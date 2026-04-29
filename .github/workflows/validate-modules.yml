@@ -1,0 +1,207 @@
+name: Validate Learning Labs Modules
+
+# Trigger conditions
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'modules/**'
+      - '.github/skills/**'
+      - '.github/agents/**'
+      - 'AGENTS.md'
+      - 'CONTRIBUTING.md'
+      - 'docs/MODULE-CONTRACT-MATRIX.md'
+      - 'scripts/validate_*.py'
+      - 'Makefile'
+      - '.github/workflows/validate-modules.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'modules/**'
+      - '.github/skills/**'
+      - '.github/agents/**'
+      - 'AGENTS.md'
+      - 'CONTRIBUTING.md'
+      - 'docs/MODULE-CONTRACT-MATRIX.md'
+      - 'scripts/validate_*.py'
+      - 'Makefile'
+      - '.github/workflows/validate-modules.yml'
+
+jobs:
+  validate-contract:
+    name: Validate Module Structure & Contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run contract validation
+        id: validate-contract
+        run: |
+          python scripts/validate_learning_labs.py \
+            --strict-core \
+            --strict-headings \
+            --report-json validate-contract-report.json
+          exit_code=$?
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+          exit $exit_code
+
+      - name: Upload contract validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validate-contract-report
+          path: validate-contract-report.json
+          retention-days: 30
+
+      - name: Comment PR with contract results (on failure)
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            let report = { errors: 0, warnings: 0 };
+            try {
+              report = JSON.parse(fs.readFileSync('validate-contract-report.json', 'utf8'));
+            } catch (e) {
+              console.log('Report file not found or invalid JSON');
+            }
+
+            const comment = `## ❌ Module Contract Validation Failed
+
+            **Errors:** ${report.errors || 0}
+            **Warnings:** ${report.warnings || 0}
+
+            Please review the validation errors:
+            - Check [MODULE-CONTRACT-MATRIX.md](./docs/MODULE-CONTRACT-MATRIX.md) for structural requirements
+            - Run \`make validate-contract\` locally to see detailed output
+            - Use \`cloud-data-module-standardization\` skill to auto-fix common issues
+
+            **Validation gates:**
+            - ✅ Required paths (STATUS.md, README.md, etc.)
+            - ✅ Exercise assets (hints.md, starter/, solution/, my_solution/)
+            - ✅ Heading schema (Overview, Learning Objectives, Prerequisites, Validation)
+
+            For details, download the [validation report](../../actions/runs/${{ github.run_id }}).`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  validate-language:
+    name: Validate English-Only Governance
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run English standards validation
+        id: validate-language
+        run: |
+          python scripts/validate_english_content.py
+          exit_code=$?
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+          exit $exit_code
+
+      - name: Comment PR with language results (on failure)
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const comment = `## ⚠️ English-Only Governance Validation Failed
+
+            Your changes contain Spanish content in governance files. Per AGENTS.md, governance files must be English-only.
+
+            **Affected scopes:**
+            - \`AGENTS.md\`
+            - \`CONTRIBUTING.md\`
+            - \`docs/\` (governance docs only)
+            - \`.github/\` (skills, agents, instructions)
+
+            **What to do:**
+            1. Review governance files for Spanish keywords or accented characters
+            2. Replace Spanish content with English equivalents
+            3. Run \`make validate-language\` locally to verify
+            4. Use \`cloud-data-english-standards\` skill to auto-fix common issues
+
+            See [ENGLISH-MIGRATION-GUIDE.md](./docs/ENGLISH-MIGRATION-GUIDE.md) for examples.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  all-validations:
+    name: Validation Gates Summary
+    runs-on: ubuntu-latest
+    needs: [validate-contract, validate-language]
+    if: always()
+
+    steps:
+      - name: Check validation status
+        run: |
+          if [ "${{ needs.validate-contract.result }}" = "failure" ] || [ "${{ needs.validate-language.result }}" = "failure" ]; then
+            echo "❌ One or more validation gates failed"
+            exit 1
+          else
+            echo "✅ All validation gates passed"
+          fi
+
+      - name: Comment PR with success
+        if: success() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const comment = `## ✅ All Validation Gates Passed
+
+            Your changes conform to:
+            - ✅ Module contract (MODULE-CONTRACT-MATRIX.md)
+            - ✅ English-only governance standards
+            - ✅ Structural requirements
+
+            Ready for review! 🎉`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

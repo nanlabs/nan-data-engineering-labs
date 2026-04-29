@@ -1,0 +1,73 @@
+# Pre-commit hooks configuration for training-cloud-data
+# See https://pre-commit.com for more information
+
+repos:
+  # Local script hooks for module validation
+  - repo: local
+    hooks:
+      # Validate module structure, headings, exercise contracts
+      - id: validate-learning-labs
+        name: Validate Learning Labs Contract
+        entry: python scripts/validate_learning_labs.py --strict-core --strict-headings
+        language: python
+        types: [markdown]
+        stages: [commit]
+        fail_fast: false
+        pass_filenames: false
+        always_run: true
+        description: |
+          Validates module structure against MODULE-CONTRACT-MATRIX:
+          - Required paths (README.md, STATUS.md, etc.)
+          - Exercise assets (hints.md, starter/, solution/, my_solution/)
+          - Heading schema (Overview, Learning Objectives, Prerequisites, Validation)
+
+      # Validate English-only governance files
+      - id: validate-english-standards
+        name: Validate English-Only Governance
+        entry: python scripts/validate_english_content.py
+        language: python
+        types: [markdown]
+        stages: [commit]
+        fail_fast: false
+        pass_filenames: false
+        always_run: true
+        description: |
+          Validates that governance files are English-only:
+          - Files scoped: AGENTS.md, CONTRIBUTING.md, docs/, .github/
+          - Detects: Spanish keywords (69 markers) + accented characters
+          - Output: Findings with file locations and line numbers
+
+  # Standard pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim Trailing Whitespace
+        stages: [commit]
+
+      - id: end-of-file-fixer
+        name: Fix End of File Fixer
+        stages: [commit]
+
+      - id: check-yaml
+        name: Check YAML
+        args: ['--unsafe']
+        stages: [commit]
+
+      - id: check-json
+        name: Check JSON
+        files: ^(?!modules/).+\.json$
+        stages: [commit]
+
+      - id: check-merge-conflict
+        name: Check for Merge Conflicts
+        stages: [commit]
+
+      - id: check-toml
+        name: Check TOML
+        stages: [commit]
+
+# Configuration
+default_stages: [commit]
+fail_fast: false
+minimum_pre_commit_version: 3.0.0
