@@ -55,10 +55,17 @@ Goal: Systematically translate 3,233+ Spanish language markers from all 23 modul
 ## Recommended Workflow (Hybrid)
 
 ### Phase 1: Prepare Translation Assets (1-2 days)
-- [ ] Create `docs/TRANSLATION-STYLE-GUIDE.md` with terminology mapping
-  - Example: "ejercicio" → "exercise", "módulo" → "module", "análisis de costos" → "cost analysis"
+- [x] Create `docs/TRANSLATION-STYLE-GUIDE.md` with terminology mapping ✅ *Complete May 1*
+  - Spanish ↔ English terminology mapping (module, exercise, objective, prerequisite, data lake, ETL, cost analysis, etc.)
+  - Translation rules (preserve code, links, formatting; translate only instructional text)
+  - Quality gate definitions (0 Spanish markers, no accented chars, consistency checks)
 - [ ] Extract all module content into translation staging directory
-- [ ] Create QA checklist template in `docs/TRANSLATION-QA-CHECKLIST.md`
+  - Copy `training-cloud-data/modules/module-0{1..18}-*/` into staging branch or temp folder
+  - Create batches list: modules 01–06 (Wave 1), 07–12 (Wave 2), 13–18 (Wave 3), checkpoints 01–03, bonus 01–02
+- [x] Create QA checklist template in `docs/TRANSLATION-QA-CHECKLIST.md` ✅ *Complete May 1*
+  - Module-level QA checklist with automated validation criteria
+  - Manual review guidance and sign-off tracking
+  - Copy and customize per wave/module (e.g., `TRANSLATION-QA-CHECKLIST-WAVE-1-MODULE-01.md`)
 
 ### Phase 2: Automated Translation Batch (1 day)
 - [ ] Set up batch translation job for all 23 modules
@@ -103,3 +110,11 @@ Each translated file must pass:
 - Translation can proceed in parallel with structure unification tasks
 - Once complete, modules will be ready for Wave 1-5 content migration with no language blockers
 - Consider reusing translated content if source modules are updated
+
+## Related Documents
+
+- [docs/TRANSLATION-STYLE-GUIDE.md](TRANSLATION-STYLE-GUIDE.md): Terminology mapping and translation rules (Phase 1, ✅ Complete)
+- [docs/TRANSLATION-QA-CHECKLIST.md](TRANSLATION-QA-CHECKLIST.md): Module-level QA template (Phase 1, ✅ Complete)
+- [docs/TODO-TRANSLATION-WAVES.md](TODO-TRANSLATION-WAVES.md): Wave-by-wave execution checklists
+- [docs/TODO-STRUCTURE-UNIFICATION.md](TODO-STRUCTURE-UNIFICATION.md): Parallel task for module folder standardization
+- [scripts/validate_english_content.py](../scripts/validate_english_content.py): Automated language validation tool
