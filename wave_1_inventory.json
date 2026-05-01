@@ -1,0 +1,47 @@
+{
+  "timestamp": "2026-05-01T17:41:10.451248",
+  "wave": 1,
+  "modules": {
+    "module-01-cloud-fundamentals": {
+      "file_count": 103,
+      "size_bytes": 16910143,
+      "source_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/training-cloud-data/modules/module-01-cloud-fundamentals",
+      "target_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/nan-data-engineering-labs/modules/module-01-cloud-fundamentals"
+    },
+    "module-02-storage-basics": {
+      "file_count": 80,
+      "size_bytes": 297478,
+      "source_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/training-cloud-data/modules/module-02-storage-basics",
+      "target_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/nan-data-engineering-labs/modules/module-02-storage-basics"
+    },
+    "module-03-sql-foundations": {
+      "file_count": 97,
+      "size_bytes": 431560,
+      "source_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/training-cloud-data/modules/module-03-sql-foundations",
+      "target_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/nan-data-engineering-labs/modules/module-03-sql-foundations"
+    },
+    "module-04-python-for-data": {
+      "file_count": 97,
+      "size_bytes": 74896086,
+      "source_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/training-cloud-data/modules/module-04-python-for-data",
+      "target_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/nan-data-engineering-labs/modules/module-04-python-for-data"
+    },
+    "module-05-data-lakehouse": {
+      "file_count": 109,
+      "size_bytes": 338975108,
+      "source_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/training-cloud-data/modules/module-05-data-lakehouse",
+      "target_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/nan-data-engineering-labs/modules/module-05-data-lakehouse"
+    },
+    "module-06-etl-fundamentals": {
+      "file_count": 69,
+      "size_bytes": 150459,
+      "source_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/training-cloud-data/modules/module-06-etl-fundamentals",
+      "target_path": "/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/nan-data-engineering-labs/modules/module-06-etl-fundamentals"
+    }
+  },
+  "summary": {
+    "total_modules": 6,
+    "total_files": 555,
+    "total_size_bytes": 431660834
+  }
+}
