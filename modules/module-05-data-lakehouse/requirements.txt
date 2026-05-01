@@ -1,0 +1,131 @@
+# ============================================================================
+# Module 05: Data Lakehouse Architecture - Python Dependencies
+# ============================================================================
+
+# ------------------------------
+# PySpark & Spark Extensions
+# ------------------------------
+pyspark==3.5.0                # Apache Spark Python API
+delta-spark==3.0.0            # Delta Lake for Spark (70% of module)
+pyiceberg[pyarrow,s3fs]==0.6.0  # Apache Iceberg Python API (30% of module)
+
+# ------------------------------
+# Data Processing & Analysis
+# ------------------------------
+pandas==2.1.4                 # Data manipulation and analysis
+pyarrow==14.0.2               # Arrow format for Parquet I/O
+numpy==1.26.3                 # Numerical computing
+
+# ------------------------------
+# Storage & Cloud
+# ------------------------------
+boto3==1.34.26                # AWS SDK for Python (S3 access)
+minio==7.2.3                  # MinIO client for local S3
+s3fs==2024.2.0                # Pythonic file interface to S3
+
+# ------------------------------
+# Data Validation & Quality
+# ------------------------------
+great-expectations==0.18.8    # Data validation framework
+pydantic==2.5.3               # Data validation using Python type hints
+
+# ------------------------------
+# Testing Framework
+# ------------------------------
+pytest==7.4.4                 # Testing framework
+pytest-spark==0.6.0           # Spark fixtures for pytest
+pytest-cov==4.1.0             # Coverage reporting for pytest
+pytest-html==4.1.1            # HTML test reports
+pytest-xdist==3.5.0           # Parallel test execution
+
+# ------------------------------
+# Jupyter & Notebooks
+# ------------------------------
+jupyter==1.0.0                # Jupyter metapackage
+jupyterlab==4.0.11            # JupyterLab computational environment
+ipykernel==6.29.0             # IPython kernel for Jupyter
+ipywidgets==8.1.1             # Interactive widgets for Jupyter
+
+# ------------------------------
+# Code Quality & Linting
+# ------------------------------
+black==23.12.1                # Code formatter
+flake8==7.0.0                 # Linting tool
+mypy==1.8.0                   # Static type checker
+isort==5.13.2                 # Import sorting
+
+# ------------------------------
+# Development Tools
+# ------------------------------
+python-dotenv==1.0.0          # Environment variable management
+loguru==0.7.2                 # Simplified logging
+rich==13.7.0                  # Rich terminal output
+click==8.1.7                  # CLI creation toolkit
+
+# ------------------------------
+# Data Generation (for exercises)
+# ------------------------------
+faker==22.0.0                 # Generate fake data
+mimesis==13.0.0               # Fast fake data generator
+
+# ------------------------------
+# Monitoring & Profiling
+# ------------------------------
+memory-profiler==0.61.0       # Memory usage profiling
+py-spy==0.3.14                # Sampling profiler
+
+# ------------------------------
+# Documentation
+# ------------------------------
+mkdocs==1.5.3                 # Project documentation
+mkdocs-material==9.5.3        # Material theme for MkDocs
+
+# ============================================================================
+# Installation Notes:
+# ============================================================================
+#
+# 1. Create virtual environment:
+#    python3 -m venv venv
+#    source venv/bin/activate
+#
+# 2. Upgrade pip:
+#    pip install --upgrade pip setuptools wheel
+#
+# 3. Install dependencies:
+#    pip install -r requirements.txt
+#
+# 4. Verify Spark installation:
+#    python -c "import pyspark; print(pyspark.__version__)"
+#    python -c "from delta import *; print('Delta Lake OK')"
+#    python -c "import pyiceberg; print('Iceberg OK')"
+#
+# ============================================================================
+# Version Notes:
+# ============================================================================
+#
+# PySpark 3.5.0 + Delta Lake 3.0.0:
+# - Fully compatible versions
+# - Delta Lake 3.0 requires Spark 3.5+
+# - Supports Python 3.8 to 3.11
+#
+# PyIceberg 0.6.0:
+# - Latest stable release
+# - Full Iceberg spec v2 support
+# - Compatible with PySpark 3.5
+#
+# Memory Requirements:
+# - Minimum: 4GB RAM for basic exercises
+# - Recommended: 8GB RAM for optimization exercises
+# - Optimal: 16GB RAM for large datasets
+#
+# ============================================================================
+# Compatibility Matrix:
+# ============================================================================
+#
+# Python:     3.8, 3.9, 3.10, 3.11
+# Spark:      3.5.0
+# Delta Lake: 3.0.0 (requires Spark 3.5+)
+# Iceberg:    0.6.0 (compatible with Spark 3.5)
+# Java:       8, 11, 17 (required for Spark)
+#
+# ============================================================================

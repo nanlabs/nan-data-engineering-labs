@@ -1,0 +1,5 @@
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pyspark==3.5.0
+delta-spark==3.0.0
+pyiceberg==0.6.0

@@ -1,0 +1,49 @@
+{
+  "title": "User Schema",
+  "type": "object",
+  "required": ["id", "email", "created_at"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique user identifier",
+      "minimum": 1
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User email address"
+    },
+    "name": {
+      "type": "string",
+      "description": "Full name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "age": {
+      "type": "integer",
+      "description": "User age",
+      "minimum": 18,
+      "maximum": 120
+    },
+    "country": {
+      "type": "string",
+      "description": "Country code (ISO 3166-1 alpha-2)",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "inactive", "suspended"],
+      "description": "Account status"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Account creation timestamp"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  }
+}

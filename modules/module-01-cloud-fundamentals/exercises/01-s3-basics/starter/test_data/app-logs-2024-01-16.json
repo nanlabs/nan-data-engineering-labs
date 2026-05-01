@@ -1,0 +1,31 @@
+{
+  "timestamp": "2024-01-16T09:15:33Z",
+  "level": "WARNING",
+  "service": "authentication",
+  "message": "Multiple failed login attempts detected",
+  "user_id": "user_55555",
+  "failed_attempts": 5,
+  "source_ip": "203.0.113.42",
+  "action_taken": "temporary_lockout"
+}
+{
+  "timestamp": "2024-01-16T09:22:18Z",
+  "level": "INFO",
+  "service": "checkout",
+  "message": "Payment processed successfully",
+  "user_id": "user_22222",
+  "order_id": "ord_67891",
+  "amount": 49.99,
+  "payment_method": "paypal",
+  "currency": "USD"
+}
+{
+  "timestamp": "2024-01-16T09:30:05Z",
+  "level": "INFO",
+  "service": "shipping",
+  "message": "Shipping label generated",
+  "order_id": "ord_67890",
+  "tracking_number": "1Z999AA10123456784",
+  "carrier": "UPS",
+  "estimated_delivery": "2024-01-18"
+}

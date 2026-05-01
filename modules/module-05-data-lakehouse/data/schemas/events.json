@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Events Schema",
+  "description": "Schema for user clickstream events (Bronze Layer)",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Unique event identifier (UUID format)",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+      "examples": ["650e8400-e29b-41d4-a716-446655440001"]
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User identifier (format: U followed by 10 digits)",
+      "pattern": "^U[0-9]{10}$",
+      "examples": ["U0000123456"]
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Session identifier (UUID format)",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+      "examples": ["750e8400-e29b-41d4-a716-446655440002"]
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Type of event",
+      "enum": ["page_view", "click", "search", "add_to_cart", "remove_from_cart", "checkout", "purchase", "signup", "login", "logout"]
+    },
+    "page_url": {
+      "type": "string",
+      "description": "Page URL where event occurred",
+      "format": "uri",
+      "maxLength": 500
+    },
+    "referrer_url": {
+      "type": "string",
+      "description": "Referrer URL",
+      "format": "uri",
+      "maxLength": 500
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "Event timestamp (ISO 8601 format)",
+      "format": "date-time",
+      "examples": ["2024-02-12T10:30:00.123Z"]
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "User agent string",
+      "maxLength": 500
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "Client IP address",
+      "format": "ipv4",
+      "examples": ["192.168.1.1"]
+    },
+    "country": {
+      "type": "string",
+      "description": "Country code (ISO 3166-1 alpha-2)",
+      "pattern": "^[A-Z]{2}$",
+      "examples": ["US", "GB", "FR"]
+    },
+    "device_type": {
+      "type": "string",
+      "description": "Device type",
+      "enum": ["desktop", "mobile", "tablet", "other"]
+    },
+    "os": {
+      "type": "string",
+      "description": "Operating system",
+      "enum": ["Windows", "macOS", "Linux", "iOS", "Android", "Other"]
+    },
+    "browser": {
+      "type": "string",
+      "description": "Browser name",
+      "enum": ["Chrome", "Firefox", "Safari", "Edge", "Opera", "Other"]
+    },
+    "screen_width": {
+      "type": "integer",
+      "description": "Screen width in pixels",
+      "minimum": 320,
+      "maximum": 7680
+    },
+    "screen_height": {
+      "type": "integer",
+      "description": "Screen height in pixels",
+      "minimum": 240,
+      "maximum": 4320
+    },
+    "event_data": {
+      "type": "object",
+      "description": "Additional event-specific data (JSON)",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "event_id",
+    "user_id",
+    "session_id",
+    "event_type",
+    "timestamp"
+  ],
+  "additionalProperties": false,
+  "notes": [
+    "Bronze layer may contain quality issues:",
+    "- Missing required fields (nulls in event_type, user_id)",
+    "- Invalid timestamps (future dates, malformed strings)",
+    "- Duplicate event_ids",
+    "- Inconsistent session tracking (same user, different sessions)",
+    "- Invalid URLs (malformed, empty strings)",
+    "- Outlier screen resolutions"
+  ]
+}

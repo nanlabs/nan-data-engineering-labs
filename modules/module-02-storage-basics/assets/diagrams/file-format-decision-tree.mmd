@@ -1,0 +1,28 @@
+graph TD
+    Start[Choose File Format] --> Q1{Query Pattern?}
+
+    Q1 -->|Analytical<br/>Columnar Access| Q2{Schema Stability?}
+    Q1 -->|Row-based<br/>Document Style| JSON[JSON/JSONL]
+    Q1 -->|Streaming<br/>Sequential| AVRO[Apache Avro]
+
+    Q2 -->|Stable Schema| Q3{Nested Data?}
+    Q2 -->|Schema Evolution| AVRO2[Apache Avro]
+
+    Q3 -->|Complex Nesting| PARQUET[Apache Parquet<br/>✓ Best Performance<br/>✓ Best Compression]
+    Q3 -->|Simple Flat| Q4{File Size?}
+
+    Q4 -->|Large Files >1GB| PARQUET2[Apache Parquet]
+    Q4 -->|Small Files <100MB| CSV[CSV with Gzip<br/>⚠️ Legacy Support]
+
+    PARQUET --> COMP1{Compression?}
+    PARQUET2 --> COMP1
+
+    COMP1 -->|Fast Read/Write| SNAPPY[Snappy<br/>Recommended]
+    COMP1 -->|Best Compression| GZIP[Gzip<br/>Cold Storage]
+    COMP1 -->|Balanced| ZSTD[Zstandard<br/>Modern Choice]
+
+    style PARQUET fill:#4CAF50,stroke:#333,stroke-width:3px,color:#fff
+    style SNAPPY fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
+    style JSON fill:#FFC107,stroke:#333,stroke-width:2px
+    style AVRO fill:#FF9800,stroke:#333,stroke-width:2px
+    style CSV fill:#F44336,stroke:#333,stroke-width:2px,color:#fff

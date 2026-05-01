@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Activity Schema",
+  "description": "Schema para el dataset de actividad de usuarios (user_activity.json)",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "ID único del evento",
+      "pattern": "^EVT-\\d{6}$"
+    },
+    "user_id": {
+      "type": ["integer", "null"],
+      "description": "ID del usuario (null para sesiones anónimas)",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "session_id": {
+      "type": "string",
+      "description": "ID de la sesión del usuario",
+      "pattern": "^SES-\\d{6}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "Timestamp del evento (ISO 8601 o Unix timestamp)",
+      "oneOf": [
+        {"format": "date-time"},
+        {"pattern": "^\\d{10,13}$"}
+      ]
+    },
+    "event_type": {
+      "type": ["string", "null"],
+      "description": "Tipo de evento realizado",
+      "enum": [
+        "page_view", "click", "search", "add_to_cart", "remove_from_cart",
+        "checkout", "purchase", "login", "logout", "review", null
+      ]
+    },
+    "page_url": {
+      "type": ["string", "null"],
+      "description": "URL de la página visitada",
+      "pattern": "^/.*"
+    },
+    "referrer": {
+      "type": ["string", "null"],
+      "description": "Referrer de la sesión",
+      "enum": [
+        "https://google.com",
+        "https://facebook.com",
+        "direct",
+        null,
+        ""
+      ]
+    },
+    "device": {
+      "type": ["object", "null"],
+      "description": "Información del dispositivo usado",
+      "properties": {
+        "type": {
+          "type": ["string", "null"],
+          "enum": ["desktop", "mobile", "tablet", null]
+        },
+        "browser": {
+          "type": ["string", "null"],
+          "enum": ["Chrome", "Firefox", "Safari", "Edge", "Opera", null]
+        },
+        "os": {
+          "type": ["string", "null"],
+          "enum": ["Windows", "MacOS", "Linux", "iOS", "Android", null]
+        },
+        "screen_resolution": {
+          "type": ["string", "null"],
+          "pattern": "^\\d{3,4}x\\d{3,4}$"
+        }
+      }
+    },
+    "location": {
+      "type": ["object", "null"],
+      "description": "Información de ubicación del usuario",
+      "properties": {
+        "country": {
+          "type": ["string", "null"]
+        },
+        "city": {
+          "type": ["string", "null"]
+        },
+        "ip_address": {
+          "type": "string",
+          "pattern": "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$"
+        }
+      }
+    },
+    "product_id": {
+      "type": ["integer", "null"],
+      "description": "ID del producto relacionado (si aplica)",
+      "minimum": 1
+    },
+    "search_query": {
+      "type": ["string", "null"],
+      "description": "Query de búsqueda (si event_type='search')"
+    },
+    "duration_seconds": {
+      "type": ["integer", "null"],
+      "description": "Duración del evento en segundos",
+      "minimum": 0
+    }
+  },
+  "required": ["event_id", "session_id", "timestamp", "event_type"],
+  "additionalProperties": false,
+  
+  "notes": {
+    "data_quality_issues": [
+      "user_id null: ~2% eventos anónimos (usuario no logueado)",
+      "Timestamp en dos formatos: ISO 8601 vs Unix timestamp (requiere conversión)",
+      "Nested objects: device y location requieren flattening",
+      "Valores nulos: device y location completos pueden ser null (~5%)",
+      "page_url null: ~5% de eventos sin URL",
+      "referrer vacío: '' vs null (inconsistencia)",
+      "product_id: null para eventos no relacionados con productos (~70%)",
+      "search_query: solo relevante para event_type='search'"
+    ],
+    "cleaning_recommendations": [
+      "Estandarizar timestamps a datetime ISO 8601",
+      "Flatten nested structures (device.*, location.*) para análisis tabular",
+      "Decidir estrategia para user_id null (sesiones anónimas)",
+      "Normalizar referrer: '' debe ser tratado como null o 'direct'",
+      "Validar coherencia: search_query debe existir solo si event_type='search'",
+      "Validar product_id contra products.parquet",
+      "Validar user_id contra customers.csv",
+      "Calcular métricas: bounce rate, session duration, conversion funnel"
+    ],
+    "nested_structure": {
+      "device": {
+        "fields": ["type", "browser", "os", "screen_resolution"],
+        "flatten_to": "device_type, device_browser, device_os, device_screen_resolution"
+      },
+      "location": {
+        "fields": ["country", "city", "ip_address"],
+        "flatten_to": "location_country, location_city, location_ip_address"
+      }
+    },
+    "event_funnel": {
+      "description": "Secuencia típica de eventos para conversión",
+      "steps": [
+        "page_view → usuario llega al sitio",
+        "search → busca productos",
+        "click → ve detalles de producto",
+        "add_to_cart → agrega al carrito",
+        "checkout → inicia proceso de compra",
+        "purchase → completa compra"
+      ],
+      "drop_off_analysis": "Analizar en qué pasos se pierden usuarios"
+    },
+    "analytics_use_cases": [
+      "Conversion funnel: page_view → purchase",
+      "Bounce rate: eventos con duration_seconds < 30",
+      "Device analysis: comportamiento por tipo de dispositivo",
+      "Referrer attribution: qué fuentes generan más conversiones",
+      "Search analytics: queries más populares, sin resultados",
+      "Session analysis: agrupar eventos por session_id",
+      "User journey: trazar path de user_id a través de eventos",
+      "A/B testing: comparar comportamiento por segmentos"
+    ],
+    "expected_stats": {
+      "total_records": "20,000",
+      "date_range": "Últimos 3 meses",
+      "anonymous_sessions": "~400",
+      "events_per_session": "2-5 promedio",
+      "event_types": {
+        "page_view": "~40%",
+        "click": "~20%",
+        "search": "~15%",
+        "add_to_cart": "~10%",
+        "purchase": "~5%",
+        "other": "~10%"
+      },
+      "devices": {
+        "mobile": "~45%",
+        "desktop": "~40%",
+        "tablet": "~15%"
+      },
+      "browsers": {
+        "Chrome": "~50%",
+        "Safari": "~25%",
+        "Firefox": "~15%",
+        "other": "~10%"
+      }
+    }
+  }
+}

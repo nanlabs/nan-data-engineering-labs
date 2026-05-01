@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Transaction",
+  "description": "E-commerce transaction schema for QuickMart",
+  "type": "object",
+  "required": [
+    "transaction_id",
+    "user_id",
+    "product_id",
+    "quantity",
+    "unit_price",
+    "total_amount",
+    "timestamp",
+    "status"
+  ],
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "pattern": "^TXN[0-9]{6}$",
+      "description": "Unique transaction identifier"
+    },
+    "user_id": {
+      "type": "string",
+      "pattern": "^USER[0-9]{4}$",
+      "description": "Reference to user"
+    },
+    "product_id": {
+      "type": "string",
+      "pattern": "^PROD[0-9]{4}$",
+      "description": "Reference to product"
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "description": "Number of items purchased"
+    },
+    "unit_price": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Price per unit in USD"
+    },
+    "total_amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total transaction amount (quantity * unit_price)"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": ["credit_card", "debit_card", "paypal", "gift_card", "crypto"],
+      "description": "Payment method used"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "completed", "failed", "refunded", "cancelled"],
+      "description": "Transaction status"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Transaction timestamp in ISO 8601 format"
+    },
+    "country": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$",
+      "description": "Country code (ISO 3166-1 alpha-2)"
+    },
+    "device": {
+      "type": "string",
+      "enum": ["mobile", "desktop", "tablet", "smartwatch"],
+      "description": "Device type used for transaction"
+    }
+  }
+}

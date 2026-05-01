@@ -1,0 +1,23 @@
+graph LR
+    A[Raw Data Sources] -->|Ingest| B[Bronze Layer]
+    B -->|Clean & Validate| C[Silver Layer]
+    C -->|Aggregate & Enrich| D[Gold Layer]
+
+    B -->|Format: Original CSV/JSON| B1[Raw Copy]
+    C -->|Format: Parquet + Snappy| C1[Validated Data]
+    D -->|Format: Parquet + Snappy| D1[Analytics Ready]
+
+    B1 -->|Retention: 2 years| B2[Archive to Glacier]
+    C1 -->|Retention: 1 year| C2[Transition to IA]
+    D1 -->|Retention: 3 years| D2[Keep in Standard]
+
+    D -->|Query| E1[Data Scientists]
+    D -->|Dashboards| E2[Business Analysts]
+    C -->|ML Models| E3[Data Engineers]
+
+    style B fill:#8B4513,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#C0C0C0,stroke:#333,stroke-width:2px
+    style D fill:#FFD700,stroke:#333,stroke-width:2px
+    style E1 fill:#90EE90,stroke:#333,stroke-width:2px
+    style E2 fill:#90EE90,stroke:#333,stroke-width:2px
+    style E3 fill:#90EE90,stroke:#333,stroke-width:2px

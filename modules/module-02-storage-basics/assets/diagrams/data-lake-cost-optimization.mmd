@@ -1,0 +1,71 @@
+graph TB
+    START[Data Lake Costs] --> CATEGORIES{Cost Categories}
+
+    CATEGORIES --> STORAGE[Storage Costs]
+    CATEGORIES --> COMPUTE[Compute Costs]
+    CATEGORIES --> TRANSFER[Data Transfer Costs]
+    CATEGORIES --> REQUEST[Request Costs]
+
+    subgraph Storage Optimization
+        STORAGE --> S1[Lifecycle Policies<br/>Save: 60-80%]
+        STORAGE --> S2[Compression Snappy/Gzip<br/>Save: 50-70%]
+        STORAGE --> S3[Parquet Format<br/>Save: 70-90% vs CSV]
+        STORAGE --> S4[Delete Temp/Old Data<br/>Save: Variable]
+        STORAGE --> S5[Intelligent-Tiering<br/>Save: Auto 40-60%]
+    end
+
+    subgraph Compute Optimization
+        COMPUTE --> C1[Partition Pruning<br/>Save: 50-90%]
+        COMPUTE --> C2[Predicate Pushdown<br/>Save: 30-50%]
+        COMPUTE --> C3[Columnar Storage<br/>Save: 80-95%]
+        COMPUTE --> C4[Right-size Clusters<br/>Save: 30-50%]
+        COMPUTE --> C5[Spot Instances<br/>Save: 70-90%]
+        COMPUTE --> C6[Query Result Caching<br/>Save: 95-100%]
+    end
+
+    subgraph Transfer Optimization
+        TRANSFER --> T1[Same Region<br/>Save: 100% vs cross-region]
+        TRANSFER --> T2[VPC Endpoints<br/>Save: 50-100%]
+        TRANSFER --> T3[CloudFront CDN<br/>Save: 30-60%]
+        TRANSFER --> T4[Minimize Egress<br/>Save: Variable]
+    end
+
+    subgraph Request Optimization
+        REQUEST --> R1[Batch Operations<br/>Save: 80-95%]
+        REQUEST --> R2[Larger Files >100MB<br/>Save: 90-99%]
+        REQUEST --> R3[List Objects Efficiently<br/>Save: 50-90%]
+        REQUEST --> R4[Use S3 Select<br/>Save: 60-80%]
+    end
+
+    S1 --> IMPACT[Cost Impact]
+    S2 --> IMPACT
+    S3 --> IMPACT
+    C1 --> IMPACT
+    C3 --> IMPACT
+    C5 --> IMPACT
+    C6 --> IMPACT
+    T1 --> IMPACT
+    R2 --> IMPACT
+
+    IMPACT --> QUICK[Quick Wins - Implement First]
+    IMPACT --> MEDIUM[Medium Effort - Plan Soon]
+    IMPACT --> LONG[Long Term - Strategic]
+
+    QUICK --> QW1[1. Enable compression Snappy<br/>2. Use Parquet format<br/>3. Set lifecycle 30d→IA<br/>4. Delete temp data<br/>5. Partition by date]
+
+    MEDIUM --> MW1[1. Implement partitioning strategy<br/>2. Optimize query patterns<br/>3. Configure VPC endpoints<br/>4. Consolidate small files<br/>5. Enable Intelligent-Tiering]
+
+    LONG --> LW1[1. Data catalog governance<br/>2. Cost allocation tags<br/>3. Reserved capacity<br/>4. Cross-region strategy<br/>5. Data retention policies]
+
+    QW1 --> RESULT[Expected Savings]
+    MW1 --> RESULT
+    LW1 --> RESULT
+
+    RESULT --> SAVE[Total Cost Reduction:<br/>Storage: 70-85%<br/>Compute: 60-75%<br/>Overall: 50-70%<br/><br/>ROI Timeline:<br/>Quick wins: 1 week<br/>Medium: 1-2 months<br/>Long term: 6-12 months]
+
+    style STORAGE fill:#F44336,stroke:#333,stroke-width:2px,color:#fff
+    style COMPUTE fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
+    style TRANSFER fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style REQUEST fill:#FF9800,stroke:#333,stroke-width:2px,color:#fff
+    style QUICK fill:#4CAF50,stroke:#333,stroke-width:3px,color:#fff
+    style RESULT fill:#FFD700,stroke:#333,stroke-width:3px

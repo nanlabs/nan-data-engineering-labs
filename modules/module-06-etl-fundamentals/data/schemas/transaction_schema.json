@@ -1,0 +1,47 @@
+{
+  "title": "Transaction Schema",
+  "type": "object",
+  "required": ["transaction_id", "user_id", "amount", "timestamp"],
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "description": "Unique transaction identifier (UUID)",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "user_id": {
+      "type": "integer",
+      "description": "Reference to user",
+      "minimum": 1
+    },
+    "product_id": {
+      "type": "string",
+      "description": "Product SKU",
+      "pattern": "^[A-Z]{3}-[0-9]{4}$"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Transaction amount",
+      "minimum": 0.01,
+      "maximum": 10000.00
+    },
+    "currency": {
+      "type": "string",
+      "enum": ["USD", "EUR", "GBP", "JPY"],
+      "description": "Currency code"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "completed", "failed", "refunded"],
+      "description": "Transaction status"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Transaction timestamp"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional transaction metadata"
+    }
+  }
+}

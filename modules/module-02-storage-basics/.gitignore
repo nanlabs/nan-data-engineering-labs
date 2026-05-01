@@ -1,0 +1,19 @@
+# Module 02 - Local Generated Files
+
+# Sample data files (must be generated locally)
+data/sample/users_sample.parquet
+data/sample/.generate_users.py
+data/sample/generate_users_temp.py
+
+# Generated data from exercises
+data/generated/
+data/output/
+output/
+
+# LocalStack data
+infrastructure/.localstack/
+
+# Exercise outputs
+exercises/*/output/
+exercises/*/data/
+exercises/**/benchmark_results.txt

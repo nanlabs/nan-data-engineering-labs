@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Transaction Schema",
+  "description": "Schema para el dataset de transacciones (transactions.csv)",
+  "type": "object",
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "description": "ID único de la transacción",
+      "pattern": "^TXN-\\d{8}$"
+    },
+    "order_id": {
+      "type": "string",
+      "description": "ID de la orden asociada (algunos pueden no existir)",
+      "pattern": "^ORD-\\d{6}$"
+    },
+    "customer_id": {
+      "type": "integer",
+      "description": "ID del cliente",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "transaction_date": {
+      "type": "string",
+      "description": "Fecha y hora de la transacción (múltiples formatos)",
+      "oneOf": [
+        {"format": "date-time"},
+        {"pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"},
+        {"pattern": "^\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}$"},
+        {"pattern": "^\\d{4}-\\d{2}-\\d{2}$"}
+      ]
+    },
+    "transaction_type": {
+      "type": ["string", "null"],
+      "description": "Tipo de transacción",
+      "enum": ["purchase", "refund", "adjustment", "bonus", null]
+    },
+    "amount": {
+      "type": "number",
+      "description": "Monto de la transacción (negativo para refunds)"
+    },
+    "currency": {
+      "type": ["string", "null"],
+      "description": "Moneda de la transacción",
+      "enum": ["USD", "EUR", "MXN", "ARS", "COP", null]
+    },
+    "payment_status": {
+      "type": ["string", "null"],
+      "description": "Estado del pago",
+      "enum": ["completed", "pending", "failed", "cancelled", null]
+    },
+    "payment_provider": {
+      "type": ["string", "null"],
+      "description": "Proveedor del pago",
+      "enum": ["Stripe", "PayPal", "Square", "MercadoPago", "Bank Transfer", null]
+    },
+    "fee": {
+      "type": ["number", "null"],
+      "description": "Comisión cobrada por el proveedor",
+      "minimum": 0
+    },
+    "net_amount": {
+      "type": "number",
+      "description": "Monto neto (amount - fee)"
+    }
+  },
+  "required": ["transaction_id", "order_id", "customer_id", "transaction_date", "amount"],
+  "additionalProperties": false,
+  
+  "notes": {
+    "data_quality_issues": [
+      "order_id orphan: ~5% de transacciones con order_id que no existe en orders.json",
+      "Formatos de fecha inconsistentes: 4 formatos diferentes",
+      "Valores nulos: transaction_type, currency, payment_status, payment_provider pueden ser null",
+      "Montos anómalos: transacciones de $0, montos muy altos (>$100k)",
+      "Refunds: transaction_type='refund' tienen amount negativo",
+      "Fee inconsistente: algunos registros sin fee cuando debería tenerlo",
+      "Múltiples monedas: requiere conversión para análisis agregado"
+    ],
+    "cleaning_recommendations": [
+      "Estandarizar fechas a ISO 8601 (YYYY-MM-DD HH:MM:SS)",
+      "Validar existencia de order_id en orders.json",
+      "Validar coherencia: refunds deben tener amount negativo",
+      "Validar net_amount = amount - fee",
+      "Decidir estrategia para valores nulos",
+      "Convertir todas las monedas a una base (ej: USD) con tipo de cambio",
+      "Validar transacciones de $0: ¿son válidas o errores?",
+      "Detectar outliers: montos > $100,000",
+      "Calcular fee esperado: debería ser 2-5% del amount para validar"
+    ],
+    "business_rules": {
+      "refunds": "transaction_type='refund' implica amount negativo",
+      "fee_calculation": "fee = amount * provider_rate (típicamente 2-5%)",
+      "net_amount": "net_amount = amount - fee",
+      "payment_status": "completed = transacción exitosa, pending = en proceso, failed = rechazada",
+      "currency_codes": "ISO 4217 codes (USD, EUR, MXN, ARS, COP)"
+    },
+    "relationships": {
+      "orders": "Relación 1:1 con orders.json vía order_id (pero no todos los order_id existen)",
+      "customers": "Relación N:1 con customers.csv vía customer_id",
+      "expected_joins": [
+        "JOIN orders ON transactions.order_id = orders.order_id",
+        "JOIN customers ON transactions.customer_id = customers.customer_id"
+      ]
+    },
+    "expected_stats": {
+      "total_records": "100,000",
+      "date_range": "Últimos 2 años",
+      "orphan_order_ids": "~5,000",
+      "transaction_types": {
+        "purchase": "~80%",
+        "refund": "~10%",
+        "adjustment": "~5%",
+        "bonus": "~3%",
+        "null": "~2%"
+      },
+      "payment_statuses": {
+        "completed": "~85%",
+        "pending": "~5%",
+        "failed": "~5%",
+        "cancelled": "~3%",
+        "null": "~2%"
+      },
+      "avg_transaction": "$200-300",
+      "avg_fee": "$5-15"
+    }
+  }
+}

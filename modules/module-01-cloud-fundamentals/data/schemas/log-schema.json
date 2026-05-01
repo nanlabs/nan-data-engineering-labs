@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ApplicationLog",
+  "description": "Application event log schema for QuickMart",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "level",
+    "event_type",
+    "user_id",
+    "session_id"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event timestamp in ISO 8601 format"
+    },
+    "level": {
+      "type": "string",
+      "enum": ["DEBUG", "INFO", "WARN", "ERROR", "FATAL"],
+      "description": "Log level"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "page_view",
+        "add_to_cart",
+        "remove_from_cart",
+        "checkout",
+        "purchase",
+        "search",
+        "login",
+        "logout",
+        "signup",
+        "error",
+        "api_call"
+      ],
+      "description": "Type of event"
+    },
+    "user_id": {
+      "type": "string",
+      "pattern": "^USER[0-9]{4}$",
+      "description": "User identifier"
+    },
+    "session_id": {
+      "type": "string",
+      "pattern": "^SESSION[0-9]{6}$",
+      "description": "Session identifier"
+    },
+    "ip_address": {
+      "type": "string",
+      "format": "ipv4",
+      "description": "Client IP address"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "Browser user agent string"
+    },
+    "page_url": {
+      "type": "string",
+      "description": "Page URL path"
+    },
+    "response_time_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Response time in milliseconds"
+    },
+    "status_code": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 599,
+      "description": "HTTP status code"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if level is ERROR or FATAL"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional event-specific metadata"
+    }
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Customer Schema",
+  "description": "Schema para el dataset de clientes (customers.csv)",
+  "type": "object",
+  "properties": {
+    "customer_id": {
+      "type": "integer",
+      "description": "ID único del cliente",
+      "minimum": 1
+    },
+    "first_name": {
+      "type": ["string", "null"],
+      "description": "Nombre del cliente",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "last_name": {
+      "type": ["string", "null"],
+      "description": "Apellido del cliente",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "email": {
+      "type": ["string", "null"],
+      "description": "Email del cliente",
+      "format": "email",
+      "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    },
+    "phone": {
+      "type": ["string", "null"],
+      "description": "Teléfono del cliente (múltiples formatos posibles)",
+      "pattern": "^[+]?[(]?[0-9]{1,4}[)]?[-\\s\\.]?[(]?[0-9]{1,4}[)]?[-\\s\\.]?[0-9]{1,9}$"
+    },
+    "country": {
+      "type": ["string", "null"],
+      "description": "País del cliente",
+      "enum": [
+        "México", "España", "Argentina", "Colombia", "Chile", "Perú", 
+        "Venezuela", "Ecuador", "Uruguay", "Paraguay", "Bolivia", 
+        "Guatemala", "Cuba", "Honduras", null
+      ]
+    },
+    "city": {
+      "type": ["string", "null"],
+      "description": "Ciudad del cliente",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "registration_date": {
+      "type": ["string", "null"],
+      "description": "Fecha de registro del cliente (múltiples formatos posibles)",
+      "oneOf": [
+        {"format": "date"},
+        {"pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        {"pattern": "^\\d{2}/\\d{2}/\\d{4}$"},
+        {"pattern": "^\\d{2}-\\d{2}-\\d{4}$"},
+        {"pattern": "^\\d{4}/\\d{2}/\\d{2}$"}
+      ]
+    },
+    "is_active": {
+      "type": ["boolean", "string", "integer", "null"],
+      "description": "Estado activo del cliente (valores inconsistentes posibles)",
+      "oneOf": [
+        {"type": "boolean"},
+        {"type": "string", "enum": ["true", "false", "True", "False", "yes", "no", "Y", "N", "1", "0"]},
+        {"type": "integer", "enum": [0, 1]},
+        {"type": "null"}
+      ]
+    },
+    "loyalty_points": {
+      "type": ["integer", "null"],
+      "description": "Puntos de lealtad del cliente (puede tener valores negativos por error)"
+    }
+  },
+  "required": ["customer_id"],
+  "additionalProperties": false,
+  
+  "notes": {
+    "data_quality_issues": [
+      "Duplicados: ~2% de registros duplicados",
+      "Valores nulos: first_name, last_name, email, phone, country, city pueden ser null o vacíos",
+      "Emails malformados: ~2% de emails sin '@'",
+      "Formatos de fecha inconsistentes: 4 formatos diferentes",
+      "is_active con múltiples representaciones: boolean, string, integer",
+      "loyalty_points: ~2% valores negativos (errores), ~1% valores muy altos (>100,000)"
+    ],
+    "cleaning_recommendations": [
+      "Eliminar duplicados basándose en customer_id",
+      "Estandarizar formatos de fecha a ISO 8601 (YYYY-MM-DD)",
+      "Validar y limpiar emails (eliminar o corregir malformados)",
+      "Normalizar teléfonos a un formato único",
+      "Convertir is_active a boolean (true/false)",
+      "Tratar valores nulos: decidir estrategia (eliminar, rellenar, mantener)",
+      "Validar loyalty_points: investigar negativos, decidir sobre outliers"
+    ],
+    "expected_stats": {
+      "total_records": "~10,000",
+      "duplicates": "~200",
+      "null_emails": "~5%",
+      "malformed_emails": "~2%",
+      "null_phones": "~10%",
+      "countries_unique": "~15",
+      "date_range": "Últimos 4 años"
+    }
+  }
+}

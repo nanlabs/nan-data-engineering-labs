@@ -1,0 +1,55 @@
+graph TD
+    Start[Schema Change Needed] --> Type{Change Type?}
+
+    Type -->|Add Column| ADD[Add Optional Column]
+    Type -->|Remove Column| REMOVE[Remove Column]
+    Type -->|Modify Type| MODIFY[Modify Data Type]
+    Type -->|Rename Column| RENAME[Rename Column]
+
+    ADD --> ADD1{Backward Compatible?}
+    ADD1 -->|Yes - Optional| SAFE1[✓ Safe Evolution<br/>Set default=null]
+    ADD1 -->|No - Required| UNSAFE1[⚠️ Breaking Change<br/>Backfill required]
+
+    REMOVE --> REMOVE1{Still Queried?}
+    REMOVE1 -->|Yes| UNSAFE2[⚠️ Breaking Change<br/>Update queries first]
+    REMOVE1 -->|No| SAFE2[✓ Safe to Remove<br/>Archive old data]
+
+    MODIFY --> MODIFY1{Compatible Cast?}
+    MODIFY1 -->|Yes - Widening| SAFE3[✓ Safe Evolution<br/>int32 → int64<br/>string → text]
+    MODIFY1 -->|No - Narrowing| UNSAFE3[⚠️ Validate Data<br/>Could lose precision]
+
+    RENAME --> RENAME1[⚠️ Breaking Change]
+    RENAME1 --> RENAME2[Create Alias/View<br/>Deprecate old name<br/>Migrate gradually]
+
+    SAFE1 --> PROCESS[Evolution Process]
+    SAFE2 --> PROCESS
+    SAFE3 --> PROCESS
+
+    UNSAFE1 --> REVIEW[Review & Plan]
+    UNSAFE2 --> REVIEW
+    UNSAFE3 --> REVIEW
+    RENAME2 --> REVIEW
+
+    PROCESS --> P1[1. Update Schema Definition]
+    P1 --> P2[2. Test with Sample Data]
+    P2 --> P3[3. Update Data Catalog]
+    P3 --> P4[4. Deploy to Production]
+    P4 --> P5[5. Monitor Queries]
+
+    REVIEW --> R1[1. Impact Analysis]
+    R1 --> R2[2. Create Migration Plan]
+    R2 --> R3[3. Update Dependent Systems]
+    R3 --> R4[4. Staged Rollout]
+    R4 --> R5[5. Validate & Monitor]
+
+    P5 --> DONE[✓ Schema Updated]
+    R5 --> DONE
+
+    style SAFE1 fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style SAFE2 fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style SAFE3 fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style UNSAFE1 fill:#F44336,stroke:#333,stroke-width:2px,color:#fff
+    style UNSAFE2 fill:#F44336,stroke:#333,stroke-width:2px,color:#fff
+    style UNSAFE3 fill:#FF9800,stroke:#333,stroke-width:2px,color:#fff
+    style RENAME1 fill:#F44336,stroke:#333,stroke-width:2px,color:#fff
+    style DONE fill:#FFD700,stroke:#333,stroke-width:3px

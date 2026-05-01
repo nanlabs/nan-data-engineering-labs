@@ -1,0 +1,326 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'GlobalMart Data Lake - Medallion Architecture (COMPLETE SOLUTION)'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, prod]
+    Description: Environment name
+
+  CompanyName:
+    Type: String
+    Default: globalmart
+    Description: Company name
+
+  CostCenter:
+    Type: String
+    Default: engineering
+    Description: Cost center
+
+Resources:
+  # BRONZE LAYER
+  BronzeBucket:
+    Type: AWS::S3::Bucket
+    DependsOn: LogsBucket
+    Properties:
+      BucketName: !Sub '${CompanyName}-bronze-${Environment}'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: TransitionOldData
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: STANDARD_IA
+              - TransitionInDays: 90
+                StorageClass: GLACIER
+            ExpirationInDays: 730
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LogsBucket
+        LogFilePrefix: bronze-access-logs/
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - {Key: Environment, Value: !Ref Environment}
+        - {Key: Layer, Value: bronze}
+        - {Key: CostCenter, Value: !Ref CostCenter}
+        - {Key: DataClassification, Value: raw}
+
+  # SILVER LAYER
+  SilverBucket:
+    Type: AWS::S3::Bucket
+    DependsOn: LogsBucket
+    Properties:
+      BucketName: !Sub '${CompanyName}-silver-${Environment}'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: TransitionToIA
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 90
+                StorageClass: STANDARD_IA
+            ExpirationInDays: 365
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LogsBucket
+        LogFilePrefix: silver-access-logs/
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - {Key: Environment, Value: !Ref Environment}
+        - {Key: Layer, Value: silver}
+        - {Key: CostCenter, Value: !Ref CostCenter}
+        - {Key: DataClassification, Value: cleaned}
+
+  # GOLD LAYER
+  GoldBucket:
+    Type: AWS::S3::Bucket
+    DependsOn: LogsBucket
+    Properties:
+      BucketName: !Sub '${CompanyName}-gold-${Environment}'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LogsBucket
+        LogFilePrefix: gold-access-logs/
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - {Key: Environment, Value: !Ref Environment}
+        - {Key: Layer, Value: gold}
+        - {Key: CostCenter, Value: business-intelligence}
+        - {Key: DataClassification, Value: aggregated}
+
+  # LOGS BUCKET
+  LogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${CompanyName}-logs-${Environment}'
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldLogs
+            Status: Enabled
+            ExpirationInDays: 90
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - {Key: Environment, Value: !Ref Environment}
+        - {Key: Purpose, Value: access-logs}
+
+  # BUCKET POLICIES
+  BronzeBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref BronzeBucket
+      PolicyDocument:
+        Statement:
+          - Sid: DenyUnencryptedUploads
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:PutObject'
+            Resource: !Sub '${BronzeBucket.Arn}/*'
+            Condition:
+              StringNotEquals:
+                's3:x-amz-server-side-encryption': 'AES256'
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: [!GetAtt BronzeBucket.Arn, !Sub '${BronzeBucket.Arn}/*']
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+  SilverBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SilverBucket
+      PolicyDocument:
+        Statement:
+          - Sid: DenyUnencryptedUploads
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:PutObject'
+            Resource: !Sub '${SilverBucket.Arn}/*'
+            Condition:
+              StringNotEquals:
+                's3:x-amz-server-side-encryption': 'AES256'
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: [!GetAtt SilverBucket.Arn, !Sub '${SilverBucket.Arn}/*']
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+  GoldBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref GoldBucket
+      PolicyDocument:
+        Statement:
+          - Sid: DenyUnencryptedUploads
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:PutObject'
+            Resource: !Sub '${GoldBucket.Arn}/*'
+            Condition:
+              StringNotEquals:
+                's3:x-amz-server-side-encryption': 'AES256'
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: [!GetAtt GoldBucket.Arn, !Sub '${GoldBucket.Arn}/*']
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+  # IAM ROLES
+  DataEngineerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'GlobalMart-DataEngineer-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [ec2.amazonaws.com, glue.amazonaws.com, lambda.amazonaws.com]
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+      Policies:
+        - PolicyName: DataLakeAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ['s3:*']
+                Resource:
+                  - !GetAtt BronzeBucket.Arn
+                  - !Sub '${BronzeBucket.Arn}/*'
+                  - !GetAtt SilverBucket.Arn
+                  - !Sub '${SilverBucket.Arn}/*'
+              - Effect: Allow
+                Action: ['s3:GetObject', 's3:ListBucket']
+                Resource:
+                  - !GetAtt GoldBucket.Arn
+                  - !Sub '${GoldBucket.Arn}/*'
+      Tags:
+        - {Key: Environment, Value: !Ref Environment}
+        - {Key: Role, Value: data-engineer}
+
+  DataScientistRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'GlobalMart-DataScientist-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [ec2.amazonaws.com, sagemaker.amazonaws.com]
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: DataLakeReadAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ['s3:GetObject', 's3:ListBucket']
+                Resource:
+                  - !GetAtt SilverBucket.Arn
+                  - !Sub '${SilverBucket.Arn}/*'
+                  - !GetAtt GoldBucket.Arn
+                  - !Sub '${GoldBucket.Arn}/*'
+              - Effect: Allow
+                Action: ['athena:*']
+                Resource: '*'
+      Tags:
+        - {Key: Environment, Value: !Ref Environment}
+        - {Key: Role, Value: data-scientist}
+
+  AnalystRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'GlobalMart-Analyst-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: GoldReadAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ['s3:GetObject', 's3:ListBucket']
+                Resource:
+                  - !GetAtt GoldBucket.Arn
+                  - !Sub '${GoldBucket.Arn}/*'
+              - Effect: Allow
+                Action: ['athena:*', 'glue:Get*']
+                Resource: '*'
+      Tags:
+        - {Key: Environment, Value: !Ref Environment}
+        - {Key: Role, Value: analyst}
+
+Outputs:
+  BronzeBucketName:
+    Value: !Ref BronzeBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-BronzeBucket'
+  SilverBucketName:
+    Value: !Ref SilverBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-SilverBucket'
+  GoldBucketName:
+    Value: !Ref GoldBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-GoldBucket'
+  LogsBucketName:
+    Value: !Ref LogsBucket
+  DataEngineerRoleArn:
+    Value: !GetAtt DataEngineerRole.Arn
+  DataScientistRoleArn:
+    Value: !GetAtt DataScientistRole.Arn
+  AnalystRoleArn:
+    Value: !GetAtt AnalystRole.Arn

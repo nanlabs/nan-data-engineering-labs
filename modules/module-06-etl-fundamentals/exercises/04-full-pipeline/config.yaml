@@ -1,0 +1,48 @@
+# ETL Pipeline Configuration
+
+name: "users_etl_pipeline"
+description: "Extract users, clean and transform, load to parquet"
+
+source:
+  type: csv
+  path: ../../data/raw/users_clean.csv
+  encoding: utf-8
+
+transform:
+  drop_duplicates: true
+
+  drop_nulls:
+    - id
+    - email
+
+  filters:
+    - column: status
+      operator: in
+      value: [active, pending]
+
+    - column: age
+      operator: "!="
+      value: null
+
+  columns:
+    - id
+    - email
+    - first_name
+    - last_name
+    - age
+    - country
+    - status
+    - created_at
+
+  add_metadata: true
+
+destination:
+  type: parquet
+  path: ../../data/output/users_processed.parquet
+  compression: snappy
+
+# Optional settings
+options:
+  log_level: INFO
+  validate_output: true
+  save_metrics: true

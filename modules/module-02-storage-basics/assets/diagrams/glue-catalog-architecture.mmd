@@ -1,0 +1,59 @@
+graph TB
+    subgraph S3 Data Lake
+        S3[(S3 Buckets)]
+        S3 --> BRONZE[bronze/transactions/]
+        S3 --> SILVER[silver/transactions/]
+        S3 --> GOLD[gold/analytics/]
+    end
+
+    subgraph AWS Glue Components
+        CRAWLER[Glue Crawler]
+        CATALOG[Glue Data Catalog]
+        ETL[Glue ETL Jobs]
+
+        CRAWLER -->|Discovers Schema| CATALOG
+        CATALOG -->|Metadata| ETL
+    end
+
+    BRONZE --> CRAWLER
+    SILVER --> CRAWLER
+    GOLD --> CRAWLER
+
+    CATALOG --> DB1[Database: bronze_db]
+    CATALOG --> DB2[Database: silver_db]
+    CATALOG --> DB3[Database: gold_db]
+
+    DB1 --> T1[Table: transactions<br/>Columns: id, amount, date<br/>Partitions: year, month]
+    DB2 --> T2[Table: transactions_clean<br/>Columns: id, amount_usd, date<br/>Partitions: year, month, country]
+    DB3 --> T3[Table: daily_revenue<br/>Columns: date, total_revenue<br/>Partitions: year, month]
+
+    subgraph Query Engines
+        ATHENA[Amazon Athena]
+        SPARK[Spark on EMR]
+        REDSHIFT[Redshift Spectrum]
+    end
+
+    CATALOG --> ATHENA
+    CATALOG --> SPARK
+    CATALOG --> REDSHIFT
+
+    ATHENA --> QUERY1[SELECT * FROM gold_db.daily_revenue<br/>WHERE year=2024 AND month=1]
+    SPARK --> QUERY2[df = spark.table gold_db.daily_revenue<br/>df.filter year=2024]
+    REDSHIFT --> QUERY3[SELECT * FROM spectrum.gold_db.daily_revenue<br/>WHERE year=2024]
+
+    subgraph Governance
+        IAM[IAM Policies]
+        LF[Lake Formation]
+
+        IAM --> CATALOG
+        LF --> CATALOG
+
+        LF --> PERM1[Row-level Security]
+        LF --> PERM2[Column-level Security]
+        LF --> PERM3[Tag-based Access Control]
+    end
+
+    style CATALOG fill:#FF9800,stroke:#333,stroke-width:3px,color:#fff
+    style CRAWLER fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style ATHENA fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
+    style LF fill:#9C27B0,stroke:#333,stroke-width:2px,color:#fff

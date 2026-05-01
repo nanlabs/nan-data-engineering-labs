@@ -1,0 +1,5 @@
+delta-spark>=3.0.0
+pyspark>=3.5.0
+pytest>=7.0.0
+# Iceberg es opcional - requiere configuración adicional
+# org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.4.0

@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Exercise 06: AWS Glue Catalog Setup (Starter Template with TODOs)'
+
+Parameters:
+  DatabaseName:
+    Type: String
+    Default: globalmart
+    Description: Name of the Glue database
+
+  BucketName:
+    Type: String
+    Description: S3 bucket containing the data
+
+Resources:
+  # TODO: Create Glue Database
+  # Hint: Use AWS::Glue::Database
+  # Set Name: !Ref DatabaseName
+  GlueDatabase:
+    Type: # TODO: Add resource type
+    Properties:
+      # TODO: Add properties
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: # TODO: Reference parameter
+        Description: 'GlobalMart data catalog'
+
+  # TODO: Create Glue Table for transactions
+  # Hint: Use AWS::Glue::Table
+  # Define schema with columns: transaction_id, user_id, amount, timestamp, country, status
+  TransactionsTable:
+    Type: # TODO: Add resource type
+    Properties:
+      # TODO: Add properties
+      pass
+
+  # TODO: Create Glue Crawler for auto-discovery
+  # Hint: Use AWS::Glue::Crawler
+  # Set path to S3 location: s3://{bucket}/silver/
+  DataCrawler:
+    Type: # TODO: Add resource type
+    Properties:
+      # TODO: Add crawler configuration
+      pass
+
+  # TODO: Create IAM Role for Crawler
+  # Hint: Crawler needs permissions to:
+  # - Read S3 (s3:GetObject, s3:ListBucket)
+  # - Write to Glue Catalog (glue:CreateTable, glue:UpdateTable)
+  CrawlerRole:
+    Type: # TODO: Add resource type
+    Properties:
+      # TODO: Add IAM role with policies
+      pass
+
+Outputs:
+  DatabaseName:
+    Description: 'Glue Database Name'
+    Value: !Ref GlueDatabase
+    Export:
+      Name: !Sub '${AWS::StackName}-DatabaseName'

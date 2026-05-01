@@ -1,0 +1,11 @@
+user_id,email,first_name,last_name,country,city,registration_date,is_active,loyalty_points
+1,john.smith@email.com,John,Smith,US,New York,2023-01-15,true,150
+2,jane.doe@email.com,Jane,Doe,US,Los Angeles,2023-02-20,true,220
+3,bob.wilson@email.com,Bob,Wilson,GB,London,2023-03-10,true,80
+4,alice.brown@email.com,Alice,Brown,CA,Toronto,2023-04-05,true,300
+5,charlie.davis@email.com,Charlie,Davis,AU,Sydney,2023-05-12,true,45
+6,emma.garcia@email.com,Emma,Garcia,ES,Madrid,2023-06-18,true,190
+7,david.martinez@email.com,David,Martinez,MX,Mexico City,2023-07-22,true,110
+8,sophia.lee@email.com,Sophia,Lee,KR,Seoul,2023-08-30,true,260
+9,james.taylor@email.com,James,Taylor,US,Chicago,2023-09-14,true,75
+10,olivia.white@email.com,Olivia,White,GB,Manchester,2023-10-08,true,340

@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Product Schema",
+  "description": "Schema para el dataset de productos (products.parquet)",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "integer",
+      "description": "ID único del producto",
+      "minimum": 1
+    },
+    "product_name": {
+      "type": "string",
+      "description": "Nombre del producto",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "category": {
+      "type": ["string", "null"],
+      "description": "Categoría del producto",
+      "enum": [
+        "Electronics", "Clothing", "Home & Garden", "Sports", "Books", 
+        "Toys", "Food & Beverage", "Beauty", "Automotive", null
+      ]
+    },
+    "brand": {
+      "type": ["string", "null"],
+      "description": "Marca del producto",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "price": {
+      "type": "number",
+      "description": "Precio del producto (puede tener valores negativos por error)",
+      "exclusiveMinimum": -100
+    },
+    "stock": {
+      "type": "integer",
+      "description": "Cantidad en inventario (puede ser negativo por error)",
+      "minimum": -100
+    },
+    "rating": {
+      "type": ["number", "null"],
+      "description": "Calificación promedio (escala 1-5, puede tener valores fuera de rango)",
+      "minimum": -1,
+      "maximum": 10
+    },
+    "num_reviews": {
+      "type": "integer",
+      "description": "Número de reseñas del producto",
+      "minimum": 0
+    },
+    "weight_kg": {
+      "type": ["number", "null"],
+      "description": "Peso del producto en kilogramos",
+      "minimum": 0
+    },
+    "length_cm": {
+      "type": ["number", "null"],
+      "description": "Largo del producto en centímetros",
+      "minimum": 0
+    },
+    "width_cm": {
+      "type": ["number", "null"],
+      "description": "Ancho del producto en centímetros",
+      "minimum": 0
+    },
+    "height_cm": {
+      "type": ["number", "null"],
+      "description": "Alto del producto en centímetros",
+      "minimum": 0
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Fecha de creación del producto",
+      "format": "date-time"
+    },
+    "is_active": {
+      "type": ["boolean", "integer", "null"],
+      "description": "Indica si el producto está activo",
+      "oneOf": [
+        {"type": "boolean"},
+        {"type": "integer", "enum": [0, 1]},
+        {"type": "null"}
+      ]
+    }
+  },
+  "required": ["product_id", "product_name", "created_at"],
+  "additionalProperties": false,
+  
+  "notes": {
+    "data_quality_issues": [
+      "Precios negativos: ~2% de productos con precio < 0 (errores de sistema)",
+      "Precios muy altos: ~1% con precio > $10,000 (posibles outliers)",
+      "Stock negativo: ~5% de productos con inventario negativo (errores de conteo)",
+      "Rating fuera de rango: ~3% con rating < 0 o > 5",
+      "Valores nulos: category, brand, rating pueden ser null",
+      "Dimensiones nulas: ~10% de productos sin dimensiones físicas",
+      "is_active inconsistente: valores boolean, integer (0/1), o null"
+    ],
+    "cleaning_recommendations": [
+      "Investigar precios negativos: corregir o marcar como error",
+      "Validar precios > $10,000: verificar si son correctos o errores",
+      "Corregir stock negativo: ajustar a 0 o investigar causa",
+      "Normalizar rating a escala 0-5: clips valores fuera de rango a null",
+      "Estandarizar is_active a boolean (true/false)",
+      "Decidir estrategia para nulls en dimensiones: mantener, rellenar, o inferir",
+      "Validar coherencia: num_reviews = 0 cuando rating es null",
+      "Calcular volumen: length * width * height para análisis de almacenamiento"
+    ],
+    "format_notes": {
+      "file_format": "Apache Parquet",
+      "compression": "Snappy",
+      "benefits": [
+        "Formato columnar eficiente",
+        "Compresión automática",
+        "Type safety preservado",
+        "Lectura rápida con pandas/PyArrow",
+        "Soporta queries predicadas"
+      ],
+      "read_with": "pd.read_parquet('products.parquet')"
+    },
+    "expected_stats": {
+      "total_records": "500",
+      "categories_unique": "9-10",
+      "brands_unique": "6-7",
+      "price_range": "$10 - $500 (excluyendo outliers)",
+      "avg_rating": "3.0 - 3.5",
+      "date_range": "Últimos 5 años",
+      "null_ratings": "~10%",
+      "negative_prices": "~10 productos",
+      "negative_stock": "~25 productos"
+    }
+  }
+}

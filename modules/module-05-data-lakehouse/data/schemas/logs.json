@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Application Logs Schema",
+  "description": "Schema for application log entries (Bronze Layer)",
+  "type": "object",
+  "properties": {
+    "log_id": {
+      "type": "string",
+      "description": "Unique log identifier (UUID format)",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+      "examples": ["850e8400-e29b-41d4-a716-446655440003"]
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "Log timestamp (ISO 8601 format)",
+      "format": "date-time",
+      "examples": ["2024-02-12T10:30:00.123456Z"]
+    },
+    "level": {
+      "type": "string",
+      "description": "Log level",
+      "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    },
+    "service": {
+      "type": "string",
+      "description": "Service name that generated the log",
+      "enum": ["api-gateway", "auth-service", "payment-service", "inventory-service", "notification-service", "analytics-service", "user-service"]
+    },
+    "host": {
+      "type": "string",
+      "description": "Hostname or IP of the server",
+      "maxLength": 255
+    },
+    "process_id": {
+      "type": "integer",
+      "description": "Process ID",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "thread_id": {
+      "type": "integer",
+      "description": "Thread ID",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "message": {
+      "type": "string",
+      "description": "Log message",
+      "maxLength": 2000
+    },
+    "error_code": {
+      "type": "string",
+      "description": "Error code (if applicable)",
+      "pattern": "^[A-Z]{3}[0-9]{4}$",
+      "examples": ["ERR5001", "WRN2003"]
+    },
+    "stack_trace": {
+      "type": "string",
+      "description": "Stack trace for errors",
+      "maxLength": 5000
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User ID associated with the log (if applicable)",
+      "pattern": "^U[0-9]{10}$",
+      "examples": ["U0000123456"]
+    },
+    "request_id": {
+      "type": "string",
+      "description": "Request ID for tracing",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+      "examples": ["950e8400-e29b-41d4-a716-446655440004"]
+    },
+    "duration_ms": {
+      "type": "number",
+      "description": "Request/operation duration in milliseconds",
+      "minimum": 0,
+      "maximum": 300000
+    },
+    "http_status": {
+      "type": "integer",
+      "description": "HTTP status code (if applicable)",
+      "minimum": 100,
+      "maximum": 599
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "API endpoint (if applicable)",
+      "maxLength": 500
+    },
+    "method": {
+      "type": "string",
+      "description": "HTTP method",
+      "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "Client IP address",
+      "format": "ipv4",
+      "examples": ["192.168.1.1"]
+    },
+    "environment": {
+      "type": "string",
+      "description": "Environment where log was generated",
+      "enum": ["development", "staging", "production"]
+    }
+  },
+  "required": [
+    "log_id",
+    "timestamp",
+    "level",
+    "service",
+    "message"
+  ],
+  "additionalProperties": false,
+  "notes": [
+    "Bronze layer may contain quality issues:",
+    "- Missing required fields (level, service)",
+    "- Invalid log levels (lowercase, typos)",
+    "- Malformed timestamps",
+    "- Duplicate log_ids",
+    "- Negative durations",
+    "- Invalid HTTP status codes (e.g., 999)",
+    "- Empty messages",
+    "- Future timestamps (clock drift)"
+  ]
+}

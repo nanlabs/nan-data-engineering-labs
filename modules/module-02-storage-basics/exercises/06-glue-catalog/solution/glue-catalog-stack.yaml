@@ -1,0 +1,210 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Exercise 06: AWS Glue Catalog Setup - Complete Solution'
+
+Parameters:
+  DatabaseName:
+    Type: String
+    Default: globalmart
+    Description: Name of the Glue database
+
+  BucketName:
+    Type: String
+    Description: S3 bucket containing the data
+
+  DataPath:
+    Type: String
+    Default: silver/
+    Description: Path within bucket to crawl
+
+Resources:
+  # Glue Database
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: !Ref DatabaseName
+        Description: 'GlobalMart e-commerce data catalog'
+        LocationUri: !Sub 's3://${BucketName}/${DataPath}'
+
+  # Transactions Table (manually defined)
+  TransactionsTable:
+    Type: AWS::Glue::Table
+    DependsOn: GlueDatabase
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref DatabaseName
+      TableInput:
+        Name: transactions
+        Description: 'Transaction data from e-commerce platform'
+        StorageDescriptor:
+          Columns:
+            - Name: transaction_id
+              Type: int
+              Comment: 'Unique transaction identifier'
+            - Name: user_id
+              Type: int
+              Comment: 'User who made the transaction'
+            - Name: product_id
+              Type: int
+              Comment: 'Product purchased'
+            - Name: amount
+              Type: double
+              Comment: 'Transaction amount in USD'
+            - Name: timestamp
+              Type: timestamp
+              Comment: 'Transaction timestamp'
+            - Name: country
+              Type: string
+              Comment: 'Country code'
+            - Name: status
+              Type: string
+              Comment: 'Transaction status'
+          Location: !Sub 's3://${BucketName}/${DataPath}transactions/'
+          InputFormat: 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'
+          OutputFormat: 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+          SerdeInfo:
+            SerializationLibrary: 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+            Parameters:
+              serialization.format: '1'
+        PartitionKeys:
+          - Name: year
+            Type: int
+          - Name: month
+            Type: int
+          - Name: day
+            Type: int
+        TableType: 'EXTERNAL_TABLE'
+        Parameters:
+          classification: 'parquet'
+          compressionType: 'snappy'
+
+  # Users Table (manually defined)
+  UsersTable:
+    Type: AWS::Glue::Table
+    DependsOn: GlueDatabase
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref DatabaseName
+      TableInput:
+        Name: users
+        Description: 'User profile information'
+        StorageDescriptor:
+          Columns:
+            - Name: user_id
+              Type: int
+            - Name: email
+              Type: string
+            - Name: first_name
+              Type: string
+            - Name: last_name
+              Type: string
+            - Name: registration_date
+              Type: date
+            - Name: country
+              Type: string
+            - Name: age
+              Type: int
+          Location: !Sub 's3://${BucketName}/${DataPath}users/'
+          InputFormat: 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'
+          OutputFormat: 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+          SerdeInfo:
+            SerializationLibrary: 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+        TableType: 'EXTERNAL_TABLE'
+        Parameters:
+          classification: 'parquet'
+
+  # IAM Role for Crawler
+  CrawlerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: glue.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole'
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:ListBucket'
+                Resource:
+                  - !Sub 'arn:aws:s3:::${BucketName}'
+                  - !Sub 'arn:aws:s3:::${BucketName}/*'
+        - PolicyName: GlueCatalogAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'glue:CreateTable'
+                  - 'glue:UpdateTable'
+                  - 'glue:DeleteTable'
+                  - 'glue:GetTable'
+                  - 'glue:GetTables'
+                  - 'glue:GetDatabase'
+                  - 'glue:CreatePartition'
+                  - 'glue:BatchCreatePartition'
+                  - 'glue:UpdatePartition'
+                Resource:
+                  - !Sub 'arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog'
+                  - !Sub 'arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/${DatabaseName}'
+                  - !Sub 'arn:aws:glue:${AWS::Region}:${AWS::AccountId}:table/${DatabaseName}/*'
+
+  # Glue Crawler for auto-discovery
+  DataCrawler:
+    Type: AWS::Glue::Crawler
+    DependsOn:
+      - GlueDatabase
+      - CrawlerRole
+    Properties:
+      Name: !Sub '${DatabaseName}-crawler'
+      Role: !GetAtt CrawlerRole.Arn
+      DatabaseName: !Ref DatabaseName
+      Description: 'Crawler to discover and catalog data in S3'
+      Targets:
+        S3Targets:
+          - Path: !Sub 's3://${BucketName}/${DataPath}products/'
+          - Path: !Sub 's3://${BucketName}/${DataPath}events/'
+          - Path: !Sub 's3://${BucketName}/${DataPath}logs/'
+      SchemaChangePolicy:
+        UpdateBehavior: 'UPDATE_IN_DATABASE'
+        DeleteBehavior: 'LOG'
+      Configuration: |
+        {
+          "Version": 1.0,
+          "CrawlerOutput": {
+            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"}
+          }
+        }
+
+Outputs:
+  DatabaseName:
+    Description: 'Glue Database Name'
+    Value: !Ref GlueDatabase
+    Export:
+      Name: !Sub '${AWS::StackName}-DatabaseName'
+
+  TransactionsTableName:
+    Description: 'Transactions Table Name'
+    Value: !Ref TransactionsTable
+
+  UsersTableName:
+    Description: 'Users Table Name'
+    Value: !Ref UsersTable
+
+  CrawlerName:
+    Description: 'Glue Crawler Name'
+    Value: !Ref DataCrawler
+
+  CrawlerRoleArn:
+    Description: 'IAM Role ARN for Crawler'
+    Value: !GetAtt CrawlerRole.Arn

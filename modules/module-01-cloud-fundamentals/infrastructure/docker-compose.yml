@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack-module-01
+    ports:
+      - "4566:4566"     # LocalStack Gateway
+      - "4571:4571"     # LocalStack additional services
+    environment:
+      # Services to enable
+      - SERVICES=s3,iam,lambda,sqs,logs,cloudformation,cloudwatch,sns,events
+
+      # Debug settings
+      - DEBUG=1
+      - LAMBDA_EXECUTOR=local
+      - LAMBDA_REMOTE_DOCKER=0
+
+      # Data persistence
+      - DATA_DIR=/tmp/localstack/data
+      - PERSISTENCE=1
+
+      # Docker configuration
+      - DOCKER_HOST=unix:///var/run/docker.sock
+
+      # AWS configuration
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+
+      # Additional settings
+      - SKIP_INFRA_DOWNLOADS=1
+      - LOCALSTACK_HOST=localhost:4566
+
+    volumes:
+      # Data persistence
+      - ./localstack-data:/tmp/localstack
+
+      # Docker socket for Lambda
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      # Lambda functions
+      - ./exercises/04-lambda-functions/starter:/tmp/lambda-functions:ro
+
+    networks:
+      - cloud-training-network
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  cloud-training-network:
+    driver: bridge
+    name: cloud-training-network
+
+volumes:
+  localstack-data:
+    driver: local

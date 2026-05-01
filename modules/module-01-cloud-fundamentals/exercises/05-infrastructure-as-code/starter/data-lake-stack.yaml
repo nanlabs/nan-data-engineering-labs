@@ -1,0 +1,147 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'QuickMart Data Lake Infrastructure'
+
+# Parameters allow customization without changing the template
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+    Description: Deployment environment
+
+  DataRetentionDays:
+    Type: Number
+    Default: 90
+    MinValue: 30
+    MaxValue: 365
+    Description: Days to retain data in STANDARD storage before transitioning
+
+# Conditions for environment-specific logic
+Conditions:
+  IsProduction: !Equals [!Ref Environment, prod]
+  IsDevelopment: !Equals [!Ref Environment, dev]
+
+Resources:
+  # TODO: Create S3 bucket for data lake
+  # Hints:
+  # - Use !Sub for bucket name with Environment parameter
+  # - Enable versioning
+  # - Add lifecycle rules
+  # - Set DeletionPolicy to Retain for production
+
+  DataLakeBucket:
+    Type: AWS::S3::Bucket
+    # TODO: Add DeletionPolicy (Retain for prod, Delete for dev)
+    Properties:
+      # TODO: Define bucket name using Environment parameter
+      # BucketName: !Sub 'quickmart-data-lake-${Environment}'
+
+      # TODO: Enable versioning
+      # VersioningConfiguration:
+      #   Status: Enabled
+
+      # TODO: Add lifecycle configuration
+      # LifecycleConfiguration:
+      #   Rules:
+      #     - Id: TransitionToIA
+      #       Status: Enabled
+      #       Transitions:
+      #         - TransitionInDays: !Ref DataRetentionDays
+      #           StorageClass: STANDARD_IA
+
+      # TODO: Add tags
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: QuickMart-DataPlatform
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  # TODO: Create bucket policy
+  # Hints:
+  # - Require encryption on upload
+  # - Deny unencrypted object uploads
+
+  DataLakeBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref DataLakeBucket
+      PolicyDocument:
+        Statement:
+          # TODO: Add policy statement requiring encryption
+          - Sid: DenyUnencryptedObjectUploads
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:PutObject'
+            Resource: !Sub '${DataLakeBucket.Arn}/*'
+            # TODO: Add condition for missing encryption
+            # Condition:
+            #   StringNotEquals:
+            #     s3:x-amz-server-side-encryption: 'AES256'
+
+  # TODO: Create IAM role for data engineers
+  # Hints:
+  # - Allow assumption by EC2 and Lambda
+  # - Attach managed policy for S3 access
+  # - Add inline policy for specific permissions
+
+  DataEngineerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'data-engineer-role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          # TODO: Allow EC2 and Lambda to assume this role
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+                - lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+
+      # TODO: Attach managed policies
+      # ManagedPolicyArns:
+      #   - arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+      # TODO: Add inline policies
+      # Policies:
+      #   - PolicyName: DataLakeAccess
+      #     PolicyDocument:
+      #       Version: '2012-10-17'
+      #       Statement:
+      #         - Effect: Allow
+      #           Action:
+      #             - s3:GetObject
+      #             - s3:PutObject
+      #           Resource: !Sub '${DataLakeBucket.Arn}/*'
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+# Outputs for cross-stack references
+Outputs:
+  # TODO: Export bucket name for use in other stacks
+  BucketName:
+    Description: Data Lake S3 bucket name
+    Value: !Ref DataLakeBucket
+    # TODO: Add export name
+    # Export:
+    #   Name: !Sub '${AWS::StackName}-BucketName'
+
+  # TODO: Export bucket ARN
+  BucketArn:
+    Description: Data Lake S3 bucket ARN
+    Value: !GetAtt DataLakeBucket.Arn
+    # TODO: Add export
+
+  # TODO: Export IAM role ARN
+  DataEngineerRoleArn:
+    Description: IAM role ARN for data engineers
+    Value: !GetAtt DataEngineerRole.Arn
+    # TODO: Add export

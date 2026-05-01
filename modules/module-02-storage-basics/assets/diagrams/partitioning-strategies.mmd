@@ -1,0 +1,53 @@
+graph TB
+    subgraph Time-based Partitioning
+        T1[year=2024/month=01/day=15/data.parquet]
+        T2[year=2024/month=01/day=16/data.parquet]
+        T3[year=2024/month=02/day=01/data.parquet]
+
+        T1 --> TQ1[✓ Time-series queries<br/>✓ Data retention<br/>✓ Lifecycle management]
+        T2 --> TQ1
+        T3 --> TQ1
+    end
+
+    subgraph Geographic Partitioning
+        G1[country=USA/region=west/data.parquet]
+        G2[country=USA/region=east/data.parquet]
+        G3[country=UK/region=london/data.parquet]
+
+        G1 --> GQ1[✓ Regional analysis<br/>✓ Data sovereignty<br/>✓ Access control]
+        G2 --> GQ1
+        G3 --> GQ1
+    end
+
+    subgraph Category Partitioning
+        C1[category=electronics/data.parquet]
+        C2[category=clothing/data.parquet]
+        C3[category=home/data.parquet]
+
+        C1 --> CQ1[✓ Business unit queries<br/>✓ Team separation<br/>✓ Domain focus]
+        C2 --> CQ1
+        C3 --> CQ1
+    end
+
+    subgraph Hybrid Partitioning
+        H1[year=2024/month=01/country=USA/data.parquet]
+        H2[year=2024/month=01/country=UK/data.parquet]
+        H3[year=2024/month=02/country=USA/data.parquet]
+
+        H1 --> HQ1[✓ Multi-dimension queries<br/>✓ Flexible analysis<br/>⚠️ More partitions]
+        H2 --> HQ1
+        H3 --> HQ1
+    end
+
+    TQ1 --> BEST[Best Practices]
+    GQ1 --> BEST
+    CQ1 --> BEST
+    HQ1 --> BEST
+
+    BEST --> BP1[• High cardinality columns<br/>• Frequently filtered<br/>• 100MB-1GB per partition<br/>• Avoid too many small files]
+
+    style T1 fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style G1 fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
+    style C1 fill:#FF9800,stroke:#333,stroke-width:2px,color:#fff
+    style H1 fill:#9C27B0,stroke:#333,stroke-width:2px,color:#fff
+    style BEST fill:#FFD700,stroke:#333,stroke-width:3px

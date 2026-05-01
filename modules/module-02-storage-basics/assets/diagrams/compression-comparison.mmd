@@ -1,0 +1,49 @@
+graph LR
+    subgraph Compression Algorithms
+        direction TB
+        NONE[No Compression]
+        SNAPPY[Snappy]
+        GZIP[Gzip]
+        ZSTD[Zstandard]
+        LZ4[LZ4]
+    end
+
+    subgraph Metrics Comparison
+        direction TB
+
+        NONE --> M1[Size: 100%<br/>Read: Fastest<br/>Write: Fastest<br/>CPU: None]
+
+        SNAPPY --> M2[Size: 40-50%<br/>Read: Very Fast<br/>Write: Very Fast<br/>CPU: Low]
+
+        GZIP --> M3[Size: 25-35%<br/>Read: Moderate<br/>Write: Slow<br/>CPU: High]
+
+        ZSTD --> M4[Size: 30-40%<br/>Read: Fast<br/>Write: Fast<br/>CPU: Medium]
+
+        LZ4 --> M5[Size: 45-55%<br/>Read: Very Fast<br/>Write: Very Fast<br/>CPU: Very Low]
+    end
+
+    subgraph Use Cases
+        direction TB
+
+        M2 --> UC1[Hot Data<br/>Frequent Access<br/>Analytics]
+
+        M3 --> UC2[Cold Storage<br/>Archive<br/>Cost Optimization]
+
+        M4 --> UC3[Balanced<br/>Modern Choice<br/>Good Compression]
+
+        M5 --> UC4[Real-time<br/>Streaming<br/>Low Latency]
+
+        M1 --> UC5[Temporary<br/>Already Compressed<br/>Testing]
+    end
+
+    UC1 --> REC[Recommendation]
+    UC2 --> REC
+    UC3 --> REC
+
+    REC --> R1[Development: Snappy<br/>Production Hot: Snappy/Zstd<br/>Production Cold: Gzip<br/>Streaming: LZ4]
+
+    style SNAPPY fill:#4CAF50,stroke:#333,stroke-width:3px,color:#fff
+    style GZIP fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
+    style ZSTD fill:#FF9800,stroke:#333,stroke-width:2px,color:#fff
+    style LZ4 fill:#9C27B0,stroke:#333,stroke-width:2px,color:#fff
+    style REC fill:#FFD700,stroke:#333,stroke-width:3px

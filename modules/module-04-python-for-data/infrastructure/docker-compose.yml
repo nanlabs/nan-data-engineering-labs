@@ -1,0 +1,208 @@
+version: '3.8'
+
+# ============================================================================
+# Module 04: Python for Data Engineering - Docker Compose Configuration
+# ============================================================================
+# Este archivo define la infraestructura para el módulo usando Docker Compose
+# Incluye: Jupyter Lab, PostgreSQL (opcional), volúmenes persistentes
+# ============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # Jupyter Lab - Entorno principal de desarrollo
+  # --------------------------------------------------------------------------
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: python-data-jupyter
+    
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    
+    environment:
+      # Jupyter Configuration
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=${JUPYTER_TOKEN:-python-data-2026}
+      
+      # Python Configuration
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      
+      # Timezone
+      - TZ=America/Santiago
+    
+    volumes:
+      # Notebooks (persistente)
+      - ./notebooks:/home/jovyan/work/notebooks
+      
+      # Data (persistente)
+      - ../data:/home/jovyan/work/data
+      
+      # Exercises (read-only para evitar sobrescribir soluciones)
+      - ../exercises:/home/jovyan/work/exercises:ro
+      
+      # Scripts (read-only)
+      - ../scripts:/home/jovyan/work/scripts:ro
+      
+      # Assets (read-only)
+      - ../assets:/home/jovyan/work/assets:ro
+      
+      # Configuración Python personalizada
+      - ./jupyter_config.py:/home/jovyan/.jupyter/jupyter_lab_config.py
+      
+      # Instalar requirements del módulo
+      - ../requirements.txt:/tmp/requirements.txt
+    
+    working_dir: /home/jovyan/work
+    
+    # Comando de inicio con instalación de dependencias
+    command: >
+      bash -c "
+        pip install --no-cache-dir -r /tmp/requirements.txt &&
+        start-notebook.sh
+      "
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Resource limits (ajustar según necesidad)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    
+    networks:
+      - python-data-network
+
+  # --------------------------------------------------------------------------
+  # PostgreSQL - Base de datos para ejercicios SQL (OPCIONAL)
+  # --------------------------------------------------------------------------
+  # Descomentar si necesitas PostgreSQL para conectar con pandas/SQLAlchemy
+  
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: python-data-postgres
+  #   
+  #   ports:
+  #     - "${POSTGRES_PORT:-5433}:5432"
+  #   
+  #   environment:
+  #     - POSTGRES_DB=${POSTGRES_DB:-python_data}
+  #     - POSTGRES_USER=${POSTGRES_USER:-python_user}
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-python_pass}
+  #     - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --locale=en_US.UTF-8
+  #   
+  #   volumes:
+  #     # Datos persistentes
+  #     - postgres_data:/var/lib/postgresql/data
+  #     
+  #     # Scripts de inicialización (si existen)
+  #     - ./init-scripts:/docker-entrypoint-initdb.d:ro
+  #   
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-python_user}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   
+  #   restart: unless-stopped
+  #   
+  #   networks:
+  #     - python-data-network
+
+  # --------------------------------------------------------------------------
+  # MinIO - S3-compatible storage para ejercicios cloud (OPCIONAL)
+  # --------------------------------------------------------------------------
+  # Descomentar si necesitas simular S3 localmente
+  
+  # minio:
+  #   image: minio/minio:latest
+  #   container_name: python-data-minio
+  #   
+  #   ports:
+  #     - "${MINIO_API_PORT:-9000}:9000"
+  #     - "${MINIO_CONSOLE_PORT:-9001}:9001"
+  #   
+  #   environment:
+  #     - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minio_admin}
+  #     - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minio_pass123}
+  #   
+  #   volumes:
+  #     - minio_data:/data
+  #   
+  #   command: server /data --console-address ":9001"
+  #   
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #   
+  #   restart: unless-stopped
+  #   
+  #   networks:
+  #     - python-data-network
+
+# ============================================================================
+# Volumes
+# ============================================================================
+volumes:
+  # Datos PostgreSQL (si se usa)
+  # postgres_data:
+  #   driver: local
+  
+  # Datos MinIO (si se usa)
+  # minio_data:
+  #   driver: local
+
+# ============================================================================
+# Networks
+# ============================================================================
+networks:
+  python-data-network:
+    driver: bridge
+    name: python-data-network
+
+# ============================================================================
+# Notas de Uso
+# ============================================================================
+# 
+# Iniciar servicios:
+#   docker-compose up -d
+#
+# Ver logs:
+#   docker-compose logs -f jupyter
+#
+# Detener servicios:
+#   docker-compose down
+#
+# Detener y eliminar volúmenes:
+#   docker-compose down -v
+#
+# Reconstruir imagen:
+#   docker-compose build --no-cache
+#
+# Acceder a Jupyter Lab:
+#   http://localhost:8888
+#   Token: Ver en .env o usar el default (python-data-2026)
+#
+# Acceder a container shell:
+#   docker-compose exec jupyter bash
+#
+# Ver uso de recursos:
+#   docker stats python-data-jupyter
+#
+# ============================================================================

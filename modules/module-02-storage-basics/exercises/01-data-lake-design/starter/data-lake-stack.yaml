@@ -1,0 +1,225 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'GlobalMart Data Lake - Medallion Architecture (Bronze/Silver/Gold)'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+    Description: Environment name
+
+  CompanyName:
+    Type: String
+    Default: globalmart
+    Description: Company name for bucket naming
+
+  CostCenter:
+    Type: String
+    Default: engineering
+    Description: Cost center for billing
+
+Resources:
+  # ============================================================================
+  # BRONZE LAYER (Raw Data Zone)
+  # ============================================================================
+
+  BronzeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${CompanyName}-bronze-${Environment}'
+      # TODO: Enable versioning
+      # VersioningConfiguration:
+      #   Status: ???
+
+      # TODO: Configure encryption
+      # BucketEncryption:
+      #   ServerSideEncryptionConfiguration:
+      #     - ???
+
+      # TODO: Configure lifecycle rules
+      # Move to IA after 30 days, Glacier after 90 days
+      # LifecycleConfiguration:
+      #   Rules:
+      #     - ???
+
+      # TODO: Enable access logging
+      # LoggingConfiguration:
+      #   DestinationBucketName: ???
+      #   LogFilePrefix: bronze-access-logs/
+
+      # TODO: Block all public access
+      # PublicAccessBlockConfiguration:
+      #   ???
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Layer
+          Value: bronze
+        - Key: CostCenter
+          Value: !Ref CostCenter
+        - Key: DataClassification
+          Value: raw
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  # ============================================================================
+  # SILVER LAYER (Cleaned Data Zone)
+  # ============================================================================
+
+  SilverBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${CompanyName}-silver-${Environment}'
+      # TODO: Configure similar to Bronze but with different lifecycle
+      # Move to IA after 90 days (no Glacier)
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Layer
+          Value: silver
+        - Key: CostCenter
+          Value: !Ref CostCenter
+        - Key: DataClassification
+          Value: cleaned
+
+  # ============================================================================
+  # GOLD LAYER (Curated Data Zone)
+  # ============================================================================
+
+  GoldBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${CompanyName}-gold-${Environment}'
+      # TODO: Configure for frequently accessed data
+      # No lifecycle transitions (keep in Standard)
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Layer
+          Value: gold
+        - Key: CostCenter
+          Value: business-intelligence
+        - Key: DataClassification
+          Value: aggregated
+
+  # ============================================================================
+  # LOGGING BUCKET
+  # ============================================================================
+
+  LogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${CompanyName}-logs-${Environment}'
+      # TODO: Configure for access logs
+      # Enable versioning, encryption, lifecycle (delete after 90 days)
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: access-logs
+
+  # ============================================================================
+  # IAM ROLES
+  # ============================================================================
+
+  DataEngineerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'GlobalMart-DataEngineer-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      # TODO: Attach policies for Bronze (RW), Silver (RW), Gold (RO)
+      # Policies:
+      #   - ???
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Role
+          Value: data-engineer
+
+  DataScientistRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'GlobalMart-DataScientist-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      # TODO: Attach policies for Silver (RO), Gold (RO)
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Role
+          Value: data-scientist
+
+  # TODO: Create AnalystRole (Gold read-only)
+
+  # ============================================================================
+  # BUCKET POLICIES
+  # ============================================================================
+
+  BronzeBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref BronzeBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          # TODO: Add policy statements
+          # - Allow DataEngineerRole full access
+          # - Deny unencrypted uploads
+          # - Deny public access
+          - Sid: DenyUnencryptedObjectUploads
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:PutObject'
+            Resource: !Sub '${BronzeBucket.Arn}/*'
+            Condition:
+              StringNotEquals:
+                's3:x-amz-server-side-encryption': 'AES256'
+
+  # TODO: Add SilverBucketPolicy and GoldBucketPolicy
+
+Outputs:
+  BronzeBucketName:
+    Description: Bronze layer bucket name
+    Value: !Ref BronzeBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-BronzeBucket'
+
+  SilverBucketName:
+    Description: Silver layer bucket name
+    Value: !Ref SilverBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-SilverBucket'
+
+  GoldBucketName:
+    Description: Gold layer bucket name
+    Value: !Ref GoldBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-GoldBucket'
+
+  DataEngineerRoleArn:
+    Description: Data Engineer IAM Role ARN
+    Value: !GetAtt DataEngineerRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-DataEngineerRole'
+
+  # TODO: Add more outputs for other roles

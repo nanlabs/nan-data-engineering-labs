@@ -1,0 +1,62 @@
+graph LR
+    subgraph Data Lifecycle
+        UPLOAD[New Data Upload] --> STANDARD[S3 Standard]
+
+        STANDARD -->|30 days| IA[S3 Intelligent-Tiering]
+        IA -->|Auto-optimize| IA1[Frequent Access Tier]
+        IA -->|Auto-optimize| IA2[Infrequent Access Tier]
+        IA -->|Auto-optimize| IA3[Archive Instant Access]
+
+        STANDARD -->|90 days<br/>if not accessed| SIA[S3 Standard-IA]
+
+        SIA -->|180 days| GLACIER[S3 Glacier Flexible]
+        IA2 -->|180 days| GLACIER
+
+        GLACIER -->|1 year| DEEP[S3 Glacier Deep Archive]
+
+        DEEP -->|7 years| DELETE[Delete After Retention]
+    end
+
+    subgraph Storage Class Comparison
+        direction TB
+
+        STANDARD --> COST1[Cost: $$$$<br/>Retrieval: Immediate<br/>Use: Hot data, <30 days]
+
+        IA1 --> COST2[Cost: $$$<br/>Retrieval: Immediate<br/>Use: Auto-managed]
+
+        SIA --> COST3[Cost: $$<br/>Retrieval: Immediate<br/>Min: 30 days storage<br/>Use: Infrequent access]
+
+        GLACIER --> COST4[Cost: $<br/>Retrieval: 1-5 hours<br/>Min: 90 days storage<br/>Use: Archive, compliance]
+
+        DEEP --> COST5[Cost: $<br/>Retrieval: 12 hours<br/>Min: 180 days storage<br/>Use: Long-term archive]
+    end
+
+    subgraph Cost Optimization Rules
+        direction TB
+
+        R1[Bronze Layer:<br/>30d Standard → 90d Glacier → 2y Delete]
+        R2[Silver Layer:<br/>90d Standard → 1y IA → Archive]
+        R3[Gold Layer:<br/>Keep in Standard/IA<br/>Business-critical data]
+        R4[Logs & Raw:<br/>7d Standard → 30d IA → 90d Glacier → 1y Delete]
+        R5[Backups:<br/>Immediate to Glacier<br/>7y retention → Delete]
+    end
+
+    COST1 --> SAVINGS[Cost Savings]
+    COST3 --> SAVINGS
+    COST4 --> SAVINGS
+    COST5 --> SAVINGS
+
+    R1 --> SAVINGS
+    R2 --> SAVINGS
+    R3 --> SAVINGS
+    R4 --> SAVINGS
+    R5 --> SAVINGS
+
+    SAVINGS --> RESULT[Typical Savings:<br/>60-80% storage costs<br/>Automatic transition<br/>No manual intervention]
+
+    style STANDARD fill:#F44336,stroke:#333,stroke-width:2px,color:#fff
+    style IA fill:#FF9800,stroke:#333,stroke-width:2px,color:#fff
+    style SIA fill:#FFC107,stroke:#333,stroke-width:2px
+    style GLACIER fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
+    style DEEP fill:#1565C0,stroke:#333,stroke-width:2px,color:#fff
+    style RESULT fill:#4CAF50,stroke:#333,stroke-width:3px,color:#fff

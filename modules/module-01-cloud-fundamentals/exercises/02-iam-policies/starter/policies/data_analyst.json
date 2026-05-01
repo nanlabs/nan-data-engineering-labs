@@ -1,0 +1,84 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3ReadOnly",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:ListBucket",
+        "s3:ListBucketVersions",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-data-lake-*",
+        "arn:aws:s3:::my-data-lake-*/*"
+      ]
+    },
+    {
+      "Sid": "AthenaQueryExecution",
+      "Effect": "Allow",
+      "Action": [
+        "athena:StartQueryExecution",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults",
+        "athena:StopQueryExecution",
+        "athena:GetWorkGroup",
+        "athena:CreateNamedQuery",
+        "athena:GetNamedQuery",
+        "athena:BatchGetNamedQuery",
+        "athena:ListNamedQueries",
+        "athena:DeleteNamedQuery"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "GlueDataCatalogReadOnly",
+      "Effect": "Allow",
+      "Action": [
+        "glue:GetDatabase",
+        "glue:GetDatabases",
+        "glue:GetTable",
+        "glue:GetTables",
+        "glue:GetPartition",
+        "glue:GetPartitions",
+        "glue:BatchGetPartition"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "S3QueryResultsBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::athena-query-results-*/*"
+    },
+    {
+      "Sid": "DenyS3Write",
+      "Effect": "Deny",
+      "Action": [
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:DeleteObjectVersion"
+      ],
+      "Resource": "arn:aws:s3:::my-data-lake-*/*"
+    },
+    {
+      "Sid": "DenyGlueModification",
+      "Effect": "Deny",
+      "Action": [
+        "glue:CreateJob",
+        "glue:UpdateJob",
+        "glue:DeleteJob",
+        "glue:StartJobRun",
+        "glue:CreateCrawler",
+        "glue:UpdateCrawler",
+        "glue:DeleteCrawler"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

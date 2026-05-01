@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Order Schema",
+  "description": "Schema para el dataset de órdenes (orders.json)",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "ID único de la orden",
+      "pattern": "^(ORD-\\d{6}|\\d+)$"
+    },
+    "customer_id": {
+      "type": "integer",
+      "description": "ID del cliente que realizó la orden",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "order_date": {
+      "type": "string",
+      "description": "Fecha y hora de la orden (ISO 8601 o formato alternativo)",
+      "oneOf": [
+        {"format": "date-time"},
+        {"pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"}
+      ]
+    },
+    "status": {
+      "type": ["string", "null"],
+      "description": "Estado actual de la orden",
+      "enum": ["pending", "processing", "shipped", "delivered", "cancelled", "returned", null]
+    },
+    "payment_method": {
+      "type": ["string", "null"],
+      "description": "Método de pago utilizado",
+      "enum": ["credit_card", "debit_card", "paypal", "bank_transfer", "cash", null]
+    },
+    "shipping_method": {
+      "type": ["string", "null"],
+      "description": "Método de envío seleccionado",
+      "enum": ["standard", "express", "overnight", "pickup", null]
+    },
+    "items": {
+      "type": "array",
+      "description": "Lista de items en la orden",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "description": "ID del producto",
+            "minimum": 1
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Cantidad del producto",
+            "minimum": 1
+          },
+          "price": {
+            "type": "number",
+            "description": "Precio unitario del producto",
+            "minimum": 0
+          },
+          "subtotal": {
+            "type": "number",
+            "description": "Subtotal del item (quantity * price)",
+            "minimum": 0
+          }
+        },
+        "required": ["product_id", "quantity", "price", "subtotal"]
+      },
+      "minItems": 1
+    },
+    "subtotal": {
+      "type": "number",
+      "description": "Subtotal de la orden (suma de items)",
+      "minimum": 0
+    },
+    "tax": {
+      "type": ["number", "null"],
+      "description": "Impuestos aplicados (generalmente 16%)",
+      "minimum": 0
+    },
+    "shipping_cost": {
+      "type": "number",
+      "description": "Costo de envío",
+      "minimum": 0
+    },
+    "total": {
+      "type": "number",
+      "description": "Total de la orden (subtotal + tax + shipping_cost)",
+      "minimum": 0
+    },
+    "shipping_address": {
+      "type": ["object", "null"],
+      "description": "Dirección de envío",
+      "properties": {
+        "street": {
+          "type": ["string", "null"],
+          "description": "Calle"
+        },
+        "number": {
+          "type": ["string", "null"],
+          "description": "Número"
+        },
+        "city": {
+          "type": ["string", "null"],
+          "description": "Ciudad"
+        },
+        "state": {
+          "type": ["string", "null"],
+          "description": "Estado o provincia"
+        },
+        "postal_code": {
+          "type": ["string", "null"],
+          "description": "Código postal"
+        },
+        "country": {
+          "type": "string",
+          "description": "País"
+        }
+      }
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "Notas adicionales sobre la orden"
+    }
+  },
+  "required": ["order_id", "customer_id", "order_date", "items", "subtotal", "total"],
+  "additionalProperties": false,
+  
+  "notes": {
+    "data_quality_issues": [
+      "order_id: ~2% con formato inconsistente (solo números en vez de ORD-XXXXXX)",
+      "order_date: Dos formatos diferentes (ISO 8601 vs YYYY-MM-DD HH:MM:SS)",
+      "Valores nulos: status, payment_method, shipping_method, tax pueden ser null",
+      "shipping_address: ~3% de órdenes sin dirección de envío",
+      "Inconsistencias en cálculos: ~5% de órdenes donde total no coincide con subtotal + tax + shipping",
+      "Items anidados: Estructura nested que requiere normalización",
+      "Algunos product_id pueden no existir en products.parquet"
+    ],
+    "cleaning_recommendations": [
+      "Estandarizar order_id al formato ORD-XXXXXX",
+      "Convertir todas las fechas a ISO 8601",
+      "Validar que total = subtotal + tax + shipping_cost",
+      "Validar que subtotal = suma de items.subtotal",
+      "Validar que items.subtotal = quantity * price",
+      "Flatten estructura nested de items para análisis relacional",
+      "Validar existencia de customer_id y product_id en otros datasets",
+      "Decidir estrategia para órdenes sin shipping_address"
+    ],
+    "nested_structure": {
+      "description": "Este dataset contiene estructuras anidadas (nested)",
+      "items_array": "Cada orden tiene 1-8 items, requiere explosión para análisis tabular",
+      "shipping_address_object": "Objeto con 6 campos, puede ser null completamente"
+    },
+    "expected_stats": {
+      "total_records": "50,000",
+      "date_range": "Últimos 2 años",
+      "avg_items_per_order": "3-4",
+      "avg_order_value": "$500-800",
+      "orders_without_address": "~1,500",
+      "calculation_errors": "~2,500"
+    }
+  }
+}

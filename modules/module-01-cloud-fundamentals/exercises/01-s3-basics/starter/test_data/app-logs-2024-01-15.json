@@ -1,0 +1,36 @@
+{
+  "timestamp": "2024-01-15T10:30:45Z",
+  "level": "INFO",
+  "service": "checkout",
+  "message": "Payment processed successfully",
+  "user_id": "user_12345",
+  "order_id": "ord_67890",
+  "amount": 129.99,
+  "payment_method": "credit_card",
+  "currency": "USD",
+  "metadata": {
+    "session_id": "sess_abc123",
+    "ip_address": "192.168.1.100",
+    "user_agent": "Mozilla/5.0",
+    "country": "US"
+  }
+}
+{
+  "timestamp": "2024-01-15T10:35:22Z",
+  "level": "ERROR",
+  "service": "inventory",
+  "message": "Failed to update stock quantity",
+  "product_id": "prod_456",
+  "error_code": "STOCK_UPDATE_FAILED",
+  "stack_trace": "Exception in updateStock() at line 142"
+}
+{
+  "timestamp": "2024-01-15T10:40:15Z",
+  "level": "INFO",
+  "service": "search",
+  "message": "Product search query executed",
+  "query": "wireless headphones",
+  "results_count": 247,
+  "execution_time_ms": 35,
+  "user_id": "user_98765"
+}

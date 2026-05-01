@@ -1,0 +1,46 @@
+{
+  "title": "Product Schema",
+  "type": "object",
+  "required": ["sku", "name", "price"],
+  "properties": {
+    "sku": {
+      "type": "string",
+      "description": "Stock Keeping Unit",
+      "pattern": "^[A-Z]{3}-[0-9]{4}$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Product name",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description",
+      "maxLength": 1000
+    },
+    "price": {
+      "type": "number",
+      "description": "Product price",
+      "minimum": 0.01
+    },
+    "category": {
+      "type": "string",
+      "enum": ["electronics", "clothing", "books", "home", "sports"],
+      "description": "Product category"
+    },
+    "stock": {
+      "type": "integer",
+      "description": "Available stock",
+      "minimum": 0
+    },
+    "supplier_id": {
+      "type": "integer",
+      "description": "Supplier reference"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

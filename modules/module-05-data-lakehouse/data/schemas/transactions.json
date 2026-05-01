@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "E-Commerce Transactions Schema",
+  "description": "Schema for e-commerce transaction data (Bronze Layer)",
+  "type": "object",
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "description": "Unique transaction identifier (UUID format)",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+      "examples": ["550e8400-e29b-41d4-a716-446655440000"]
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User identifier (format: U followed by 10 digits)",
+      "pattern": "^U[0-9]{10}$",
+      "examples": ["U0000123456"]
+    },
+    "product_id": {
+      "type": "string",
+      "description": "Product identifier (format: P followed by 8 digits)",
+      "pattern": "^P[0-9]{8}$",
+      "examples": ["P00012345"]
+    },
+    "product_name": {
+      "type": "string",
+      "description": "Product name",
+      "maxLength": 200
+    },
+    "category": {
+      "type": "string",
+      "description": "Product category",
+      "enum": ["Electronics", "Clothing", "Home & Garden", "Books", "Sports", "Toys", "Food & Beverage", "Beauty", "Automotive", "Other"]
+    },
+    "price": {
+      "type": "number",
+      "description": "Product price in USD",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Quantity purchased",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "total_amount": {
+      "type": "number",
+      "description": "Total transaction amount (price * quantity)",
+      "minimum": 0
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "Payment method used",
+      "enum": ["credit_card", "debit_card", "paypal", "apple_pay", "google_pay", "bank_transfer", "cash"]
+    },
+    "status": {
+      "type": "string",
+      "description": "Transaction status",
+      "enum": ["completed", "pending", "cancelled", "refunded", "failed"]
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "Transaction timestamp (ISO 8601 format)",
+      "format": "date-time",
+      "examples": ["2024-02-12T10:30:00Z"]
+    },
+    "country": {
+      "type": "string",
+      "description": "Country code (ISO 3166-1 alpha-2)",
+      "pattern": "^[A-Z]{2}$",
+      "examples": ["US", "GB", "FR"]
+    },
+    "city": {
+      "type": "string",
+      "description": "City name",
+      "maxLength": 100
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "Client IP address",
+      "format": "ipv4",
+      "examples": ["192.168.1.1"]
+    },
+    "device_type": {
+      "type": "string",
+      "description": "Device type used for transaction",
+      "enum": ["desktop", "mobile", "tablet"]
+    },
+    "browser": {
+      "type": "string",
+      "description": "Browser used",
+      "enum": ["Chrome", "Firefox", "Safari", "Edge", "Other"]
+    }
+  },
+  "required": [
+    "transaction_id",
+    "user_id",
+    "product_id",
+    "price",
+    "quantity",
+    "timestamp"
+  ],
+  "additionalProperties": false,
+  "notes": [
+    "Bronze layer may contain quality issues:",
+    "- Missing required fields (nulls)",
+    "- Invalid formats (malformed IDs, dates)",
+    "- Duplicates (same transaction_id)",
+    "- Outliers (negative prices, future dates)",
+    "- Inconsistent values (total_amount != price * quantity)"
+  ]
+}

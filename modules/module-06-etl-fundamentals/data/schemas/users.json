@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User",
+  "description": "User data schema for ETL exercises",
+  "type": "object",
+  "required": ["id", "email", "created_at"],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique user identifier",
+      "minimum": 1
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User email address"
+    },
+    "first_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "last_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 18,
+      "maximum": 120
+    },
+    "country": {
+      "type": "string",
+      "enum": ["USA", "UK", "Canada", "Australia", "Germany", "France", "Spain", "Mexico", "Brazil", "Argentina"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "inactive", "suspended", "pending"]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Account creation timestamp"
+    },
+    "last_login": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    }
+  }
+}

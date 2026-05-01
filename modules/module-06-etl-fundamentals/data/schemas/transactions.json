@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Transaction",
+  "description": "Transaction data schema for ETL exercises",
+  "type": "object",
+  "required": ["transaction_id", "user_id", "product_id", "amount", "timestamp"],
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "pattern": "^TXN-[0-9]{8}$",
+      "description": "Unique transaction identifier"
+    },
+    "user_id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Reference to user"
+    },
+    "product_id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Reference to product"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0.01,
+      "maximum": 10000.00,
+      "description": "Transaction amount in USD"
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": ["credit_card", "debit_card", "paypal", "bank_transfer", "cash"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["completed", "pending", "failed", "refunded"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Transaction timestamp"
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "maxLength": 500
+    }
+  }
+}

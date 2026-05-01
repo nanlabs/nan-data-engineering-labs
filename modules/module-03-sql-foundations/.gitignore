@@ -1,0 +1,84 @@
+# Module 03 - SQL Foundations - Local Files
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.duckdb
+
+# PostgreSQL data
+infrastructure/.postgres-data/
+infrastructure/pgdata/
+
+# Query outputs
+output/
+*.csv
+*.parquet
+*.json
+!data/seeds/*.csv
+!data/seeds/*.json
+
+# Logs
+*.log
+logs/
+query_logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+.temp/
+
+# Exercise outputs
+exercises/*/output/
+exercises/*/results/
+exercises/**/query_results.txt
+exercises/**/benchmark_results.txt
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.local
+*.env
+
+# Query profiling results
+*.prof
+*.profile
+
+# SQL dumps
+*.dump
+*.sql.bak
+
+# Documentation builds
+docs/_build/
+
+# Test artifacts
+.pytest_cache/
+test_results/
