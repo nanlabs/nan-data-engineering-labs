@@ -12,7 +12,17 @@ Last updated: 2026-04-29
 - [ ] Capture validation evidence snapshot in `docs/validation-evidence/bootstrap-YYYYMMDD.md`.
 - [ ] Open first bootstrap PR with validation evidence (push is currently postponed by admin).
 
-## Priority 2: Submodule Translation Migration (Execution Waves)
+## Priority 2: Translation Batch Processing (Blocking for content migration)
+
+- [ ] Review `docs/TODO-TRANSLATION-BATCH.md` for strategy and QA criteria
+- [ ] Create `docs/TRANSLATION-STYLE-GUIDE.md` with terminology mapping
+- [ ] Execute Phase 1: Prepare translation assets and staging
+- [ ] Execute Phase 2: Batch automated translation for all 23 modules
+- [ ] Execute Phase 3: Manual QA and refinement (Wave 1-5 rollout)
+- [ ] Final validation: `python scripts/validate_english_content.py --full-scan` PASS with 0 findings
+- [ ] Merge translation staging branch to main
+
+## Priority 2b: Submodule Content Migration (After translation batch)
 
 - [ ] Execute Wave 1 migration (modules 01-06): bring translated content from source and keep destination naming conventions.
 - [ ] Execute Wave 2 migration (modules 07-12): preserve exercise unit contract (`README.md`, `hints.md`, `starter/`, `solution/`, `my_solution/`).
@@ -58,4 +68,5 @@ Last updated: 2026-04-29
 - This repository bootstrap intentionally excludes module instructional content.
 - The `modules/` tree is committed as placeholders only for structural continuity.
 - Push is intentionally postponed until admin resolves repository permissions.
-- Detailed execution checklists are in `docs/TODO-TRANSLATION-WAVES.md` and `docs/TODO-STRUCTURE-UNIFICATION.md`.
+- Translation batch is now a separate parallel workflow from content migration waves
+- Detailed execution checklists are in `docs/TODO-TRANSLATION-WAVES.md`, `docs/TODO-TRANSLATION-BATCH.md`, and `docs/TODO-STRUCTURE-UNIFICATION.md`.
