@@ -116,8 +116,8 @@ Retención: 7-10 años
 Costo: $0.00099/GB/mes (vs. $0.023 Standard)
 
 Restore time:
-- Glacier: 1-5 minutos (Expedited) a 12 horas (Bulk)
-- Deep Archive: 12-48 horas
+- Glacier: 1-5 minutes (Expedited) a 12 hours (Bulk)
+- Deep Archive: 12-48 hours
 ```
 
 ---
@@ -157,7 +157,7 @@ graph LR
 **Kinesis Data Streams**
 ```
 Capacidad: 1MB/sec write, 2MB/sec read per shard
-Retención: 24 horas (default) - 7 días (extended)
+Retención: 24 hours (default) - 7 días (extended)
 Escalado: Manual (add/remove shards) o On-Demand (automático)
 
 Cálculo de shards necesarios:
@@ -185,14 +185,14 @@ def lambda_handler(event, context):
 **Kinesis Firehose (Delivery)**
 ```
 Ventajas:
-- Entrega automática a S3 cada X minutos o Y MB
+- Entrega automática a S3 cada X minutes o Y MB
 - Puede transformar datos en ruta (Lambda)
 - Convierte a Parquet automáticamente
 - Comprime con Gzip/Snappy
 - Sin gestión de shards
 
-Configuración típica:
-- Buffer: 5 minutos o 5MB (lo que ocurra primero)
+Configuration típica:
+- Buffer: 5 minutes o 5MB (lo que ocurra primero)
 - Formato: JSON → Parquet
 - Compresión: Snappy
 - Destino: s3://datalake/streaming/year=!{timestamp:yyyy}/...
@@ -224,7 +224,7 @@ graph TB
     C1 -->|Pass| C2[Glue Job 1<br/>Extract & Transform]
     C1 -->|Fail| C3[SNS Alert<br/>Notify team]
 
-    C2 --> D1[S3 Staging<br/>Intermediate data]
+    C2 --> D1[S3 Staging<br/>Intermediatetete data]
 
     D1 --> E1[Glue Job 2<br/>Join & Aggregate]
 
@@ -426,7 +426,7 @@ def process_small_file(bucket, key):
     # Transformar
     df_transformed = transform_data(df)
 
-    # Escribir a Parquet
+    # Write a Parquet
     output_key = key.replace('.csv', '.parquet')
     df_transformed.to_parquet(
         f's3://{OUTPUT_BUCKET}/{output_key}',
@@ -453,7 +453,7 @@ def lambda_handler(event, context):
 **Lambda limits:**
 ```
 Memory: 128MB - 10GB
-Timeout: Máximo 15 minutos
+Timeout: Máximo 15 minutes
 /tmp storage: 512MB (ephemeral)
 Concurrent executions: 1000 (default limit)
 
@@ -467,7 +467,7 @@ Reglas de oro:
 ```
 Propósito: Capturar mensajes/archivos que fallan procesamiento
 
-Configuración:
+Configuration:
 Lambda → On failure → Send to DLQ (SQS or SNS)
 
 Monitoring:
@@ -604,7 +604,7 @@ FORMAT AS PARQUET;
 -- Beneficios:
 -- - Paralelo automático (todos los compute nodes participan)
 -- - Compresión automática
--- - Load de 1TB puede tomar <30 minutos
+-- - Load de 1TB puede tomar <30 minutes
 ```
 
 ---
@@ -873,7 +873,7 @@ RPO: Minutos (replicación asíncrona pero rápida)
 RTO: Minutos (solo actualizar endpoints)
 Costo: Storage duplicado + replication fees
 
-Configuración:
+Configuration:
 aws s3api put-bucket-replication \
   --bucket source-bucket \
   --replication-configuration '{
@@ -909,7 +909,7 @@ RPO: Horas (depende de snapshot schedule)
 RTO: Horas (restore desde snapshot)
 Costo: Snapshot storage en DR region
 
-Configuración:
+Configuration:
 aws redshift enable-snapshot-copy \
   --cluster-identifier my-cluster \
   --destination-region us-west-2 \
@@ -1024,7 +1024,7 @@ def lambda_handler(event, context):
 
 **Savings Calculation:**
 ```
-Escenario: Proceso nocturno que toma 2 horas/día
+Scenario: Process nocturno que toma 2 hours/día
 
 Opción A: EMR Cluster 24/7
 - 3 × m5.xlarge × $0.192/hr × 24 × 30 = $414/mes

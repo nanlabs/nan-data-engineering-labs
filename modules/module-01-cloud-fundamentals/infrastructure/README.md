@@ -1,12 +1,12 @@
 # Infrastructure Configuration
 
-Este directorio contiene la configuración de infraestructura necesaria para ejecutar los ejercicios del Module 01.
+Este directorio contiene la configuration de infraestructura necessary para run los exercises del Module 01.
 
 ## 📦 Contenido
 
 ### docker-compose.yml
 
-Configuración de LocalStack para simular servicios AWS localmente.
+Configuration de LocalStack para simular servicios AWS localmente.
 
 **Servicios incluidos:**
 - S3 (buckets, objects, versioning, lifecycle)
@@ -27,7 +27,7 @@ docker-compose up -d
 # Ver logs
 docker-compose logs -f
 
-# Verificar estado
+# Verify estado
 curl http://localhost:4566/_localstack/health
 
 # Detener
@@ -38,9 +38,9 @@ docker-compose down -v
 rm -rf ./localstack-data/*
 ```
 
-## 🔧 Configuración
+## 🔧 Configuration
 
-### Variables de Entorno
+### Variables de Environment
 
 ```bash
 # AWS CLI
@@ -49,7 +49,7 @@ export AWS_SECRET_ACCESS_KEY=test
 export AWS_DEFAULT_REGION=us-east-1
 export AWS_ENDPOINT_URL=http://localhost:4566
 
-# Verificar
+# Verify
 aws s3 ls --endpoint-url=$AWS_ENDPOINT_URL
 ```
 
@@ -61,7 +61,7 @@ import boto3
 # Opción 1: Cliente con endpoint
 s3 = boto3.client('s3', endpoint_url='http://localhost:4566')
 
-# Opción 2: Variable de entorno
+# Opción 2: Variable de environment
 import os
 os.environ['AWS_ENDPOINT_URL'] = 'http://localhost:4566'
 s3 = boto3.client('s3')
@@ -89,15 +89,15 @@ docker-compose up -d
 # 2. Esperar a que esté listo (30 segundos)
 sleep 30
 
-# 3. Verificar salud
+# 3. Verify salud
 docker-compose ps
 curl http://localhost:4566/_localstack/health | jq
 
-# 4. Ejecutar setup
+# 4. Run setup
 cd ..
 ./scripts/setup.sh
 
-# 5. Correr ejercicios
+# 5. Runr exercises
 cd exercises/01-s3-basics/starter
 ./s3_operations.sh
 ```
@@ -107,7 +107,7 @@ cd exercises/01-s3-basics/starter
 ### LocalStack no inicia
 
 ```bash
-# Verificar Docker
+# Verify Docker
 docker ps
 
 # Ver logs
@@ -120,10 +120,10 @@ docker-compose restart
 ### Puerto 4566 en uso
 
 ```bash
-# Encontrar proceso
+# Encontrar process
 sudo lsof -i :4566
 
-# Matar proceso
+# Matar process
 sudo kill -9 <PID>
 
 # O cambiar puerto en docker-compose.yml

@@ -1,17 +1,17 @@
 # Exercise 03: S3 Advanced Features
 
-**Estimated Duration:** 60-75 minutos
-**Difficulty:** ⭐⭐⭐ Intermediatete
+**Estimated Duration:** 60-75 minutes
+**Difficulty:** ⭐⭐⭐ Intermediatetetete
 
 ## 🎯 Objectives de Aprendizaje
 
-- Implementar versionado de objetos en S3
-- Configurar políticas de lifecycle para optimización de costos
-- Configurar replicación entre buckets
-- Implementar event notifications con SQS
-- Entender storage classes y sus casos de uso
+- Implement versionado de objetos en S3
+- Configure políticas de lifecycle para optimización de costos
+- Configure replicación entre buckets
+- Implement event notifications con SQS
+- Understand storage classes y sus casos de uso
 
-## 📋 Prerequisitos
+## 📋 Prerequisites
 
 - ✅ Exercise 01: S3 Basics completed
 - ✅ Exercise 02: IAM Policies completed
@@ -70,9 +70,9 @@ Automatizan la transición entre storage classes:
 ```
 
 **Storage Classes:**
-- `STANDARD`: Acceso frecuente (<$0.023/GB)
+- `STANDARD`: Access frecuente (<$0.023/GB)
 - `INTELLIGENT_TIERING`: Auto-optimización
-- `STANDARD_IA`: Acceso infrecuente (<$0.0125/GB)
+- `STANDARD_IA`: Access infrecuente (<$0.0125/GB)
 - `GLACIER`: Archivo (<$0.004/GB, retrieval 3-5h)
 - `DEEP_ARCHIVE`: Archivo profundo (<$0.00099/GB, retrieval 12h)
 
@@ -116,18 +116,18 @@ Desencadena acciones cuando cambian objetos:
 }
 ```
 
-## 🎬 Pasos a Seguir
+## 🎬 Steps a Seguir
 
-### Paso 1: Revisar el Escenario
+### Step 1: Review el Scenario
 
-Lee [starter/scenario.md](starter/scenario.md) para entender el contexto:
+Lee [starter/scenario.md](starter/scenario.md) para understand el context:
 
 - **QuickMart** necesita optimizar costos de almacenamiento
 - Millones de logs históricos ocupando storage STANDARD
 - Necesidad de backup automático para disaster recovery
 - Pipeline de procesamiento con event-driven architecture
 
-### Paso 2: Copiar Starter Files
+### Step 2: Copiar Starter Files
 
 ```bash
 cd exercises/03-s3-advanced
@@ -135,7 +135,7 @@ cp -r starter/ my_solution/
 cd my_solution
 ```
 
-### Paso 3: Implementar Lifecycle Configuration
+### Step 3: Implement Lifecycle Configuration
 
 Edita `s3_lifecycle.py` y completa las funciones con TODOs:
 
@@ -151,12 +151,12 @@ def create_lifecycle_policy(bucket_name: str, policy: Dict) -> bool:
 
 **Debes implementar:**
 - ✅ Habilitar versionado en bucket principal
-- ✅ Crear lifecycle rule: 30 días → STANDARD_IA
-- ✅ Crear lifecycle rule: 90 días → GLACIER
-- ✅ Crear expiration rule: 365 días
-- ✅ Verificar que las policies se aplicaron correctamente
+- ✅ Create lifecycle rule: 30 días → STANDARD_IA
+- ✅ Create lifecycle rule: 90 días → GLACIER
+- ✅ Create expiration rule: 365 días
+- ✅ Verify que las policies se aplicaron runctamente
 
-### Paso 4: Implementar Replicación
+### Step 4: Implement Replicación
 
 Edita `s3_replication.py` y completa:
 
@@ -171,12 +171,12 @@ def setup_replication(source_bucket: str, dest_bucket: str, role_arn: str) -> bo
 ```
 
 **Debes implementar:**
-- ✅ Crear bucket de backup (destination)
-- ✅ Crear IAM role para replicación
-- ✅ Configurar replication rule
-- ✅ Verificar objetos se replican automáticamente
+- ✅ Create bucket de backup (destination)
+- ✅ Create IAM role para replicación
+- ✅ Configure replication rule
+- ✅ Verify objetos se replican automáticamente
 
-### Paso 5: Implementar Event Notifications
+### Step 5: Implement Event Notifications
 
 Edita `s3_events.py` y completa:
 
@@ -191,12 +191,12 @@ def configure_bucket_notification(bucket_name: str, queue_arn: str) -> bool:
 ```
 
 **Debes implementar:**
-- ✅ Crear SQS queue para recibir notificaciones
-- ✅ Configurar queue policy (permitir S3 enviar mensajes)
-- ✅ Configurar bucket notification para `s3:ObjectCreated:*`
+- ✅ Create SQS queue para recibir notificaciones
+- ✅ Configure queue policy (permitir S3 enviar mensajes)
+- ✅ Configure bucket notification para `s3:ObjectCreated:*`
 - ✅ Test: Upload file → verificar mensaje en SQS
 
-### Paso 6: Testing Integral
+### Step 6: Testing Integral
 
 Ejecuta el script de testing:
 
@@ -210,7 +210,7 @@ python3 test_s3_advanced.py
 - ✅ Replicación funciona (upload → verifica en backup bucket)
 - ✅ Event notifications funcionan (upload → verifica mensaje SQS)
 
-## 🧪 Validación
+## 🧪 Validation
 
 ### Test Manual
 
@@ -332,7 +332,7 @@ policy = {
 sqs.set_queue_attributes(QueueUrl=queue_url, Attributes={'Policy': json.dumps(policy)})
 ```
 
-## 📚 Entregables
+## 📚 Deliverables
 
 Al finalizar debes tener:
 
@@ -346,9 +346,9 @@ Al finalizar debes tener:
    - Objeto replicado en backup bucket
    - Mensaje SQS con evento S3
 
-## 🚀 Siguiente Paso
+## 🚀 Next Step
 
-Una vez completed este ejercicio: **[Exercise 04: Lambda Functions](../04-lambda-functions/README.md)**
+Una vez completed este exercise: **[Exercise 04: Lambda Functions](../04-lambda-functions/README.md)**
 
 ---
 

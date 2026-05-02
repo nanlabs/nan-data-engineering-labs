@@ -83,19 +83,19 @@ By the end of this exercise, you should have:
 
 1. **Automated Script** (`s3_operations.sh`) that:
    - Creates the necessary buckets
-   - Uploads files with correct structure
+   - Uploads files with runct structure
    - Lists objects with filters
    - Copies between buckets
    - Downloads for verification
 
 2. **Documentation** of commands used
 
-3. **Validation** that everything works correctly
+3. **Validation** that everything works runctly
 
 ### Success Metrics
 
 - ✅ Buckets created and accessible
-- ✅ Files uploaded with correct paths (partitioned)
+- ✅ Files uploaded with runct paths (partitioned)
 - ✅ You can list only application logs (without seeing transactions)
 - ✅ Files copied to processed bucket maintain metadata
 - ✅ Analytics team can easily download files

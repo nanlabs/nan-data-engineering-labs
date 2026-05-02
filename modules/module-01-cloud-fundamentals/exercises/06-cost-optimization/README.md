@@ -1,11 +1,11 @@
 # Exercise 06: Cost Optimization & Monitoring
 
-**Duration:** 60-75 minutos | **Difficulty:** ⭐⭐⭐
+**Duration:** 60-75 minutes | **Difficulty:** ⭐⭐⭐
 
 ## 🎯 Objectives
 
-- Implementar AWS Budgets para alertas de costos
-- Configurar CloudWatch Metrics y Alarms
+- Implement AWS Budgets para alertas de costos
+- Configure CloudWatch Metrics y Alarms
 - Analizar Cost Explorer patterns
 - Optimizar costos con lifecycle y reserved capacity
 
@@ -44,9 +44,9 @@ cloudwatch.put_metric_data(
 | Right-sizing | 20-40% | Medium |
 | Data compression | 50-70% | Low |
 
-## 🎬 Pasos
+## 🎬 Steps
 
-### Paso 1: Configurar CloudWatch Metrics
+### Step 1: Configure CloudWatch Metrics
 
 ```python
 # my_solution/cloudwatch_metrics.py
@@ -62,7 +62,7 @@ def create_storage_alarm(metric_name: str, threshold: int):
     pass
 ```
 
-### Paso 2: Implementar Cost Budgets
+### Step 2: Implement Cost Budgets
 
 ```python
 # my_solution/cost_budgets.py
@@ -73,7 +73,7 @@ def create_monthly_budget(amount: float):
     pass
 ```
 
-### Paso 3: Analizar Storage Patterns
+### Step 3: Analizar Storage Patterns
 
 ```python
 # my_solution/analyze_costs.py
@@ -89,7 +89,7 @@ def recommend_optimizations():
     pass
 ```
 
-### Paso 4: Implementar Optimizaciones
+### Step 4: Implement Optimizaciones
 
 ```bash
 # Apply lifecycle policies
@@ -102,7 +102,7 @@ python3 apply_lifecycle.py
 # Total potential savings: $133/month (58%)
 ```
 
-### Paso 5: Configurar Dashboards
+### Step 5: Configure Dashboards
 
 ```python
 # Create CloudWatch Dashboard
@@ -125,7 +125,7 @@ dashboard_body = {
 }
 ```
 
-## 🧪 Validación
+## 🧪 Validation
 
 ```python
 # Run tests
@@ -157,7 +157,7 @@ After Optimization:
 💰 Savings: $135/month (54% reduction)
 ```
 
-## 📚 Entregables
+## 📚 Deliverables
 
 - ✅ `cloudwatch_metrics.py` (custom metrics)
 - ✅ `cost_budgets.py` (budget configuration)
@@ -186,4 +186,4 @@ tags = [
 
 ---
 
-**Hints:** [hints.md](hints.md) | **Siguiente:** [Module 02: Storage Basics](../../module-02-storage-basics/README.md)
+**Hints:** [hints.md](hints.md) | **Next:** [Module 02: Storage Basics](../../module-02-storage-basics/README.md)

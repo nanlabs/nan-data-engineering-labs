@@ -1,6 +1,6 @@
-# Escenario: QuickMart Data Team Access Control
+# Scenario: QuickMart Data Team Access Control
 
-## Contexto
+## Context
 
 QuickMart ha crecido y ahora tiene un equipo de datos completo. El CTO te pidió implementar **access control** robusto siguiendo el principio de **least privilege**.
 
@@ -11,8 +11,8 @@ QuickMart ha crecido y ahora tiene un equipo de datos completo. El CTO te pidió
 
 **Responsabilidades:**
 - Construir y mantener data pipelines
-- Escribir Glue ETL jobs y Lambda functions
-- Configurar infraestructura (S3, EMR, Kinesis)
+- Write Glue ETL jobs y Lambda functions
+- Configure infraestructura (S3, EMR, Kinesis)
 - Troubleshooting de pipelines en producción
 
 **Permisos Necesarios:**
@@ -26,10 +26,10 @@ QuickMart ha crecido y ahora tiene un equipo de datos completo. El CTO te pidió
 **Nombres:** Carol Davis, David Martinez
 
 **Responsabilidades:**
-- Ejecutar queries en Athena
-- Crear dashboards en QuickSight
+- Run queries en Athena
+- Create dashboards en QuickSight
 - Explorar datos en S3 (read-only)
-- Revisar Glue Data Catalog
+- Review Glue Data Catalog
 
 **Permisos Necesarios:**
 - ✅ S3 read-only (GetObject, ListBucket)
@@ -55,14 +55,14 @@ QuickMart ha crecido y ahora tiene un equipo de datos completo. El CTO te pidió
   - `s3://my-data-lake-curated/ml-models/*`
   - `s3://my-data-lake-curated/training-data/*`
   - `s3://sagemaker-quickmart-*/*` (para SageMaker)
-- ✅ Lambda read-only (para entender inference endpoints)
+- ✅ Lambda read-only (para understand inference endpoints)
 - ✅ ECR (para custom Docker images)
 - ❌ NO puede acceder a `raw-data` (datos sensibles sin anonimizar)
 - ❌ NO puede acceder a `transactions` (PII, GDPR)
 
 ---
 
-## Requisitos de Seguridad
+## Requirements de Seguridad
 
 ### 1. Principle of Least Privilege
 
@@ -100,19 +100,19 @@ Ejemplo:
 ```
 Public:
 ├── s3://my-data-lake-curated/public-datasets/
-└── Acceso: Todos los analysts
+└── Access: Todos los analysts
 
 Internal:
 ├── s3://my-data-lake-processed/analytics/
-└── Acceso: Analysts + Engineers
+└── Access: Analysts + Engineers
 
 Confidential:
 ├── s3://my-data-lake-raw/transactions/
-└── Acceso: Solo Engineers (con logging)
+└── Access: Solo Engineers (con logging)
 
 Restricted:
 ├── s3://my-data-lake-raw/pii/
-└── Acceso: NADIE (solo via pipeline automatizado)
+└── Access: NADIE (solo via pipeline automatizado)
 ```
 
 ### 4. Audit Logging
@@ -182,7 +182,7 @@ Restricted:
 QuickMart tiene un partner (ficticio account `999999999999`) que necesita acceso **read-only** a ciertos reports.
 
 **Setup:**
-1. Crear role `PartnerReportReader` en tu account
+1. Create role `PartnerReportReader` en tu account
 2. Trust policy permite account 999999999999 asumir el role
 3. Role tiene permisos S3 read-only a `s3://my-data-lake-curated/partner-reports/*`
 
@@ -203,26 +203,26 @@ Lee reports desde S3
 
 Implementa el access control completo:
 
-1. **Crear 3 IAM Groups:**
+1. **Create 3 IAM Groups:**
    - `data-engineers`
    - `data-analysts`
    - `ml-scientists`
 
-2. **Escribir 3 IAM Policies (JSON):**
+2. **Write 3 IAM Policies (JSON):**
    - `DataEngineerPolicy`
    - `DataAnalystPolicy`
    - `MLScientistPolicy`
 
-3. **Crear 5 IAM Users:**
+3. **Create 5 IAM Users:**
    - alice.engineer, bob.engineer → grupo data-engineers
    - carol.analyst, david.analyst → grupo data-analysts
    - eve.scientist → grupo ml-scientists
 
-4. **Configurar S3 Bucket Policy** para `my-data-lake-raw`:
+4. **Configure S3 Bucket Policy** para `my-data-lake-raw`:
    - Deny deletes
    - Require encryption
 
-5. **Crear Lambda Execution Role:**
+5. **Create Lambda Execution Role:**
    - Trust policy para Lambda service
    - Permisos: S3 read/write, CloudWatch Logs
 
@@ -280,9 +280,9 @@ aws s3 ls s3://my-data-lake-curated/ml-models/ --endpoint-url=http://localhost:4
 
 ---
 
-## Reflexión
+## Reflection
 
-Después de completar, responde:
+Después de complete, answer:
 
 1. **¿Cómo revocarías acceso si Bob renuncia?**
    - Opción A: Eliminar user
@@ -292,12 +292,12 @@ Después de completar, responde:
 
 2. **Alice necesita acceso temporal a billing por auditoría. ¿Cómo lo harías?**
    - Sin modificar su policy permanente
-   - Solo por 24 horas
+   - Solo por 24 hours
    - Auditable
 
 3. **Detectaste que Carol accedió a datos sensibles fuera de su scope. ¿Qué haces?**
    - Investigar en CloudTrail
    - Revocar acceso inmediato
-   - Revisar policies (¿error de config?)
+   - Review policies (¿error de config?)
 
 ¡Adelante con la implementación! 🔐

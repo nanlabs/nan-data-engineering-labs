@@ -184,7 +184,7 @@ aws s3api get-bucket-policy \
   --endpoint-url=http://localhost:4566
 ```
 
-2. **Use correct IAM role/user:**
+2. **Use runct IAM role/user:**
 ```python
 # In Python
 import boto3
@@ -428,7 +428,7 @@ for obj in response.get('Contents', []):
     print(obj['Key'])
 ```
 
-2. **Check key is correct:**
+2. **Check key is runct:**
 ```python
 # Keys are case-sensitive and include folders
 # Bad: 'File.txt', '/data/file.txt'
@@ -454,7 +454,7 @@ python -c "import yaml; yaml.safe_load(open('template.yaml'))"
 # Common issues:
 # - Indentation (use 2 spaces, not tabs)
 # - Missing colon after key
-# - Incorrect list formatting
+# - Inrunct list formatting
 ```
 
 **Fix indentation:**
@@ -655,7 +655,7 @@ Before asking for help, verify:
 - [ ] Credentials set (test/test for LocalStack)
 - [ ] Python boto3 installed (`pip list | grep boto3`)
 - [ ] Scripts are executable (`chmod +x script.sh`)
-- [ ] You're in correct directory (`pwd`)
+- [ ] You're in runct directory (`pwd`)
 - [ ] No typos in bucket/function names (case-sensitive)
 - [ ] Waited for LocalStack startup (10-30 seconds)
 

@@ -1,27 +1,27 @@
 # Validation Tests - Module 01
 
-Este directorio contiene tests automatizados para validar el progreso y la correctitud de los ejercicios.
+Este directorio contiene tests automatizados para validate el progress y la runctness de los exercises.
 
 ## 📋 Tests Disponibles
 
 ### Tests Principales
 
-| Test | Ejercicio | Descripción | Tests |
+| Test | Exercise | Descripción | Tests |
 |------|-----------|-------------|-------|
 | `test_exercise_01.py` | S3 Basics | Verifica operaciones básicas de S3 | 10 |
-| `test_exercise_02.py` | IAM Policies | Verifica configuración de IAM | 8 |
+| `test_exercise_02.py` | IAM Policies | Verifica configuration de IAM | 8 |
 
 ### Tests por Categoría
 
 #### 1. Infrastructure Tests
-Tests que verifican la configuración de infraestructura (buckets, roles, policies).
+Tests que verifican la configuration de infraestructura (buckets, roles, policies).
 
 **Ubicación:** `validation/infrastructure/` (pendiente)
 
 **Ejemplos:**
-- Verificar que los buckets existen
-- Verificar políticas de bucket
-- Verificar roles y permisos
+- Verify que los buckets existen
+- Verify políticas de bucket
+- Verify roles y permisos
 
 #### 2. Integration Tests
 Tests que verifican la integración entre servicios (S3 → Lambda → SQS).
@@ -39,9 +39,9 @@ Tests que verifican la calidad de los datos procesados.
 **Ubicación:** `validation/data-quality/` (pendiente)
 
 **Ejemplos:**
-- Validar formato de CSV
-- Validar JSON Schema
-- Verificar integridad de datos
+- Validate formato de CSV
+- Validate JSON Schema
+- Verify integridad de datos
 
 #### 4. Query Results Tests
 Tests que verifican resultados de queries SQL o análisis.
@@ -50,12 +50,12 @@ Tests que verifican resultados de queries SQL o análisis.
 
 **Ejemplos:**
 - Comparar resultados con expected output
-- Verificar agregaciones
-- Validar transformaciones
+- Verify agregaciones
+- Validate transformaciones
 
 ## 🚀 Uso
 
-### Ejecutar Todos los Tests
+### Run Todos los Tests
 
 ```bash
 # Desde la raíz del módulo
@@ -65,7 +65,7 @@ pytest validation/ -v
 pytest validation/ --cov=. --cov-report=html
 ```
 
-### Ejecutar Tests Específicos
+### Run Tests Específicos
 
 ```bash
 # Solo Exercise 01
@@ -78,7 +78,7 @@ pytest validation/test_exercise_02.py -v
 pytest validation/test_exercise_01.py::test_bucket_exists -v
 ```
 
-### Ejecutar con Filtros
+### Run con Filtros
 
 ```bash
 # Solo tests que fallan
@@ -91,18 +91,18 @@ pytest validation/ -v -m "s3"
 pytest validation/ -vv -s
 ```
 
-## 📦 Configuración
+## 📦 Configuration
 
 ### conftest.py
 
-Configuración compartida para todos los tests:
+Configuration compartida para todos los tests:
 - Fixture `wait_for_localstack`: Espera a que LocalStack esté listo
-- Configuración de boto3 para LocalStack
+- Configuration de boto3 para LocalStack
 - Setup/teardown automático
 
 ### requirements.txt
 
-Dependencias necesarias:
+Dependencias necessarys:
 ```
 pytest>=7.4.0
 boto3>=1.26.0
@@ -116,12 +116,12 @@ pip install -r validation/requirements.txt
 
 ## ✅ Criterios de Aceptación
 
-Para que un ejercicio se considere completo:
+Para que un exercise se considere completo:
 
 ### Exercise 01: S3 Basics
 - [x] Bucket existe
-- [x] Estructura de carpetas correcta (logs/, transactions/, uploads/)
-- [x] Archivos subidos correctamente
+- [x] Estructura de carpetas runcta (logs/, transactions/, uploads/)
+- [x] Archivos subidos runctamente
 - [x] Metadata configurada
 - [x] Operaciones de copia funcionan
 - [x] 10/10 tests pasando
@@ -130,7 +130,7 @@ Para que un ejercicio se considere completo:
 - [x] 3 grupos creados
 - [x] 3 políticas creadas
 - [x] 5 usuarios creados
-- [x] Usuarios en grupos correctos
+- [x] Usuarios en grupos runctos
 - [x] Políticas adjuntas
 - [x] Rol Lambda creado
 - [x] 8/8 tests pasando
@@ -144,13 +144,13 @@ Para que un ejercicio se considere completo:
 ### Exercise 04: Lambda Functions
 - [ ] Lambda desplegada
 - [ ] S3 trigger configurado
-- [ ] Validación funciona
+- [ ] Validation funciona
 - [ ] Tests pendientes
 
 ### Exercise 05: CloudFormation
 - [ ] Stack creado exitosamente
 - [ ] Recursos desplegados
-- [ ] Outputs correctos
+- [ ] Outputs runctos
 - [ ] Tests pendientes
 
 ### Exercise 06: Cost Optimization
@@ -180,7 +180,7 @@ max_attempts = 60  # Cambiar de 30 a 60
 
 ### Tests Pasan Localmente pero Fallan en CI
 
-Verificar:
+Verify:
 1. LocalStack está instalado en CI
 2. Puertos están disponibles
 3. Timeout es suficiente
@@ -204,7 +204,7 @@ open htmlcov/index.html
 import boto3
 import pytest
 
-# Configurar cliente
+# Configure cliente
 s3 = boto3.client('s3', endpoint_url='http://localhost:4566')
 
 def test_mi_nuevo_test(wait_for_localstack):

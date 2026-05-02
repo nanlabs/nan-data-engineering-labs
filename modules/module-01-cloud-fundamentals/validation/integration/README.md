@@ -4,17 +4,17 @@ Este directorio está reservado para tests de integración entre servicios.
 
 ## 🔗 Propósito
 
-Validar que múltiples servicios AWS funcionan correctamente en conjunto (S3 → Lambda → SQS, etc.).
+Validate que múltiples servicios AWS funcionan runctamente en conjunto (S3 → Lambda → SQS, etc.).
 
 ## 🎯 Tipos de Tests a Agregar
 
 ### Event-Driven Workflows
 ```python
 def test_s3_to_lambda_trigger():
-    """Verificar que subir a S3 dispara Lambda"""
+    """Verify que subir a S3 dispara Lambda"""
 
 def test_lambda_to_sqs_delivery():
-    """Verificar que Lambda envía mensajes a SQS"""
+    """Verify que Lambda envía mensajes a SQS"""
 ```
 
 ### End-to-End Scenarios
@@ -26,10 +26,10 @@ def test_csv_validation_pipeline():
 ### Cross-Service Communication
 ```python
 def test_cloudwatch_logs_generated():
-    """Verificar que Lambda genera logs en CloudWatch"""
+    """Verify que Lambda genera logs en CloudWatch"""
 
 def test_sns_notification_sent():
-    """Verificar que SNS envía notificaciones"""
+    """Verify que SNS envía notificaciones"""
 ```
 
 ## 📝 Ejemplo de Test
@@ -40,7 +40,7 @@ import time
 import pytest
 
 def test_complete_validation_pipeline():
-    """Test end-to-end del pipeline de validación CSV"""
+    """Test end-to-end del pipeline de validation CSV"""
 
     s3 = boto3.client('s3', endpoint_url='http://localhost:4566')
     sqs = boto3.client('sqs', endpoint_url='http://localhost:4566')
@@ -72,7 +72,7 @@ def test_complete_validation_pipeline():
     assert response['KeyCount'] > 0
 ```
 
-## 🚀 Ejecutar
+## 🚀 Run
 
 ```bash
 pytest validation/integration/ -v
@@ -83,7 +83,7 @@ pytest validation/integration/ -v
 - Tests de integración son más lentos (esperan eventos, procesamiento)
 - Requieren servicios corriendo (LocalStack)
 - Pueden necesitar timeouts más largos
-- Útiles para detectar problemas de configuración
+- Útiles para detectar problemas de configuration
 
 ## 📚 Herramientas Recomendadas
 

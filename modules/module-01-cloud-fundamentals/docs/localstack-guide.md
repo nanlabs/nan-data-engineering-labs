@@ -391,7 +391,7 @@ sleep 10  # Wait for startup
 
 Consider using real AWS (free tier) for:
 
-1. **IAM Policy Testing** - Verify access controls work correctly
+1. **IAM Policy Testing** - Verify access controls work runctly
 2. **Performance Benchmarking** - Measure real latency and throughput
 3. **Cost Optimization** - Test billing impact of changes
 4. **Regional Features** - Test multi-region deployments

@@ -1,27 +1,27 @@
 # Exercise 02: IAM Policies & Security
 
 **Difficulty:** ⭐⭐ Beginner-Intermedio
-**Estimated Time:** 60-75 minutos
+**Estimated Time:** 60-75 minutes
 **Prerequisites:** Exercise 01 completed
 
 ---
 
 ## 🎯 Objective
 
-Dominar IAM (Identity and Access Management) creando users, groups, roles y policies restrictivas. Implementarás el principio de **least privilege** y configurarás acceso seguro para diferentes roles en un data team.
+Dominar IAM (Identity and Access Management) creando users, groups, roles y policies restrictivas. Implementás el principio de **least privilege** y configurarás acceso seguro para diferentes roles en un data team.
 
 ## 📋 What You Will Learn
 
-1. ✅ Crear IAM users, groups y roles con AWS CLI
-2. ✅ Escribir IAM policies en JSON (inline y managed)
-3. ✅ Implementar least privilege principle
-4. ✅ Configurar S3 bucket policies (resource-based)
+1. ✅ Create IAM users, groups y roles con AWS CLI
+2. ✅ Write IAM policies en JSON (inline y managed)
+3. ✅ Implement least privilege principle
+4. ✅ Configure S3 bucket policies (resource-based)
 5. ✅ Setup cross-account access con roles
 6. ✅ Troubleshooting de permisos (Access Denied)
 
 ## 🛤️ Clear Path to Follow
 
-### Step 1: Entender el Escenario (5 min)
+### Step 1: Understand el Scenario (5 min)
 
 Lee `starter/scenario.md`:
 
@@ -32,7 +32,7 @@ Lee `starter/scenario.md`:
 
 Necesitas configurar IAM para que cada rol tenga **solo** los permisos necesarios.
 
-### Step 2: Revisar Starter Files (10 min)
+### Step 2: Review Starter Files (10 min)
 
 ```
 starter/
@@ -45,7 +45,7 @@ starter/
 └── requirements.txt      # boto3
 ```
 
-### Step 3: Implementar Solución (40 min)
+### Step 3: Implement Solution (40 min)
 
 **Orden recomendado:**
 
@@ -55,16 +55,16 @@ starter/
    - `policies/ml_scientist.json` - ML + S3 specific buckets
 
 2. **Implementa iam_setup.py** (20 min)
-   - Crear grupos
-   - Crear users y asignar a grupos
+   - Create grupos
+   - Create users y asignar a grupos
    - Attach policies a grupos
-   - Crear role para Lambda
+   - Create role para Lambda
 
 3. **Configura S3 Bucket Policy** (5 min)
    - Restrict delete operations
    - Allow cross-account access (simulado)
 
-### Step 4: Validar (5 min)
+### Step 4: Validate (5 min)
 
 ```bash
 # Ejecuta el script
@@ -73,13 +73,13 @@ python my_solution/iam_setup.py
 # Valida permisos
 python ../../validation/integration/test_iam_permissions.py
 
-# Validación completa
+# Validation completa
 ../../scripts/validate-module.sh 01
 ```
 
 ### Step 5: Test Real (10 min)
 
-Prueba los permisos creados:
+Test los permisos creados:
 
 ```bash
 # Como data analyst (read-only)
@@ -92,7 +92,7 @@ AWS_PROFILE=engineer aws s3 rm s3://my-data-lake/file.txt  # ✅ Funciona
 
 ---
 
-## 📝 Requisitos de la Solución
+## 📝 Requirements de la Solution
 
 ### IAM Policies Requeridas
 
@@ -183,7 +183,7 @@ Ejemplo:
 
 ## 🔍 Debugging Tips
 
-### Problema: "Access Denied" al ejecutar operación
+### Problem: "Access Denied" al run operación
 
 ```bash
 # 1. Verifica qué identity estás usando
@@ -202,7 +202,7 @@ aws iam simulate-principal-policy \
   --resource-arns arn:aws:s3:::my-bucket/file.txt
 ```
 
-### Problema: Policy JSON mal formado
+### Problem: Policy JSON mal formado
 
 Valida JSON antes de crear policy:
 
@@ -214,12 +214,12 @@ cat policies/data_engineer.json | jq .
 aws iam validate-policy-document --policy-document file://policies/data_engineer.json
 ```
 
-### Problema: LocalStack no soporta feature X de IAM
+### Problem: LocalStack no soporta feature X de IAM
 
 LocalStack Community tiene limitaciones:
 - ✅ Soporta: Users, groups, roles, policies básicas
 - ❌ NO soporta: Policy conditions complejas, federation, MFA
-- Solución: Documenta qué harías en AWS real
+- Solution: Documenta qué harías en AWS real
 
 ---
 
@@ -311,4 +311,4 @@ Summary:
 - Policy Examples: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_examples.html
 - boto3 IAM: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/iam.html
 
-**Recuerda:** En producción NUNCA des más permisos de los necesarios. Es más fácil expandir permisos después que revocar acceso indebido.
+**Remember:** En producción NUNCA des más permisos de los necesarios. Es más fácil expandir permisos después que revocar acceso indebido.

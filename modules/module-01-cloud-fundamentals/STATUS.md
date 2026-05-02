@@ -130,18 +130,18 @@ module-01-cloud-fundamentals/
 
 ### Contenido por Tipo
 - **Teoría:** 8,000+ palabras
-- **Ejercicios README:** 12,000+ palabras
+- **Exercises README:** 12,000+ palabras
 - **Código funcional:** 3,500+ líneas
 - **Tests:** 18 tests pytest
 - **Diagramas:** 7 Mermaid
 
 ### Tiempo Invertido Estimado
-- Teoría: 4 horas
-- Ejercicios 01-03: 8 horas
+- Teoría: 4 hours
+- Exercises 01-03: 8 hours
 - Data generation: 1 hora
-- Validation tests: 2 horas
-- Scripts y docs: 2 horas
-- **Total:** ~17 horas de trabajo
+- Validation tests: 2 hours
+- Scripts y docs: 2 hours
+- **Total:** ~17 hours de trabajo
 
 ---
 
@@ -154,8 +154,8 @@ module-01-cloud-fundamentals/
 2. ✅ Hacer Exercise 01 completo (S3 Basics)
 3. ✅ Hacer Exercise 02 completo (IAM Policies)
 4. ✅ Hacer Exercise 03 completo (S3 Advanced)
-5. ✅ Ejecutar setup.sh para environment
-6. ✅ Ejecutar validate.sh para verificar progreso
+5. ✅ Run setup.sh para environment
+6. ✅ Run validate.sh para verificar progress
 7. ✅ Usar sample datasets para práctica
 8. 🔶 Empezar Exercise 04 (Lambda) con starter
 
@@ -163,19 +163,19 @@ module-01-cloud-fundamentals/
 
 **Para 100% completitud:**
 
-1. **Exercise 04 - Lambda Functions** (2-3 horas)
+1. **Exercise 04 - Lambda Functions** (2-3 hours)
    - hints.md con debugging Lambda
    - solution/lambda_csv_validator.py completo
    - solution/test_lambda.py
 
-2. **Exercise 05 - CloudFormation** (3-4 horas)
+2. **Exercise 05 - CloudFormation** (3-4 hours)
    - starter/data-lake-stack.yaml (template con TODOs)
    - starter/deploy_stack.sh
    - hints.md (3 niveles)
    - solution/data-lake-stack.yaml completo
    - solution/deploy_stack.sh
 
-3. **Exercise 06 - Cost Optimization** (2-3 horas)
+3. **Exercise 06 - Cost Optimization** (2-3 hours)
    - starter/cloudwatch_metrics.py
    - starter/cost_budgets.py
    - starter/analyze_costs.py
@@ -186,17 +186,17 @@ module-01-cloud-fundamentals/
    - docs/localstack-guide.md
    - docs/troubleshooting.md
 
-**Tiempo restante estimado:** 8-11 horas
+**Tiempo restante estimado:** 8-11 hours
 
 ---
 
 ## ✨ Calidad del Contenido
 
 ### Fortalezas
-✅ **Real-world scenarios** - QuickMart startup en todos los ejercicios
+✅ **Real-world scenarios** - QuickMart startup en todos los exercises
 ✅ **Progressive hints** - 3 niveles (conceptual → técnico → código parcial)
 ✅ **Production code** - Solutions con error handling robusto
-✅ **Clear paths** - Pasos numerados, sin ambigüedad
+✅ **Clear paths** - Steps numerados, sin ambigüedad
 ✅ **Automated validation** - pytest tests + validate.sh
 ✅ **Cost-aware** - LocalStack gratuito, sin gastos AWS
 ✅ **Visual aids** - 7 diagramas Mermaid
@@ -204,29 +204,29 @@ module-01-cloud-fundamentals/
 
 ### Patrón Establecido
 ```
-1. Lee scenario.md (contexto business)
+1. Lee scenario.md (context business)
 2. Copia starter/ a my_solution/
 3. Implementa TODOs en tu workspace
 4. Consulta hints.md si bloqueado (3 niveles)
 5. Compara con solution/ al terminar
-6. Ejecuta validación automática
+6. Ejecuta validation automática
 ```
 
 ---
 
-## 🚀 Próximos Pasos Recomendados
+## 🚀 Próximos Steps Recomendados
 
 ### Opción A: Completar Module 01 al 100%
-Invertir 8-11 horas más para terminar Exercises 04-06 + docs adicionales.
+Invertir 8-11 hours más para terminar Exercises 04-06 + docs adicionales.
 
 **Ventaja:** Módulo template completo para replicar en Modules 02-23
 
-### Opción B: Avanzar a Módulos Siguientes
+### Opción B: Avanzar a Módulos Nexts
 Poblar Modules 02-04 (Storage, SQL, Python) con el mismo nivel de calidad.
 
 **Ventaja:** Establecer fundamentos completos del programa
 
-### Opción C: Validar con Usuario Real
+### Opción C: Validate con Usuario Real
 Pedir a un estudiante que complete Exercises 01-03 y dar feedback.
 
 **Ventaja:** Mejorar contenido basado en experiencia real

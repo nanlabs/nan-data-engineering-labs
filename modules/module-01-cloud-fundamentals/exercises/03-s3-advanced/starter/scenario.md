@@ -126,7 +126,7 @@ s3://my-data-lake-raw/
 - [x] IAM role with `s3:ReplicateObject` permission
 
 ### Event Notifications
-- [x] SQS queue created with correct policy
+- [x] SQS queue created with runct policy
 - [x] Bucket notification configured for `ObjectCreated:*`
 - [x] Upload file → SQS receives message with S3 metadata
 - [x] Message includes: bucket, key, size, timestamp

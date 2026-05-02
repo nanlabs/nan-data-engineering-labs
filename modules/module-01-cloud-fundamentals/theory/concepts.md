@@ -1,8 +1,8 @@
 # Fundamental Concepts of Cloud Computing
 
 **Estimated study time:** 3-4 hours
-**Nivel:** Fundamental
-**Prerequisitos:** Ninguno
+**Level:** Fundamental
+**Prerequisites:** Ninguno
 
 ---
 
@@ -102,7 +102,7 @@ There are three main cloud service models, forming an abstraction pyramid:
 ```
 Necesitas instalar una versión específica de Apache Kafka con configuraciones
 custom que no están disponibles en servicios managed. Usas EC2 para desplegar
-tu cluster de Kafka con control total sobre la configuración.
+tu cluster de Kafka con control total sobre la configuration.
 ```
 
 **Ventajas:**
@@ -181,7 +181,7 @@ mantenidos, sin escribir código.
 **Ventajas:**
 - Zero infrastructure management
 - Automatic updates
-- Acceso inmediato
+- Access inmediato
 
 **Desventajas:**
 - Menos flexibilidad
@@ -302,7 +302,7 @@ Si us-east-1a falla → Kinesis sigue escribiendo en 1b y 1c
 
 **Usage in Data Engineering:**
 ```
-Escenario: Dashboard de BI consumido por 10,000 usuarios globales
+Scenario: Dashboard de BI consumido por 10,000 usuarios globales
 
 Sin Edge Locations:
 - Todos los requests van a us-east-1
@@ -381,7 +381,7 @@ IAM User: john.doe@company.com
 
 **For Data Engineering:**
 ```
-Escenario: Tienes 5 data engineers en tu equipo
+Scenario: Tienes 5 data engineers en tu equipo
 
 ❌ MAL:
 - Todos comparten un solo user
@@ -442,21 +442,21 @@ Ventajas:
 ```
 Cuenta A (Producción) → Permite Cuenta B (Dev) → Asumir role
 
-Escenario: Developers en cuenta Dev necesitan leer datos de S3 en cuenta Prod
-Solución: Crear role en Prod que Cuenta Dev puede asumir temporalmente
+Scenario: Developers en cuenta Dev necesitan leer datos de S3 en cuenta Prod
+Solution: Create role en Prod que Cuenta Dev puede asumir temporalmente
 ```
 
 **3. Lambda Functions**
 ```
 Lambda Function → Execution Role → Permisos para:
 ├── Leer de S3
-├── Escribir a DynamoDB
+├── Write a DynamoDB
 └── Enviar logs a CloudWatch
 ```
 
 **4. Federated Access (SSO)**
 ```
-Employee → Autentica con Okta/Azure AD → Asume Role en AWS → Acceso temporal
+Employee → Autentica con Okta/Azure AD → Asume Role en AWS → Access temporal
 
 Ventaja: Single Sign-On, no gestionar passwords en AWS
 ```
@@ -590,7 +590,7 @@ Uso: Relaciones 1:1 estrictas
 **Scenario:** Pipeline that reads from S3, processes with Lambda, writes to DynamoDB
 
 ```
-Step 1: Crear IAM Policy para Lambda
+Step 1: Create IAM Policy para Lambda
 {
   "Statement": [
     {
@@ -611,17 +611,17 @@ Step 1: Crear IAM Policy para Lambda
   ]
 }
 
-Step 2: Crear IAM Role
+Step 2: Create IAM Role
 Role Name: DataProcessingLambdaRole
 Trust Policy: Lambda service can assume this role
 Attach: La policy del Step 1
 
 Step 3: Asignar Role a Lambda Function
-En la configuración de Lambda → Execution Role → DataProcessingLambdaRole
+En la configuration de Lambda → Execution Role → DataProcessingLambdaRole
 
 Step 4: Lambda ejecuta con credenciales temporales
 - Lambda asume el role automáticamente
-- Obtiene credenciales temporales (1-6 horas según config)
+- Obtiene credenciales temporales (1-6 hours según config)
 - SDK de AWS (boto3) usa credenciales automáticamente
 - Al expirar, Lambda solicita nuevas credenciales
 ```
@@ -653,9 +653,9 @@ Usos típicos:
 
 **Storage Classes:**
 ```
-S3 Standard: Acceso frecuente, baja latencia
+S3 Standard: Access frecuente, baja latencia
 └─→ S3 Intelligent-Tiering: Mueve datos automáticamente entre tiers
-    └─→ S3 Standard-IA: Acceso infrecuente (backups mensuales)
+    └─→ S3 Standard-IA: Access infrecuente (backups mensuales)
         └─→ S3 Glacier: Archivo (backups anuales, compliance)
             └─→ S3 Glacier Deep Archive: Archivo a largo plazo (7-10 años)
 
@@ -690,7 +690,7 @@ Ejemplo de costos (us-east-1):
 2. Orquestación de pipelines
    Lambda que invoca Glue jobs, EMR steps, Step Functions
 
-3. Validación de datos
+3. Validation de datos
    Nuevo archivo en S3 → Lambda valida schema → Rechaza o acepta
 
 4. API para consultas
@@ -728,13 +728,13 @@ Storage Optimized (I-family):
 **When to use EC2 vs. Lambda:**
 ```
 Usa EC2 si:
-- Proceso corre >15 minutos
+- Process run >15 minutes
 - Necesitas control del OS
 - Software específico no disponible en Lambda
 - High-memory workloads (>10GB RAM)
 
 Usa Lambda si:
-- Proceso <15 minutos
+- Process <15 minutes
 - Event-driven
 - Scaling automático es crítico
 - No quieres gestionar servidores
@@ -846,7 +846,7 @@ Ahorro: $1,278/año (76% descuento)
 **When to use:**
 ```
 ✅ Workloads de producción estables
-✅ Databases que corren 24/7 (RDS, Redshift)
+✅ Databases que runn 24/7 (RDS, Redshift)
 ✅ Base layer de Auto Scaling Groups
 ```
 
@@ -874,7 +874,7 @@ EMR Cluster para procesamiento nocturno:
 - Core nodes: On-Demand (master + state)
 - Task nodes: 100% Spot (solo compute)
 
-Costo On-Demand: 10 × m5.2xlarge × 8 horas = $30.72
+Costo On-Demand: 10 × m5.2xlarge × 8 hours = $30.72
 Costo Spot (70% discount): = $9.22
 
 Ahorro por job: $21.50
@@ -905,7 +905,7 @@ AWS aplica descuento a:
 **12 months free** from AWS account creation:
 ```
 EC2:
-- 750 horas/mes de t2.micro o t3.micro
+- 750 hours/mes de t2.micro o t3.micro
 
 S3:
 - 5GB de Standard storage
@@ -916,7 +916,7 @@ Lambda:
 - 400,000 GB-seconds de compute
 
 RDS:
-- 750 horas/mes de db.t2.micro
+- 750 hours/mes de db.t2.micro
 - 20GB de storage
 
 DynamoDB:
@@ -1061,7 +1061,7 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
 
 ### Pilar 3: Reliability
 
-**Principle:** Systems that function correctly and recover from failures.
+**Principle:** Systems that function runctly and recover from failures.
 
 **For Data Engineering:**
 ```
@@ -1097,7 +1097,7 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
 
 2. Partitioning
    s3://data/year=2024/month=01/day=15/
-   Query solo lee particiones necesarias
+   Query solo lee particiones necessarys
 
 3. Right-sizing
    - Lambda: 1GB RAM para transformaciones ligeras
@@ -1105,7 +1105,7 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
    - RDS: db.t3.medium para dev, db.r5.xlarge para prod
 
 4. Caching
-   - Athena query results cache (24 horas)
+   - Athena query results cache (24 hours)
    - Lambda con /tmp para datos reutilizables
    - CloudFront para dashboards
 ```
@@ -1150,9 +1150,9 @@ Mentalidad Cloud:
 "Qué servicio resuelve mi problema con menos overhead?"
 
 Ejemplo:
-- Proceso de 5 minutos → Lambda (serverless)
-- Proceso de 3 horas → Glue (managed Spark)
-- Proceso de 12 horas → EMR (cluster ephemeral)
+- Process de 5 minutes → Lambda (serverless)
+- Process de 3 hours → Glue (managed Spark)
+- Process de 12 hours → EMR (cluster ephemeral)
 ```
 
 **2. Everything is API-driven**
@@ -1160,7 +1160,7 @@ Ejemplo:
 # No hay UI que hacer click manualmente
 # Todo es programático y reproducible
 
-# Crear bucket S3
+# Create bucket S3
 s3_client.create_bucket(Bucket='my-data-lake')
 
 # Lanzar EMR cluster
@@ -1176,7 +1176,7 @@ Cada decisión arquitectónica tiene impacto en costos:
 
 Mala práctica:
 - Cluster EMR 24/7 → $5,000/mes
-- Solo se usa 2 horas/día
+- Solo se usa 2 hours/día
 
 Buena práctica:
 - EMR ephemeral clusters
@@ -1225,7 +1225,7 @@ Kinesis Data Stream → Lambda → S3 (partitioned)
 
 ---
 
-## 9. Escenario Real: E-Commerce Data Pipeline
+## 9. Scenario Real: E-Commerce Data Pipeline
 
 **Context:** Online store with 100K transactions/day needs analytics pipeline.
 
@@ -1316,7 +1316,7 @@ Considera:
 ```
 Tienes un data engineer que necesita:
 ✅ Leer todos los buckets S3
-✅ Ejecutar Glue jobs existentes
+✅ Run Glue jobs existentes
 ❌ NO debe poder eliminar buckets S3
 ❌ NO debe poder crear nuevos Glue jobs
 
@@ -1337,9 +1337,9 @@ Tu factura AWS es $5,000/mes:
 **4. Reliability**
 ```
 Tu pipeline ETL falla cada 2-3 semanas con error:
-"Lambda timeout después de 15 minutos"
+"Lambda timeout después de 15 minutes"
 
-El proceso:
+El process:
 - Lee 50,000 archivos CSV de S3
 - Transforma con Pandas
 - Escribe a Parquet
@@ -1389,7 +1389,7 @@ Usuarios EU se quejan de lentitud en queries.
 5. **Exercise 05:** Infrastructure as Code with CloudFormation
 6. **Exercise 06:** Cost optimization with lifecycle policies
 
-**Recuerda:**
+**Remember:**
 - Read the Theory completely before starting Exercises
 - Check out additional Resources at`theory/resources.md`
 - Usa hints progresivos si te atascas

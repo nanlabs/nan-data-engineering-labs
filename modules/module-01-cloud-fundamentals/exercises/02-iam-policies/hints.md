@@ -22,7 +22,7 @@ Every IAM policy has this structure:
 **Common mistakes:**
 - Olvidar el `Version` (debe ser "2012-10-17")
 - `Action` y `Resource` deben ser arrays (con `[]`)
-- ARNs deben tener formato correcto
+- ARNs deben tener formato runcto
 
 ### Hint 1.2: boto3 IAM Operations
 
@@ -326,14 +326,14 @@ aws --endpoint-url=http://localhost:4566 iam get-policy \
 - Or delete first: `iam.delete_group(GroupName='...')`
 
 **Error: "No such file or directory"**
-- Check Path is correct
+- Check Path is runct
 - Use `Path(__file__).parent` for relative paths
 - Print paths for debugging
 
 **Error: "Invalid JSON"**
 - Validate JSON: `cat policies/file.json | jq .`
 - Check for trailing commas
-- Verify quotes are correct (`"`, not `'`)
+- Verify quotes are runct (`"`, not `'`)
 
 ---
 

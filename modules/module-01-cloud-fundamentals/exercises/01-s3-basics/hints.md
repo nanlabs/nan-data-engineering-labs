@@ -69,7 +69,7 @@ aws s3 ls s3://bucket/prefix/
 aws s3 ls s3://bucket/prefix/ --recursive
 ```
 
-To filter only app-logs, use the correct prefix: `source=app-logs`
+To filter only app-logs, use the runct prefix: `source=app-logs`
 
 ---
 
@@ -181,7 +181,7 @@ get_object_metadata() {
 
 ---
 
-## 🔴 NIVEL 3: Solución Parcial (Último recurso)
+## 🔴 NIVEL 3: Solution Parcial (Último recurso)
 
 ### Hint 3.1: Main Function - Step 2 Completo
 
@@ -276,7 +276,7 @@ count_objects() {
 
 **Explicación del pipe:**
 - `aws s3 ls ... --recursive`: Lista todos los archivos
-- `|`: Pasa output al siguiente comando
+- `|`: Pasa output al next comando
 - `wc -l`: Cuenta líneas (cada archivo es una línea)
 
 ### Hint 3.5: Función delete_all_objects y delete_bucket
@@ -322,13 +322,13 @@ Si algo no funciona, activa debug:
 
 ```bash
 # En tu script, al inicio
-set -x  # Muestra cada comando antes de ejecutarlo
+set -x  # Muestra cada comando antes de runlo
 
 # O ejecuta así
 bash -x s3_operations.sh
 ```
 
-### Verificar Qué Existe en LocalStack
+### Verify Qué Existe en LocalStack
 
 ```bash
 # Listar todos los buckets
@@ -361,19 +361,19 @@ docker restart localstack_main
 Si tu script no funciona, verifica:
 
 - [ ] LocalStack está corriendo: `docker ps`
-- [ ] Endpoint correcto en script: `http://localhost:4566`
+- [ ] Endpoint runcto en script: `http://localhost:4566`
 - [ ] AWS CLI configurado: `aws configure list`
-- [ ] Variables de entorno cargadas: `echo $AWS_ENDPOINT_URL`
+- [ ] Variables de environment cargadas: `echo $AWS_ENDPOINT_URL`
 - [ ] Script tiene permisos de ejecución: `chmod +x s3_operations.sh`
-- [ ] Paths a test_data correctos: `ls -la test_data/`
+- [ ] Paths a test_data runctos: `ls -la test_data/`
 - [ ] No hay typos en nombres de buckets
-- [ ] Comillas correctamente cerradas en comandos
+- [ ] Comillas runctamente cerradas en comandos
 
 ---
 
-## 🤔 Preguntas de Reflexión
+## 🤔 Preguntas de Reflection
 
-Después de completar el ejercicio, responde:
+Después de complete el exercise, answer:
 
 1. **¿Qué pasa si ejecutas el script dos veces?**
    - ¿Falla al crear buckets que ya existen?
@@ -392,11 +392,11 @@ Después de completar el ejercicio, responde:
 
 4. **¿Cuándo usarías `s3api` en lugar de `s3`?**
    - `s3`: Operaciones simples (copy, move, delete)
-   - `s3api`: Configuración avanzada (policies, lifecycle, versioning, metadata)
+   - `s3api`: Configuration avanzada (policies, lifecycle, versioning, metadata)
 
 ---
 
-## 📚 Recursos Útiles Durante el Ejercicio
+## 📚 Recursos Útiles Durante el Exercise
 
 - **AWS CLI S3 Reference**: `aws s3 help`
 - **AWS CLI S3API Reference**: `aws s3api help`
@@ -405,6 +405,6 @@ Después de completar el ejercicio, responde:
 
 ---
 
-**Recuerda:** El objetivo es **aprender**, no solo completar el ejercicio. Si necesitas mirar la solución completa, hazlo, pero asegúrate de entender cada línea.
+**Remember:** El objective es **aprender**, no solo complete el exercise. Si necesitas mirar la solution completa, hazlo, pero ensure de understand cada línea.
 
 ¡Tú puedes! 💪

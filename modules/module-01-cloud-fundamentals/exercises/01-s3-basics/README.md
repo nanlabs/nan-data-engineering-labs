@@ -65,14 +65,14 @@ cd my_solution/
 
 **⚠️ IMPORTANT:** Work ONLY in `my_solution/`. Do not modify `starter/` or `solution/`.
 
-### Step 4: Implementar Solución (30 min)
+### Step 4: Implement Solution (30 min)
 
 **Camino recomendado:**
 
-1. **Configura entorno (5 min)**
+1. **Configura environment (5 min)**
    ```bash
    cp .env.example .env
-   # Edita .env con tu configuración LocalStack
+   # Edita .env con tu configuration LocalStack
    source .env
    ```
 
@@ -80,7 +80,7 @@ cd my_solution/
    - Empieza con `create_bucket()`
    - Luego `upload_file()`
    - Continúa en orden: list, download, copy, delete
-   - **Prueba cada función antes de continuar a la siguiente**
+   - **Test cada función antes de continuar a la next**
 
 3. **Ejecuta script completo (5 min)**
    ```bash
@@ -88,7 +88,7 @@ cd my_solution/
    ./s3_operations.sh
    ```
 
-### Step 5: Validar (5 min)
+### Step 5: Validate (5 min)
 
 ```bash
 # Desde el directorio del módulo
@@ -101,7 +101,7 @@ cd ../..  # Vuelve a module-01-cloud-fundamentals/
 ✅ All tests passed!
 ✅ Bucket creation works
 ✅ File upload successful
-✅ Object listing correct
+✅ Object listing runct
 ...
 ```
 
@@ -109,22 +109,22 @@ cd ../..  # Vuelve a module-01-cloud-fundamentals/
 
 1. **Lee hints.md** - Tiene 3 niveles de ayuda progresiva
 2. **Consulta AWS CLI docs**: `aws s3 help`
-3. **Revisa tu configuración LocalStack**
+3. **Revisa tu configuration LocalStack**
 4. **Solo como último recurso:** Compara con `solution/s3_operations.sh`
 
 ---
 
-## 📝 Requisitos de la Solución
+## 📝 Requirements de la Solution
 
 Tu implementación debe cumplir:
 
 ### Funcional
-- ✅ Crear bucket `my-data-lake-raw`
+- ✅ Create bucket `my-data-lake-raw`
 - ✅ Subir 3 archivos a paths con particiones: `source=app-logs/year=2024/month=01/`
 - ✅ Listar objetos con prefix `source=app-logs`
 - ✅ Copiar archivo a otro bucket `my-data-lake-processed`
 - ✅ Descargar archivo localmente
-- ✅ Verificar metadata (content-type, storage class)
+- ✅ Verify metadata (content-type, storage class)
 
 ### Calidad de Código
 - ✅ Script debe manejar errores (exit code != 0 si falla)
@@ -134,7 +134,7 @@ Tu implementación debe cumplir:
 
 ---
 
-## 🎓 Conceptos Clave del Ejercicio
+## 🎓 Conceptos Clave del Exercise
 
 ### 1. AWS CLI Endpoint Configuration
 
@@ -180,12 +180,12 @@ En realidad S3 solo ve:
 
 ```
 Standard (default):
-- Acceso frecuente
+- Access frecuente
 - $0.023/GB/mes
 - 99.99% availability
 
 Standard-IA (Infrequent Access):
-- Acceso <1 vez/mes
+- Access <1 vez/mes
 - $0.0125/GB/mes (46% más barato)
 - Cobra por retrieval
 
@@ -198,15 +198,15 @@ Cuándo cambiar:
 
 ## 🔍 Debugging Tips
 
-### Problema: "aws: command not found"
+### Problem: "aws: command not found"
 ```bash
-# Solución
+# Solution
 pip install awscli
 # o
 brew install awscli  # macOS
 ```
 
-### Problema: "Unable to locate credentials"
+### Problem: "Unable to locate credentials"
 ```bash
 # Configura credenciales dummy
 aws configure
@@ -215,7 +215,7 @@ aws configure
 # Default region: us-east-1
 ```
 
-### Problema: "Unable to connect to endpoint"
+### Problem: "Unable to connect to endpoint"
 ```bash
 # Verifica LocalStack esté corriendo
 docker ps | grep localstack
@@ -225,7 +225,7 @@ cd ../../..  # Vuelve a raíz del proyecto
 make up
 ```
 
-### Problema: "Bucket already exists"
+### Problem: "Bucket already exists"
 ```bash
 # Lista buckets existentes
 aws --endpoint-url=http://localhost:4566 s3 ls
@@ -238,11 +238,11 @@ aws --endpoint-url=http://localhost:4566 s3 rb s3://my-data-lake-raw --force
 
 ## ✅ Checklist de Completitud
 
-Antes de considerar el ejercicio completo:
+Antes de considerar el exercise completo:
 
 - [ ] `my_solution/s3_operations.sh` implementado completamente
 - [ ] Script ejecuta sin errores: `./s3_operations.sh`
-- [ ] Validación pasa: `../../scripts/validate-module.sh 01`
+- [ ] Validation pasa: `../../scripts/validate-module.sh 01`
 - [ ] Puedes explicar qué hace cada comando aws s3
 - [ ] Entiendes diferencia entre bucket y object key
 - [ ] Conoces al menos 2 storage classes de S3
@@ -251,7 +251,7 @@ Antes de considerar el ejercicio completo:
 
 ## 📊 Expected Output
 
-Cuando ejecutes `./s3_operations.sh` correctamente, deberías ver:
+Cuando ejecutes `./s3_operations.sh` runctamente, deberías ver:
 
 ```
 🚀 Starting S3 Operations Demo...
@@ -296,12 +296,12 @@ Cuando ejecutes `./s3_operations.sh` correctamente, deberías ver:
 
 ## 🚀 Next Steps
 
-Después de completar este ejercicio:
+Después de complete este exercise:
 
-1. **Entiendes S3 CLI** → Ejercicio 02 te introduce a IAM policies
+1. **Entiendes S3 CLI** → Exercise 02 te introduce a IAM policies
 2. **Experimenta más:**
    - Crea tu propia estructura de carpetas
-   - Prueba subir archivos de diferentes tipos
+   - Test subir archivos de diferentes tipos
    - Usa `aws s3 sync` para sincronizar directorios
 
 3. **Reflexiona:**
@@ -317,6 +317,6 @@ Después de completar este ejercicio:
 - S3 API Reference: https://docs.aws.amazon.com/cli/latest/reference/s3/
 - LocalStack S3 Docs: https://docs.localstack.cloud/user-guide/aws/s3/
 
-**¡Éxito con el ejercicio!** 🎉
+**¡Success con el exercise!** 🎉
 
-Recuerda: El objetivo NO es completarlo lo más rápido posible, sino **entender cada comando** que ejecutas.
+Remember: El objective NO es completelo lo más rápido posible, sino **understand cada comando** que ejecutas.

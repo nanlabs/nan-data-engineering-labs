@@ -1,13 +1,13 @@
 # Exercise 04: AWS Lambda Functions
 
-**Duration:** 75-90 minutos | **Difficulty:** ⭐⭐⭐
+**Duration:** 75-90 minutes | **Difficulty:** ⭐⭐⭐
 
 ## 🎯 Objectives
 
-- Crear Lambda functions en Python
-- Implementar event-driven processing con S3 triggers
+- Create Lambda functions en Python
+- Implement event-driven processing con S3 triggers
 - Manejar errores y logging
-- Configurar timeouts y memory optimization
+- Configure timeouts y memory optimization
 
 ## 📖 Conceptos
 
@@ -19,24 +19,24 @@
 - API Gateway (HTTP requests)
 - CloudWatch Events (scheduled)
 
-## 🎬 Pasos
+## 🎬 Steps
 
-### Paso 1: Escenario
+### Step 1: Scenario
 
 QuickMart necesita:
-- **Validar CSV uploads** (schema, data quality)
+- **Validate CSV uploads** (schema, data quality)
 - **Transform JSON logs** (parse, enrich, send to CloudWatch)
 - **Generate thumbnails** for product images
 - **Alert on anomalies** (high transaction values)
 
-### Paso 2: Copiar Starter
+### Step 2: Copiar Starter
 
 ```bash
 cp -r starter/ my_solution/
 cd my_solution
 ```
 
-### Paso 3: Implementar Lambda Functions
+### Step 3: Implement Lambda Functions
 
 #### Function 1: CSV Validator
 
@@ -61,7 +61,7 @@ def lambda_handler(event, context):
     pass
 ```
 
-### Paso 4: Desplegar con CLI
+### Step 4: Desplegar con CLI
 
 ```bash
 # Create deployment package
@@ -76,7 +76,7 @@ aws --endpoint-url=http://localhost:4566 lambda create-function \
   --zip-file fileb://function.zip
 ```
 
-### Paso 5: Configurar S3 Trigger
+### Step 5: Configure S3 Trigger
 
 ```python
 # Add S3 trigger programmatically
@@ -92,7 +92,7 @@ s3.put_bucket_notification_configuration(
 )
 ```
 
-### Paso 6: Testing
+### Step 6: Testing
 
 ```bash
 # Upload CSV to trigger Lambda
@@ -105,7 +105,7 @@ aws --endpoint-url=http://localhost:4566 logs tail /aws/lambda/csv-validator
 aws s3 ls s3://my-data-lake/processed/
 ```
 
-## 🧪 Validación
+## 🧪 Validation
 
 ```python
 # Test locally
@@ -119,7 +119,7 @@ python3 test_lambda.py
 # ✓ Invalid records logged
 ```
 
-## 📚 Entregables
+## 📚 Deliverables
 
 - ✅ `lambda_csv_validator.py` (validates CSV schema)
 - ✅ `lambda_log_transformer.py` (transforms JSON logs)
@@ -129,4 +129,4 @@ python3 test_lambda.py
 
 ---
 
-**Hints:** [hints.md](hints.md) | **Siguiente:** [Exercise 05](../05-infrastructure-as-code/README.md)
+**Hints:** [hints.md](hints.md) | **Next:** [Exercise 05](../05-infrastructure-as-code/README.md)

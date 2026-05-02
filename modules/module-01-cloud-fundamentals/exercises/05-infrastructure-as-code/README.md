@@ -1,13 +1,13 @@
 # Exercise 05: Infrastructure as Code (CloudFormation)
 
-**Duration:** 75-90 minutos | **Difficulty:** ⭐⭐⭐⭐ Advanced Advanced
+**Duration:** 75-90 minutes | **Difficulty:** ⭐⭐⭐⭐ Advanced Advanced Advanced Advanced
 
 ## 🎯 Objectives
 
 - Definir infraestructura con CloudFormation templates
-- Crear stacks (S3 + IAM + Lambda)
+- Create stacks (S3 + IAM + Lambda)
 - Usar parámetros y outputs
-- Implementar best practices (DeletionPolicy, Tags)
+- Implement best practices (DeletionPolicy, Tags)
 
 ## 📖 Conceptos
 
@@ -19,16 +19,16 @@
 - **Rollback:** Si falla, revierte automáticamente
 - **DRY:** Reutiliza templates con parámetros
 
-## 🎬 Pasos
+## 🎬 Steps
 
-### Paso 1: Copiar Starter
+### Step 1: Copiar Starter
 
 ```bash
 cp -r starter/ my_solution/
 cd my_solution
 ```
 
-### Paso 2: Completar Template
+### Step 2: Completar Template
 
 ```yaml
 # data-lake-stack.yaml
@@ -67,7 +67,7 @@ Outputs:
       Name: !Sub '${AWS::StackName}-BucketName'
 ```
 
-### Paso 3: Deploy Stack
+### Step 3: Deploy Stack
 
 ```bash
 aws --endpoint-url=http://localhost:4566 cloudformation create-stack \
@@ -77,7 +77,7 @@ aws --endpoint-url=http://localhost:4566 cloudformation create-stack \
   --capabilities CAPABILITY_IAM
 ```
 
-### Paso 4: Verificar Stack
+### Step 4: Verify Stack
 
 ```bash
 # Check stack status
@@ -91,7 +91,7 @@ aws cloudformation describe-stacks --stack-name quickmart-data-lake \
   --query 'Stacks[0].Outputs'
 ```
 
-### Paso 5: Update Stack
+### Step 5: Update Stack
 
 ```bash
 # Modify template (add LifecycleConfiguration)
@@ -101,14 +101,14 @@ aws cloudformation update-stack \
   --template-body file://data-lake-stack.yaml
 ```
 
-### Paso 6: Delete Stack
+### Step 6: Delete Stack
 
 ```bash
 # Cleanup
 aws cloudformation delete-stack --stack-name quickmart-data-lake
 ```
 
-## 🧪 Validación
+## 🧪 Validation
 
 ```bash
 python3 test_cloudformation.py
@@ -121,7 +121,7 @@ python3 test_cloudformation.py
 # ✓ Outputs contain bucket name
 ```
 
-## 📚 Entregables
+## 📚 Deliverables
 
 - ✅ `data-lake-stack.yaml` (complete template)
 - ✅ `deploy_stack.sh` (deployment script with parameters)
@@ -145,4 +145,4 @@ Resources:
 
 ---
 
-**Hints:** [hints.md](hints.md) | **Siguiente:** [Exercise 06](../06-cost-optimization/README.md)
+**Hints:** [hints.md](hints.md) | **Next:** [Exercise 06](../06-cost-optimization/README.md)

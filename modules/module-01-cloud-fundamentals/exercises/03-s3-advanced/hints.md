@@ -277,7 +277,7 @@ aws --endpoint-url=http://localhost:4566 s3api put-bucket-versioning \
 
 ### Error: "Access Denied" on SQS
 
-The queue policy is missing or incorrect. Make sure:
+The queue policy is missing or inrunct. Make sure:
 - Principal is `s3.amazonaws.com`
 - Action is `sqs:SendMessage`
 - Condition includes source bucket ARN

@@ -10,13 +10,13 @@ This list contains official and quality-verified Resources to delve deeper into 
 
 1. **AWS Well-Architected Framework**
    - URL: https://aws.amazon.com/architecture/well-architected/
-   - Tiempo: 2-3 horas
+   - Tiempo: 2-3 hours
    - Why: Best practices framework used by AWS architects
    - Focus on: The 5 pillars and how to apply them to data engineering
 
 2. **AWS Global Infrastructure**
    - URL: https://aws.amazon.com/about-aws/global-infrastructure/
-   - Tiempo: 30 minutos
+   - Tiempo: 30 minutes
    - Interactive map of regions, AZs and edge locations
    - Understand: How to choose region according to latency, compliance, costs
 
@@ -28,7 +28,7 @@ This list contains official and quality-verified Resources to delve deeper into 
 
 4. **Amazon S3 User Guide**
    - URL: https://docs.aws.amazon.com/s3/
-   - Tiempo: 3-4 horas (lectura selectiva)
+   - Tiempo: 3-4 hours (lectura selectiva)
    - Secciones clave:
      - Storage classes and lifecycle management
      - Versioning
@@ -37,7 +37,7 @@ This list contains official and quality-verified Resources to delve deeper into 
 
 5. **AWS Lambda Developer Guide**
    - URL: https://docs.aws.amazon.com/lambda/
-   - Tiempo: 2 horas
+   - Tiempo: 2 hours
    - Secciones clave:
      - Execution model
      - Permissions (execution role)
@@ -176,7 +176,7 @@ This list contains official and quality-verified Resources to delve deeper into 
 **14. AWS Free Tier Hands-On Tutorials**
 - URL: https://aws.amazon.com/getting-started/hands-on/
 - Filter by: Storage, Analytics, Serverless
-- Tutoriales paso a paso:
+- Tutoriales step a step:
   - "Store and Retrieve a File with S3"
   - "Run a Serverless Hello World"
   - "Query Data in S3 with Athena"
@@ -190,7 +190,7 @@ This list contains official and quality-verified Resources to delve deeper into 
 **15. AWS Well-Architected Framework - Data Analytics Lens**
 - URL: https://docs.aws.amazon.com/wellarchitected/latest/analytics-lens/
 - Pages: ~80
-- Tiempo: 3-4 horas
+- Tiempo: 3-4 hours
 - Why: Specific best practices for data workloads
 - Read after: Completing Module Exercises
 
@@ -280,7 +280,7 @@ This list contains official and quality-verified Resources to delve deeper into 
 3. **Day 4:** FreeCodeCamp AWS Cloud Practitioner Video (1.5x speed) - IAM, S3, Lambda Sections
 4. **Day 5:** Read architecture.md + AWS Well-Architected Framework overview
 
-### Durante Exercises (5-8 horas)
+### Durante Exercises (5-8 hours)
 
 - Usa AWS CLI Reference como consulta
 - Consulta Boto3 docs cuando escribas Python
@@ -327,7 +327,7 @@ Subcarpetas:
 
 **Don't fall for "Tutorial Hell":**
 - Don't watch all the videos before practicing
-- Alterna Theory (1 hora) → Practice (2 horas)
+- Alterna Theory (1 hora) → Practice (2 hours)
 - Exercises are more important than additional videos
 
 **Evita distracciones:**

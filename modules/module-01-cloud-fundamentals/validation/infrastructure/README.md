@@ -4,35 +4,35 @@ Este directorio está reservado para tests de infraestructura cloud.
 
 ## 🏗️ Propósito
 
-Validar que la infraestructura AWS (buckets, roles, políticas, funciones Lambda) está configurada correctamente.
+Validate que la infraestructura AWS (buckets, roles, políticas, funciones Lambda) está configurada runctamente.
 
 ## 🎯 Tipos de Tests a Agregar
 
 ### Resource Existence
 ```python
 def test_s3_bucket_exists():
-    """Verificar que el bucket S3 existe"""
+    """Verify que el bucket S3 existe"""
 
 def test_iam_role_exists():
-    """Verificar que el rol IAM existe"""
+    """Verify que el rol IAM existe"""
 ```
 
 ### Configuration Validation
 ```python
 def test_bucket_has_encryption():
-    """Verificar que el bucket tiene encriptación habilitada"""
+    """Verify que el bucket tiene encriptación habilitada"""
 
 def test_bucket_versioning_enabled():
-    """Verificar que el versionado está habilitado"""
+    """Verify que el versionado está habilitado"""
 ```
 
 ### Policy Validation
 ```python
-def test_bucket_policy_correct():
-    """Verificar que la política del bucket es correcta"""
+def test_bucket_policy_runct():
+    """Verify que la política del bucket es runcta"""
 
 def test_iam_policy_least_privilege():
-    """Verificar principio de privilegio mínimo"""
+    """Verify principio de privilegio mínimo"""
 ```
 
 ## 📝 Ejemplo de Test
@@ -42,7 +42,7 @@ import boto3
 import pytest
 
 def test_data_lake_bucket_configuration():
-    """Verificar configuración completa del data lake bucket"""
+    """Verify configuration completa del data lake bucket"""
     s3 = boto3.client('s3', endpoint_url='http://localhost:4566')
     bucket_name = 'quickmart-data-lake-dev'
 
@@ -60,7 +60,7 @@ def test_data_lake_bucket_configuration():
     assert len(lifecycle['Rules']) > 0
 ```
 
-## 🚀 Ejecutar
+## 🚀 Run
 
 ```bash
 pytest validation/infrastructure/ -v
