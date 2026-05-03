@@ -16,9 +16,10 @@ Use this skill when reviewing or normalizing language compliance in governance d
 ## Required Workflow
 
 1. Identify modified or target files.
-2. Run language validation script.
+2. Run language validation script and capture baseline counts.
 3. Fix non-English instructional content in scoped files.
-4. Re-run validation and confirm zero findings.
+4. Re-run validation and compare baseline vs current counts.
+5. Confirm zero findings for target scope before claiming completion.
 
 ```bash
 PYTHON=python
@@ -30,12 +31,15 @@ $PYTHON scripts/validate_english_content.py
 - Keep governance and instructional content in English.
 - Allow domain terminology and acronyms (for example AWS, IAM, S3, ETL, ELT, SQL, API).
 - Avoid introducing bilingual sections in the same file.
+- Do not report "fully translated" unless validation confirms zero findings in the declared scope.
+- If full zero is not achieved, report residual markers and next remediation slice.
 
 ## Definition of Done
 
 - No disallowed non-English markers in scoped files.
 - New comments/docstrings/instructions are English-only.
 - Validator reports success.
+- Report includes: baseline count, final count, and exact validated scope.
 
 ## Safety
 

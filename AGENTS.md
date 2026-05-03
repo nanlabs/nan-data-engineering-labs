@@ -36,6 +36,20 @@ $PYTHON scripts/validate_english_content.py
 $PYTHON scripts/progress.py
 ```
 
+## Execution and Reporting Norms
+
+- Verify before claiming completion:
+  - For commits/merges: confirm with `git log --oneline -n 1` and `git status --short`.
+  - For translation progress: report measured counts (for example with `rg`/validator output), not estimates.
+  - For validations: include the exact command run and whether scope was full repo or target module.
+- Scope-first translation flow:
+  - Populate missing module content before claiming translation progress.
+  - Translate target module files first (`README.md`, `theory/`, `exercises/*/{README.md,starter/scenario.md,hints.md}`), then expand scope.
+  - If API credentials are missing, use local/manual translation and explicitly mark residual Spanish markers.
+- Commit discipline:
+  - Keep commits atomic by module or wave.
+  - Do not claim "fully translated" unless target-scope validation passes with zero findings.
+
 ## Safety
 
 - Do not run destructive git commands (`reset --hard`, `checkout --`) unless explicitly requested.
