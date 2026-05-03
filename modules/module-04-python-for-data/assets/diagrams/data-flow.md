@@ -1,23 +1,23 @@
-# 🔄 Data Flow - Flujos de Datos y Pipelines ETL
+# 🔄 Data Flow - Flujos de Data y Pipelines ETL
 
 ## 📊 pipeline ETL Completo
 
 ```mermaid
 flowchart TD
-    A[📥 Fuentes de Datos] --> B[Extract]
-    B --> C{Validación Inicial}
-    C -->|✅ Válido| D[Transform]
-    C -->|❌ Inválido| E[Error Log]
-    E --> F[Notificación]
+    A[📥 Fuentes de Data] --> B[Extract]
+    B --> C{Validation Inicial}
+    C -->|✅ Valido| D[Transform]
+    C -->|❌ Invalido| E[Error Log]
+    E --> F[Notificacion]
     
-    D --> G[Limpieza]
-    G --> H[Normalización]
-    H --> I[Enriquecimiento]
-    I --> J{Validación Calidad}
+    D --> G[Cleaning]
+    G --> H[Normalizacion]
+    H --> I[Enrichment]
+    I --> J{Validation Calidad}
     
     J -->|✅ Pasa QA| K[Load]
     J -->|❌ Falla QA| L[Cuarentena]
-    L --> M[Revisión Manual]
+    L --> M[Revision Manual]
     M --> D
     
     K --> N[Data Warehouse]
@@ -35,11 +35,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[Ejercicio 01<br/>Python Basics] --> B[Ejercicio 02<br/>Data Structures]
-    B --> C[Ejercicio 03<br/>File Operations]
-    C --> D[Ejercicio 04<br/>Pandas Fundamentals]
-    D --> E[Ejercicio 05<br/>Data Transformation]
-    E --> F[Ejercicio 06<br/>Error Handling]
+    A[Exercise 01<br/>Python Basics] --> B[Exercise 02<br/>Data Structures]
+    B --> C[Exercise 03<br/>File Operations]
+    C --> D[Exercise 04<br/>Pandas Fundamentals]
+    D --> E[Exercise 05<br/>Data Transformation]
+    E --> F[Exercise 06<br/>Error Handling]
     
     C --> G[(Raw Data<br/>CSV/JSON)]
     G --> D
@@ -61,9 +61,9 @@ flowchart LR
     style J fill:#c8e6c9
 ```
 
-## 📁 Flujo de Archivos
+## 📁 Flujo de Files
 
-### De Archivos Crudos a Datos Procesados
+### De Files Crudos a Data Procesados
 
 ```mermaid
 flowchart TD
@@ -76,27 +76,27 @@ flowchart TD
     B --> H{Explorar<br/>df.info<br/>df.describe}
     F --> H
     
-    H --> I[🧹 Limpieza]
+    H --> I[🧹 Cleaning]
     I --> J[Eliminar Nulls]
     I --> K[Eliminar Duplicados]
     I --> L[Corregir Tipos]
     
-    J --> M[🔄 Transformación]
+    J --> M[🔄 Transformacion]
     K --> M
     L --> M
     
     M --> N[Normalizar Strings]
     M --> O[Crear Columnas]
-    M --> P[Filtrar Datos]
+    M --> P[Filtrar Data]
     
-    N --> Q[🔗 Combinación]
+    N --> Q[🔗 Combinacion]
     O --> Q
     P --> Q
     
     Q --> R[Merge Customers<br/>+ Transactions]
     Q --> S[Join Products]
     
-    R --> T[📊 Agregación]
+    R --> T[📊 Agregacion]
     S --> T
     
     T --> U[GroupBy]
@@ -130,36 +130,36 @@ flowchart TD
 
 ```mermaid
 flowchart TB
-    subgraph EXTRACT[" 🔍 EXTRACT - Extracción"]
+    subgraph EXTRACT[" 🔍 EXTRACT - Extraction"]
         A1[CSV Files] --> A2[Read CSV]
         A3[JSON Files] --> A4[Read JSON]
         A5[API Endpoints] --> A6[HTTP Request]
         A7[Databases] --> A8[SQL Query]
     end
     
-    subgraph VALIDATE[" ✅ VALIDATE - Validación"]
+    subgraph VALIDATE[" ✅ VALIDATE - Validation"]
         V1[Schema Check]
         V2[Data Types]
         V3[Required Fields]
         V4[Business Rules]
     end
     
-    subgraph TRANSFORM[" 🔄 TRANSFORM - Transformación"]
-        subgraph CLEAN[" 🧹 Limpieza"]
+    subgraph TRANSFORM[" 🔄 TRANSFORM - Transformacion"]
+        subgraph CLEAN[" 🧹 Cleaning"]
             T1[Handle Nulls]
             T2[Remove Duplicates]
             T3[Fix Data Types]
             T4[Normalize Strings]
         end
         
-        subgraph ENRICH[" 🎨 Enriquecimiento"]
+        subgraph ENRICH[" 🎨 Enrichment"]
             T5[Create Columns]
             T6[Apply Functions]
             T7[Categorize]
             T8[Aggregate]
         end
         
-        subgraph JOIN[" 🔗 Combinación"]
+        subgraph JOIN[" 🔗 Combinacion"]
             T9[Merge Datasets]
             T10[Lookup Values]
             T11[Flatten JSON]
@@ -173,7 +173,7 @@ flowchart TB
         Q4[Outlier Detection]
     end
     
-    subgraph LOAD[" 💾 LOAD - Carga"]
+    subgraph LOAD[" 💾 LOAD - Load"]
         L1[Data Warehouse]
         L2[Data Lake]
         L3[Analytics DB]
@@ -192,8 +192,8 @@ flowchart TB
     QUALITY -->|✅ Pass| LOAD
     QUALITY -->|❌ Fail| QUARANTINE[Cuarentena]
     
-    ERROR --> NOTIFY[Notificación]
-    QUARANTINE --> REVIEW[Revisión Manual]
+    ERROR --> NOTIFY[Notificacion]
+    QUARANTINE --> REVIEW[Revision Manual]
     
     style EXTRACT fill:#e3f2fd
     style VALIDATE fill:#fff9c4
@@ -320,7 +320,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[📊 DataFrame] --> B{Tipo de<br/>Agregación}
+    A[📊 DataFrame] --> B{Tipo de<br/>Agregacion}
     
     B -->|Simple| C[df.sum]
     B -->|Simple| D[df.mean]
@@ -328,7 +328,7 @@ flowchart TD
     
     B -->|Agrupada| F[GroupBy]
     F --> G[df.groupby col]
-    G --> H{Operación}
+    G --> H{Operacion}
     H --> I[.agg funcs]
     H --> J[.apply custom]
     
@@ -360,11 +360,11 @@ flowchart TD
 ### 1. Separation of Responsibilities
 ```python
 def extract(source):
-    """Solo extracción"""
+    """Solo extraccion"""
     return pd.read_csv(source)
 
 def transform(df):
-    """Solo transformación"""
+    """Solo transformacion"""
     df = df.dropna()
     df = df.drop_duplicates()
     return df
@@ -417,14 +417,14 @@ def process_data(df):
 ### 4. Validation at Every Step
 ```python
 def validate_and_transform(df):
-    # Validar antes
-    assert len(df) > 0, "DataFrame vacío"
+    # Validate antes
+    assert len(df) > 0, "Empty DataFrame"
     assert 'id' in df.columns, "Columna 'id' faltante"
     
     # Transformar
     df = transform(df)
     
-    # Validar después
+    # Validate despues
     assert df['id'].nunique() == len(df), "IDs duplicados"
     assert df['precio'].min() >= 0, "Precios negativos"
     

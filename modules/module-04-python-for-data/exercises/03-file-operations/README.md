@@ -1,11 +1,11 @@
-# Ejercicio 03: File Operations
+# Exercise 03: File Operations
 
-## Objetivos de Aprendizaje
+## Learning Objectives
 
 After completing this exercise, you will be able to:
 
-1. ✅ Leer y escribir archivos **CSV** con pandas
-2. ✅ Manipular archivos **JSON** (simple y anidado)
+1. ✅ Leer y escribir files **CSV** con pandas
+2. ✅ Manipular files **JSON** (simple y anidado)
 3. ✅ Trabajar con formato **Parquet** (columnr)
 4. ✅ Usar **context managers** (`with` statement)
 5. ✅ Manejar errores de I/O correctamente
@@ -18,14 +18,14 @@ After completing this exercise, you will be able to:
 
 ```python
 # ❌ Sin context manager (mal)
-archivo = open("datos.txt", "r")
-contenido = archivo.read()
-archivo.close()  # Fácil de olvidar
+file = open("data.txt", "r")
+contenido = file.read()
+file.close()  # Facil de olvidar
 
 # ✅ Con context manager (bien)
-with open("datos.txt", "r") as archivo:
-    contenido = archivo.read()
-# Se cierra automáticamente
+with open("data.txt", "r") as file:
+    contenido = file.read()
+# Se cierra automaticamente
 ```
 
 **Beneficios**:
@@ -39,13 +39,13 @@ with open("datos.txt", "r") as archivo:
 import pandas as pd
 
 # Leer CSV
-df = pd.read_csv("datos.csv")
+df = pd.read_csv("data.csv")
 
 # Leer con opciones
 df = pd.read_csv(
-    "datos.csv",
+    "data.csv",
     sep=",",           # Separador
-    encoding="utf-8",  # Codificación
+    encoding="utf-8",  # Codificacion
     na_values=["N/A", "null"],  # Valores nulos
     parse_dates=["fecha"]  # Parsear fechas
 )
@@ -60,16 +60,16 @@ df.to_csv("salida.csv", index=False)
 import json
 
 # Leer JSON
-with open("datos.json", "r") as f:
-    datos = json.load(f)
+with open("data.json", "r") as f:
+    data = json.load(f)
 
 # Escribir JSON
 with open("salida.json", "w") as f:
-    json.dump(datos, f, indent=2, ensure_ascii=False)
+    json.dump(data, f, indent=2, ensure_ascii=False)
 
 # JSON con pandas
-df = pd.read_json("datos.json")
-df = pd.read_json("datos.json", orient="records")  # Lista de objetos
+df = pd.read_json("data.json")
+df = pd.read_json("data.json", orient="records")  # Lista de objetos
 ```
 
 ### Parquet
@@ -78,26 +78,26 @@ df = pd.read_json("datos.json", orient="records")  # Lista de objetos
 import pandas as pd
 
 # Leer Parquet
-df = pd.read_parquet("datos.parquet")
+df = pd.read_parquet("data.parquet")
 
 # Escribir Parquet
 df.to_parquet("salida.parquet", compression="snappy")
 ```
 
-**Ventajas de Parquet**:
+**Advantages de Parquet**:
 - columnr format (more efficient)
 - Integrated compression
-- Preserva tipos de datos
+- Preserva tipos de data
 - Faster than CSV for reading
 
 ### Manejo de Errores
 
 ```python
 try:
-    with open("archivo.txt", "r") as f:
+    with open("file.txt", "r") as f:
         contenido = f.read()
 except FileNotFoundError:
-    print("Archivo no encontrado")
+    print("File no encontrado")
 except PermissionError:
     print("Sin permisos para leer")
 except Exception as e:
@@ -106,7 +106,7 @@ except Exception as e:
 
 ---
 
-## Ejercicios
+## Exercises
 
 Usa los datasets generados en `data/raw/`:
 - `customers.csv` (10,000 registros)
@@ -117,7 +117,7 @@ Usa los datasets generados en `data/raw/`:
 
 ### 1. leer_csv(ruta) ⭐
 
-Lee un archivo CSV y retorna un DataFrame.
+Lee un file CSV y retorna un DataFrame.
 
 ```python
 df = leer_csv("data/raw/customers.csv")
@@ -137,21 +137,21 @@ assert os.path.exists("output.csv")
 
 ### 3. leer_json(ruta) ⭐⭐
 
-Lee un archivo JSON y retorna dict/list.
+Lee un file JSON y retorna dict/list.
 
 ```python
-datos = leer_json("data/raw/orders.json")
-assert isinstance(datos, list)
-assert len(datos) == 50000
+data = leer_json("data/raw/orders.json")
+assert isinstance(data, list)
+assert len(data) == 50000
 ```
 
-### 4. escribir_json(datos, ruta) ⭐⭐
+### 4. escribir_json(data, ruta) ⭐⭐
 
-Escribe datos a JSON con formato legible.
+Escribe data a JSON con formato legible.
 
 ```python
-datos = {"nombre": "Ana", "edad": 25}
-escribir_json(datos, "output.json")
+data = {"nombre": "Ana", "edad": 25}
+escribir_json(data, "output.json")
 ```
 
 ### 5. csv_a_parquet(csv_path, parquet_path) ⭐⭐
@@ -164,7 +164,7 @@ csv_a_parquet("data/raw/products.csv", "data/processed/products.parquet")
 
 ### 6. contar_registros(ruta) ⭐⭐
 
-Cuenta registros en archivo CSV/JSON.
+Cuenta registros en file CSV/JSON.
 
 ```python
 assert contar_registros("data/raw/customers.csv") == 10000
@@ -223,13 +223,13 @@ json_a_csv_plano("data/raw/orders.json", "orders_flat.csv")
 ## Execution
 
 ```bash
-# Ejecutar tests
+# Run tests
 pytest exercises/03-file-operations/tests/ -v
 
 # Con coverage
 pytest exercises/03-file-operations/tests/ --cov
 
-# Test específico
+# Test especifico
 pytest exercises/03-file-operations/tests/test_file_io.py::test_leer_csv -v
 ```
 
@@ -237,11 +237,11 @@ pytest exercises/03-file-operations/tests/test_file_io.py::test_leer_csv -v
 
 ## Tips
 
-1. **Context managers**: Siempre usa `with` para archivos
+1. **Context managers**: Siempre usa `with` para files
 2. **Encoding**: Especifica UTF-8 para evitar problemas
-3. **Chunks**: Para archivos grandes, procesa por chunks
+3. **Chunks**: Para files grandes, procesa por chunks
 4. **Validation**: Verify that the file exists before reading
-5. **Cleanup**: Borra archivos temporales en tests
+5. **Cleanup**: Borra files temporales en tests
 
 ---
 
@@ -253,6 +253,6 @@ pytest exercises/03-file-operations/tests/test_file_io.py::test_leer_csv -v
 
 ---
 
-## Siguiente Paso
+## Next Step
 
-Una vez completado: ➡️ **Ejercicio 04: Pandas Fundamentals**
+Una vez completed: ➡️ **Exercise 04: Pandas Fundamentals**

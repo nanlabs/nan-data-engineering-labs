@@ -1,6 +1,6 @@
-# Ejercicio 01: Python Basics
+# Exercise 01: Python Basics
 
-## Objetivos de Aprendizaje
+## Learning Objectives
 
 After completing this exercise, you will be able to:
 
@@ -18,11 +18,11 @@ After completing this exercise, you will be able to:
 
 ```python
 def suma(a: int, b: int) -> int:
-    """Suma dos números enteros."""
+    """Suma dos numeros enteros."""
     return a + b
 
 def procesar_nombre(nombre: str) -> str:
-    """Convierte nombre a mayúsculas."""
+    """Convierte nombre a mayusculas."""
     return nombre.upper()
 
 # Con tipos opcionales
@@ -37,7 +37,7 @@ def buscar_usuario(id: int) -> Optional[dict]:
 **Why they are important**:
 - Improve code readability
 - Allow error detection with mypy
-- Facilitan autocompletado en IDEs
+- Facilitan autocompleted en IDEs
 - Documentan contratos de funciones
 
 ### Docstrings (Google Style)
@@ -45,23 +45,23 @@ def buscar_usuario(id: int) -> Optional[dict]:
 ```python
 def calcular_promedio(numeros: list[float]) -> float:
     """
-    Calcula el promedio de una lista de números.
+    Calcula el promedio de una lista de numeros.
     
     Args:
-        numeros: Lista de números flotantes.
+        numeros: Lista de numeros flotantes.
         
     Returns:
         El promedio como float.
         
     Raises:
-        ValueError: Si la lista está vacía.
+        ValueError: Si la lista esta vacia.
         
     Example:
         >>> calcular_promedio([1.0, 2.0, 3.0])
         2.0
     """
     if not numeros:
-        raise ValueError("La lista no puede estar vacía")
+        raise ValueError("La lista no puede estar vacia")
     return sum(numeros) / len(numeros)
 ```
 
@@ -75,7 +75,7 @@ if edad >= 18:
 elif edad >= 13:
     print("Adolescente")
 else:
-    print("Niño")
+    print("Nino")
 
 # Ternario (inline if)
 estado = "activo" if edad >= 18 else "inactivo"
@@ -104,7 +104,7 @@ nombre = obtener_nombre()
 if nombre is not None:
     print(nombre.upper())
 
-# Aún mejor ✅
+# Aun mejor ✅
 nombre = obtener_nombre()
 if nombre:  # Truthy check
     print(nombre.upper())
@@ -112,7 +112,7 @@ if nombre:  # Truthy check
 
 ---
 
-## Ejercicios
+## Exercises
 
 Implementa las siguientes funciones en `starter/basics.py`.
 
@@ -199,15 +199,15 @@ assert fibonacci(5) == [0, 1, 1, 2, 3]
 assert fibonacci(10) == [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
 ```
 
-### 9. validar_email(email) ⭐⭐⭐
+### 9. validate_email(email) ⭐⭐⭐
 
 Validates basic email format (contains @ and .).
 
 ```python
-assert validar_email("user@example.com") == True
-assert validar_email("invalid.email") == False
-assert validar_email("no@domain") == False
-assert validar_email(None) == False
+assert validate_email("user@example.com") == True
+assert validate_email("invalid.email") == False
+assert validate_email("no@domain") == False
+assert validate_email(None) == False
 ```
 
 ### 10. calcular_promedio(numeros) ⭐⭐
@@ -217,7 +217,7 @@ Calculates the average of a list of numbers.
 ```python
 assert calcular_promedio([1, 2, 3, 4, 5]) == 3.0
 assert calcular_promedio([10]) == 10.0
-# Debe manejar lista vacía
+# Debe manejar lista vacia
 ```
 
 ---
@@ -225,13 +225,13 @@ assert calcular_promedio([10]) == 10.0
 ## Execution
 
 ```bash
-# Ejecutar tests
+# Run tests
 pytest exercises/01-python-basics/tests/ -v
 
 # Con coverage
 pytest exercises/01-python-basics/tests/ --cov=exercises.01-python-basics.starter
 
-# Ejecutar un test específico
+# Run un test especifico
 pytest exercises/01-python-basics/tests/test_basics.py::test_suma -v
 ```
 
@@ -255,6 +255,6 @@ pytest exercises/01-python-basics/tests/test_basics.py::test_suma -v
 
 ---
 
-## Siguiente Paso
+## Next Step
 
-Una vez completado: ➡️ **Ejercicio 02: Data Structures**
+Una vez completed: ➡️ **Exercise 02: Data Structures**

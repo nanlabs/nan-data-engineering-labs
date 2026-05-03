@@ -4,18 +4,18 @@
 
 This directory contains visual resources and quick references designed to facilitate learning and query while working with Python for Data Engineering.
 
-## 📂 Estructura de Assets
+## 📂 Structure de Assets
 
 ```
 assets/
-├── README.md                          # Este archivo
-├── cheatsheets/                       # Hojas de referencia rápida
+├── README.md                          # Este file
+├── cheatsheets/                       # Hojas de referencia quick
 │   ├── python-basics.md              # Fundamentos de Python
 │   ├── pandas-reference.md           # Operaciones de Pandas
-│   ├── data-cleaning.md              # Limpieza de datos
-│   └── file-formats.md               # Formatos de archivo
+│   ├── data-cleaning.md              # Cleaning de data
+│   └── file-formats.md               # Formatos de file
 └── diagrams/                          # Diagramas y flujos
-    ├── data-flow.md                  # Flujos de datos ETL
+    ├── data-flow.md                  # Flujos de data ETL
     └── pandas-operations.md          # Operaciones de Pandas
 ```
 
@@ -24,15 +24,15 @@ assets/
 The assets are designed to:
 
 1. **Quick query**: Find common syntax and patterns without searching the documentation
-2. **Referencia Visual**: Entender flujos de datos y transformaciones mediante diagramas
-3. **Aprendizaje Activo**: Tener ejemplos concretos al alcance durante los ejercicios
+2. **Referencia Visual**: Entender flujos de data y transformaciones mediante diagramas
+3. **Active Learning**: Tener ejemplos concretos al alcance during exercises
 4. **Troubleshooting**: Quick Guides to Common Errors and Best Practices
 
 ## 📝 Cheatsheets Disponibles
 
 ### 1. Python Basics (`cheatsheets/python-basics.md`)
-- Variables y tipos de datos
-- Estructuras de control (if/for/while)
+- Variables y tipos de data
+- Structures de control (if/for/while)
 - Funciones y lambdas
 - Comprehensions
 - Manejo de strings y colecciones
@@ -82,10 +82,10 @@ The assets are designed to:
 
 ## 🎨 How to Use Cheatsheets
 
-### Durante los Ejercicios
+### Durante los Exercises
 ```bash
-# Abre el cheatsheet relevante en una pestaña del editor
-# Mantén el cheatsheet visible mientras trabajas en el ejercicio
+# Abre el cheatsheet relevante en una pestana del editor
+# Keep the cheatsheet visible while working on the exercise
 ```
 
 ### As a Quick Reference
@@ -111,7 +111,7 @@ The diagrams are written in **Mermaid**, a diagramming language that renders in 
 
 ### Para Principiantes
 1. Comienza con `python-basics.md` para refrescar conceptos
-2. Usa `data-flow.md` para entender el objetivo final
+2. Usa `data-flow.md` para understand the final goal
 3. query specific cheatsheets when you need them
 
 ### Para Usuarios Intermedios
@@ -127,7 +127,7 @@ The diagrams are written in **Mermaid**, a diagramming language that renders in 
 ## 🔄 Actualizaciones
 
 Assets are periodically updated to include:
-- Nuevos patrones descubiertos durante los ejercicios
+- Nuevos patrones descubiertos during exercises
 - Mejoras en diagramas basadas en feedback
 - Errores comunes reportados por estudiantes
 - Industry best practices

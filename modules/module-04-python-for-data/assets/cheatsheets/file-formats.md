@@ -22,47 +22,47 @@
 ```python
 import pandas as pd
 
-# Básico
-df = pd.read_csv('datos.csv')
+# Basico
+df = pd.read_csv('data.csv')
 
 # Con opciones
 df = pd.read_csv(
-    'datos.csv',
+    'data.csv',
     sep=',',                    # Delimitador (';' en Europa)
     encoding='utf-8',           # Encoding (utf-8, latin1)
     header=0,                   # Fila con nombres de columnas
     names=['col1', 'col2'],     # Nombres personalizados
-    dtype={'edad': int},        # Tipos de datos explícitos
+    dtype={'edad': int},        # Tipos de data explicitos
     parse_dates=['fecha'],      # Parsear como fecha
     na_values=['N/A', 'null'],  # Valores a considerar como null
     thousands=',',              # Separador de miles
     decimal='.',                # Separador decimal
-    usecols=['col1', 'col2'],   # Solo leer columnas específicas
+    usecols=['col1', 'col2'],   # Solo leer columnas especificas
     nrows=1000,                 # Leer solo N filas
     skiprows=5,                 # Saltar primeras N filas
     low_memory=False            # Inferir tipos correctamente
 )
 
-# Leer en chunks (archivos grandes)
+# Leer en chunks (files grandes)
 chunk_size = 10000
-for chunk in pd.read_csv('datos_grandes.csv', chunksize=chunk_size):
+for chunk in pd.read_csv('data_grandes.csv', chunksize=chunk_size):
     process(chunk)
 ```
 
 ### Escritura
 ```python
-# Básico
+# Basico
 df.to_csv('output.csv', index=False)
 
 # Con opciones
 df.to_csv(
     'output.csv',
-    index=False,                # No incluir índice
+    index=False,                # No incluir index
     sep=',',                    # Delimitador
     encoding='utf-8',           # Encoding
     header=True,                # Incluir nombres de columnas
-    columns=['col1', 'col2'],   # Solo columnas específicas
-    na_rep='NULL',              # Representación de nulls
+    columns=['col1', 'col2'],   # Solo columnas especificas
+    na_rep='NULL',              # Representacion de nulls
     float_format='%.2f',        # Formato de floats
     date_format='%Y-%m-%d',     # Formato de fechas
     quoting=csv.QUOTE_NONNUMERIC,  # Entrecomillar non-numeric
@@ -73,16 +73,16 @@ df.to_csv(
 ### Problemas Comunes
 ```python
 # 1. Encoding incorrecto
-df = pd.read_csv('datos.csv', encoding='latin1')  # Prueba diferentes encodings
+df = pd.read_csv('data.csv', encoding='latin1')  # Prueba diferentes encodings
 
 # 2. Delimitador incorrecto
-df = pd.read_csv('datos.csv', sep=';')  # Europa usa ';'
+df = pd.read_csv('data.csv', sep=';')  # Europa usa ';'
 
 # 3. Decimal incorrecto
-df = pd.read_csv('datos.csv', decimal=',')  # Europa usa ','
+df = pd.read_csv('data.csv', decimal=',')  # Europa usa ','
 
 # 4. Tipos inferidos mal
-df = pd.read_csv('datos.csv', dtype={'codigo': str})  # '001' sería int sin esto
+df = pd.read_csv('data.csv', dtype={'codigo': str})  # '001' seria int sin esto
 ```
 
 ## 📋 JSON (JavaScript Object Notation)
@@ -105,7 +105,7 @@ df = pd.read_csv('datos.csv', dtype={'codigo': str})  # '001' sería int sin est
 
 ```python
 # Leer
-df = pd.read_json('datos.json', orient='records')
+df = pd.read_json('data.json', orient='records')
 
 # Escribir
 df.to_json('output.json', orient='records', indent=2)
@@ -121,7 +121,7 @@ df.to_json('output.json', orient='records', indent=2)
 ```
 
 ```python
-df = pd.read_json('datos.json', orient='columns')
+df = pd.read_json('data.json', orient='columns')
 df.to_json('output.json', orient='columns')
 ```
 
@@ -135,16 +135,16 @@ df.to_json('output.json', orient='columns')
 
 ### Lectura
 ```python
-# Básico
-df = pd.read_json('datos.json')
+# Basico
+df = pd.read_json('data.json')
 
 # Con opciones
 df = pd.read_json(
-    'datos.json',
-    orient='records',           # Orientación
+    'data.json',
+    orient='records',           # Orientacion
     typ='frame',                # 'frame' o 'series'
     encoding='utf-8',
-    lines=True,                 # JSON Lines (un objeto por línea)
+    lines=True,                 # JSON Lines (un objeto por linea)
     compression='gzip'
 )
 
@@ -155,7 +155,7 @@ data = [
     {
         "id": 1,
         "nombre": "Ana",
-        "direccion": {"ciudad": "Madrid", "pais": "España"}
+        "direccion": {"ciudad": "Madrid", "pais": "Espana"}
     }
 ]
 
@@ -165,29 +165,29 @@ df = json_normalize(data, sep='_')
 
 ### Escritura
 ```python
-# Básico
+# Basico
 df.to_json('output.json', orient='records', indent=2)
 
 # JSON Lines (eficiente para streaming)
 df.to_json('output.jsonl', orient='records', lines=True)
 
-# Con compresión
+# Con compresion
 df.to_json('output.json.gz', orient='records', compression='gzip')
 ```
 
 ### JSON Anidado Complejo
 ```python
-# Cargar JSON complejo
+# Loadr JSON complejo
 import json
 
 with open('complejo.json', 'r') as f:
     data = json.load(f)
 
-# Normalizar niveles específicos
+# Normalizar specific levels
 df = json_normalize(
     data,
     record_path=['orders'],          # Path a los registros
-    meta=['customer_id', 'name'],    # Campos del nivel superior
+    meta=['customer_id', 'name'],    # Top-level fields
     meta_prefix='customer_',         # Prefijo para campos meta
     sep='_'
 )
@@ -205,9 +205,9 @@ df = json_normalize(
 
 #### 1. Compression
 ```python
-# Comparación de tamaño
-df.to_csv('datos.csv', index=False)         # 100 MB
-df.to_parquet('datos.parquet')              # 15 MB (85% menos!)
+# Comparacion de tamano
+df.to_csv('data.csv', index=False)         # 100 MB
+df.to_parquet('data.parquet')              # 15 MB (85% menos!)
 ```
 
 #### 2. Velocidad
@@ -216,78 +216,78 @@ import time
 
 # CSV
 start = time.time()
-df = pd.read_csv('datos.csv')
+df = pd.read_csv('data.csv')
 print(f"CSV: {time.time() - start:.2f}s")   # ~10s
 
 # Parquet
 start = time.time()
-df = pd.read_parquet('datos.parquet')
-print(f"Parquet: {time.time() - start:.2f}s")  # ~2s (5x más rápido!)
+df = pd.read_parquet('data.parquet')
+print(f"Parquet: {time.time() - start:.2f}s")  # ~2s (5x mas quick!)
 ```
 
 #### 3. Type Preservation
 ```python
 # CSV pierde tipos
-df.to_csv('datos.csv', index=False)
-df_csv = pd.read_csv('datos.csv')
+df.to_csv('data.csv', index=False)
+df_csv = pd.read_csv('data.csv')
 # fecha: object (string), edad: int64 o float64 (ambiguo)
 
 # Parquet preserva tipos exactos
-df.to_parquet('datos.parquet')
-df_parquet = pd.read_parquet('datos.parquet')
+df.to_parquet('data.parquet')
+df_parquet = pd.read_parquet('data.parquet')
 # fecha: datetime64, edad: int32 (exacto)
 ```
 
 ### Lectura
 ```python
-# Básico
-df = pd.read_parquet('datos.parquet')
+# Basico
+df = pd.read_parquet('data.parquet')
 
 # Con opciones
 df = pd.read_parquet(
-    'datos.parquet',
-    engine='pyarrow',           # 'pyarrow' (rápido) o 'fastparquet'
-    columns=['col1', 'col2'],   # Solo leer columnas específicas (eficiente!)
+    'data.parquet',
+    engine='pyarrow',           # 'pyarrow' (quick) o 'fastparquet'
+    columns=['col1', 'col2'],   # Solo leer columnas especificas (eficiente!)
     filters=[('edad', '>', 25)]  # Filtros pushdown (muy eficiente)
 )
 
 # Leer desde S3/Cloud
-df = pd.read_parquet('s3://bucket/datos.parquet')
+df = pd.read_parquet('s3://bucket/data.parquet')
 ```
 
 ### Escritura
 ```python
-# Básico
+# Basico
 df.to_parquet('output.parquet', index=False)
 
 # Con opciones
 df.to_parquet(
     'output.parquet',
     engine='pyarrow',
-    compression='snappy',       # 'snappy' (rápido), 'gzip' (más compacto), 'lz4', 'brotli'
+    compression='snappy',       # 'snappy' (quick), 'gzip' (mas compacto), 'lz4', 'brotli'
     index=False
 )
 
 # Particionado (para datasets muy grandes)
 df.to_parquet(
     'output.parquet',
-    partition_cols=['año', 'mes']  # Crea estructura: año=2024/mes=01/data.parquet
+    partition_cols=['ano', 'mes']  # Crea estructura: ano=2024/mes=01/data.parquet
 )
 ```
 
 ### Comparative Compression
 ```python
-# Sin compresión
+# Sin compresion
 df.to_parquet('sin_comp.parquet', compression=None)      # 50 MB
 
 # Snappy (default, balanceado)
-df.to_parquet('snappy.parquet', compression='snappy')    # 15 MB, rápido
+df.to_parquet('snappy.parquet', compression='snappy')    # 15 MB, quick
 
-# Gzip (máxima compresión)
-df.to_parquet('gzip.parquet', compression='gzip')        # 10 MB, más lento
+# Gzip (maxima compresion)
+df.to_parquet('gzip.parquet', compression='gzip')        # 10 MB, mas lento
 
-# LZ4 (muy rápido)
-df.to_parquet('lz4.parquet', compression='lz4')          # 18 MB, muy rápido
+# LZ4 (muy quick)
+df.to_parquet('lz4.parquet', compression='lz4')          # 18 MB, muy quick
 ```
 
 ## 📊 Excel (XLS/XLSX)
@@ -300,31 +300,31 @@ df.to_parquet('lz4.parquet', compression='lz4')          # 18 MB, muy rápido
 
 ### Lectura
 ```python
-# Básico
-df = pd.read_excel('datos.xlsx')
+# Basico
+df = pd.read_excel('data.xlsx')
 
 # Con opciones
 df = pd.read_excel(
-    'datos.xlsx',
-    sheet_name='Hoja1',         # Nombre o índice de la hoja
+    'data.xlsx',
+    sheet_name='Hoja1',         # Nombre o index de la hoja
     header=0,                   # Fila con nombres de columnas
-    usecols='A:C',              # Columnas específicas (A:C o [0,1,2])
+    usecols='A:C',              # Columnas especificas (A:C o [0,1,2])
     skiprows=2,                 # Saltar filas
     nrows=100                   # Leer solo N filas
 )
 
-# Leer múltiples sheets
-sheets = pd.read_excel('datos.xlsx', sheet_name=None)  # Dict de DataFrames
+# Leer multiples sheets
+sheets = pd.read_excel('data.xlsx', sheet_name=None)  # Dict de DataFrames
 for sheet_name, df in sheets.items():
     print(f"Sheet: {sheet_name}, Filas: {len(df)}")
 ```
 
 ### Escritura
 ```python
-# Básico
-df.to_excel('output.xlsx', index=False, sheet_name='Datos')
+# Basico
+df.to_excel('output.xlsx', index=False, sheet_name='Data')
 
-# Múltiples sheets
+# Multiples sheets
 with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
     df1.to_excel(writer, sheet_name='Ventas', index=False)
     df2.to_excel(writer, sheet_name='Productos', index=False)
@@ -332,10 +332,10 @@ with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
 
 # Con formato (requiere openpyxl o xlsxwriter)
 writer = pd.ExcelWriter('formatted.xlsx', engine='xlsxwriter')
-df.to_excel(writer, sheet_name='Datos', index=False)
+df.to_excel(writer, sheet_name='Data', index=False)
 
 workbook = writer.book
-worksheet = writer.sheets['Datos']
+worksheet = writer.sheets['Data']
 format = workbook.add_format({'bold': True, 'bg_color': '#D7E4BD'})
 worksheet.set_row(0, None, format)  # Formatear header
 
@@ -347,27 +347,27 @@ writer.close()
 ### CSV → Parquet
 ```python
 # Simple
-df = pd.read_csv('datos.csv')
-df.to_parquet('datos.parquet', index=False)
+df = pd.read_csv('data.csv')
+df.to_parquet('data.parquet', index=False)
 
-# En chunks (archivos muy grandes)
+# En chunks (files muy grandes)
 writer = None
-for chunk in pd.read_csv('datos_grandes.csv', chunksize=100000):
+for chunk in pd.read_csv('data_grandes.csv', chunksize=100000):
     if writer is None:
-        writer = pq.ParquetWriter('datos.parquet', chunk.to_arrow().schema)
+        writer = pq.ParquetWriter('data.parquet', chunk.to_arrow().schema)
     writer.write_table(chunk.to_arrow())
 writer.close()
 ```
 
 ### JSON → Parquet
 ```python
-df = pd.read_json('datos.json', orient='records')
-df.to_parquet('datos.parquet', index=False)
+df = pd.read_json('data.json', orient='records')
+df.to_parquet('data.parquet', index=False)
 ```
 
 ### Parquet → CSV (para reportes)
 ```python
-df = pd.read_parquet('datos.parquet')
+df = pd.read_parquet('data.parquet')
 df.to_csv('reporte.csv', index=False)
 ```
 
@@ -376,16 +376,16 @@ df.to_csv('reporte.csv', index=False)
 ### Decision Flow
 ```
 ¿Necesitas compatibilidad universal?
-├─ SÍ → CSV
+├─ YES → CSV
 └─ NO
-    ├─ ¿Datos anidados/jerárquicos?
-    │   ├─ SÍ → JSON
+    ├─ ¿Data anidados/jerarquicos?
+    │   ├─ YES → JSON
     │   └─ NO
     │       ├─ ¿Dataset grande (>1 GB)?
-    │       │   ├─ SÍ → PARQUET
+    │       │   ├─ YES → PARQUET
     │       │   └─ NO
     │       │       ├─ ¿Para usuario de negocio?
-    │       │       │   ├─ SÍ → EXCEL
+    │       │       │   ├─ YES → EXCEL
     │       │       │   └─ NO → CSV o PARQUET
 ```
 
@@ -418,7 +418,7 @@ report.to_excel('reporte_mensual.xlsx', sheet_name='Resumen')
 #### 3. API Response
 ```python
 # Leer desde almacenamiento eficiente
-df = pd.read_parquet('datos.parquet', columns=['id', 'nombre', 'valor'])
+df = pd.read_parquet('data.parquet', columns=['id', 'nombre', 'valor'])
 
 # Filtrar
 df = df[df['valor'] > 100]
@@ -432,8 +432,8 @@ return df.to_json(orient='records')
 ### S3 (AWS)
 ```python
 # Leer
-df = pd.read_parquet('s3://my-bucket/datos.parquet')
-df = pd.read_csv('s3://my-bucket/datos.csv')
+df = pd.read_parquet('s3://my-bucket/data.parquet')
+df = pd.read_csv('s3://my-bucket/data.csv')
 
 # Escribir
 df.to_parquet('s3://my-bucket/output.parquet')
@@ -442,7 +442,7 @@ df.to_parquet('s3://my-bucket/output.parquet')
 ### Google Cloud Storage
 ```python
 # Leer
-df = pd.read_parquet('gs://my-bucket/datos.parquet')
+df = pd.read_parquet('gs://my-bucket/data.parquet')
 
 # Escribir
 df.to_parquet('gs://my-bucket/output.parquet')
@@ -467,8 +467,8 @@ df.to_parquet('gs://my-bucket/output.parquet')
 2. **Intercambio externo**: Usa **CSV** (universal)
 3. **APIs**: Use **JSON** (web standard)
 4. **Reportes**: Usa **Excel** (usuarios de negocio)
-5. **Datos anidados**: Usa **JSON** o **Parquet**
-6. **Archivos grandes**: Usa **Parquet** con particionado
+5. **Data anidados**: Usa **JSON** o **Parquet**
+6. **Files grandes**: Usa **Parquet** con particionado
 7. **Compression**:
    - Parquet: `snappy` (balanceado)
    - CSV: `.csv.gz` si es necesario
@@ -476,5 +476,5 @@ df.to_parquet('gs://my-bucket/output.parquet')
 
 ---
 
-**Siguiente**: Ver [diagramas](../diagrams/) para visualizar flujos de datos
+**Siguiente**: Ver [diagramas](../diagrams/) para visualizar flujos de data
 

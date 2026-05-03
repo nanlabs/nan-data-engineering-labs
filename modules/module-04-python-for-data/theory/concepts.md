@@ -49,11 +49,11 @@ Python has become the dominant language for data engineering thanks to its clear
 
 | Aspecto | Data Engineering | Data Science |
 |---------|------------------|--------------|
-| **Objetivo** | Mover y transformar datos a escala | Extraer insights y models |
+| **Objective** | Mover y transformar data a escala | Extraer insights y models |
 | **Focus** | Robust and scalable pipelines | Exploration and experimentation |
 | **Herramientas** | Airflow, Spark, Kafka, dbt | Jupyter, scikit-learn, TensorFlow |
 | **Priority** | reliability, performance | Model precision |
-| **Output** | Datos limpios y estructurados | Modelos y visualizaciones |
+| **Output** | Data limpios y estructurados | Modelos y visualizaciones |
 | **Testing** | Unit tests, integration tests | Model validation |
 
 ### Principios Core
@@ -81,22 +81,22 @@ Python has become the dominant language for data engineering thanks to its clear
 ### Basic Syntax
 
 ```python
-# Variables (sin declaración de tipo)
+# Variables (without type declaration)
 nombre = "Pipeline ETL"
 num_registros = 1000000
 tasa_error = 0.001
 activo = True
 
-# Tipos dinámicos
+# Dynamic types
 valor = 42        # int
 valor = "texto"   # ahora es str
 valor = [1, 2, 3] # ahora es list
 
-# Indentación (4 espacios estándar)
+# Indentation (standard 4 spaces)
 if activo:
     print("Pipeline activo")    # 4 espacios
     if num_registros > 0:
-        print("Datos disponibles")  # 8 espacios
+        print("Data disponibles")  # 8 espacios
 ```
 
 ### Convenciones de Nombres (PEP 8)
@@ -104,7 +104,7 @@ if activo:
 ```python
 # Variables y funciones: snake_case
 numero_registros = 1000
-def procesar_datos():
+def procesar_data():
     pass
 
 # Constantes: UPPER_CASE
@@ -115,7 +115,7 @@ DATABASE_URL = "postgresql://..."
 class DataPipeline:
     pass
 
-# Módulos: lowercase
+# Modules: lowercase
 import data_processor
 from utils import helper_functions
 ```
@@ -123,31 +123,31 @@ from utils import helper_functions
 ### Comentarios y Docstrings
 
 ```python
-# Comentario de una línea
+# Single-line comment
 
 """
-Comentario multi-línea
-para documentación extensa
+Multi-line comment
+para documentation extensa
 """
 
-def extraer_datos(fuente: str, fecha: str) -> list:
+def extract_data(fuente: str, fecha: str) -> list:
     """
-    Extrae datos de una fuente específica para una fecha dada.
+    Extracts data from a specific source for a given date.
     
     Args:
-        fuente: Nombre de la fuente de datos (ej: 'api', 'database', 's3')
+        fuente: Nombre de la fuente de data (ej: 'api', 'database', 's3')
         fecha: Fecha en formato YYYY-MM-DD
         
     Returns:
-        Lista de diccionarios con los datos extraídos
+        List of dictionaries with extracted data
         
     Raises:
-        ValueError: Si el formato de fecha es inválido
+        ValueError: If the date format is invalid
         ConnectionError: Si no se puede conectar a la fuente
         
     Example:
-        >>> datos = extraer_datos('api', '2026-02-01')
-        >>> print(len(datos))
+        >>> data = extract_data('api', '2026-02-01')
+        >>> print(len(data))
         1523
     """
     pass
@@ -155,17 +155,17 @@ def extraer_datos(fuente: str, fecha: str) -> list:
 
 ---
 
-## Tipos de Datos
+## Tipos de Data
 
 ### Tipos Primitivos
 
 #### Numbers
 
 ```python
-# Integers (int) - Precisión arbitraria
+# Integers (int) - Arbitrary precision
 num_registros = 1_000_000_000  # Underscores para legibilidad
 id_usuario = 42
-potencia = 2 ** 64  # Python maneja enteros grandes automáticamente
+potencia = 2 ** 64  # Python handles large integers automatically
 
 # Operaciones
 suma = 10 + 5        # 15
@@ -181,7 +181,7 @@ tasa_conversion = 0.045
 precio = 19.99
 cientifico = 1.23e-4  # 0.000123
 
-# Cuidado con precisión
+# Be careful with precision
 print(0.1 + 0.2)  # 0.30000000000000004
 # Usar Decimal para dinero:
 from decimal import Decimal
@@ -191,11 +191,11 @@ precio = Decimal('19.99')
 #### Strings
 
 ```python
-# Definición
+# Definition
 simple = 'hola'
 doble = "mundo"
 multi = """Texto
-multi-línea"""
+multi-line"""
 
 # Inmutables
 texto = "Python"
@@ -212,7 +212,7 @@ valor = 1234.5678
 print(f"{valor:,.2f}")  # "1,234.57"
 print(f"{valor:>10.2f}")  # "   1234.57" (right-align)
 
-# Métodos útiles
+# Useful methods
 texto = "  Data Engineering  "
 texto.strip()           # "Data Engineering"
 texto.lower()           # "  data engineering  "
@@ -232,7 +232,7 @@ texto.isdigit()         # False
 ```python
 # Valores
 activo = True
-completado = False
+completed = False
 
 # Operadores
 resultado = True and False  # False
@@ -257,7 +257,7 @@ bool(None)            # False
 # Short-circuit evaluation
 valor = None
 resultado = valor or "default"  # "default"
-resultado = valor and "nunca"   # None (no evalúa "nunca")
+resultado = valor and "never"   # None (no evalua "never")
 ```
 
 #### None
@@ -266,22 +266,22 @@ resultado = valor and "nunca"   # None (no evalúa "nunca")
 # Representa ausencia de valor
 resultado = None
 
-# Verificación
+# Verification
 if resultado is None:
     print("Sin resultado")
     
 # NO usar == para None
-if resultado == None:  # ❌ Funciona pero no es idiomático
+if resultado == None:  # ❌ Works but is not idiomatic
     pass
     
 if resultado is None:  # ✅ Forma correcta
     pass
 
-# Uso común: valores por defecto
-def procesar(datos=None):
-    if datos is None:
-        datos = []
-    return len(datos)
+# Common use: default values
+def procesar(data=None):
+    if data is None:
+        data = []
+    return len(data)
 ```
 
 ### Type Hints (Python 3.5+)
@@ -297,7 +297,7 @@ def procesar_registros(
     """Procesa registros y retorna (procesados, fallidos)"""
     procesados = 0
     fallidos = 0
-    # ... lógica ...
+    # ... logica ...
     return procesados, fallidos
 
 # Variables con tipos
@@ -315,7 +315,7 @@ resultado: Union[str, None] = None
 
 ---
 
-## Estructuras de Datos
+## Structures de Data
 
 ### Listas (Lists)
 
@@ -327,7 +327,7 @@ resultado: Union[str, None] = None
 - Implemented as dynamic arrays
 
 ```python
-# Creación
+# Creation
 registros = [1, 2, 3, 4, 5]
 mixto = [1, "texto", True, None, [1, 2]]
 vacia = []
@@ -339,19 +339,19 @@ ultimo = registros[-1]           # 5
 slice = registros[1:4]           # [2, 3, 4]
 reversa = registros[::-1]        # [5, 4, 3, 2, 1]
 
-# Modificación
+# Modification
 registros.append(6)              # [1, 2, 3, 4, 5, 6]
 registros.extend([7, 8])         # [1, 2, 3, 4, 5, 6, 7, 8]
 registros.insert(0, 0)           # [0, 1, 2, 3, 4, 5, 6, 7, 8]
 registros.remove(3)              # Remueve primera ocurrencia de 3
-elemento = registros.pop()       # Remueve y retorna último
+elemento = registros.pop()       # Removes and returns last
 elemento = registros.pop(0)      # Remueve y retorna primero
 
 # Operaciones
-len(registros)                   # Tamaño
+len(registros)                   # Size
 3 in registros                   # True/False
 registros.count(2)               # Cuenta ocurrencias
-registros.index(4)               # Índice de primera ocurrencia
+registros.index(4)               # First occurrence index
 registros.sort()                 # Ordena in-place
 ordenada = sorted(registros)     # Retorna nueva lista ordenada
 registros.reverse()              # Revierte in-place
@@ -359,7 +359,7 @@ registros.reverse()              # Revierte in-place
 # List Comprehensions (muy importante!)
 cuadrados = [x**2 for x in range(10)]
 pares = [x for x in range(20) if x % 2 == 0]
-procesados = [procesar(x) for x in datos if validar(x)]
+procesados = [procesar(x) for x in data if validate(x)]
 ```
 
 ### Tuplas (Tuples)
@@ -372,9 +372,9 @@ procesados = [procesar(x) for x in datos if validar(x)]
 - Pueden usarse como keys en diccionarios
 
 ```python
-# Creación
+# Creation
 coordenadas = (10.5, 20.3)
-resultado = (True, "Éxito", 1234)
+resultado = (True, "Success", 1234)
 singleton = (42,)  # Nota la coma
 vacia = ()
 
@@ -386,7 +386,7 @@ estado, mensaje, codigo = resultado
 # coordenadas[0] = 15  # ❌ Error
 nueva = (15,) + coordenadas[1:]  # ✅ Crear nueva
 
-# Named Tuples (más legibles)
+# Named Tuples (more readable)
 from collections import namedtuple
 
 Registro = namedtuple('Registro', ['id', 'nombre', 'valor'])
@@ -405,7 +405,7 @@ print(reg.nombre)   # "Cliente A"
 - Implementados como hash tables (O(1) lookup)
 
 ```python
-# Creación
+# Creation
 usuario = {
     "id": 123,
     "nombre": "Juan",
@@ -421,13 +421,13 @@ nombre = usuario["nombre"]               # Puede lanzar KeyError
 email = usuario.get("email")             # None si no existe
 telefono = usuario.get("telefono", "")   # Default value
 
-# Modificación
+# Modification
 usuario["edad"] = 30                     # Agregar/actualizar
 usuario.update({"ciudad": "Santiago", "edad": 31})
 del usuario["edad"]                      # Eliminar
 edad = usuario.pop("edad", None)         # Eliminar y retornar
 
-# Iteración
+# Iteration
 for key in usuario:
     print(key)
 
@@ -438,7 +438,7 @@ for value in usuario.values():
     print(value)
 
 # Operaciones
-len(usuario)                             # Número de keys
+len(usuario)                             # Number of keys
 "email" in usuario                       # True
 keys = list(usuario.keys())
 values = list(usuario.values())
@@ -460,10 +460,10 @@ filtrado = {k: v for k, v in usuario.items() if v is not None}
 - Fast set operations
 
 ```python
-# Creación
+# Creation
 numeros = {1, 2, 3, 4, 5}
 letras = set("abracadabra")  # {'a', 'b', 'r', 'c', 'd'}
-vacio = set()  # Nota: {} crea dict vacío!
+vacio = set()  # Note: {} creates empty dict!
 
 # Operaciones
 numeros.add(6)
@@ -486,9 +486,9 @@ a.issubset(b)          # False
 a.issuperset({1, 2})   # True
 a.isdisjoint(b)        # False
 
-# Uso común: deduplicación
-datos_con_duplicados = [1, 2, 2, 3, 3, 3, 4]
-unicos = list(set(datos_con_duplicados))
+# Common use: deduplication
+data_con_duplicados = [1, 2, 2, 3, 3, 3, 4]
+unicos = list(set(data_con_duplicados))
 ```
 
 ---
@@ -498,7 +498,7 @@ unicos = list(set(datos_con_duplicados))
 ### Condicionales
 
 ```python
-# If básico
+# Basic if
 if temperatura > 30:
     print("Calor")
 
@@ -508,17 +508,17 @@ if temperatura > 30:
 elif temperatura > 20:
     print("Templado")
 else:
-    print("Frío")
+    print("Cold")
 
-# Expresión ternaria
+# Ternary expression
 estado = "activo" if usuario.get("activo") else "inactivo"
 
-# Múltiples condiciones
+# Multiple conditions
 if edad >= 18 and licencia_valida:
     print("Puede conducir")
 
 if usuario is None or not usuario.get("activo"):
-    print("Usuario inválido")
+    print("Invalid user")
 ```
 
 ### Loops
@@ -530,7 +530,7 @@ if usuario is None or not usuario.get("activo"):
 for item in lista:
     print(item)
 
-# Con índice
+# Con index
 for i, item in enumerate(lista):
     print(f"{i}: {item}")
 
@@ -557,7 +557,7 @@ for x in range(3):
 #### While Loops
 
 ```python
-# While básico
+# Basic while
 contador = 0
 while contador < 5:
     print(contador)
@@ -584,7 +584,7 @@ for numero in range(10):
 cuadrados = [x**2 for x in range(10)]
 pares = [x for x in range(20) if x % 2 == 0]
 
-# Con múltiples for
+# With multiple for loops
 pares = [(x, y) for x in range(3) for y in range(3)]
 # [(0,0), (0,1), (0,2), (1,0), ...]
 
@@ -606,7 +606,7 @@ suma = sum(x**2 for x in range(1000000))  # No crea lista en memoria
 ### Definition of Functions
 
 ```python
-# Función básica
+# Basic function
 def saludar(nombre):
     return f"Hola, {nombre}"
 
@@ -615,21 +615,21 @@ def conectar_db(host="localhost", port=5432):
     return f"Conectando a {host}:{port}"
 
 # Type hints
-def procesar_datos(datos: List[Dict], filtro: str = "") -> List[Dict]:
-    """Procesa y filtra datos"""
+def procesar_data(data: List[Dict], filtro: str = "") -> List[Dict]:
+    """Procesa y filtra data"""
     if filtro:
-        datos = [d for d in datos if d.get('tipo') == filtro]
-    return datos
+        data = [d for d in data if d.get('tipo') == filtro]
+    return data
 
 # Args y kwargs
 def log_mensaje(*args, **kwargs):
-    """Acepta cualquier número de argumentos"""
+    """Accepts any number of arguments"""
     print("Args:", args)
     print("Kwargs:", kwargs)
 
-log_mensaje(1, 2, 3, nivel="INFO", timestamp="2026-02-02")
+log_mensaje(1, 2, 3, level="INFO", timestamp="2026-02-02")
 # Args: (1, 2, 3)
-# Kwargs: {'nivel': 'INFO', 'timestamp': '2026-02-02'}
+# Kwargs: {'level': 'INFO', 'timestamp': '2026-02-02'}
 ```
 
 ### Lambda Functions
@@ -639,7 +639,7 @@ log_mensaje(1, 2, 3, nivel="INFO", timestamp="2026-02-02")
 cuadrado = lambda x: x**2
 suma = lambda a, b: a + b
 
-# Uso común: con map, filter, sorted
+# Common use: with map, filter, sorted
 numeros = [1, 2, 3, 4, 5]
 cuadrados = list(map(lambda x: x**2, numeros))
 pares = list(filter(lambda x: x % 2 == 0, numeros))
@@ -648,7 +648,7 @@ pares = list(filter(lambda x: x % 2 == 0, numeros))
 usuarios = [
     {"nombre": "Ana", "edad": 25},
     {"nombre": "Juan", "edad": 30},
-    {"nombre": "María", "edad": 22}
+    {"nombre": "Maria", "edad": 22}
 ]
 ordenados = sorted(usuarios, key=lambda u: u["edad"])
 ```
@@ -656,7 +656,7 @@ ordenados = sorted(usuarios, key=lambda u: u["edad"])
 ### Funciones de Orden Superior
 
 ```python
-# Map: aplica función a cada elemento
+# Map: aplica funcion a cada elemento
 def duplicar(x):
     return x * 2
 
@@ -678,18 +678,18 @@ suma = reduce(lambda a, b: a + b, numeros)  # 10
 ### Decoradores
 
 ```python
-# Decorator básico
+# Basic decorator
 def log_execution(func):
     def wrapper(*args, **kwargs):
         print(f"Ejecutando {func.__name__}")
         resultado = func(*args, **kwargs)
-        print(f"{func.__name__} completado")
+        print(f"{func.__name__} completed")
         return resultado
     return wrapper
 
 @log_execution
-def procesar_datos(datos):
-    return len(datos)
+def procesar_data(data):
+    return len(data)
 
 # Decorator con argumentos
 def retry(max_attempts=3):
@@ -701,29 +701,29 @@ def retry(max_attempts=3):
                 except Exception as e:
                     if attempt == max_attempts - 1:
                         raise
-                    print(f"Intento {attempt + 1} falló: {e}")
+                    print(f"Attempt {attempt + 1} failed: {e}")
         return wrapper
     return decorator
 
 @retry(max_attempts=5)
 def llamar_api():
-    # código que puede fallar
+    # code that may fail
     pass
 ```
 
 ---
 
-## Manejo de Archivos
+## Manejo de Files
 
 ### Context Managers
 
 ```python
-# Forma correcta: with statement (cierra automáticamente)
-with open('datos.txt', 'r') as f:
+# Correct way: with statement (closes automatically)
+with open('data.txt', 'r') as f:
     contenido = f.read()
-# Archivo se cierra automáticamente al salir del bloque
+# File closes automatically when leaving the block
 
-# Múltiples archivos
+# Multiple files
 with open('input.txt') as f_in, open('output.txt', 'w') as f_out:
     for linea in f_in:
         f_out.write(linea.upper())
@@ -737,27 +737,27 @@ with open('input.txt') as f_in, open('output.txt', 'w') as f_out:
 # 'a' - Append
 # 'r+' - Lectura y escritura
 # 'b' - Modo binario
-# 'x' - Creación exclusiva (falla si existe)
+# 'x' - Creation exclusiva (falla si existe)
 
 # Lectura
-with open('datos.txt', 'r', encoding='utf-8') as f:
+with open('data.txt', 'r', encoding='utf-8') as f:
     # Leer todo
     contenido = f.read()
     
-    # Leer líneas
-    lineas = f.readlines()  # Lista de líneas
+    # Read lines
+    lineas = f.readlines()  # List of lines
     
-    # Iterar línea por línea (memory-efficient)
+    # Iterate line by line (memory-efficient)
     for linea in f:
         procesar(linea)
 
 # Escritura
 with open('output.txt', 'w') as f:
-    f.write("Primera línea\n")
-    f.writelines(["Línea 2\n", "Línea 3\n"])
+    f.write("First line\n")
+    f.writelines(["Line 2\n", "Line 3\n"])
 ```
 
-### Formatos de Datos
+### Formatos de Data
 
 #### CSV
 
@@ -765,13 +765,13 @@ with open('output.txt', 'w') as f:
 import csv
 
 # Lectura
-with open('datos.csv', 'r') as f:
+with open('data.csv', 'r') as f:
     reader = csv.DictReader(f)
     for row in reader:
         print(row['nombre'], row['edad'])
 
 # Escritura
-datos = [
+data = [
     {'nombre': 'Ana', 'edad': 25},
     {'nombre': 'Juan', 'edad': 30}
 ]
@@ -779,7 +779,7 @@ datos = [
 with open('output.csv', 'w', newline='') as f:
     writer = csv.DictWriter(f, fieldnames=['nombre', 'edad'])
     writer.writeheader()
-    writer.writerows(datos)
+    writer.writerows(data)
 ```
 
 #### JSON
@@ -792,13 +792,13 @@ with open('config.json', 'r') as f:
     config = json.load(f)
 
 # Escritura
-datos = {"usuarios": [{"id": 1, "nombre": "Ana"}]}
-with open('datos.json', 'w') as f:
-    json.dump(datos, f, indent=2, ensure_ascii=False)
+data = {"usuarios": [{"id": 1, "nombre": "Ana"}]}
+with open('data.json', 'w') as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)
 
 # String ↔ JSON
-json_str = json.dumps(datos)
-datos = json.loads(json_str)
+json_str = json.dumps(data)
+data = json.loads(json_str)
 ```
 
 #### Parquet
@@ -808,13 +808,13 @@ import pyarrow.parquet as pq
 import pandas as pd
 
 # Lectura con pandas
-df = pd.read_parquet('datos.parquet')
+df = pd.read_parquet('data.parquet')
 
 # Escritura
 df.to_parquet('output.parquet', compression='snappy')
 
-# Lectura con PyArrow (más control)
-table = pq.read_table('datos.parquet')
+# Reading with PyArrow (more control)
+table = pq.read_table('data.parquet')
 df = table.to_pandas()
 ```
 
@@ -831,7 +831,7 @@ import numpy as np
 arr = np.array([1, 2, 3, 4, 5])
 matriz = np.array([[1, 2], [3, 4], [5, 6]])
 
-# Operaciones vectorizadas (muy rápidas)
+# Operaciones vectorizadas (muy quicks)
 arr * 2              # [2, 4, 6, 8, 10]
 arr + arr            # [2, 4, 6, 8, 10]
 arr ** 2             # [1, 4, 9, 16, 25]
@@ -851,31 +851,31 @@ matriz + 10          # Suma 10 a cada elemento
 ```python
 import pandas as pd
 
-# Creación
+# Creation
 df = pd.DataFrame({
-    'nombre': ['Ana', 'Juan', 'María'],
+    'nombre': ['Ana', 'Juan', 'Maria'],
     'edad': [25, 30, 22],
-    'ciudad': ['Santiago', 'Lima', 'Bogotá']
+    'ciudad': ['Santiago', 'Lima', 'Bogota']
 })
 
 # Desde CSV
-df = pd.read_csv('datos.csv')
+df = pd.read_csv('data.csv')
 
-# Exploración
+# Exploration
 df.head()            # Primeras 5 filas
-df.tail()            # Últimas 5 filas
-df.info()            # Información del DataFrame
-df.describe()        # Estadísticas descriptivas
+df.tail()            # Last 5 rows
+df.info()            # DataFrame information
+df.describe()        # Descriptive statistics
 df.shape             # (filas, columnas)
 df.columns           # Lista de columnas
-df.dtypes            # Tipos de datos
+df.dtypes            # Tipos de data
 
-# Selección
+# Selection
 df['nombre']         # Una columna (Series)
-df[['nombre', 'edad']]  # Múltiples columnas
-df.loc[0]            # Fila por índice label
-df.iloc[0]           # Fila por posición
-df.loc[0, 'nombre']  # Celda específica
+df[['nombre', 'edad']]  # Multiple columns
+df.loc[0]            # Fila por index label
+df.iloc[0]           # Row by position
+df.loc[0, 'nombre']  # Specific cell
 
 # Filtrado
 df[df['edad'] > 25]
@@ -885,7 +885,7 @@ df.query('edad > 25 and ciudad == "Santiago"')
 # Agregaciones
 df['edad'].mean()
 df.groupby('ciudad')['edad'].mean()
-df.groupby(['ciudad', 'género']).agg({
+df.groupby(['ciudad', 'gender']).agg({
     'edad': ['mean', 'max'],
     'ingreso': 'sum'
 })
@@ -940,7 +940,7 @@ schema = pa.DataFrameSchema({
     "signup_date": pa.Column(pd.Timestamp)
 })
 
-# Validación
+# Validation
 try:
     validated_df = schema.validate(df)
 except pa.errors.SchemaError as e:
@@ -954,15 +954,15 @@ except pa.errors.SchemaError as e:
 ### Excepciones
 
 ```python
-# Try-except básico
+# Basic try-except
 try:
     resultado = 10 / 0
 except ZeroDivisionError:
     print("No se puede dividir por cero")
 
-# Múltiples excepciones
+# Multiple exceptions
 try:
-    # código que puede fallar
+    # code that may fail
     pass
 except ValueError as e:
     print(f"Error de valor: {e}")
@@ -973,20 +973,20 @@ except Exception as e:
 
 # Finally (siempre se ejecuta)
 try:
-    archivo = open('datos.txt')
+    file = open('data.txt')
     # procesar
 except FileNotFoundError:
-    print("Archivo no encontrado")
+    print("File no encontrado")
 finally:
-    archivo.close()  # Siempre se ejecuta
+    file.close()  # Siempre se ejecuta
 
-# Else (se ejecuta si no hay excepción)
+# Else (runs if no exception)
 try:
-    resultado = procesar_datos()
+    resultado = procesar_data()
 except Exception as e:
     print(f"Error: {e}")
 else:
-    print("Éxito!")
+    print("Success!")
     guardar(resultado)
 ```
 
@@ -994,22 +994,22 @@ else:
 
 ```python
 class DataValidationError(Exception):
-    """Error cuando los datos no cumplen validaciones"""
+    """Error cuando los data no cumplen validaciones"""
     pass
 
 class PipelineError(Exception):
-    """Error genérico de pipeline"""
+    """Generic pipeline error"""
     def __init__(self, mensaje, codigo_error=None):
         self.mensaje = mensaje
         self.codigo_error = codigo_error
         super().__init__(self.mensaje)
 
 # Uso
-def validar_datos(df):
+def validate_data(df):
     if df.empty:
-        raise DataValidationError("DataFrame vacío")
+        raise DataValidationError("Empty DataFrame")
     if df.isnull().sum().sum() > 0:
-        raise DataValidationError("Datos contienen nulls")
+        raise DataValidationError("Data contienen nulls")
 ```
 
 ### Logging
@@ -1017,7 +1017,7 @@ def validar_datos(df):
 ```python
 import logging
 
-# Configuración básica
+# Basic configuration
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -1029,18 +1029,18 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Niveles de log
-logger.debug("Información detallada para debugging")
-logger.info("Información general del flujo")
+# Log levels
+logger.debug("Detailed info for debugging")
+logger.info("General flow information")
 logger.warning("Advertencia: algo inesperado")
-logger.error("Error que no detiene la ejecución")
-logger.critical("Error crítico")
+logger.error("Error that does not stop execution")
+logger.critical("Critical error")
 
 # Logging con contexto
 try:
-    procesar_datos(df)
+    procesar_data(df)
 except Exception as e:
-    logger.error(f"Error procesando datos: {e}", exc_info=True)
+    logger.error(f"Error procesando data: {e}", exc_info=True)
 ```
 
 ---
@@ -1051,14 +1051,14 @@ except Exception as e:
 
 ```python
 # ✅ Bueno
-def procesar_datos(datos: List[Dict]) -> pd.DataFrame:
+def procesar_data(data: List[Dict]) -> pd.DataFrame:
     """Procesa lista de diccionarios y retorna DataFrame"""
-    df = pd.DataFrame(datos)
+    df = pd.DataFrame(data)
     df_limpio = df.dropna()
     return df_limpio
 
 # ❌ Malo
-def ProcesarDatos(d):
+def ProcesarData(d):
     df=pd.DataFrame(d)
     df=df.dropna()
     return df
@@ -1076,20 +1076,20 @@ def extraer_transformar_cargar(
     Pipeline ETL completo de fuente a destino.
     
     Args:
-        fuente: Path o URL de origen de datos
+        fuente: Path o URL de origen de data
         destino: Path o URL de destino
-        transformaciones: Lista de funciones de transformación
+        transformations: List of transformation functions
         
     Returns:
-        Dict con métricas: {'registros_procesados': int, 'errores': int}
+        Dict with metrics: {'processed_records': int, 'errors': int}
         
     Raises:
         ConnectionError: Si no puede conectar a fuente/destino
-        DataValidationError: Si datos no pasan validación
+        DataValidationError: If data fails validation
         
     Example:
         >>> metrics = extraer_transformar_cargar(
-        ...     fuente='s3://bucket/datos.csv',
+        ...     fuente='s3://bucket/data.csv',
         ...     destino='postgresql://db/tabla',
         ...     transformaciones=[limpiar, normalizar]
         ... )
@@ -1102,7 +1102,7 @@ def extraer_transformar_cargar(
 ### DRY (Don't Repeat Yourself)
 
 ```python
-# ❌ Malo: código repetido
+# ❌ Bad: repeated code
 registros_validos = []
 for registro in registros:
     if registro.get('edad') and registro.get('email'):
@@ -1113,7 +1113,7 @@ for usuario in usuarios:
     if usuario.get('edad') and usuario.get('email'):
         usuarios_validos.append(usuario)
 
-# ✅ Bueno: función reutilizable
+# ✅ Good: reusable function
 def filtrar_validos(items: List[Dict], campos_requeridos: List[str]) -> List[Dict]:
     """Filtra items que tienen todos los campos requeridos"""
     return [
@@ -1150,23 +1150,23 @@ nueva_lista = [x * 2 for x in lista if x > 0]
 
 # ❌ No Pythonic
 if len(lista) == 0:
-    print("Vacía")
+    print("Empty")
 
 # ✅ Pythonic
 if not lista:
-    print("Vacía")
+    print("Empty")
 ```
 
 ### Performance Tips
 
 ```python
 # 1. Usar comprensiones en vez de loops
-# ❌ Lento
+# ❌ Slow
 resultado = []
 for x in range(1000000):
     resultado.append(x * 2)
 
-# ✅ Rápido
+# ✅ Fast
 resultado = [x * 2 for x in range(1000000)]
 
 # 2. Usar generators para grandes datasets
@@ -1179,12 +1179,12 @@ suma = sum(x**2 for x in range(1000000))
 # 3. Usar set para membership testing
 # ❌ O(n) lookup en lista
 lista_grande = list(range(10000))
-if 9999 in lista_grande:  # Lento
+if 9999 in lista_grande:  # Slow
     pass
 
 # ✅ O(1) lookup en set
 set_grande = set(range(10000))
-if 9999 in set_grande:  # Rápido
+if 9999 in set_grande:  # Fast
     pass
 
 # 4. Usar dict comprehension para lookups
@@ -1205,16 +1205,16 @@ This document covered the fundamental concepts of Python for data engineering:
 
 1. **Syntax and Fundamentals**: Dynamic typing, indentation, conventions
 2. **Data Types**: Numbers, strings, booleans, None, type hints
-3. **Estructuras**: Listas, tuplas, dicts, sets y sus operaciones
+3. **Structures**: Listas, tuplas, dicts, sets y sus operaciones
 4. **Control de Flujo**: Condicionales, loops, comprehensions
 5. **Functions**: Definition, lambdas, decorators, functional programming
-6. **Archivos**: Context managers, CSV, JSON, Parquet
+6. **Files**: Context managers, CSV, JSON, Parquet
 7. **Pandas/NumPy**: DataFrames, Series, operaciones vectorizadas
 8. **Data Quality**: Missing data, duplicates, validation
 9. **Error Handling**: Excepciones, logging, debugging
 10. **Best Practices**: PEP 8, docstrings, pythonic code
 
-Estos conceptos forman la base para construir pipelines de datos robustos y scalables.
+Estos conceptos forman la base para construir pipelines de data robustos y scalables.
 
 ---
 

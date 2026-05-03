@@ -7,7 +7,7 @@
 import pandas as pd
 import numpy as np
 
-# Verificar versión
+# Verificar version
 pd.__version__
 ```
 
@@ -15,7 +15,7 @@ pd.__version__
 ```python
 # Desde diccionario
 df = pd.DataFrame({
-    'nombre': ['Ana', 'Luis', 'María'],
+    'nombre': ['Ana', 'Luis', 'Maria'],
     'edad': [25, 30, 28],
     'ciudad': ['Madrid', 'Barcelona', 'Valencia']
 })
@@ -27,37 +27,37 @@ df = pd.DataFrame(
 )
 
 # Desde CSV
-df = pd.read_csv('datos.csv')
-df = pd.read_csv('datos.csv', sep=';', encoding='utf-8')
+df = pd.read_csv('data.csv')
+df = pd.read_csv('data.csv', sep=';', encoding='utf-8')
 
 # Desde JSON
-df = pd.read_json('datos.json')
-df = pd.read_json('datos.json', orient='records')
+df = pd.read_json('data.json')
+df = pd.read_json('data.json', orient='records')
 
 # Desde Parquet
-df = pd.read_parquet('datos.parquet')
+df = pd.read_parquet('data.parquet')
 ```
 
 ## 🔍 Initial Exploration
 
 ### Basic Information
 ```python
-# Primeras/últimas filas
+# Primeras/ultimas filas
 df.head()           # 5 primeras filas
 df.head(10)         # 10 primeras filas
-df.tail()           # 5 últimas filas
+df.tail()           # 5 ultimas filas
 
-# Información del DataFrame
+# DataFrame information
 df.info()           # Tipos, nulls, memoria
-df.describe()       # Estadísticas numéricas
+df.describe()       # Estadisticas numericas
 df.shape            # (filas, columnas)
 df.columns          # Nombres de columnas
-df.dtypes           # Tipos de datos
-df.index            # Índice
+df.dtypes           # Tipos de data
+df.index            # Index
 
-# Valores únicos
-df['columna'].unique()          # Array de únicos
-df['columna'].nunique()         # Cantidad de únicos
+# Valores unicos
+df['columna'].unique()          # Array de unicos
+df['columna'].nunique()         # Cantidad de unicos
 df['columna'].value_counts()    # Frecuencia de valores
 ```
 
@@ -67,9 +67,9 @@ df['columna'].value_counts()    # Frecuencia de valores
 ```python
 # Una columna (Series)
 df['nombre']
-df.nombre  # Notación de atributo
+df.nombre  # Notacion de atributo
 
-# Múltiples columnas (DataFrame)
+# Multiple columns (DataFrame)
 df[['nombre', 'edad']]
 
 # Reordenar columnas
@@ -83,9 +83,9 @@ df[['edad', 'nombre', 'ciudad']]
 # Una fila
 df.iloc[0]              # Primera fila
 
-# Múltiples filas
+# Multiples filas
 df.iloc[0:5]            # Filas 0 a 4
-df.iloc[[0, 2, 4]]      # Filas específicas
+df.iloc[[0, 2, 4]]      # Filas especificas
 
 # Filas y columnas
 df.iloc[0:5, 0:2]       # Filas 0-4, columnas 0-1
@@ -94,11 +94,11 @@ df.iloc[:, [0, 2]]      # Todas las filas, columnas 0 y 2
 
 #### Por Etiqueta (loc)
 ```python
-# Por índice
-df.loc[0]               # Fila con índice 0
+# Por index
+df.loc[0]               # Fila con index 0
 df.loc[0:5]             # Filas 0 a 5 (INCLUYE 5)
 
-# Por condición
+# Por condicion
 df.loc[df['edad'] > 25]
 df.loc[df['ciudad'] == 'Madrid']
 
@@ -108,14 +108,14 @@ df.loc[df['edad'] > 25, ['nombre', 'edad']]
 
 ### Filtrado (Boolean Indexing)
 ```python
-# Condición simple
+# Condicion simple
 df[df['edad'] > 25]
 df[df['nombre'] == 'Ana']
 
-# Múltiples condiciones (AND)
+# Multiple conditions (AND)
 df[(df['edad'] > 25) & (df['ciudad'] == 'Madrid')]
 
-# Múltiples condiciones (OR)
+# Multiple conditions (OR)
 df[(df['edad'] > 30) | (df['ciudad'] == 'Madrid')]
 
 # NOT
@@ -142,9 +142,9 @@ df['edad_doble'] = df['edad'] * 2
 # Columna calculada
 df['mayor_edad'] = df['edad'] >= 18
 
-# Apply (aplicar función)
+# Apply (aplicar funcion)
 df['nombre_upper'] = df['nombre'].apply(lambda x: x.upper())
-df['nombre_upper'] = df['nombre'].str.upper()  # Más eficiente
+df['nombre_upper'] = df['nombre'].str.upper()  # Mas eficiente
 
 # Map (mapear valores)
 mapa = {'Madrid': 'MAD', 'Barcelona': 'BCN'}
@@ -160,14 +160,14 @@ df.rename(columns={'nombre': 'name', 'edad': 'age'}, inplace=True)
 df.sort_values('edad')                    # Ascendente
 df.sort_values('edad', ascending=False)   # Descendente
 
-# Ordenar por múltiples columnas
+# Ordenar por multiples columnas
 df.sort_values(['ciudad', 'edad'], ascending=[True, False])
 
-# Ordenar índice
+# Ordenar index
 df.sort_index()
 ```
 
-### Limpieza de Datos
+### Cleaning de Data
 
 #### Valores Nulos
 ```python
@@ -200,7 +200,7 @@ df[df.duplicated()]                 # Ver duplicados
 df.drop_duplicates()                # Eliminar todas
 df.drop_duplicates(subset=['nombre'])  # Por columna
 df.drop_duplicates(keep='first')    # Mantener primera ocurrencia
-df.drop_duplicates(keep='last')     # Mantener última
+df.drop_duplicates(keep='last')     # Mantener ultima
 ```
 
 ### Type Conversion
@@ -210,7 +210,7 @@ df['edad'] = df['edad'].astype(int)
 df['precio'] = df['precio'].astype(float)
 df['fecha'] = pd.to_datetime(df['fecha'])
 
-# Categorías (ahorro de memoria)
+# Categorias (ahorro de memoria)
 df['ciudad'] = df['ciudad'].astype('category')
 ```
 
@@ -221,9 +221,9 @@ df['ciudad'] = df['ciudad'].astype('category')
 # Por columna
 df['edad'].mean()       # Media
 df['edad'].median()     # Mediana
-df['edad'].std()        # Desviación estándar
-df['edad'].min()        # Mínimo
-df['edad'].max()        # Máximo
+df['edad'].std()        # Desviacion estandar
+df['edad'].min()        # Minimo
+df['edad'].max()        # Maximo
 df['edad'].sum()        # Suma
 df['edad'].count()      # Conteo (no-null)
 
@@ -238,10 +238,10 @@ df['edad'].quantile(0.75)   # Q3
 df.groupby('ciudad')['edad'].mean()
 df.groupby('ciudad')['edad'].sum()
 
-# Múltiples agregaciones
+# Multiples agregaciones
 df.groupby('ciudad')['edad'].agg(['mean', 'min', 'max', 'count'])
 
-# Agrupar por múltiples columnas
+# Agrupar por multiples columnas
 df.groupby(['ciudad', 'genero'])['edad'].mean()
 
 # Agregar con nombres personalizados
@@ -251,13 +251,13 @@ df.groupby('ciudad').agg(
     total_personas=('nombre', 'count')
 )
 
-# Reset index después de groupby
+# Reset index despues de groupby
 df.groupby('ciudad')['edad'].mean().reset_index()
 ```
 
 ### Pivot Tables
 ```python
-# Tabla pivote básica
+# Tabla pivote basica
 pd.pivot_table(
     df,
     values='edad',
@@ -266,7 +266,7 @@ pd.pivot_table(
     aggfunc='mean'
 )
 
-# Con múltiples agregaciones
+# Con multiples agregaciones
 pd.pivot_table(
     df,
     values='edad',
@@ -303,7 +303,7 @@ pd.merge(df1, df2, on='id', how='outer')
 # Join con diferentes nombres de columna
 pd.merge(df1, df2, left_on='customer_id', right_on='id')
 
-# Join con múltiples columnas
+# Join con multiples columnas
 pd.merge(df1, df2, on=['id', 'fecha'])
 
 # Sufijos para columnas duplicadas
@@ -324,7 +324,7 @@ df['fecha'] = pd.date_range('2024-01-01', periods=100, freq='D')
 
 ### Extraer Componentes
 ```python
-df['año'] = df['fecha'].dt.year
+df['ano'] = df['fecha'].dt.year
 df['mes'] = df['fecha'].dt.month
 df['dia'] = df['fecha'].dt.day
 df['dia_semana'] = df['fecha'].dt.dayofweek  # 0=Lunes
@@ -345,22 +345,22 @@ df.set_index('fecha').resample('M').sum()  # Por mes
 df.set_index('fecha').resample('W').mean()  # Por semana
 ```
 
-## 💾 Guardar Datos
+## 💾 Guardar Data
 
 ### Exportar
 ```python
 # CSV
-df.to_csv('datos.csv', index=False)
-df.to_csv('datos.csv', sep=';', encoding='utf-8', index=False)
+df.to_csv('data.csv', index=False)
+df.to_csv('data.csv', sep=';', encoding='utf-8', index=False)
 
 # JSON
-df.to_json('datos.json', orient='records')
+df.to_json('data.json', orient='records')
 
 # Parquet
-df.to_parquet('datos.parquet', compression='gzip')
+df.to_parquet('data.parquet', compression='gzip')
 
 # Excel
-df.to_excel('datos.xlsx', sheet_name='Hoja1', index=False)
+df.to_excel('data.xlsx', sheet_name='Hoja1', index=False)
 ```
 
 ## ⚡ Optimization and Performance
@@ -370,17 +370,17 @@ df.to_excel('datos.xlsx', sheet_name='Hoja1', index=False)
 # Ver uso de memoria
 df.memory_usage(deep=True)
 
-# Optimizar tipos numéricos
+# Optimizar tipos numericos
 df['id'] = df['id'].astype('int32')  # En lugar de int64
 
-# Usar categorías para strings repetitivos
+# Usar categorias para strings repetitivos
 df['ciudad'] = df['ciudad'].astype('category')
 
 # Leer solo columnas necesarias
-df = pd.read_csv('datos.csv', usecols=['nombre', 'edad'])
+df = pd.read_csv('data.csv', usecols=['nombre', 'edad'])
 
-# Leer en chunks para archivos grandes
-for chunk in pd.read_csv('datos.csv', chunksize=10000):
+# Leer en chunks para files grandes
+for chunk in pd.read_csv('data.csv', chunksize=10000):
     process(chunk)
 ```
 
@@ -388,18 +388,18 @@ for chunk in pd.read_csv('datos.csv', chunksize=10000):
 
 ### 1. SettingWithCopyWarning
 ```python
-# ❌ Incorrecto
+# ❌ Incorrect
 subset = df[df['edad'] > 25]
 subset['nueva_col'] = 0  # Warning!
 
-# ✅ Correcto
+# ✅ Correct
 subset = df[df['edad'] > 25].copy()
 subset['nueva_col'] = 0
 ```
 
 ### 2. Modify During Iteration
 ```python
-# ❌ Lento e ineficiente
+# ❌ Slow e ineficiente
 for i in range(len(df)):
     df.loc[i, 'nueva'] = df.loc[i, 'edad'] * 2
 

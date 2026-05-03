@@ -44,7 +44,7 @@ import this
 ### Naming Conventions
 
 ```python
-# ✅ Correcto
+# ✅ Correct
 class CustomerDataProcessor:
     """Usa PascalCase para clases"""
     pass
@@ -56,43 +56,43 @@ def calculate_total_sales(transactions):
 MAXIMUM_RETRIES = 3  # UPPER_CASE para constantes
 customer_id = 123    # snake_case para variables
 
-# ❌ Incorrecto
-class customer_processor:  # Debería ser PascalCase
+# ❌ Incorrect
+class customer_processor:  # Should be PascalCase
     pass
 
-def CalculateSales():  # Debería ser snake_case
+def CalculateSales():  # Should be snake_case
     pass
 
-MaxRetries = 3  # Debería ser UPPER_CASE
+MaxRetries = 3  # Should be UPPER_CASE
 ```
 
 ### Indentation and Spacing
 
 ```python
-# ✅ Correcto: 4 espacios
+# ✅ Correct: 4 espacios
 def process_data(df):
     if df is not None:
         df = df.dropna()
         return df
     return None
 
-# ✅ Correcto: espacios alrededor de operadores
+# ✅ Correct: espacios alrededor de operadores
 result = (value1 + value2) * factor
 items = [1, 2, 3, 4, 5]
 
-# ❌ Incorrecto: tabulaciones mezcladas con espacios
+# ❌ Incorrect: tabulaciones mezcladas con espacios
 def bad_function():
 	print("Tab")  # Tab
     print("Spaces")  # Espacios
 
-# ❌ Incorrecto: sin espacios
+# ❌ Incorrect: sin espacios
 result=(value1+value2)*factor
 ```
 
 ### Line Length
 
 ```python
-# ✅ Correcto: máximo 79 caracteres
+# ✅ Correct: maximum 79 characters
 def calculate_customer_lifetime_value(
     customer_id,
     purchase_history,
@@ -100,14 +100,14 @@ def calculate_customer_lifetime_value(
 ):
     return sum(purchase_history) * average_order_value
 
-# ✅ Correcto: break en operadores
+# ✅ Correct: break en operadores
 total = (
     first_value +
     second_value +
     third_value
 )
 
-# ❌ Incorrecto: línea muy larga
+# ❌ Incorrect: linea muy larga
 def calculate_customer_lifetime_value(customer_id, purchase_history, average_order_value, discount_rate, retention_rate):
     pass
 ```
@@ -115,7 +115,7 @@ def calculate_customer_lifetime_value(customer_id, purchase_history, average_ord
 ### Imports
 
 ```python
-# ✅ Correcto: orden de imports
+# ✅ Correct: orden de imports
 # 1. Standard library
 import os
 import sys
@@ -129,31 +129,31 @@ import numpy as np
 from .utils import process_data
 from .validators import validate_schema
 
-# ✅ Correcto: un import por línea
+# ✅ Correct: one import per line
 import pandas as pd
 import numpy as np
 
-# ❌ Incorrecto: múltiples imports en una línea
+# ❌ Incorrect: multiple imports on one line
 import pandas, numpy, matplotlib
 ```
 
 ---
 
-## 📦 Estructuras de Datos
+## 📦 Structures de Data
 
-### Eligiendo la Estructura Correcta
+### Eligiendo la Structure Correcta
 
 ```python
 # Lista: Orden importa, elementos duplicados OK
 transactions = [100, 200, 100, 300]
 
-# Tupla: Inmutable, más rápida que lista
+# Tupla: Inmutable, faster than list
 coordinates = (10.5, 20.3)
 
-# Set: Únicos, no ordenado, búsqueda rápida O(1)
+# Set: Unique, unordered, O(1) lookup
 unique_customers = {1, 2, 3, 4, 5}
 
-# Dict: Key-value, búsqueda rápida O(1)
+# Dict: Key-value, O(1) lookup
 customer_data = {"name": "Ana", "age": 25}
 ```
 
@@ -194,7 +194,7 @@ most_common = word_counts.most_common(5)
 # namedtuple: estructura ligera
 Customer = namedtuple('Customer', ['id', 'name', 'email'])
 customer = Customer(1, 'Ana', 'ana@example.com')
-print(customer.name)  # Más legible que customer[1]
+print(customer.name)  # More readable than customer[1]
 ```
 
 ---
@@ -204,7 +204,7 @@ print(customer.name)  # Más legible que customer[1]
 ### Try-Except (Specific)
 
 ```python
-# ✅ Correcto: captura excepciones específicas
+# ✅ Correct: captures specific exceptions
 try:
     df = pd.read_csv(file_path)
 except FileNotFoundError:
@@ -214,7 +214,7 @@ except pd.errors.EmptyDataError:
     logger.warning("CSV file is empty")
     return pd.DataFrame()
 
-# ❌ Incorrecto: captura genérica
+# ❌ Incorrect: generic catch
 try:
     df = pd.read_csv(file_path)
 except Exception as e:  # Demasiado amplio
@@ -224,21 +224,21 @@ except Exception as e:  # Demasiado amplio
 ### Context Managers
 
 ```python
-# ✅ Correcto: with statement (automáticamente cierra archivo)
+# ✅ Correct: with statement (automatically closes file)
 with open('data.csv', 'r') as f:
     data = f.read()
-# Archivo cerrado automáticamente
+# File closed automatically
 
-# ❌ Incorrecto: sin context manager
+# ❌ Incorrect: sin context manager
 f = open('data.csv', 'r')
 data = f.read()
-f.close()  # Fácil olvidar
+f.close()  # Easy to forget
 ```
 
 ### Custom Exceptions
 
 ```python
-# ✅ Crear excepciones específicas
+# ✅ Create specific exceptions
 class DataValidationError(Exception):
     """Raised when data validation fails"""
     pass
@@ -259,7 +259,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# ✅ Correcto: log con contexto
+# ✅ Correct: log con contexto
 try:
     result = risky_operation()
 except ValueError as e:
@@ -281,17 +281,17 @@ except ValueError as e:
 import pandas as pd
 import numpy as np
 
-# ❌ Lento: loop sobre DataFrame
+# ❌ Slow: loop sobre DataFrame
 for i in range(len(df)):
     df.loc[i, 'total'] = df.loc[i, 'price'] * df.loc[i, 'quantity']
 
-# ✅ Rápido: operación vectorizada
+# ✅ Fast: vectorized operation
 df['total'] = df['price'] * df['quantity']
 
-# ❌ Lento: apply con función simple
+# ❌ Slow: apply with a simple function
 df['doubled'] = df['value'].apply(lambda x: x * 2)
 
-# ✅ Rápido: operación directa
+# ✅ Fast: direct operation
 df['doubled'] = df['value'] * 2
 ```
 
@@ -304,11 +304,11 @@ def read_large_file(file_path):
         for line in f:
             yield process_line(line)
 
-# Procesar línea por línea sin cargar todo
+# Process line by line without loading all
 for processed_line in read_large_file('huge_file.txt'):
     save(processed_line)
 
-# ❌ Cargar todo en memoria
+# ❌ Loadr todo en memoria
 with open('huge_file.txt', 'r') as f:
     lines = [process_line(line) for line in f]  # Consume mucha RAM
 ```
@@ -321,14 +321,14 @@ from functools import lru_cache
 # ✅ Cachear resultados costosos
 @lru_cache(maxsize=128)
 def expensive_calculation(n):
-    # Operación costosa
+    # Expensive operation
     return result
 
 # Primera llamada: calcula
-result1 = expensive_calculation(10)  # Lento
+result1 = expensive_calculation(10)  # Slow
 
 # Segunda llamada: usa cache
-result2 = expensive_calculation(10)  # Instantáneo
+result2 = expensive_calculation(10)  # Instant
 ```
 
 ### Profiling
@@ -337,31 +337,31 @@ result2 = expensive_calculation(10)  # Instantáneo
 import cProfile
 import pstats
 
-# Perfilar función
+# Profile function
 cProfile.run('my_function()', 'profile_stats')
 
 # Analizar resultados
 stats = pstats.Stats('profile_stats')
 stats.sort_stats('cumulative')
-stats.print_stats(10)  # Top 10 funciones más lentas
+stats.print_stats(10)  # Top 10 slowest functions
 ```
 
 ---
 
 ## ✅ Testing
 
-### Estructura de Tests
+### Structure de Tests
 
 ```python
-# ✅ Patrón AAA (Arrange, Act, Assert)
+# ✅ AAA pattern (Arrange, Act, Assert)
 def test_calculate_total():
-    # Arrange: preparar datos
+    # Arrange: preparar data
     df = pd.DataFrame({
         'price': [10, 20, 30],
         'quantity': [2, 3, 1]
     })
     
-    # Act: ejecutar función
+    # Act: run function
     result = calculate_total(df)
     
     # Assert: verificar resultado
@@ -389,7 +389,7 @@ def test_process_data(sample_dataframe):
 ### Parameterization
 
 ```python
-# ✅ Probar múltiples casos
+# ✅ Test multiple cases
 @pytest.mark.parametrize("input,expected", [
     (0, 0),
     (1, 1),
@@ -513,22 +513,22 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 ```
 
-### Niveles de Logging
+### Logging Levels
 
 ```python
-# DEBUG: Información detallada para diagnóstico
+# DEBUG: Detailed information for diagnostics
 logger.debug(f"Processing customer {customer_id}")
 
-# INFO: Confirmación de operaciones normales
+# INFO: Confirmation of normal operations
 logger.info(f"Successfully processed {count} records")
 
-# WARNING: Algo inesperado pero no crítico
+# WARNING: Something unexpected but not critical
 logger.warning(f"Missing data for customer {customer_id}, using default")
 
-# ERROR: Error que impide una operación
+# ERROR: Error that prevents an operation
 logger.error(f"Failed to process file {file_name}", exc_info=True)
 
-# CRITICAL: Error crítico, la aplicación puede fallar
+# CRITICAL: Critical error, the application may fail
 logger.critical("Database connection lost")
 ```
 
@@ -550,7 +550,7 @@ class JsonFormatter(logging.Formatter):
             log_data.update(record.extra)
         return json.dumps(log_data)
 
-# ✅ Logs estructurados para análisis
+# ✅ Structured logs for analysis
 logger.info(
     "Customer processed",
     extra={
@@ -571,20 +571,20 @@ logger.info(
 import os
 from dotenv import load_dotenv
 
-# ✅ Correcto: variables de entorno
+# ✅ Correct: variables de environment
 load_dotenv()
 
 DB_HOST = os.getenv('DB_HOST')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
-# ❌ Incorrecto: credenciales en código
+# ❌ Incorrect: credentials in code
 DB_PASSWORD = "my_secret_password"  # NUNCA!
 ```
 
 ### Input Validation
 
 ```python
-# ✅ Validar y sanitizar inputs
+# ✅ Validate y sanitizar inputs
 def get_customer_data(customer_id: int) -> dict:
     if not isinstance(customer_id, int):
         raise TypeError("customer_id must be an integer")
@@ -661,7 +661,7 @@ clean_data = pipeline.execute(raw_data)
 ### Singleton Pattern
 
 ```python
-# ✅ Singleton para configuración
+# ✅ Singleton para configuration
 class Config:
     _instance = None
     
@@ -672,7 +672,7 @@ class Config:
         return cls._instance
     
     def _load_config(self):
-        # Cargar configuración
+        # Loadr configuration
         pass
 
 # Siempre devuelve la misma instancia
@@ -704,7 +704,7 @@ assert config1 is config2  # True
 - [ ] Updated documentation
 - [ ] Performance aceptable
 - [ ] Peer reviewed code
-- [ ] Variables de entorno configuradas
+- [ ] Variables de environment configuradas
 - [ ] Dependencias documentadas
 
 ---

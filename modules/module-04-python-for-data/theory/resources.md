@@ -128,7 +128,7 @@
 - Note: Not specific to Python but essential for architectures
 
 **"The Data Engineering Handbook" - DataEngineer.io**
-- Level: Todos los niveles
+- Level: All levels
 - Formato: Online/GitHub
 - URL: https://github.com/DataEngineer-io/data-engineer-handbook
 - Description: Community open-source handbook
@@ -544,9 +544,9 @@
 
 **LeetCode**
 - URL: https://leetcode.com/
-- Tipo: Algoritmos y estructuras de datos
+- Tipo: Algoritmos y estructuras de data
 - Use: Interview preparation
-- Dificultad: Easy, Medium, Hard
+- Difficulty: Easy, Medium, Hard
 
 **HackerRank**
 - URL: https://www.hackerrank.com/domains/python
@@ -562,7 +562,7 @@
 
 **Exercism**
 - URL: https://exercism.org/tracks/python
-- Tipo: Ejercicios con mentoring
+- Tipo: Exercises con mentoring
 - Use: Practice with feedback
 - Gratis: Yes
 
@@ -718,19 +718,19 @@
 **Backend Developer Roadmap**
 - URL: https://roadmap.sh/backend
 - Description: Backend skills (includes Python)
-- Relevante para: APIs, services de datos
+- Relevante para: APIs, services de data
 
 ### Rutas Sugeridas
 
-**Nivel 1: Fundamentos (1-2 meses)**
+**Level 1: Fundamentos (1-2 meses)**
 1. Basic Python Syntax
-2. Estructuras de datos
+2. Structures de data
 3. Control de flujo
 4. Funciones
-5. Archivos y excepciones
+5. Files y excepciones
 6. resources: "Python Crash Course", Real Python basics
 
-**Nivel 2: Python Intermedio (1-2 meses)**
+**Level 2: Python Intermedio (1-2 meses)**
 1. OOP en Python
 2. Modules and packages
 3. List/dict comprehensions
@@ -739,7 +739,7 @@
 6. Testing con pytest
 7. resources: "Fluent Python", Real Python intermediate
 
-**Nivel 3: Data con Python (2-3 meses)**
+**Level 3: Data con Python (2-3 meses)**
 1. NumPy arrays
 2. pandas DataFrames
 3. Data cleaning
@@ -748,7 +748,7 @@
 6. SQL con Python (SQLAlchemy)
 7. resources: "Python for Data Analysis", DataCamp
 
-**Nivel 4: Data Engineering (3-4 meses)**
+**Level 4: Data Engineering (3-4 meses)**
 1. pipeline design patterns
 2. ETL/ELT pipelines
 3. Airflow/Prefect orchestration
@@ -758,7 +758,7 @@
 7. Streaming basics (Kafka)
 8. resources: "Data Engineering with Python", proyectos reales
 
-**Nivel 5: Advanced Topics (ongoing)**
+**Level 5: Advanced Topics (ongoing)**
 1. Spark y PySpark
 2. Data lakehouse (Delta Lake, Iceberg)
 3. Real-time streaming
@@ -773,13 +773,13 @@
 
 ### Estrategias Efectivas
 
-1. **Aprender Haciendo**
+1. **Learn Haciendo**
    - Not just reading, writing code every day
    - "Tutorial hell" es real: construye proyectos propios
    - 70/30 rule: 70% coding, 30% theory
 
 2. **Proyectos Propios**
-   - Construir mini-pipeline con tus propios datos
+   - Construir mini-pipeline con tus propios data
    - Automatizar algo tedioso de tu trabajo
    - Contribuir a proyectos open source
 
@@ -806,7 +806,7 @@
 
 ---
 
-## resources por Nivel de Experiencia
+## resources por Level de Experiencia
 
 ### Principiante (0-6 meses)
 - 📚 "Python Crash Course"

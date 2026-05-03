@@ -1,10 +1,10 @@
 # 🐍 Python Basics - Quick Reference
 
-## 📋 Variables y Tipos de Datos
+## 📋 Variables y Tipos de Data
 
 ### Declaration of Variables
 ```python
-# Tipos básicos
+# Tipos basicos
 nombre = "Juan"                    # str
 edad = 30                          # int
 altura = 1.75                      # float
@@ -18,11 +18,11 @@ isinstance(edad, int)  # True
 
 ### Type Conversion
 ```python
-# String a número
+# String a numero
 int("42")        # 42
 float("3.14")    # 3.14
 
-# Número a string
+# Numero a string
 str(42)          # "42"
 str(3.14)        # "3.14"
 
@@ -37,29 +37,29 @@ bool(1)          # True
 
 ### Operaciones Comunes
 ```python
-texto = "Python para Datos"
+texto = "Python para Data"
 
-# Mayúsculas/minúsculas
+# Mayusculas/minusculas
 texto.upper()           # "PYTHON PARA DATOS"
-texto.lower()           # "python para datos"
-texto.title()           # "Python Para Datos"
+texto.lower()           # "python para data"
+texto.title()           # "Python Para Data"
 
-# Búsqueda
+# Busqueda
 texto.startswith("Py")  # True
 texto.endswith("s")     # True
 "para" in texto         # True
 
 # Reemplazo
-texto.replace("Datos", "ML")  # "Python para ML"
+texto.replace("Data", "ML")  # "Python para ML"
 
-# División
-texto.split()           # ["Python", "para", "Datos"]
+# Division
+texto.split()           # ["Python", "para", "Data"]
 "a,b,c".split(",")     # ["a", "b", "c"]
 
-# Unión
+# Union
 "-".join(["a", "b"])   # "a-b"
 
-# Limpieza
+# Cleaning
 "  texto  ".strip()    # "texto"
 ```
 
@@ -68,18 +68,18 @@ texto.split()           # ["Python", "para", "Datos"]
 nombre = "Ana"
 edad = 25
 
-# Básico
+# Basico
 f"Hola, {nombre}"                    # "Hola, Ana"
 
 # Expresiones
-f"{nombre} tiene {edad + 1} años"    # "Ana tiene 26 años"
+f"{nombre} tiene {edad + 1} anos"    # "Ana tiene 26 anos"
 
-# Formateo numérico
+# Formateo numerico
 precio = 99.99
 f"Precio: ${precio:.2f}"             # "Precio: $99.99"
 f"Porcentaje: {0.875:.1%}"           # "Porcentaje: 87.5%"
 
-# Alineación
+# Alineacion
 f"{nombre:>10}"                      # "       Ana"
 f"{nombre:<10}"                      # "Ana       "
 ```
@@ -88,51 +88,51 @@ f"{nombre:<10}"                      # "Ana       "
 
 ### Listas (Ordenadas, Mutables)
 ```python
-# Creación
+# Creation
 numeros = [1, 2, 3, 4, 5]
 mixta = [1, "dos", 3.0, True]
 
 # Acceso
 numeros[0]      # 1 (primer elemento)
-numeros[-1]     # 5 (último elemento)
+numeros[-1]     # 5 (ultimo elemento)
 numeros[1:3]    # [2, 3] (slicing)
 
-# Modificación
+# Modification
 numeros.append(6)              # Agregar al final
-numeros.insert(0, 0)           # Insertar en posición
+numeros.insert(0, 0)           # Insertar en posicion
 numeros.remove(3)              # Eliminar valor
-numeros.pop()                  # Eliminar y retornar último
-numeros.pop(0)                 # Eliminar en posición
+numeros.pop()                  # Eliminar y retornar ultimo
+numeros.pop(0)                 # Eliminar en posicion
 
 # Operaciones
 len(numeros)                   # Longitud
 sum(numeros)                   # Suma
-max(numeros)                   # Máximo
-min(numeros)                   # Mínimo
+max(numeros)                   # Maximo
+min(numeros)                   # Minimo
 sorted(numeros)                # Ordenar (nueva lista)
 numeros.sort()                 # Ordenar in-place
 ```
 
 ### Tuplas (Ordenadas, Inmutables)
 ```python
-# Creación
+# Creation
 coordenadas = (10, 20)
-punto = 5, 6  # Sin paréntesis
+punto = 5, 6  # Sin parentesis
 
 # Desempaquetado
 x, y = coordenadas
 a, b, c = (1, 2, 3)
 
-# Uso común: retornar múltiples valores
-def obtener_datos():
-    return "Juan", 30, "México"
+# Uso comun: retornar multiples valores
+def obtener_data():
+    return "Juan", 30, "Mexico"
 
-nombre, edad, pais = obtener_datos()
+nombre, edad, pais = obtener_data()
 ```
 
 ### Diccionarios (Clave-Valor)
 ```python
-# Creación
+# Creation
 persona = {
     "nombre": "Ana",
     "edad": 25,
@@ -144,9 +144,9 @@ persona["nombre"]              # "Ana"
 persona.get("edad")            # 25
 persona.get("pais", "N/A")     # "N/A" (default)
 
-# Modificación
+# Modification
 persona["edad"] = 26           # Actualizar
-persona["pais"] = "España"     # Agregar nueva clave
+persona["pais"] = "Espana"     # Agregar nueva clave
 del persona["ciudad"]          # Eliminar
 
 # Operaciones
@@ -154,13 +154,13 @@ persona.keys()                 # dict_keys(['nombre', 'edad'])
 persona.values()               # dict_values(['Ana', 25])
 persona.items()                # dict_items([('nombre', 'Ana'), ...])
 
-# Verificación
+# Verification
 "nombre" in persona            # True
 ```
 
 ### Sets (Not ordered, unique)
 ```python
-# Creación
+# Creation
 numeros = {1, 2, 3, 4, 5}
 letras = set("abracadabra")    # {'a', 'b', 'r', 'c', 'd'}
 
@@ -172,8 +172,8 @@ numeros.discard(3)             # Eliminar (sin error)
 # Operaciones de conjuntos
 a = {1, 2, 3}
 b = {3, 4, 5}
-a | b                          # {1, 2, 3, 4, 5} unión
-a & b                          # {3} intersección
+a | b                          # {1, 2, 3, 4, 5} union
+a & b                          # {3} interseccion
 a - b                          # {1, 2} diferencia
 ```
 
@@ -181,7 +181,7 @@ a - b                          # {1, 2} diferencia
 
 ### Condicionales
 ```python
-# If básico
+# Basic if
 if edad >= 18:
     print("Mayor de edad")
 
@@ -224,14 +224,14 @@ for i in range(1, 10, 2):      # 1, 3, 5, 7, 9 (start, stop, step)
 for clave, valor in persona.items():
     print(f"{clave}: {valor}")
 
-# Enumerar (índice + valor)
-for i, nombre in enumerate(["Ana", "Luis", "María"]):
+# Enumerar (index + valor)
+for i, nombre in enumerate(["Ana", "Luis", "Maria"]):
     print(f"{i}: {nombre}")
 
 # Control de flujo
 for i in range(10):
     if i == 5:
-        continue  # Saltar iteración
+        continue  # Saltar iteracion
     if i == 8:
         break     # Salir del loop
     print(i)
@@ -239,7 +239,7 @@ for i in range(10):
 
 #### While Loop
 ```python
-# While básico
+# Basic while
 contador = 0
 while contador < 5:
     print(contador)
@@ -256,11 +256,11 @@ while True:
 
 ### Basic Definition
 ```python
-# Función simple
+# Funcion simple
 def saludar():
     print("¡Hola!")
 
-# Con parámetros
+# Con parametros
 def saludar(nombre):
     print(f"¡Hola, {nombre}!")
 
@@ -268,10 +268,10 @@ def saludar(nombre):
 def suma(a, b):
     return a + b
 
-# Múltiples retornos
+# Multiples retornos
 def dividir(a, b):
     if b == 0:
-        return None, "Error: división por cero"
+        return None, "Error: division por cero"
     return a / b, "OK"
 
 resultado, mensaje = dividir(10, 2)
@@ -280,12 +280,12 @@ resultado, mensaje = dividir(10, 2)
 ### Parameters
 
 ```python
-# Parámetros por defecto
+# Parametros por defecto
 def saludar(nombre, saludo="Hola"):
     return f"{saludo}, {nombre}!"
 
-# Parámetros nombrados
-saludar(nombre="Ana", saludo="Buenos días")
+# Parametros nombrados
+saludar(nombre="Ana", saludo="Buenos dias")
 
 # *args (argumentos variables)
 def suma_todos(*numeros):
@@ -294,19 +294,19 @@ def suma_todos(*numeros):
 suma_todos(1, 2, 3, 4, 5)  # 15
 
 # **kwargs (argumentos con nombre variables)
-def crear_persona(**datos):
-    return datos
+def crear_persona(**data):
+    return data
 
 crear_persona(nombre="Ana", edad=25, ciudad="Madrid")
 ```
 
 ### Lambda (Anonymous Functions)
 ```python
-# Sintaxis: lambda argumentos: expresión
+# Sintaxis: lambda argumentos: expresion
 suma = lambda a, b: a + b
 suma(3, 5)  # 8
 
-# Uso común: como argumento
+# Uso comun: como argumento
 numeros = [1, 2, 3, 4, 5]
 pares = list(filter(lambda x: x % 2 == 0, numeros))  # [2, 4]
 cuadrados = list(map(lambda x: x**2, numeros))       # [1, 4, 9, 16, 25]
@@ -316,7 +316,7 @@ cuadrados = list(map(lambda x: x**2, numeros))       # [1, 4, 9, 16, 25]
 
 ### List Comprehensions
 ```python
-# Básica
+# Basica
 cuadrados = [x**2 for x in range(10)]
 # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
 
@@ -324,7 +324,7 @@ cuadrados = [x**2 for x in range(10)]
 pares = [x for x in range(10) if x % 2 == 0]
 # [0, 2, 4, 6, 8]
 
-# Con transformación
+# Con transformacion
 palabras = ["hola", "mundo"]
 mayusculas = [p.upper() for p in palabras]
 # ["HOLA", "MUNDO"]
@@ -336,14 +336,14 @@ matriz = [[i*j for j in range(3)] for i in range(3)]
 
 ### Dict Comprehensions
 ```python
-# Básica
+# Basica
 cuadrados_dict = {x: x**2 for x in range(5)}
 # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
 
 # De listas
-nombres = ["Ana", "Luis", "María"]
+nombres = ["Ana", "Luis", "Maria"]
 longitudes = {n: len(n) for n in nombres}
-# {'Ana': 3, 'Luis': 4, 'María': 5}
+# {'Ana': 3, 'Luis': 4, 'Maria': 5}
 
 # Invertir diccionario
 original = {"a": 1, "b": 2}
@@ -353,7 +353,7 @@ invertido = {v: k for k, v in original.items()}
 
 ### Set Comprehensions
 ```python
-# Únicos
+# Unique
 unicos = {x % 3 for x in range(10)}
 # {0, 1, 2}
 ```
@@ -362,12 +362,12 @@ unicos = {x % 3 for x in range(10)}
 
 ### 1. Inconsistent Indentation
 ```python
-# ❌ Incorrecto
+# ❌ Incorrect
 def funcion():
   print("Hola")   # 2 espacios
     print("Mundo")  # 4 espacios
 
-# ✅ Correcto
+# ✅ Correct
 def funcion():
     print("Hola")   # 4 espacios
     print("Mundo")  # 4 espacios
@@ -381,13 +381,13 @@ lista2 = lista1        # ¡Misma referencia!
 lista2.append(4)
 print(lista1)          # [1, 2, 3, 4] ¡Modificada!
 
-# ✅ Correcto
+# ✅ Correct
 lista2 = lista1.copy()  # o lista1[:]
 ```
 
 ### 3. Default Mutable Arguments
 ```python
-# ❌ Incorrecto
+# ❌ Incorrect
 def agregar_item(item, lista=[]):
     lista.append(item)
     return lista
@@ -395,7 +395,7 @@ def agregar_item(item, lista=[]):
 agregar_item(1)  # [1]
 agregar_item(2)  # [1, 2] ¡Mantiene estado!
 
-# ✅ Correcto
+# ✅ Correct
 def agregar_item(item, lista=None):
     if lista is None:
         lista = []
@@ -415,4 +415,4 @@ def agregar_item(item, lista=None):
 
 ---
 
-**Siguiente**: Ver [pandas-reference.md](pandas-reference.md) para trabajar con datos
+**Siguiente**: Ver [pandas-reference.md](pandas-reference.md) para trabajar con data

@@ -1,12 +1,12 @@
-# Ejercicio 02: Data Structures
+# Exercise 02: Data Structures
 
-## Objetivos de Aprendizaje
+## Learning Objectives
 
 After completing this exercise, you will be able to:
 
 1. ✅ Trabajar con **listas**, **tuplas**, **diccionarios** y **sets**
 2. ✅ Usar **list/dict/set comprehensions** de forma efectiva
-3. ✅ Manipular estructuras de datos anidadas
+3. ✅ Manipular estructuras de data anidadas
 4. ✅ Aplicar operaciones avanzadas (filter, map, reduce)
 5. ✅ Optimize code using appropriate structures
 
@@ -17,15 +17,15 @@ After completing this exercise, you will be able to:
 ### Listas (list)
 
 ```python
-# Creación
+# Creation
 numeros = [1, 2, 3, 4, 5]
 vacia = []
 
 # Operaciones
 numeros.append(6)           # Agregar al final
-numeros.insert(0, 0)        # Insertar en posición
+numeros.insert(0, 0)        # Insertar en posicion
 numeros.remove(3)           # Remover primer 3
-ultimo = numeros.pop()      # Remover y retornar último
+ultimo = numeros.pop()      # Remover y retornar ultimo
 numeros.extend([7, 8])      # Extender lista
 
 # Slicing
@@ -41,7 +41,7 @@ pares = [x for x in range(20) if x % 2 == 0]
 ### Diccionarios (dict)
 
 ```python
-# Creación
+# Creation
 usuario = {"nombre": "Ana", "edad": 25}
 vacio = {}
 
@@ -55,7 +55,7 @@ usuario["email"] = "ana@example.com"  # Agregar/actualizar
 del usuario["edad"]                   # Eliminar
 edad = usuario.pop("edad", None)      # Eliminar y retornar
 
-# Iteración
+# Iteration
 for clave, valor in usuario.items():
     print(f"{clave}: {valor}")
 
@@ -67,7 +67,7 @@ cuadrados = {x: x**2 for x in range(5)}
 ### Sets (set)
 
 ```python
-# Creación
+# Creation
 numeros = {1, 2, 3, 4, 5}
 vacio = set()  # No {} (eso es dict)
 
@@ -90,7 +90,7 @@ pares = {x for x in range(20) if x % 2 == 0}
 ### Tuplas (tuple)
 
 ```python
-# Creación (inmutables)
+# Creation (inmutables)
 coordenadas = (10, 20)
 singleton = (1,)  # Nota la coma
 
@@ -107,7 +107,7 @@ print(p.x, p.y)
 
 ---
 
-## Ejercicios
+## Exercises
 
 ### 1. filtrar_pares(numeros) ⭐
 
@@ -178,7 +178,7 @@ Aplana una lista anidada.
 
 ```python
 assert flatten_list([[1, 2], [3, 4], [5]]) == [1, 2, 3, 4, 5]
-assert flatten_list([[1], [[2, 3]], [4]]) == [1, [2, 3], 4]  # Solo un nivel
+assert flatten_list([[1], [[2, 3]], [4]]) == [1, [2, 3], 4]  # Only one level
 ```
 
 ### 9. crear_matriz(rows, columns, valor) ⭐⭐
@@ -205,13 +205,13 @@ assert resultado == [[1, 4], [2, 5], [3, 6]]
 ## Execution
 
 ```bash
-# Ejecutar tests
+# Run tests
 pytest exercises/02-data-structures/tests/ -v
 
 # Con coverage
 pytest exercises/02-data-structures/tests/ --cov
 
-# Test específico
+# Test especifico
 pytest exercises/02-data-structures/tests/test_data_structures.py::test_filtrar_pares -v
 ```
 
@@ -223,7 +223,7 @@ pytest exercises/02-data-structures/tests/test_data_structures.py::test_filtrar_
 2. **Sets**: For quick searches and removing duplicates
 3. **get()**: Usa `.get()` en dicts para evitar KeyError
 4. **Unpacking**: Useful for returning multiple values
-5. **Inmutabilidad**: Tuplas para datos que no deben cambiar
+5. **Inmutabilidad**: Tuplas para data que no deben cambiar
 
 ---
 
@@ -235,6 +235,6 @@ pytest exercises/02-data-structures/tests/test_data_structures.py::test_filtrar_
 
 ---
 
-## Siguiente Paso
+## Next Step
 
-Una vez completado: ➡️ **Ejercicio 03: File Operations**
+Una vez completed: ➡️ **Exercise 03: File Operations**

@@ -2,7 +2,7 @@
 
 This folder contains 6 progressive exercises designed to build Python skills applied to data engineering. Each exercise includes theory, starter code with TODOs, complete solutions and automated tests.
 
-## Estructura de Ejercicios
+## Structure de Exercises
 
 ```
 exercises/
@@ -11,15 +11,15 @@ exercises/
 ├── 03-file-operations/         # CSV, JSON, Parquet
 ├── 04-pandas-fundamentals/     # DataFrames y operaciones
 ├── 05-data-transformation/     # ETL, joins, aggregations
-└── 06-error-handling/          # Logging, excepciones, producción
+└── 06-error-handling/          # Logging, excepciones, produccion
 ```
 
 ## How to Use the Exercises
 
 ### Option 1: Guided Mode (Recommended for Learning)
 
-1. **Read theory**: Open the`README.md` de cada ejercicio
-2. **Intentar starter**: Trabaja en `starter/ejercicio.py`
+1. **Read theory**: Open the `README.md` for each exercise
+2. **Try starter**: Work in `starter/exercise.py`
    - Busca los comentarios `# TODO:`
    - Implementa las funciones marcadas
 3. **Run tests**: Verify your solution
@@ -43,25 +43,25 @@ exercises/
 
 ---
 
-## Lista de Ejercicios
+## Lista de Exercises
 
-### 📘 Ejercicio 01: Python Basics
+### 📘 Exercise 01: Python Basics
 
 **Duration**: 1-2 hours
-**Dificultad**: ⭐☆☆☆☆
+**Difficulty**: ⭐☆☆☆☆
 
 **Temas**:
-- Variables y tipos de datos
+- Variables y tipos de data
 - Features and documentation
 - Control de flujo (if/else, loops)
 - Basic operations with strings and numbers
 
-**Objetivos**:
+**Objectives**:
 - Escribir funciones con type hints
 - Document code with docstrings
 - Handle edge cases (empty values, None)
 
-**Archivos**:
+**Files**:
 - `README.md`- Theory
 - `starter/basics.py`- Your code here
 - `solution/basics.py`- Complete solution
@@ -69,10 +69,10 @@ exercises/
 
 ---
 
-### 📗 Ejercicio 02: Data Structures
+### 📗 Exercise 02: Data Structures
 
 **Duration**: 2-3 hours
-**Dificultad**: ⭐⭐☆☆☆
+**Difficulty**: ⭐⭐☆☆☆
 
 **Temas**:
 - Listas y tuplas
@@ -81,12 +81,12 @@ exercises/
 - Dictionary comprehensions
 - Nested structures
 
-**Objetivos**:
-- Manipular estructuras de datos eficientemente
+**Objectives**:
+- Manipular estructuras de data eficientemente
 - Use comprehensions for concise code
-- Trabajar con datos nested
+- Trabajar con data nested
 
-**Archivos**:
+**Files**:
 - `README.md`- Theory
 - `starter/data_structures.py`- Your code here
 - `solution/data_structures.py`- Complete solution
@@ -95,25 +95,25 @@ exercises/
 
 ---
 
-### 📙 Ejercicio 03: File Operations
+### 📙 Exercise 03: File Operations
 
 **Duration**: 2-3 hours
-**Dificultad**: ⭐⭐⭐☆☆
+**Difficulty**: ⭐⭐⭐☆☆
 
 **Temas**:
-- Leer/escribir archivos de texto
+- Leer/escribir files de texto
 - CSV con csv module
 - JSON con json module
 - Parquet con pandas/pyarrow
 - Context managers
 
-**Objetivos**:
+**Objectives**:
 - Handle multiple file formats
 - Usar encoding correcto (UTF-8)
 - Implementar error handling robusto
 - Work with real module data
 
-**Archivos**:
+**Files**:
 - `README.md`- Theory
 - `starter/file_io.py`- Your code here
 - `solution/file_io.py`- Complete solution
@@ -121,10 +121,10 @@ exercises/
 
 ---
 
-### 📕 Ejercicio 04: Pandas Fundamentals
+### 📕 Exercise 04: Pandas Fundamentals
 
 **Duration**: 3-4 hours
-**Dificultad**: ⭐⭐⭐☆☆
+**Difficulty**: ⭐⭐⭐☆☆
 
 **Temas**:
 - Crear DataFrames
@@ -133,13 +133,13 @@ exercises/
 - Merge y join
 - Basic data cleaning
 
-**Objetivos**:
+**Objectives**:
 - Dominar operaciones core de pandas
-- Limpiar datos sucios (nulls, duplicados)
+- Limpiar data sucios (nulls, duplicados)
 - Perform exploratory analysis
 - Use real data from the module
 
-**Archivos**:
+**Files**:
 - `README.md`- Theory
 - `starter/pandas_basics.py`- Your code here
 - `solution/pandas_basics.py`- Complete solution
@@ -148,10 +148,10 @@ exercises/
 
 ---
 
-### 📔 Ejercicio 05: Data Transformation
+### 📔 Exercise 05: Data Transformation
 
 **Duration**: 3-4 hours
-**Dificultad**: ⭐⭐⭐⭐☆
+**Difficulty**: ⭐⭐⭐⭐☆
 
 **Temas**:
 - ETL pipelines
@@ -160,13 +160,13 @@ exercises/
 - Pivot y reshape
 - Data validation
 
-**Objetivos**:
+**Objectives**:
 - Construir pipeline ETL completo
 - Normalizar estructuras nested
 - Integrate multiple datasets
 - Calculate business metrics
 
-**Archivos**:
+**Files**:
 - `README.md`- Theory
 - `starter/transformation.py`- Your code here
 - `solution/transformation.py`- Complete solution
@@ -175,10 +175,10 @@ exercises/
 
 ---
 
-### 📓 Ejercicio 06: Error Handling & Production
+### 📓 Exercise 06: Error Handling & Production
 
 **Duration**: 2-3 hours
-**Dificultad**: ⭐⭐⭐⭐☆
+**Difficulty**: ⭐⭐⭐⭐☆
 
 **Temas**:
 - Try/except/finally
@@ -187,13 +187,13 @@ exercises/
 - Input validation
 - Retry logic
 
-**Objetivos**:
+**Objectives**:
 - Write production-ready code
 - Manejar errores elegantemente
 - Implement useful logging
-- Validar datos con schemas
+- Validate data con schemas
 
-**Archivos**:
+**Files**:
 - `README.md`- Theory
 - `starter/error_handling.py`- Your code here
 - `solution/error_handling.py`- Complete solution
@@ -204,10 +204,10 @@ exercises/
 
 ## Test Execution
 
-### Ejecutar todos los tests
+### Run todos los tests
 
 ```bash
-# Desde la raíz del módulo
+# Desde la raiz del modulo
 pytest exercises/ -v
 
 # Con coverage
@@ -227,7 +227,7 @@ pytest exercises/04-pandas-fundamentals/tests/ -v
 pytest exercises/01-python-basics/tests/test_basics.py::test_suma -v
 ```
 
-### Ejecutar tests con output detallado
+### Run tests con output detallado
 
 ```bash
 pytest exercises/ -v -s  # -s muestra prints
@@ -256,12 +256,12 @@ pytest exercises/ -v -s  # -s muestra prints
 
 ### 🎯 Antes de Empezar
 
-1. **Lee el README completo** del ejercicio
+1. **Read the full README** for the exercise
 2. **Watch the tests** to understand what to expect
 3. **Experiment in notebook** before writing code
-4. **Usa los datos reales** de `data/raw/`
+4. **Usa los data reales** de `data/raw/`
 
-### 💡 Durante el Ejercicio
+### 💡 Durante el Exercise
 
 1. **No copies-pegues** solution - aprende escribiendo
 2. **Run tests frequently** (each function)
@@ -305,24 +305,24 @@ pytest exercises/ -v -s  # -s muestra prints
 # Ver error detallado
 pytest exercises/01-python-basics/tests/ -v -s
 
-# Ver qué línea falla exactamente
+# Ver que linea falla exactamente
 pytest exercises/01-python-basics/tests/ --tb=long
 ```
 
 ### Import errors
 
 ```bash
-# Asegurarte de estar en la raíz del módulo
+# Asegurarte de estar en la raiz del modulo
 cd /path/to/module-04-python-for-data
 
 # O ajustar PYTHONPATH
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 ```
 
-### Datos no encontrados
+### Data no encontrados
 
 ```bash
-# Verificar que los datos existen
+# Verificar que los data existen
 ls -lh data/raw/
 
 # Regenerar si es necesario
@@ -349,7 +349,7 @@ pip install -r requirements.txt
 | Exercise | Test Passing | Estimated Time | Comprehension |
 |-----------|---------------|-----------------|-------------|
 | 01 - Python Basics | 15/15 ✅ | 1-2h | Basic syntax |
-| 02 - Data Structures | 20/20 ✅ | 2-3h | Estructuras core |
+| 02 - Data Structures | 20/20 ✅ | 2-3h | Structures core |
 | 03 - File Operations | 18/18 ✅ | 2-3h | I/O multi-formato |
 | 04 - Pandas Fundamentals | 25/25 ✅ | 3-4h | DataFrames |
 | 05 - Data Transformation | 22/22 ✅ | 3-4h | ETL completo |
@@ -373,11 +373,11 @@ After each exercise, ask yourself:
 
 After completing the 6 exercises, build a **complete ETL pipeline**:
 
-**Objetivo**: Procesar todos los datasets y generar un reporte de negocio
+**Objective**: Procesar todos los datasets y generar un reporte de negocio
 
 **Requerimientos**:
 1. Leer los 5 datasets (CSV, JSON)
-2. Limpiar datos (duplicados, nulls, inconsistencias)
+2. Limpiar data (duplicados, nulls, inconsistencias)
 3. Integrar con joins (customers ← orders ← transactions)
 4. Calculate metrics:
    - Total revenue and by country
@@ -385,23 +385,23 @@ After completing the 6 exercises, build a **complete ETL pipeline**:
    - Customer lifetime value
    - Conversion rate del funnel
 5. Exportar resultados a CSV y JSON
-6. Logging completo de cada paso
+6. Complete logging for each step
 7. Tests unitarios (>80% coverage)
 
 **Tiempo estimado**: 8-10 horas
 
 ---
 
-## Siguiente Paso
+## Next Step
 
 After completing these exercises:
 
-➡️ **Paso 6: Validation** - Tests automatizados integrados  
-➡️ **Paso 7: Assets** - Cheatsheets y diagramas de referencia  
+➡️ **Step 6: Validation** - Tests automatizados integrados  
+➡️ **Step 7: Assets** - Cheatsheets y diagramas de referencia  
 ➡️ **Step 8: Scripts & Docs** - Automation and troubleshooting
 
 ---
 
 **Happy coding! 🐍🐼**
 
-Doubts? Review`theory/` o query los `examples/` en cada ejercicio.
+Doubts? Review`theory/` or check the `examples/` in each exercise.

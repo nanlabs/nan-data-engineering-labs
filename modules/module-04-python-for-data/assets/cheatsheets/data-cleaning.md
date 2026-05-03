@@ -13,13 +13,13 @@ def clean_data(df):
     # 2. Manejar valores nulos
     df = handle_missing_values(df)
     
-    # 3. Corregir tipos de datos
+    # 3. Corregir tipos de data
     df = fix_data_types(df)
     
     # 4. Normalizar strings
     df = normalize_strings(df)
     
-    # 5. Validar rangos
+    # 5. Validate rangos
     df = validate_ranges(df)
     
     # 6. Remover outliers
@@ -33,12 +33,12 @@ def clean_data(df):
 ### Initial Analysis
 ```python
 def data_quality_report(df):
-    """Reporte completo de calidad de datos"""
+    """Reporte completo de calidad de data"""
     print("=" * 50)
     print("DATA QUALITY REPORT")
     print("=" * 50)
     
-    # Información general
+    # Informacion general
     print(f"\n📊 General Info:")
     print(f"   Total filas: {len(df):,}")
     print(f"   Total columnas: {len(df.columns)}")
@@ -56,17 +56,17 @@ def data_quality_report(df):
     duplicates = df.duplicated().sum()
     print(f"\n🔄 Duplicates: {duplicates:,} ({duplicates/len(df)*100:.2f}%)")
     
-    # Tipos de datos
+    # Tipos de data
     print(f"\n📝 Data Types:")
     for dtype, cols in df.dtypes.groupby(df.dtypes).items():
         print(f"   {dtype}: {len(cols)} columnas")
     
-    # Valores únicos
+    # Valores unicos
     print(f"\n🎯 Unique Values:")
     for col in df.columns:
         unique = df[col].nunique()
-        if unique < 20:  # Solo mostrar si hay pocos únicos
-            print(f"   {col}: {unique} únicos")
+        if unique < 20:  # Solo mostrar si hay pocos unicos
+            print(f"   {col}: {unique} unicos")
     
     return {
         'total_rows': len(df),
@@ -78,7 +78,7 @@ def data_quality_report(df):
 ### Identificar Outliers
 ```python
 def detect_outliers_iqr(df, column):
-    """Detectar outliers usando método IQR"""
+    """Detectar outliers usando metodo IQR"""
     Q1 = df[column].quantile(0.25)
     Q3 = df[column].quantile(0.75)
     IQR = Q3 - Q1
@@ -92,7 +92,7 @@ def detect_outliers_iqr(df, column):
     ]
     
     print(f"Outliers en {column}:")
-    print(f"  Rango válido: [{lower_bound:.2f}, {upper_bound:.2f}]")
+    print(f"  Rango valido: [{lower_bound:.2f}, {upper_bound:.2f}]")
     print(f"  Outliers encontrados: {len(outliers)}")
     
     return outliers
@@ -119,10 +119,10 @@ def detect_outliers_zscore(df, column, threshold=3):
 # Eliminar filas con cualquier null
 df_clean = df.dropna()
 
-# Eliminar solo si columnas críticas tienen null
+# Eliminar solo si columnas criticas tienen null
 df_clean = df.dropna(subset=['customer_id', 'transaction_date'])
 
-# Eliminar si más del 50% de la fila es null
+# Eliminar si mas del 50% de la fila es null
 threshold = len(df.columns) * 0.5
 df_clean = df.dropna(thresh=threshold)
 
@@ -140,18 +140,18 @@ df['edad'].fillna(df['edad'].mean(), inplace=True)
 # Mediana (robusta a outliers)
 df['salario'].fillna(df['salario'].median(), inplace=True)
 
-# Moda (más común)
+# Moda (mas comun)
 df['ciudad'].fillna(df['ciudad'].mode()[0], inplace=True)
 
 # Valor fijo
 df['descuento'].fillna(0, inplace=True)
 
-# Interpolación (datos temporales)
+# Interpolacion (data temporales)
 df['temperatura'] = df['temperatura'].interpolate(method='linear')
 
 # Forward/Backward fill
 df['precio'] = df['precio'].fillna(method='ffill')  # Propagar hacia adelante
-df['precio'] = df['precio'].fillna(method='bfill')  # Propagar hacia atrás
+df['precio'] = df['precio'].fillna(method='bfill')  # Propagar hacia atras
 ```
 
 #### 3. Imputation by Groups
@@ -175,14 +175,14 @@ from sklearn.impute import SimpleImputer, KNNImputer
 imputer = SimpleImputer(strategy='mean')
 df[['edad', 'salario']] = imputer.fit_transform(df[['edad', 'salario']])
 
-# KNN Imputer (usa vecinos más cercanos)
+# KNN Imputer (usa vecinos mas cercanos)
 imputer = KNNImputer(n_neighbors=5)
 df[['edad', 'salario']] = imputer.fit_transform(df[['edad', 'salario']])
 ```
 
 ### Crear Indicadores de Nulls
 ```python
-# Flag para indicar si había null (puede ser importante para ML)
+# Flag para indicar si habia null (puede ser importante para ML)
 df['edad_was_null'] = df['edad'].isnull().astype(int)
 df['edad'].fillna(df['edad'].median(), inplace=True)
 ```
@@ -194,7 +194,7 @@ df['edad'].fillna(df['edad'].median(), inplace=True)
 # Duplicados exactos
 duplicates = df[df.duplicated(keep=False)]
 
-# Duplicados por columnas específicas
+# Duplicados por columnas especificas
 duplicates = df[df.duplicated(subset=['customer_id', 'fecha'], keep=False)]
 
 # Ver grupos de duplicados
@@ -209,13 +209,13 @@ for group_id, group in df.groupby(['customer_id', 'fecha']):
 # Mantener primera ocurrencia
 df_clean = df.drop_duplicates(keep='first')
 
-# Mantener última ocurrencia (más reciente)
+# Mantener ultima ocurrencia (mas reciente)
 df_clean = df.drop_duplicates(keep='last')
 
 # Eliminar todas las ocurrencias
 df_clean = df.drop_duplicates(keep=False)
 
-# Por columnas específicas, mantener fila con valor max
+# Por columnas especificas, mantener fila con valor max
 df_clean = df.sort_values('fecha').drop_duplicates(
     subset=['customer_id'], 
     keep='last'
@@ -224,7 +224,7 @@ df_clean = df.sort_values('fecha').drop_duplicates(
 
 ### Aggregation instead of Deletion
 ```python
-# Si duplicados son válidos, agregar
+# Si duplicados son validos, agregar
 df_agg = df.groupby(['customer_id', 'fecha']).agg({
     'monto': 'sum',
     'cantidad': 'sum',
@@ -236,7 +236,7 @@ df_agg = df.groupby(['customer_id', 'fecha']).agg({
 
 ### Conversiones Comunes
 ```python
-# Numéricos
+# Numericos
 df['edad'] = pd.to_numeric(df['edad'], errors='coerce')  # NaN si falla
 df['precio'] = df['precio'].astype(float)
 
@@ -248,14 +248,14 @@ df['fecha'] = pd.to_datetime(df['fecha'], format='%Y-%m-%d')
 df['activo'] = df['activo'].map({'Yes': True, 'No': False})
 df['activo'] = df['activo'].astype(bool)
 
-# Categorías (ahorra memoria)
+# Categorias (ahorra memoria)
 df['ciudad'] = df['ciudad'].astype('category')
 df['estado'] = pd.Categorical(df['estado'], categories=['bajo', 'medio', 'alto'], ordered=True)
 ```
 
 ### Cleaning Before Conversion
 ```python
-# Limpiar strings antes de convertir a número
+# Limpiar strings antes de convertir a numero
 df['precio'] = df['precio'].str.replace('$', '').str.replace(',', '')
 df['precio'] = pd.to_numeric(df['precio'], errors='coerce')
 
@@ -278,11 +278,11 @@ def normalize_strings(df):
         # Eliminar espacios en blanco
         df[col] = df[col].str.strip()
         
-        # Minúsculas (opcional, depende del caso)
+        # Minusculas (opcional, depende del caso)
         if col in ['email', 'username']:
             df[col] = df[col].str.lower()
         
-        # Reemplazar múltiples espacios
+        # Reemplazar multiples espacios
         df[col] = df[col].str.replace(r'\s+', ' ', regex=True)
         
         # Remover caracteres especiales (si aplica)
@@ -293,8 +293,8 @@ def normalize_strings(df):
 
 ### Specific Cases
 ```python
-# Teléfonos (formato uniforme)
-df['telefono'] = df['telefono'].str.replace(r'\D', '', regex=True)  # Solo dígitos
+# Telefonos (formato uniforme)
+df['telefono'] = df['telefono'].str.replace(r'\D', '', regex=True)  # Solo digitos
 
 # Emails (lowercase, trim)
 df['email'] = df['email'].str.lower().str.strip()
@@ -302,7 +302,7 @@ df['email'] = df['email'].str.lower().str.strip()
 # Nombres (Title Case)
 df['nombre'] = df['nombre'].str.title()
 
-# Códigos postales (padding con ceros)
+# Codigos postales (padding con ceros)
 df['codigo_postal'] = df['codigo_postal'].astype(str).str.zfill(5)
 ```
 
@@ -312,7 +312,7 @@ df['codigo_postal'] = df['codigo_postal'].astype(str).str.zfill(5)
 ```python
 def validate_numeric_ranges(df, rules):
     """
-    Validar rangos numéricos
+    Validate rangos numericos
     
     rules = {
         'edad': {'min': 0, 'max': 120},
@@ -326,13 +326,13 @@ def validate_numeric_ranges(df, rules):
         if col not in df.columns:
             continue
         
-        # Validar mínimo
+        # Validate minimo
         if bounds.get('min') is not None:
             invalid = df[df[col] < bounds['min']]
             if len(invalid) > 0:
                 issues.append(f"{col}: {len(invalid)} valores < {bounds['min']}")
         
-        # Validar máximo
+        # Validate maximo
         if bounds.get('max') is not None:
             invalid = df[df[col] > bounds['max']]
             if len(invalid) > 0:
@@ -343,13 +343,13 @@ def validate_numeric_ranges(df, rules):
         for issue in issues:
             print(f"  - {issue}")
     else:
-        print("✅ Todos los valores dentro de rangos válidos")
+        print("✅ Todos los valores dentro de rangos validos")
     
     return issues
 
 # Corregir valores fuera de rango
 def fix_ranges(df, column, min_val=None, max_val=None):
-    """Clip valores a rangos válidos"""
+    """Clip valores a rangos validos"""
     if min_val is not None and max_val is not None:
         df[column] = df[column].clip(min_val, max_val)
     elif min_val is not None:
@@ -363,7 +363,7 @@ def fix_ranges(df, column, min_val=None, max_val=None):
 ### Relationship Validation
 ```python
 def validate_relationships(df):
-    """Validar relaciones lógicas entre columnas"""
+    """Validate relaciones logicas entre columnas"""
     issues = []
     
     # Fecha inicio < Fecha fin
@@ -423,7 +423,7 @@ def cap_outliers(df, column, lower_percentile=0.01, upper_percentile=0.99):
 def comprehensive_cleaning_pipeline(df):
     """Pipeline completo de limpieza"""
     
-    print("🔍 Análisis inicial...")
+    print("🔍 Analisis inicial...")
     initial_report = data_quality_report(df)
     
     # 1. Crear copia
@@ -440,7 +440,7 @@ def comprehensive_cleaning_pipeline(df):
     df_clean = normalize_strings(df_clean)
     
     # 4. Corregir tipos
-    print("\n🔧 Corrigiendo tipos de datos...")
+    print("\n🔧 Corrigiendo tipos de data...")
     if 'fecha' in df_clean.columns:
         df_clean['fecha'] = pd.to_datetime(df_clean['fecha'], errors='coerce')
     
@@ -457,14 +457,14 @@ def comprehensive_cleaning_pipeline(df):
     if 'ciudad' in df_clean.columns:
         df_clean['ciudad'].fillna('Desconocido', inplace=True)
     
-    # 6. Validar rangos
+    # 6. Validate rangos
     print("\n✅ Validando rangos...")
     validate_numeric_ranges(df_clean, {
         'edad': {'min': 0, 'max': 120},
         'precio': {'min': 0, 'max': None}
     })
     
-    # 7. Remover outliers en columnas numéricas
+    # 7. Remover outliers en columnas numericas
     print("\n🎯 Removiendo outliers...")
     for col in ['precio', 'cantidad']:
         if col in df_clean.columns:
@@ -473,10 +473,10 @@ def comprehensive_cleaning_pipeline(df):
             print(f"   {col}: {before - len(df_clean)} filas removidas")
     
     # 8. Reporte final
-    print("\n📊 Análisis final...")
+    print("\n📊 Analisis final...")
     final_report = data_quality_report(df_clean)
     
-    print(f"\n✨ Limpieza completada:")
+    print(f"\n✨ Cleaning completada:")
     print(f"   Filas iniciales: {initial_rows:,}")
     print(f"   Filas finales: {len(df_clean):,}")
     print(f"   Filas removidas: {initial_rows - len(df_clean):,} ({(1 - len(df_clean)/initial_rows)*100:.1f}%)")

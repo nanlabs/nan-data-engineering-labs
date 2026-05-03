@@ -7,10 +7,10 @@ This folder contains the Docker configuration for running Jupyter Lab and suppor
 ```
 infrastructure/
 ├── Dockerfile              # Imagen personalizada de Jupyter Lab
-├── docker-compose.yml      # Orquestación de servicios
-├── .env.example           # Template de variables de entorno
-├── jupyter_config.py      # Configuración de Jupyter Lab
-└── README.md              # Este archivo
+├── docker-compose.yml      # Service orchestration
+├── .env.example           # Template de variables de environment
+├── jupyter_config.py      # Configuration de Jupyter Lab
+└── README.md              # Este file
 ```
 
 ## services Disponibles
@@ -35,7 +35,7 @@ infrastructure/
 
 **Imagen**: `postgres:15-alpine`
 
-**Uso**: Para ejercicios que requieren conectar Python con databases
+**Uso**: For exercises that require connecting Python to databases
 
 **Acceso**:
 - Host: `localhost`(from machine) or`postgres` (desde Jupyter)
@@ -57,7 +57,7 @@ infrastructure/
 
 ## Quick Setup
 
-### 1. Copiar variables de entorno
+### 1. Copiar variables de environment
 
 ```bash
 # Desde la carpeta infrastructure/
@@ -105,10 +105,10 @@ docker-compose logs -f jupyter
 # Detener servicios
 docker-compose down
 
-# Detener y eliminar volúmenes (⚠️ elimina datos)
+# Stop and remove volumes (⚠️ removes data)
 docker-compose down -v
 
-# Reiniciar un servicio específico
+# Restart a specific service
 docker-compose restart jupyter
 
 # Ver estado de servicios
@@ -118,10 +118,10 @@ docker-compose ps
 ### Build y Debugging
 
 ```bash
-# Reconstruir imagen (después de modificar Dockerfile)
+# Rebuild image (after modifying Dockerfile)
 docker-compose build --no-cache jupyter
 
-# Ejecutar comando en container
+# Run comando en container
 docker-compose exec jupyter bash
 
 # Ver uso de recursos
@@ -134,7 +134,7 @@ docker inspect python-data-jupyter
 ### Mantenimiento
 
 ```bash
-# Limpiar imágenes no usadas
+# Clean unused images
 docker system prune -a
 
 # Ver espacio usado
@@ -156,13 +156,13 @@ The following module directories are mounted in the container:
 | Local | Container | Description |
 |-------|-----------|-------------|
 | `./notebooks` | `/home/jovyan/work/notebooks`| Your exploration notebooks |
-| `../data` | `/home/jovyan/work/data` | Datasets y archivos de datos |
+| `../data` | `/home/jovyan/work/data` | Datasets y files de data |
 
 ### Read-Only Volumes
 
 | Local | Container | Description |
 |-------|-----------|-------------|
-| `../exercises` | `/home/jovyan/work/exercises` | Ejercicios (evita sobrescribir) |
+| `../exercises` | `/home/jovyan/work/exercises` | Exercises (evita sobrescribir) |
 | `../scripts` | `/home/jovyan/work/scripts` | Scripts de utilidad |
 | `../assets` | `/home/jovyan/work/assets` | Cheatsheets y resources |
 
@@ -179,7 +179,7 @@ File with custom configuration:
 - **Autoreload**: Automatic reload of modified modules
 - **Autosave**: Automatic save every minute
 - **Plots**: Inline matplotlib configuration
-- **Logging**: Formato y nivel de logs
+- **Logging**: Log format and level
 - **Security**: CORS y acceso remoto
 
 **Modify settings**:
@@ -191,7 +191,7 @@ File with custom configuration:
 
 - **jupyterlab-git**: Integration with Git
 - **jupyterlab-code-formatter**: Automatic formatting (Black)
-- **jupyterlab-lsp**: Language Server Protocol (autocompletado mejorado)
+- **jupyterlab-lsp**: Language Server Protocol (autocompleted mejorado)
 - **jupyterlab-system-monitor**: Monitor de resources
 
 ---
@@ -232,16 +232,16 @@ engine = create_engine(DATABASE_URL)
 df = pd.read_sql("SELECT * FROM mi_tabla", engine)
 ```
 
-### Leer/Escribir Archivos
+### Leer/Escribir Files
 
 ```python
 # Leer CSV
-df = pd.read_csv('/home/jovyan/work/data/raw/datos.csv')
+df = pd.read_csv('/home/jovyan/work/data/raw/data.csv')
 
 # Escribir Parquet
-df.to_parquet('/home/jovyan/work/data/processed/datos.parquet')
+df.to_parquet('/home/jovyan/work/data/processed/data.parquet')
 
-# Los archivos persisten en tu máquina local
+# Files persist on your local machine
 ```
 
 ---
@@ -256,10 +256,10 @@ df.to_parquet('/home/jovyan/work/data/processed/datos.parquet')
 ### Useful Commands in Terminal
 
 ```bash
-# Ver estructura de archivos
+# Ver estructura de files
 tree /home/jovyan/work
 
-# Ejecutar script Python
+# Run script Python
 python /home/jovyan/work/scripts/mi_script.py
 
 # Instalar paquete adicional (temporal)
@@ -281,7 +281,7 @@ pg_isready -h postgres -p 5432
 1. Editar `docker-compose.yml`
 2. Uncomment section`postgres`
 3. Descomentar volumen `postgres_data`
-4. Guardar y ejecutar:
+4. Guardar y run:
 
 ```bash
 docker-compose up -d postgres
@@ -292,7 +292,7 @@ docker-compose up -d postgres
 1. Editar `docker-compose.yml`
 2. Uncomment section`minio`
 3. Descomentar volumen `minio_data`
-4. Guardar y ejecutar:
+4. Guardar y run:
 
 ```bash
 docker-compose up -d minio
@@ -333,7 +333,7 @@ docker-compose up -d --build
 
 ```dockerfile
 # Editar infrastructure/Dockerfile
-# Agregar en la sección apropiada:
+# Add in the appropriate section:
 RUN pip install --no-cache-dir nueva-libreria==1.0.0
 
 # Reconstruir
@@ -355,7 +355,7 @@ docker-compose up -d
 # Ver logs detallados
 docker-compose logs jupyter
 
-# Verificar sintaxis de archivos
+# Verificar sintaxis de files
 docker-compose config
 
 # Reconstruir desde cero
@@ -371,10 +371,10 @@ docker-compose up -d
 **Solution**:
 
 ```bash
-# Opción 1: Cambiar puerto en .env
+# Option 1: Change port in .env
 JUPYTER_PORT=8889
 
-# Opción 2: Detener proceso que usa el puerto
+# Option 2: Stop process using the port
 lsof -i :8888
 kill -9 <PID>
 ```
@@ -398,13 +398,13 @@ docker-compose restart jupyter
 
 ### Problema: Out of Memory
 
-**Yesntomas**: Kernel muere procesando datos grandes
+**Yesntomas**: Kernel muere procesando data grandes
 
 **Solution**:
 
 ```bash
 # Editar docker-compose.yml
-# Aumentar límite de memoria:
+# Increase memory limit:
 deploy:
   resources:
     limits:
@@ -436,7 +436,7 @@ docker-compose up -d
 **Solution**:
 
 ```bash
-# 1. Verificar que postgres está corriendo
+# 1. Verify postgres is running
 docker-compose ps postgres
 
 # 2. Verificar health
@@ -523,7 +523,7 @@ secrets:
     file: ./secrets/postgres_password.txt
 ```
 
-### 4. Ejecutar container como usuario no-root
+### 4. Run container como usuario no-root
 
 Ya configurado con usuario `jovyan` (non-root) en la imagen base.
 
@@ -537,7 +537,7 @@ Ya configurado con usuario `jovyan` (non-root) en la imagen base.
 # Backup manual
 tar -czf notebooks-backup-$(date +%Y%m%d).tar.gz notebooks/
 
-# Script de backup automático (agregar a cron)
+# Automatic backup script (add to cron)
 #!/bin/bash
 docker-compose exec jupyter bash -c "tar -czf /home/jovyan/work/notebooks-backup-$(date +%Y%m%d).tar.gz /home/jovyan/work/notebooks"
 ```
@@ -609,7 +609,7 @@ After configuring the infrastructure:
 
 **Unresolved problems?**
 
-See complete troubleshooting guide at`docs/troubleshooting.md` (creado en Paso 8)
+See complete troubleshooting guide at`docs/troubleshooting.md` (creado en Step 8)
 
 **Suggestions for improvement?**
 

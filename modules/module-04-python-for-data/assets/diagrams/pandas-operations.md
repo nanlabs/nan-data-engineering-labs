@@ -6,7 +6,7 @@
 flowchart LR
     A[DataFrame] --> B[Index<br/>Filas]
     A --> C[Columns<br/>Nombres]
-    A --> D[Values<br/>Datos]
+    A --> D[Values<br/>Data]
     A --> E[dtypes<br/>Tipos]
     
     B --> F["0, 1, 2, ..."]
@@ -27,19 +27,19 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[Selección de Datos] --> B{Método}
+    A[Selection de Data] --> B{Metodo}
     
     B -->|loc| C[Por Etiquetas]
     C --> D["df.loc[0]<br/>df.loc[0:5]"]
     C --> E["df.loc[df['edad'] > 25]"]
     C --> F["df.loc[:, ['col1', 'col2']]"]
     
-    B -->|iloc| G[Por Posición]
+    B -->|iloc| G[Por Posicion]
     G --> H["df.iloc[0]<br/>df.iloc[0:5]"]
     G --> I["df.iloc[[0, 2, 4]]"]
     G --> J["df.iloc[:, [0, 2]]"]
     
-    B -->|Boolean| K[Máscaras]
+    B -->|Boolean| K[Mascaras]
     K --> L["df[df['edad'] > 25]"]
     K --> M["df[df['ciudad'] == 'Madrid']"]
     
@@ -126,22 +126,22 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[📊 DataFrame] --> B[GroupBy Column]
-    B --> C{Operación}
+    B --> C{Operacion}
     
-    C --> D[Agregación]
+    C --> D[Agregacion]
     D --> E[sum]
     D --> F[mean]
     D --> G[count]
     D --> H[min/max]
     
-    C --> I[Transformación]
+    C --> I[Transformacion]
     I --> J[standardize]
     I --> K[normalize]
     
     C --> L[Filtrado]
     L --> M[filter groups]
     
-    C --> N[Aplicar Función]
+    C --> N[Aplicar Funcion]
     N --> O[apply custom]
     
     E --> P[📈 Resultado]
@@ -196,7 +196,7 @@ flowchart LR
     style OUTPUT fill:#c8e6c9
 ```
 
-## 🧹 pipeline de Limpieza
+## 🧹 pipeline de Cleaning
 
 ```mermaid
 flowchart TD
@@ -205,7 +205,7 @@ flowchart TD
     B --> C[Nulls<br/>Encontrados]
     B --> D[Duplicados<br/>Encontrados]
     B --> E[Outliers<br/>Encontrados]
-    B --> F[Tipos<br/>Incorrectos]
+    B --> F[Tipos<br/>Incorrects]
     
     C --> C1{Estrategia}
     C1 --> C2[Eliminar]
@@ -216,7 +216,7 @@ flowchart TD
     D --> D1[Drop Duplicates]
     D1 --> D2[Keep: first/last]
     
-    E --> E1{Método}
+    E --> E1{Metodo}
     E1 --> E2[IQR]
     E1 --> E3[Z-Score]
     E1 --> E4[Cap Values]
@@ -250,15 +250,15 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[📊 Sales Data] --> B[GroupBy]
-    B --> C[Nivel 1: País]
-    C --> D[Nivel 2: Ciudad]
-    D --> E[Nivel 3: Tienda]
+    B --> C[Level 1: Pais]
+    C --> D[Level 2: Ciudad]
+    D --> E[Level 3: Tienda]
     
-    E --> F{Métricas}
+    E --> F{Metricas}
     F --> G[Total Ventas<br/>sum]
     F --> H[Promedio<br/>mean]
     F --> I[Transacciones<br/>count]
-    F --> J[Productos Únicos<br/>nunique]
+    F --> J[Unique Products<br/>nunique]
     
     G --> K[📊 Multi-Index<br/>DataFrame]
     H --> K
@@ -267,7 +267,7 @@ flowchart TD
     
     K --> L{Output}
     L --> M[Tabla Pivote]
-    L --> N[Jerarquía]
+    L --> N[Jerarquia]
     L --> O[Flat Table<br/>reset_index]
     
     style A fill:#e3f2fd
@@ -287,17 +287,17 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph LONG[" Formato Largo"]
-        A1[País: USA<br/>Año: 2023<br/>Ventas: 100]
-        A2[País: USA<br/>Año: 2024<br/>Ventas: 120]
-        A3[País: MX<br/>Año: 2023<br/>Ventas: 80]
-        A4[País: MX<br/>Año: 2024<br/>Ventas: 90]
+        A1[Pais: USA<br/>Ano: 2023<br/>Ventas: 100]
+        A2[Pais: USA<br/>Ano: 2024<br/>Ventas: 120]
+        A3[Pais: MX<br/>Ano: 2023<br/>Ventas: 80]
+        A4[Pais: MX<br/>Ano: 2024<br/>Ventas: 90]
     end
     
     LONG --> P[Pivot]
     P --> WIDE
     
     subgraph WIDE[" Formato Ancho"]
-        B1["País | 2023 | 2024"]
+        B1["Pais | 2023 | 2024"]
         B2["USA  | 100  | 120"]
         B3["MX   | 80   | 90"]
     end
@@ -311,7 +311,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph WIDE2[" Formato Ancho"]
-        C1["País | 2023 | 2024"]
+        C1["Pais | 2023 | 2024"]
         C2["USA  | 100  | 120"]
     end
     
@@ -319,8 +319,8 @@ flowchart LR
     M --> LONG2
     
     subgraph LONG2[" Formato Largo"]
-        D1[País: USA<br/>Año: 2023<br/>Valor: 100]
-        D2[País: USA<br/>Año: 2024<br/>Valor: 120]
+        D1[Pais: USA<br/>Ano: 2023<br/>Valor: 100]
+        D2[Pais: USA<br/>Ano: 2024<br/>Valor: 120]
     end
     
     style WIDE2 fill:#c8e6c9
@@ -367,9 +367,9 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[DataFrame/Series] --> B{Método}
+    A[DataFrame/Series] --> B{Metodo}
     
-    B -->|apply| C[Aplicar Función]
+    B -->|apply| C[Aplicar Funcion]
     C --> C1{Axis}
     C1 --> C2[axis=0<br/>Por Columna]
     C1 --> C3[axis=1<br/>Por Fila]
@@ -398,7 +398,7 @@ flowchart TD
 
 ## 🔢 Operaciones Vectorizadas vs Loops
 
-### ❌ Loop (Lento)
+### ❌ Loop (Slow)
 ```mermaid
 flowchart TD
     A[For Loop] --> B[Fila 1]
@@ -420,8 +420,8 @@ flowchart TD
 ### ✅ Vectorized (Fast)
 ```mermaid
 flowchart LR
-    A[Operación<br/>Vectorizada] --> B[Todas las Filas]
-    B --> C[Una Operación]
+    A[Operacion<br/>Vectorizada] --> B[Todas las Filas]
+    B --> C[Una Operacion]
     C --> D[Resultado]
     
     style A fill:#c8e6c9
@@ -434,26 +434,26 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[Operación Lenta] --> B{Diagnóstico}
+    A[Operacion Lenta] --> B{Diagnostico}
     
     B --> C[¿Usando Loop?]
-    C -->|Sí| D[Vectorizar]
+    C -->|Si| D[Vectorizar]
     D --> D1[Operaciones Pandas]
     D --> D2[NumPy Arrays]
     
     B --> E[¿Muchas Columnas?]
-    E -->|Sí| F[Seleccionar Solo<br/>Necesarias]
+    E -->|Si| F[Seleccionar Solo<br/>Necesarias]
     
-    B --> G[¿Tipos Incorrectos?]
-    G -->|Sí| H[Optimizar Tipos]
+    B --> G[¿Tipos Incorrects?]
+    G -->|Si| H[Optimizar Tipos]
     H --> H1[int64 → int32]
     H --> H2[object → category]
     
     B --> I[¿Operaciones<br/>Repetidas?]
-    I -->|Sí| J[Cache Results]
+    I -->|Si| J[Cache Results]
     
-    B --> K[¿Archivo Grande?]
-    K -->|Sí| L[Chunks/Dask]
+    B --> K[¿File Grande?]
+    K -->|Si| L[Chunks/Dask]
     
     D1 --> M[⚡ Optimizado]
     D2 --> M
@@ -523,7 +523,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[100K Rows Operation] --> B{Método}
+    A[100K Rows Operation] --> B{Metodo}
     
     B --> C[Python Loop]
     C --> C1[⏱️ 10 segundos]

@@ -1,9 +1,9 @@
-# Ejercicio 05: Data Transformation
+# Exercise 05: Data Transformation
 
-## Objetivos
+## Objectives
 
 ✅ Implementar pipelines ETL completos  
-✅ Flatten datos JSON anidados  
+✅ Flatten data JSON anidados  
 ✅ Joins complejos entre datasets  
 ✅ Data quality validation
 ✅ Transformaciones avanzadas  
@@ -32,11 +32,11 @@ def etl_pipeline(source, destination):
 df = pd.json_normalize(data, sep='_')
 ```
 
-## Ejercicios
+## Exercises
 
 Usa TODOS los datasets en `data/raw/`.
 
-1. **extraer_datos**(rutas) → dict con DataFrames
+1. **extract_data**(rutas) → dict con DataFrames
 2. **limpiar_customers**(df) → DataFrame limpio
 3. **flatten_orders**(df) → DataFrame con items aplanados
 4. **calcular_metricas_orden**(df) → DataFrame con totales
@@ -53,4 +53,4 @@ Usa TODOS los datasets en `data/raw/`.
 pytest exercises/05-data-transformation/tests/ -v
 ```
 
-➡️ **Siguiente**: Ejercicio 06
+➡️ **Siguiente**: Exercise 06

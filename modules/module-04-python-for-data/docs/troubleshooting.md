@@ -48,7 +48,7 @@ python3 --version  # Debe mostrar Python 3.8+
 
 ---
 
-### Error: "Permission denied" al ejecutar scripts
+### Error: "Permission denied" al run scripts
 
 **Yesntomas**:
 ```bash
@@ -58,7 +58,7 @@ bash: ./scripts/setup.sh: Permission denied
 
 **Solution**:
 ```bash
-# Dar permisos de ejecución a los scripts
+# Grant execution permissions to scripts
 chmod +x scripts/*.sh
 
 # O individualmente
@@ -70,7 +70,7 @@ chmod +x scripts/run_jupyter.sh
 
 ---
 
-## 🟠 Errores de Entorno Virtual
+## 🟠 Errores de Environment Virtual
 
 ### Error: "No module named 'venv'"
 
@@ -95,7 +95,7 @@ virtualenv venv
 
 ---
 
-### Error: Entorno virtual no se activa
+### Error: Environment virtual no se activa
 
 **Yesntomas**:
 ```bash
@@ -127,20 +127,20 @@ which python  # Debe mostrar ruta dentro de venv/
 ### Error: "cannot activate virtualenv from bash script"
 
 **Yesntomas**:
-El script ejecuta pero el entorno no permanece activo.
+El script ejecuta pero el environment no permanece activo.
 
 **Explanation**:
 Bash scripts run in a subshell, so the activation does not persist.
 
 **Solution**:
 ```bash
-# En lugar de ejecutar el script:
+# En lugar de run el script:
 ./scripts/setup.sh
 
 # Usa source:
 source scripts/setup.sh
 
-# O activa manualmente después:
+# Or activate manually afterwards:
 ./scripts/setup.sh
 source venv/bin/activate
 ```
@@ -170,7 +170,7 @@ python --version  # Debe ser 3.8+
 
 **3. Install without specific version**:
 ```bash
-pip install pandas  # Instala la última compatible
+pip install pandas  # Install the latest compatible version
 ```
 
 **4. Limpiar cache de pip**:
@@ -191,25 +191,25 @@ ImportError: No module named 'pandas'
 
 **Diagnosis**:
 ```bash
-# Verificar que estás en el entorno virtual
+# Verify you are in the virtual environment
 echo $VIRTUAL_ENV  # Debe mostrar ruta a venv
 
-# Verificar dónde está instalado pandas
+# Verify where pandas is installed
 pip list | grep pandas
 
-# Verificar qué Python estás usando
+# Verify which Python you are using
 which python
 ```
 
 **Solution**:
 ```bash
-# Activar entorno
+# Activar environment
 source venv/bin/activate
 
 # Reinstalar pandas
 pip install pandas
 
-# Verificar instalación
+# Verify installation
 python -c "import pandas; print(pandas.__version__)"
 ```
 
@@ -226,7 +226,7 @@ ERROR: package-a 1.0 has requirement package-b<2.0, but you have package-b 2.1
 
 **1. Crear requirements limpio**:
 ```bash
-# Resetear entorno
+# Resetear environment
 ./scripts/reset_env.sh --full
 
 # Recrear
@@ -254,7 +254,7 @@ collected 0 items
 
 **Diagnosis**:
 ```bash
-# Verificar ubicación de tests
+# Verify tests location
 find . -name "test_*.py"
 
 # Verificar pytest.ini
@@ -263,7 +263,7 @@ cat pytest.ini
 
 **Solution**:
 
-**1. Ejecutar desde directorio correcto**:
+**1. Run desde directorio correcto**:
 ```bash
 cd /path/to/module-04-python-for-data
 pytest exercises/
@@ -274,7 +274,7 @@ pytest exercises/
 pytest exercises/01-python-basics/tests/
 ```
 
-**3. Verificar nombres de archivos**:
+**3. Verificar nombres de files**:
 ```bash
 # Los tests deben empezar con test_
 mv basics_test.py test_basics.py
@@ -304,7 +304,7 @@ def customers_df():
     return pd.read_csv("data/raw/customers.csv")
 ```
 
-**3. Ejecutar desde directorio correcto**:
+**3. Run desde directorio correcto**:
 ```bash
 cd modules/module-04-python-for-data
 pytest validation/
@@ -321,7 +321,7 @@ FileNotFoundError: [Errno 2] No such file or directory: 'data/raw/customers.csv'
 
 **Solution**:
 
-**1. Generar datos**:
+**1. Generar data**:
 ```bash
 python data/scripts/generate_all_datasets.py
 ```
@@ -346,7 +346,7 @@ pytest
 ### Error: Tests lentos
 
 **Yesntomas**:
-Los tests tardan mucho en ejecutar.
+Los tests tardan mucho en run.
 
 **Solution**:
 
@@ -355,7 +355,7 @@ Los tests tardan mucho en ejecutar.
 ./scripts/validate.sh --fast
 ```
 
-**2. Ejecutar tests en paralelo**:
+**2. Run tests en paralelo**:
 ```bash
 pip install pytest-xdist
 pytest -n auto  # Usa todos los cores
@@ -369,7 +369,7 @@ pytest -m "unit"
 
 ---
 
-## 🟢 Problemas con Datos
+## 🟢 Problemas con Data
 
 ### Error: "Data files not found"
 
@@ -437,7 +437,7 @@ df['columna'] = pd.to_numeric(df['columna'], errors='coerce')
 
 ---
 
-### Error: "MemoryError" al cargar datos
+### Error: "MemoryError" al cargar data
 
 **Yesntomas**:
 ```python
@@ -486,7 +486,7 @@ bash: jupyter: command not found
 
 **Solution**:
 
-**1. Verificar entorno activo**:
+**1. Verificar environment activo**:
 ```bash
 echo $VIRTUAL_ENV
 source venv/bin/activate
@@ -570,11 +570,11 @@ Operaciones simples tardan mucho.
 
 **1. Avoid loops, use vectorization**:
 ```python
-# ❌ Lento
+# ❌ Slow
 for i in range(len(df)):
     df.loc[i, 'new'] = df.loc[i, 'old'] * 2
 
-# ✅ Rápido
+# ✅ Fast
 df['new'] = df['old'] * 2
 ```
 
@@ -589,7 +589,7 @@ df['id'] = df['id'].astype('int32')
 
 **3. Usar query() para filtros**:
 ```python
-# ✅ Más rápido
+# ✅ Mas quick
 df.query('edad > 25 and ciudad == "Madrid"')
 ```
 
@@ -626,7 +626,7 @@ df.memory_usage(deep=True)
 df['ciudad'] = df['ciudad'].astype('category')
 df['id'] = df['id'].astype('int32')
 
-# Después
+# Despues
 df.memory_usage(deep=True)  # Menor
 ```
 
@@ -666,7 +666,7 @@ Got permission denied while trying to connect to the Docker daemon socket
 sudo usermod -aG docker $USER
 
 # Logout y login nuevamente
-# O reiniciar sesión
+# O reiniciar sesion
 newgrp docker
 
 # Verificar
@@ -688,7 +688,7 @@ ERROR: container exited with code 1
 # Ver logs
 docker-compose logs
 
-# Ver logs específicos
+# Ver logs especificos
 docker-compose logs jupyter
 
 # Inspeccionar container
@@ -714,17 +714,17 @@ docker-compose up
 
 ## 📞 Obtener Ayuda Adicional
 
-### Pasos para reportar un problema
+### Steps to report a problem
 
 1. **Collect information**:
 ```bash
-# Versión de Python
+# Python version
 python --version
 
 # Versiones de paquetes
 pip list
 
-# Entorno
+# Environment
 echo $VIRTUAL_ENV
 echo $PYTHONPATH
 ```
@@ -754,12 +754,12 @@ cat logs/jupyter.log
 ### Diagnostic commands
 
 ```bash
-# Información del sistema
+# System information
 uname -a
 python --version
 pip --version
 
-# Información del módulo
+# Module information
 ls -la
 du -h data/
 pytest --collect-only

@@ -31,13 +31,13 @@ Good architecture is essential to building maintainable, scalable and robust dat
 **Data Specific Principles**:
 - **Idempotencia**: Mismos inputs → mismos outputs siempre
 - **Atomicidad**: Operaciones completas o rollback completo
-- **Incrementalidad**: Procesar solo datos nuevos/modificados
+- **Incrementalidad**: Procesar solo data nuevos/modificados
 - **Trazabilidad**: Saber origen y transformaciones de cada dato
 - **Recuperabilidad**: Poder reintentar desde punto de fallo
 
 ---
 
-## Arquitectura de Pipelines de Datos
+## Arquitectura de Pipelines de Data
 
 ### ETL vs ELT
 
@@ -47,7 +47,7 @@ Good architecture is essential to building maintainable, scalable and robust dat
 class ETLPipeline:
     """
     ETL tradicional: Transformaciones antes de cargar
-    Usado cuando: destino es OLTP o recursos limitados
+    Used when: destino es OLTP o recursos limitados
     """
     
     def __init__(self, extractor, transformer, loader):
@@ -56,27 +56,27 @@ class ETLPipeline:
         self.loader = loader
         self.logger = logging.getLogger(__name__)
     
-    def ejecutar(self, config: Dict) -> Dict[str, int]:
+    def run(self, config: Dict) -> Dict[str, int]:
         """Ejecuta pipeline ETL completo"""
         try:
             # 1. Extract
-            self.logger.info("Iniciando extracción...")
-            datos_raw = self.extractor.extraer(config['source'])
-            self.logger.info(f"Extraídos {len(datos_raw)} registros")
+            self.logger.info("Starting extraction...")
+            data_raw = self.extractor.extraer(config['source'])
+            self.logger.info(f"Extracted {len(data_raw)} registros")
             
             # 2. Transform
-            self.logger.info("Iniciando transformación...")
-            datos_transformados = self.transformer.transformar(datos_raw)
-            self.logger.info(f"Transformados {len(datos_transformados)} registros")
+            self.logger.info("Starting transformation...")
+            data_transformados = self.transformer.transformar(data_raw)
+            self.logger.info(f"Transformados {len(data_transformados)} registros")
             
             # 3. Load
             self.logger.info("Iniciando carga...")
-            resultado = self.loader.cargar(datos_transformados, config['destination'])
-            self.logger.info(f"Cargados {resultado['registros']} registros")
+            resultado = self.loader.cargar(data_transformados, config['destination'])
+            self.logger.info(f"Loaddos {resultado['registros']} registros")
             
             return {
-                'extraidos': len(datos_raw),
-                'transformados': len(datos_transformados),
+                'extraidos': len(data_raw),
+                'transformados': len(data_transformados),
                 'cargados': resultado['registros']
             }
             
@@ -90,8 +90,8 @@ class ETLPipeline:
 ```python
 class ELTPipeline:
     """
-    ELT moderno: Carga primero, transforma en destino
-    Usado cuando: destino es data warehouse/lakehouse con poder de cómputo
+    ELT moderno: Load primero, transforma en destino
+    Used when: target is a data warehouse/lakehouse with compute power
     """
     
     def __init__(self, extractor, loader, transformer_sql):
@@ -100,20 +100,20 @@ class ELTPipeline:
         self.transformer_sql = transformer_sql
         self.logger = logging.getLogger(__name__)
     
-    def ejecutar(self, config: Dict) -> Dict[str, int]:
+    def run(self, config: Dict) -> Dict[str, int]:
         """Ejecuta pipeline ELT completo"""
         try:
             # 1. Extract
-            self.logger.info("Iniciando extracción...")
-            datos_raw = self.extractor.extraer(config['source'])
+            self.logger.info("Starting extraction...")
+            data_raw = self.extractor.extraer(config['source'])
             
             # 2. Load (staging area)
-            self.logger.info("Cargando a staging...")
-            self.loader.cargar_staging(datos_raw)
+            self.logger.info("Loadndo a staging...")
+            self.loader.cargar_staging(data_raw)
             
             # 3. Transform (SQL en warehouse)
             self.logger.info("Ejecutando transformaciones SQL...")
-            resultado = self.transformer_sql.ejecutar_transformaciones(
+            resultado = self.transformer_sql.run_transformaciones(
                 staging_table=config['staging_table'],
                 target_table=config['target_table']
             )
@@ -134,31 +134,31 @@ from functools import reduce
 class DataPipeline:
     """
     Pipeline composable de transformaciones
-    Permite encadenar múltiples pasos de manera declarativa
+    Allows chaining multiple steps declaratively
     """
     
     def __init__(self):
         self.steps: List[Callable] = []
         self.logger = logging.getLogger(__name__)
     
-    def agregar_paso(self, 
-                     paso: Callable, 
+    def add_step(self, 
+                     step: Callable, 
                      nombre: str = None,
                      skip_on_error: bool = False) -> 'DataPipeline':
-        """Agrega paso al pipeline"""
-        def wrapped_step(datos):
-            step_name = nombre or paso.__name__
+        """Adds step to pipeline"""
+        def wrapped_step(data):
+            step_name = name or step.__name__
             try:
                 self.logger.info(f"Ejecutando: {step_name}")
-                resultado = paso(datos)
-                self.logger.info(f"Completado: {step_name}")
+                result = step(data)
+                self.logger.info(f"Completed: {step_name}")
                 return resultado
             except Exception as e:
                 if skip_on_error:
                     self.logger.warning(
                         f"Error en {step_name} (skip_on_error=True): {e}"
                     )
-                    return datos
+                    return data
                 else:
                     self.logger.error(f"Error en {step_name}: {e}")
                     raise
@@ -166,21 +166,21 @@ class DataPipeline:
         self.steps.append(wrapped_step)
         return self  # Para encadenamiento
     
-    def ejecutar(self, datos_iniciales: Any) -> Any:
-        """Ejecuta todos los pasos del pipeline"""
-        return reduce(lambda datos, paso: paso(datos), self.steps, datos_iniciales)
+    def run(self, data_iniciales: Any) -> Any:
+        """Executes all pipeline steps"""
+        return reduce(lambda data, step: step(data), self.steps, data_iniciales)
 
 # Uso
 pipeline = DataPipeline()
 pipeline \
-    .agregar_paso(extraer_datos, "Extracción") \
-    .agregar_paso(validar_esquema, "Validación") \
-    .agregar_paso(limpiar_nulls, "Limpieza") \
-    .agregar_paso(transformar_fechas, "Transformación fechas") \
-    .agregar_paso(enriquecer_datos, "Enriquecimiento", skip_on_error=True) \
-    .agregar_paso(cargar_destino, "Carga")
+    .add_step(extract_data, "Extraction") \
+    .add_step(validate_schema, "Validation") \
+    .add_step(clean_nulls, "Cleaning") \
+    .add_step(transform_dates, "Date transformation") \
+    .add_step(enrich_data, "Enrichment", skip_on_error=True) \
+    .add_step(load_target, "Load")
 
-resultado = pipeline.ejecutar(datos_iniciales)
+resultado = pipeline.run(data_iniciales)
 ```
 
 ### Batch vs Streaming
@@ -190,8 +190,8 @@ resultado = pipeline.ejecutar(datos_iniciales)
 ```python
 class BatchProcessor:
     """
-    Procesamiento por lotes: procesa datos históricos en ventanas
-    Ventajas: Simple, más fácil de debuggear, puede reprocesar
+    Batch processing: processes historical data in windows
+    Advantages: Simple, easier to debug, can reprocess
     Desventajas: Latencia (minutos/horas)
     """
     
@@ -199,27 +199,27 @@ class BatchProcessor:
         self.window_size = window_size
     
     def procesar_ventana(self, fecha_inicio: datetime, fecha_fin: datetime):
-        """Procesa ventana de tiempo específica"""
-        # 1. Extraer datos de la ventana
+        """Processes specific time window"""
+        # 1. Extraer data de la ventana
         query = f"""
             SELECT * FROM transacciones 
             WHERE timestamp >= '{fecha_inicio}' 
             AND timestamp < '{fecha_fin}'
         """
-        datos = ejecutar_query(query)
+        data = run_query(query)
         
         # 2. Procesar
-        procesados = self.transformar(datos)
+        procesados = self.transformar(data)
         
-        # 3. Guardar con partición de tiempo
+        # 3. Store with time partition
         fecha_particion = fecha_inicio.strftime('%Y-%m-%d')
-        ruta = f"s3://bucket/datos/fecha={fecha_particion}/datos.parquet"
+        ruta = f"s3://bucket/data/fecha={fecha_particion}/data.parquet"
         procesados.to_parquet(ruta)
         
         return len(procesados)
     
     def procesar_backfill(self, fecha_inicio: datetime, fecha_fin: datetime):
-        """Reprocesa rango histórico completo"""
+        """Reprocess full historical range"""
         fecha_actual = fecha_inicio
         while fecha_actual < fecha_fin:
             fecha_siguiente = fecha_actual + self.window_size
@@ -233,7 +233,7 @@ class BatchProcessor:
 class MicroBatchProcessor:
     """
     Procesamiento en micro-lotes: balance entre batch y streaming
-    Procesa pequeños lotes frecuentemente (segundos/minutos)
+    Processes small batches frequently (segundos/minutos)
     """
     
     def __init__(self, batch_size: int = 1000, flush_interval: int = 60):
@@ -246,7 +246,7 @@ class MicroBatchProcessor:
         """Agrega evento al buffer y procesa si es necesario"""
         self.buffer.append(evento)
         
-        # Flush por tamaño o tiempo
+        # Flush by size or time
         if (len(self.buffer) >= self.batch_size or 
             time.time() - self.last_flush >= self.flush_interval):
             self.flush()
@@ -274,7 +274,7 @@ class MicroBatchProcessor:
 from abc import ABC, abstractmethod
 
 class DataExtractor(ABC):
-    """Interfaz para extractores de datos"""
+    """Interfaz para extractores de data"""
     
     @abstractmethod
     def extraer(self, config: Dict) -> pd.DataFrame:
@@ -295,7 +295,7 @@ class DatabaseExtractor(DataExtractor):
         return pd.read_sql(config['query'], engine)
 
 class ExtractorFactory:
-    """Factory para crear extractores según tipo"""
+    """Factory to create extractors by type"""
     
     _extractors = {
         'csv': CSVExtractor,
@@ -317,14 +317,14 @@ config = {
 }
 
 extractor = ExtractorFactory.crear_extractor(config['type'])
-datos = extractor.extraer(config)
+data = extractor.extraer(config)
 ```
 
 ### Strategy Pattern
 
 ```python
 class TransformationStrategy(ABC):
-    """Interfaz para estrategias de transformación"""
+    """Interface for transformation strategies"""
     
     @abstractmethod
     def transformar(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -339,7 +339,7 @@ class CleaningStrategy(TransformationStrategy):
         return df
 
 class NormalizationStrategy(TransformationStrategy):
-    """Estrategia de normalización"""
+    """Normalization strategy"""
     
     def transformar(self, df: pd.DataFrame) -> pd.DataFrame:
         for col in df.select_dtypes(include=['float64', 'int64']).columns:
@@ -347,7 +347,7 @@ class NormalizationStrategy(TransformationStrategy):
         return df
 
 class AggregationStrategy(TransformationStrategy):
-    """Estrategia de agregación"""
+    """Aggregation strategy"""
     
     def __init__(self, group_by: List[str], agg_config: Dict):
         self.group_by = group_by
@@ -357,7 +357,7 @@ class AggregationStrategy(TransformationStrategy):
         return df.groupby(self.group_by).agg(self.agg_config).reset_index()
 
 class DataTransformer:
-    """Contexto que usa estrategias de transformación"""
+    """Context using transformation strategies"""
     
     def __init__(self, strategy: TransformationStrategy):
         self.strategy = strategy
@@ -365,22 +365,22 @@ class DataTransformer:
     def set_strategy(self, strategy: TransformationStrategy):
         self.strategy = strategy
     
-    def ejecutar(self, df: pd.DataFrame) -> pd.DataFrame:
+    def run(self, df: pd.DataFrame) -> pd.DataFrame:
         return self.strategy.transformar(df)
 
 # Uso
 transformer = DataTransformer(CleaningStrategy())
-df_limpio = transformer.ejecutar(df)
+df_limpio = transformer.run(df)
 
 transformer.set_strategy(NormalizationStrategy())
-df_normalizado = transformer.ejecutar(df_limpio)
+df_normalizado = transformer.run(df_limpio)
 ```
 
 ### Builder Pattern
 
 ```python
 class DataPipelineBuilder:
-    """Builder para construir pipelines complejos paso a paso"""
+    """Builder to construct complex pipelines step by step"""
     
     def __init__(self):
         self._pipeline = {
@@ -422,7 +422,7 @@ class DataPipelineBuilder:
         return self
     
     def construir(self) -> 'Pipeline':
-        # Validar que componentes requeridos están presentes
+        # Validate que componentes requeridos estan presentes
         if not self._pipeline['extractor']:
             raise ValueError("Pipeline requiere un extractor")
         if not self._pipeline['loader']:
@@ -435,24 +435,24 @@ pipeline = (
     DataPipelineBuilder()
     .con_nombre("Pipeline Ventas")
     .con_extractor(CSVExtractor())
-    .agregar_validacion(validar_esquema)
-    .agregar_transformacion(limpiar_nulls)
+    .agregar_validacion(validate_schema)
+    .agregar_transformacion(clean_nulls)
     .agregar_transformacion(calcular_metricas)
-    .agregar_validacion(validar_rangos)
+    .agregar_validacion(validate_rangos)
     .con_loader(ParquetLoader())
     .con_error_handler(notificar_error)
     .con_config({'max_retries': 3, 'timeout': 300})
     .construir()
 )
 
-resultado = pipeline.ejecutar()
+resultado = pipeline.run()
 ```
 
 ### Repository Pattern
 
 ```python
 class DataRepository(ABC):
-    """Abstracción para acceso a datos - separa lógica de negocio de persistencia"""
+    """Abstraction for data access - separates business logic from persistence"""
     
     @abstractmethod
     def obtener_por_id(self, id: int) -> Dict:
@@ -463,11 +463,11 @@ class DataRepository(ABC):
         pass
     
     @abstractmethod
-    def guardar(self, datos: Dict) -> int:
+    def guardar(self, data: Dict) -> int:
         pass
     
     @abstractmethod
-    def actualizar(self, id: int, datos: Dict) -> bool:
+    def actualizar(self, id: int, data: Dict) -> bool:
         pass
     
     @abstractmethod
@@ -475,7 +475,7 @@ class DataRepository(ABC):
         pass
 
 class PostgresRepository(DataRepository):
-    """Implementación con PostgreSQL"""
+    """Implementation with PostgreSQL"""
     
     def __init__(self, connection_string: str, tabla: str):
         self.engine = create_engine(connection_string)
@@ -494,16 +494,16 @@ class PostgresRepository(DataRepository):
         df = pd.read_sql(query, self.engine)
         return df.to_dict('records')
     
-    def guardar(self, datos: Dict) -> int:
-        df = pd.DataFrame([datos])
+    def guardar(self, data: Dict) -> int:
+        df = pd.DataFrame([data])
         df.to_sql(self.tabla, self.engine, if_exists='append', index=False)
         # Retornar ID del nuevo registro
         return self._obtener_ultimo_id()
     
-    # ... otros métodos
+    # ... otros metodos
 
 class S3Repository(DataRepository):
-    """Implementación con S3 (diferentes operaciones)"""
+    """Implementation with S3 (different operations)"""
     
     def __init__(self, bucket: str, prefix: str):
         self.s3 = boto3.client('s3')
@@ -515,27 +515,27 @@ class S3Repository(DataRepository):
         obj = self.s3.get_object(Bucket=self.bucket, Key=key)
         return json.loads(obj['Body'].read())
     
-    # ... otros métodos adaptados a S3
+    # ... otros metodos adaptados a S3
 
-# Uso - Lógica de negocio desacoplada de implementación
+# Uso - Business logic decoupled from implementation
 class VentasService:
     def __init__(self, repository: DataRepository):
         self.repo = repository
     
     def procesar_venta(self, venta: Dict):
-        # Validar
-        if not self._validar_venta(venta):
-            raise ValueError("Venta inválida")
+        # Validate
+        if not self._validate_venta(venta):
+            raise ValueError("Invalid sale")
         
         # Guardar
         venta_id = self.repo.guardar(venta)
         
-        # Lógica adicional
+        # Additional logic
         self._actualizar_inventario(venta)
         
         return venta_id
 
-# Fácil cambiar implementación sin tocar lógica de negocio
+# Easy to switch implementation without touching business logic
 ventas_service = VentasService(PostgresRepository(conn_str, 'ventas'))
 # O cambiar a S3
 ventas_service = VentasService(S3Repository('bucket', 'ventas'))
@@ -545,23 +545,23 @@ ventas_service = VentasService(S3Repository('bucket', 'ventas'))
 
 ## Arquitectura de Proyectos Python
 
-### Estructura Recomendada
+### Structure Recomendada
 
 ```
 mi_data_pipeline/
-├── README.md                   # Documentación del proyecto
+├── README.md                   # Documentation del proyecto
 ├── requirements.txt            # Dependencias (pip)
-├── pyproject.toml             # Configuración del proyecto (Poetry)
-├── setup.py                   # Instalación del paquete
-├── .env.example               # Template de variables de entorno
-├── .gitignore                 # Archivos a ignorar en git
+├── pyproject.toml             # Configuration del proyecto (Poetry)
+├── setup.py                   # Package installation
+├── .env.example               # Template de variables de environment
+├── .gitignore                 # Files a ignorar en git
 │
 ├── config/                    # Configuraciones
 │   ├── dev.yaml
 │   ├── staging.yaml
 │   └── prod.yaml
 │
-├── src/                       # Código fuente
+├── src/                       # Source code
 │   └── mi_pipeline/
 │       ├── __init__.py
 │       ├── main.py            # Entry point
@@ -586,7 +586,7 @@ mi_data_pipeline/
 │       │   ├── __init__.py
 │       │   └── schema_validator.py
 │       │
-│       ├── models/            # Modelos de datos
+│       ├── models/            # Modelos de data
 │       │   ├── __init__.py
 │       │   └── schemas.py
 │       │
@@ -602,9 +602,9 @@ mi_data_pipeline/
 │   ├── unit/                  # Tests unitarios
 │   │   ├── test_extractors.py
 │   │   └── test_transformers.py
-│   ├── integration/           # Tests de integración
+│   ├── integration/           # Integration tests
 │   │   └── test_pipeline.py
-│   └── fixtures/              # Datos de prueba
+│   └── fixtures/              # Data de prueba
 │       └── sample_data.csv
 │
 ├── scripts/                   # Scripts de utilidad
@@ -612,10 +612,10 @@ mi_data_pipeline/
 │   ├── run_pipeline.sh
 │   └── deploy.sh
 │
-├── notebooks/                 # Jupyter notebooks (exploración)
-│   └── exploracion_datos.ipynb
+├── notebooks/                 # Jupyter notebooks (exploration)
+│   └── exploracion_data.ipynb
 │
-├── docs/                      # Documentación adicional
+├── docs/                      # Documentation adicional
 │   ├── architecture.md
 │   └── api.md
 │
@@ -632,14 +632,14 @@ from pathlib import Path
 from typing import Dict, Any
 
 class Config:
-    """Gestor de configuración con soporte para múltiples ambientes"""
+    """Configuration manager with support for multiple environments"""
     
     def __init__(self, env: str = 'dev'):
         self.env = env
         self._config = self._cargar_config()
     
     def _cargar_config(self) -> Dict[str, Any]:
-        """Carga configuración del ambiente especificado"""
+        """Load configuration del ambiente especificado"""
         config_path = Path(__file__).parent.parent.parent / 'config' / f'{self.env}.yaml'
         
         if not config_path.exists():
@@ -649,7 +649,7 @@ class Config:
             return yaml.safe_load(f)
     
     def get(self, key: str, default: Any = None) -> Any:
-        """Obtiene valor de configuración con soporte para nested keys"""
+        """Obtiene valor de configuration con soporte para nested keys"""
         keys = key.split('.')
         value = self._config
         
@@ -674,11 +674,11 @@ class Config:
 database:
   host: localhost
   port: 5432
-  name: datos_dev
+  name: data_dev
   user: dev_user
   
 s3:
-  bucket: datos-dev
+  bucket: data-dev
   region: us-east-1
   
 pipeline:
@@ -733,7 +733,7 @@ poetry add --group dev pytest black
 # Instalar
 poetry install
 
-# Ejecutar en ambiente
+# Run en ambiente
 poetry run python script.py
 poetry run pytest
 
@@ -749,7 +749,7 @@ poetry export -f requirements.txt --output requirements.txt
 [tool.poetry]
 name = "mi-data-pipeline"
 version = "0.1.0"
-description = "Pipeline de datos con Python"
+description = "Pipeline de data con Python"
 authors = ["Tu Nombre <tu@email.com>"]
 
 [tool.poetry.dependencies]
@@ -790,7 +790,7 @@ COPY requirements.txt .
 # Instalar dependencias Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código
+# Copy code
 COPY src/ ./src/
 COPY config/ ./config/
 
@@ -807,7 +807,7 @@ services:
     build: .
     environment:
       - ENV=dev
-      - DATABASE_URL=postgresql://user:pass@db:5432/datos
+      - DATABASE_URL=postgresql://user:pass@db:5432/data
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -817,7 +817,7 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: datos
+      POSTGRES_DB: data
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
     volumes:
@@ -852,7 +852,7 @@ import pandas as pd
 from src.mi_pipeline.transformers.cleaning import CleaningTransformer
 
 class TestCleaningTransformer:
-    """Tests para limpieza de datos"""
+    """Tests para limpieza de data"""
     
     @pytest.fixture
     def transformer(self):
@@ -889,7 +889,7 @@ class TestCleaningTransformer:
         (pd.DataFrame({'a': [1, None, 3]}), 2),
     ])
     def test_multiples_casos(self, transformer, entrada, esperado):
-        """Test parametrizado con múltiples casos"""
+        """Parametrized test with multiple cases"""
         resultado = transformer.eliminar_nulls(entrada)
         assert len(resultado) == esperado
 ```
@@ -904,11 +904,11 @@ from src.mi_pipeline.extractors.csv_extractor import CSVExtractor
 from src.mi_pipeline.loaders.parquet_loader import ParquetLoader
 
 class TestPipelineIntegration:
-    """Tests de integración del pipeline completo"""
+    """Integration tests del pipeline completo"""
     
     @pytest.fixture
     def pipeline(self, tmp_path):
-        """Pipeline configurado con archivos temporales"""
+        """Pipeline configurado con files temporales"""
         return Pipeline(
             extractor=CSVExtractor(),
             loader=ParquetLoader(tmp_path)
@@ -920,8 +920,8 @@ class TestPipelineIntegration:
         input_file = tmp_path / "input.csv"
         input_file.write_text("id,valor\n1,100\n2,200")
         
-        # Ejecutar pipeline
-        resultado = pipeline.ejecutar({
+        # Run pipeline
+        resultado = pipeline.run({
             'input': str(input_file),
             'output': str(tmp_path / "output.parquet")
         })
@@ -942,11 +942,11 @@ def test_extractor_con_api_mock():
     with patch('requests.get') as mock_get:
         # Configurar respuesta mock
         mock_response = Mock()
-        mock_response.json.return_value = {'datos': [1, 2, 3]}
+        mock_response.json.return_value = {'data': [1, 2, 3]}
         mock_response.status_code = 200
         mock_get.return_value = mock_response
         
-        # Ejecutar
+        # Run
         extractor = APIExtractor()
         resultado = extractor.extraer({'url': 'http://api.example.com'})
         
@@ -1044,7 +1044,7 @@ jobs:
 
 ## Observabilidad y Monitoring
 
-### Logging Estructurado
+### Logging Structuredo
 
 ```python
 import logging
@@ -1075,7 +1075,7 @@ class JSONFormatter(logging.Formatter):
         
         return json.dumps(log_obj)
 
-# Configuración
+# Configuration
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
 handler.setFormatter(JSONFormatter())
@@ -1101,7 +1101,7 @@ import time
 from functools import wraps
 
 def medir_tiempo(func):
-    """Decorator para medir tiempo de ejecución"""
+    """Decorator to measure execution time"""
     @wraps(func)
     def wrapper(*args, **kwargs):
         inicio = time.time()
@@ -1109,7 +1109,7 @@ def medir_tiempo(func):
             resultado = func(*args, **kwargs)
             duracion = time.time() - inicio
             logger.info(
-                f"{func.__name__} completado",
+                f"{func.__name__} completed",
                 extra={
                     'funcion': func.__name__,
                     'duracion': duracion,
@@ -1120,7 +1120,7 @@ def medir_tiempo(func):
         except Exception as e:
             duracion = time.time() - inicio
             logger.error(
-                f"{func.__name__} falló",
+                f"{func.__name__} failed",
                 extra={
                     'funcion': func.__name__,
                     'duracion': duracion,
@@ -1132,7 +1132,7 @@ def medir_tiempo(func):
     return wrapper
 
 @medir_tiempo
-def procesar_datos(df):
+def procesar_data(df):
     # procesamiento
     return df
 ```
@@ -1148,29 +1148,29 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 import multiprocessing as mp
 
 # Thread Pool (I/O bound)
-def descargar_archivos_paralelo(urls: List[str]) -> List[bytes]:
-    """Descarga múltiples archivos en paralelo"""
+def descargar_files_paralelo(urls: List[str]) -> List[bytes]:
+    """Download multiple files in parallel"""
     with ThreadPoolExecutor(max_workers=10) as executor:
-        resultados = list(executor.map(descargar_archivo, urls))
+        resultados = list(executor.map(descargar_file, urls))
     return resultados
 
 # Process Pool (CPU bound)
-def procesar_archivos_paralelo(archivos: List[str]) -> List[pd.DataFrame]:
-    """Procesa archivos en paralelo usando múltiples procesos"""
+def procesar_files_paralelo(files: List[str]) -> List[pd.DataFrame]:
+    """Process files in parallel using multiple processes"""
     num_workers = mp.cpu_count() - 1
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        resultados = list(executor.map(procesar_archivo, archivos))
+        resultados = list(executor.map(procesar_file, files))
     return resultados
 ```
 
 ### Chunking para grandes datasets
 
 ```python
-def procesar_csv_grande(archivo: str, chunk_size: int = 10000):
+def procesar_csv_grande(file: str, chunk_size: int = 10000):
     """Procesa CSV grande en chunks para evitar OOM"""
     resultados = []
     
-    for chunk in pd.read_csv(archivo, chunksize=chunk_size):
+    for chunk in pd.read_csv(file, chunksize=chunk_size):
         # Procesar chunk
         chunk_procesado = transformar(chunk)
         resultados.append(chunk_procesado)
@@ -1183,13 +1183,13 @@ def procesar_csv_grande(archivo: str, chunk_size: int = 10000):
 
 ## Security y Secrets Management
 
-### Variables de Entorno
+### Variables de Environment
 
 ```python
 import os
 from dotenv import load_dotenv
 
-# Cargar .env
+# Loadr .env
 load_dotenv()
 
 # Acceder a secrets
@@ -1238,7 +1238,7 @@ This document covered:
 8. **Performance**: Parallelization, chunking
 9. **Security**: Secrets management
 
-Estos patrones y arquitecturas son fundamentales para construir pipelines de datos robustos y scalables.
+Estos patrones y arquitecturas son fundamentales para construir pipelines de data robustos y scalables.
 
 ---
 

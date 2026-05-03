@@ -4,16 +4,16 @@
 
 This directory contains the **integrated validation suite** for the entire Module 04: Python for Data Engineering.
 
-## Estructura
+## Structure
 
 ```
 validation/
-├── README.md                    # Este archivo
-├── conftest.py                  # Configuración global de pytest
-├── test_integration.py          # Tests de integración entre ejercicios
-├── test_data_quality.py         # Validación de calidad de datasets
-├── test_module_completeness.py  # Verifica que todo esté completo
-└── pytest.ini                   # Configuración de pytest
+├── README.md                    # Este file
+├── conftest.py                  # Configuration global de pytest
+├── test_integration.py          # Integration tests across exercises
+├── test_data_quality.py         # Validation de calidad de datasets
+├── test_module_completeness.py  # Verifies everything is complete
+└── pytest.ini                   # Configuration de pytest
 ```
 
 ---
@@ -22,10 +22,10 @@ validation/
 
 ### 1. Integration Tests (`test_integration.py`)
 
-Valida que los ejercicios funcionan juntos:
+Validate that exercises work together:
 
 - pipeline completo: leer CSV → limpiar → transformar → guardar
-- Interoperabilidad entre funciones de diferentes ejercicios
+- Interoperability between functions from different exercises
 - Flujo end-to-end de un proyecto real
 
 ### 2. Data Validation (`test_data_quality.py`)
@@ -42,9 +42,9 @@ Verifica la calidad de los datasets:
 
 Verify that the module is complete:
 
-- ✅ Todos los ejercicios tienen sus archivos
+- ✅ All exercises have their files
 - ✅ Todos los READMEs existen
-- ✅ Estructura de directorios correcta
+- ✅ Structure de directorios correcta
 - ✅ Dependencias instalables
 
 ---
@@ -54,16 +54,16 @@ Verify that the module is complete:
 ### Run all validation tests
 
 ```bash
-# Desde el root del módulo
+# From the module root
 pytest validation/ -v
 
 # Con coverage
 pytest validation/ -v --cov=. --cov-report=html
 
-# Solo tests de integración
+# Integration tests only
 pytest validation/test_integration.py -v
 
-# Solo validación de datos
+# Data validation only
 pytest validation/test_data_quality.py -v
 
 # Solo completitud
@@ -73,7 +73,7 @@ pytest validation/test_module_completeness.py -v
 ### Run ALL module tests
 
 ```bash
-# Todos los ejercicios + validación (120+ tests)
+# All exercises + validation (120+ tests)
 pytest exercises/ validation/ -v
 
 # Con reporte detallado
@@ -89,18 +89,18 @@ pytest exercises/ validation/ -v --lf
 
 ### Coverage Esperado
 
-- **Ejercicios individuales**: >90% coverage
+- **Exercises individuales**: >90% coverage
 - **Integration tests**: >80% coverage
 - **Total module**: >85% coverage
 
-### Tests Totales
+### Total Tests
 
-- Ejercicio 01: 15 tests
-- Ejercicio 02: 20 tests
-- Ejercicio 03: 18 tests
-- Ejercicio 04: 25 tests
-- Ejercicio 05: 22 tests
-- Ejercicio 06: 20 tests
+- Exercise 01: 15 tests
+- Exercise 02: 20 tests
+- Exercise 03: 18 tests
+- Exercise 04: 25 tests
+- Exercise 05: 22 tests
+- Exercise 06: 20 tests
 - **Validation suite**: 15+ tests
 - **TOTAL**: ~135+ tests
 
@@ -181,8 +181,8 @@ pytest -n auto  # Usa todos los cores disponibles
 
 After validating the module:
 
-1. ✅ Todos los tests pasan → Continuar con Paso 7 (Assets)
-2. ❌ Tests fallan → Revisar y corregir ejercicios
+1. ✅ Todos los tests pasan → Continuar con Step 7 (Assets)
+2. ❌ Tests fallan → Review and fix exercises
 3. 📊 Low coverage → Add more tests
 
 ---

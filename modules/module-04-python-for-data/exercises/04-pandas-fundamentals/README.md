@@ -1,10 +1,10 @@
-# Ejercicio 04: Pandas Fundamentals
+# Exercise 04: Pandas Fundamentals
 
-## Objetivos
+## Objectives
 
 ✅ Basic operations with DataFrames
 ✅ Filtering and selection of data
-✅ Limpieza de datos (nulls, duplicados)  
+✅ Cleaning de data (nulls, duplicados)  
 ✅ Groupby y agregaciones  
 ✅ Merges y joins  
 
@@ -18,15 +18,15 @@ df['nombre']
 df[['nombre', 'edad']]
 
 # Por fila (loc/iloc)
-df.loc[0]  # Por índice
-df.iloc[0]  # Por posición
+df.loc[0]  # Por index
+df.iloc[0]  # Por posicion
 
 # Filtrado
 df[df['edad'] > 25]
 df[(df['edad'] > 25) & (df['pais'] == 'USA')]
 ```
 
-### Limpieza
+### Cleaning
 
 ```python
 # Nulls
@@ -46,13 +46,13 @@ df.groupby('categoria')['precio'].mean()
 df.groupby(['pais', 'ciudad']).size()
 ```
 
-## Ejercicios
+## Exercises
 
 Usa `data/raw/customers.csv` y `data/raw/transactions.csv`.
 
 1. **load_and_explore**(path) → dict with basic info
 2. **filtrar_por_pais**(df, pais) → DataFrame filtrado
-3. **limpiar_datos**(df) → DataFrame sin nulls ni duplicados
+3. **limpiar_data**(df) → DataFrame sin nulls ni duplicados
 4. **calcular_estadisticas**(df, column) → dict con mean/median/std
 5. **agrupar_por_column**(df, column) → DataFrame agrupado
 6. **top_n_registros**(df, column, n) → Top N valores
@@ -67,4 +67,4 @@ Usa `data/raw/customers.csv` y `data/raw/transactions.csv`.
 pytest exercises/04-pandas-fundamentals/tests/ -v
 ```
 
-➡️ **Siguiente**: Ejercicio 05
+➡️ **Siguiente**: Exercise 05
