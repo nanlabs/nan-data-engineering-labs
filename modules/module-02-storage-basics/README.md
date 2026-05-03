@@ -2,7 +2,7 @@
 
 ⏱️ **Estimated Time:** 10-12 hours
 
-## Prerequisitos
+## Prerequisites
 
 - Module 01: Cloud Fundamentals (completed)
 
@@ -10,7 +10,7 @@
 
 Master the fundamentals of data storage and file formats essential for data engineering. Dive deeper into S3 as a data lake, learn how to choose optimal formats (JSON, CSV, Parquet, Avro), and understand partitioning and compression for performance.
 
-## Objetivos de Aprendizaje
+## Learning Objectives
 
 Upon completion of this module, you will be able to:
 
@@ -23,7 +23,7 @@ Upon completion of this module, you will be able to:
 - [x] Implement schema evolution in Parquet
 - [x] Optimize metadata with Glue Catalog
 
-## Estructura
+## Structure
 
 - **theory/**: Core concepts and architectural documentation
 - **exercises/**: Practical exercises (6 exercises)
@@ -32,7 +32,7 @@ Upon completion of this module, you will be able to:
 - **validation/**: Automated tests to validate your learning
 - **scripts/**: Help scripts
 
-## Comenzando
+## Getting Started
 
 1. Make sure prerequisites are completed
 2. Install dependencies: `pip install -r requirements.txt`
@@ -43,7 +43,7 @@ Upon completion of this module, you will be able to:
 7. Complete exercises in order (01 to 06)
 8. Validate your learning: `bash scripts/validate.sh`
 
-## Ejercicios
+## Exercises
 
 1. **Exercise 01**: Data Lake Medallion Design - Design Bronze/Silver/Gold architecture with S3, lifecycle policies, and IAM
 2. **Exercise 02**: File Format Conversion - Convert between CSV, JSON, Parquet, Avro with performance benchmarking
@@ -52,7 +52,7 @@ Upon completion of this module, you will be able to:
 5. **Exercise 05**: Schema Evolution - Add columns, handle backward/forward compatibility in Parquet files
 6. **Exercise 06**: Integration with Glue Catalog - Register datasets, create crawlers, query with Athena
 
-## resources
+## Resources
 
 See `theory/resources.md` for:
 - Official AWS Documentation
@@ -62,7 +62,7 @@ See `theory/resources.md` for:
 
 ## Validation
 
-Ejecutar todas las validaciones:
+Run all validations:
 ```bash
 bash scripts/validate.sh
 ```
@@ -84,7 +84,7 @@ make validate MODULE=module-{module_id}-{module["name"]}
 - [ ] All validations passing
 - [ ] Ready for next module
 
-## Siguientes Pasos
+## Next Steps
 
 After completing this module, you will be ready to:
 [List of modules that depend on it]
