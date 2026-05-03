@@ -32,7 +32,7 @@ pydantic==2.5.3               # Data validation using Python type hints
 # ------------------------------
 # Testing Framework
 # ------------------------------
-pytest==7.4.4                 # Testing framework
+pytest==9.0.3                 # Testing framework
 pytest-spark==0.6.0           # Spark fixtures for pytest
 pytest-cov==4.1.0             # Coverage reporting for pytest
 pytest-html==4.1.1            # HTML test reports
