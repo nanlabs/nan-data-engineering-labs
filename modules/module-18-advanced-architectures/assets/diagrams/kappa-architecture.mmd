@@ -1,0 +1,86 @@
+graph TB
+    %% Kappa Architecture - Stream-only with Replayable Log
+
+    subgraph "Data Sources"
+        DS1[User Events<br/>REST API]:::source
+        DS2[IoT Sensors<br/>MQTT]:::source
+        DS3[Database CDC<br/>Debezium]:::source
+    end
+
+    subgraph "Unified Log - Kafka"
+        K1[Kafka Cluster<br/>365-day Retention]:::kafka
+        K2[Topic: raw-events<br/>100 Partitions]:::kafka
+        K3[Topic: processed-events<br/>50 Partitions]:::kafka
+    end
+
+    subgraph "Stream Processing Layer"
+        SP1[Flink Job 1<br/>Real-time Aggregation]:::processor
+        SP2[Flink Job 2<br/>Enrichment]:::processor
+        SP3[Lambda Functions<br/>Event Rules]:::processor
+        SP4[Kinesis Analytics<br/>SQL Queries]:::processor
+    end
+
+    subgraph "Materialized Views"
+        MV1[DynamoDB<br/>User Profiles]:::view
+        MV2[Redis<br/>Real-time Metrics]:::view
+        MV3[Elasticsearch<br/>Search Index]:::view
+        MV4[S3 Data Lake<br/>Long-term Storage]:::view
+    end
+
+    subgraph "Query Layer"
+        QL1[GraphQL API<br/>Unified Queries]:::query
+        QL2[WebSocket<br/>Real-time Push]:::query
+        QL3[REST API<br/>Batch Queries]:::query
+    end
+
+    %% Data Ingestion
+    DS1 --> K1
+    DS2 --> K1
+    DS3 --> K1
+    K1 --> K2
+
+    %% Stream Processing
+    K2 --> SP1
+    K2 --> SP2
+    K2 --> SP3
+    K2 --> SP4
+
+    %% Output to Processed Topic
+    SP1 --> K3
+    SP2 --> K3
+    SP3 --> K3
+    SP4 --> K3
+
+    %% Materialized Views
+    K3 --> MV1
+    K3 --> MV2
+    K3 --> MV3
+    K3 --> MV4
+
+    %% Query Layer
+    MV1 --> QL1
+    MV2 --> QL2
+    MV3 --> QL3
+
+    %% Replay Capability
+    K2 -.->|"Replay from<br/>any offset"| SP1
+    K2 -.->|"Reprocess<br/>historical data"| SP2
+
+    %% Version Deployment
+    SP1 -.->|"Deploy v2<br/>read from offset 0"| K2
+
+    %% Styling
+    classDef source fill:#4A90E2,stroke:#2E6FA8,stroke-width:3px,color:#fff
+    classDef kafka fill:#231F20,stroke:#E02F40,stroke-width:3px,color:#fff
+    classDef processor fill:#7ED321,stroke:#5A9E18,stroke-width:3px,color:#fff
+    classDef view fill:#F5A623,stroke:#C17F1A,stroke-width:3px,color:#fff
+    classDef query fill:#BD10E0,stroke:#8A0CA8,stroke-width:3px,color:#fff
+
+    %% Notes
+    subgraph "Key Benefits"
+        B1[✅ Single processing path<br/>simpler than Lambda]:::note
+        B2[✅ Replayable log<br/>fix bugs by replaying]:::note
+        B3[✅ Event sourcing<br/>full history preserved]:::note
+    end
+
+    classDef note fill:#F8E71C,stroke:#D4C017,stroke-width:2px,color:#333

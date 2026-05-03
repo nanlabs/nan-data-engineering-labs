@@ -1,0 +1,389 @@
+```mermaid
+graph TB
+    subgraph "1. Data Preparation"
+        RawData[Raw Data<br/>CSV, Parquet, Databases]
+        FeatureEng[Feature Engineering<br/>- Handle missing values<br/>- Encode categoricals<br/>- Scale numerical<br/>- Create new features]
+        TrainTest[Train/Test Split<br/>80% train, 20% test<br/>Stratified sampling]
+
+        RawData --> FeatureEng
+        FeatureEng --> TrainTest
+    end
+
+    subgraph "2. Experiment Tracking (MLflow)"
+        ExpInit[mlflow.start_run]
+        LogParams[Log Parameters<br/>- n_estimators: 100<br/>- max_depth: 10<br/>- learning_rate: 0.1]
+        Training[Train Model<br/>RandomForest, XGBoost, etc.]
+        LogMetrics[Log Metrics<br/>- accuracy: 0.95<br/>- precision: 0.93<br/>- recall: 0.92<br/>- f1_score: 0.93<br/>- roc_auc: 0.97]
+        LogArtifacts[Log Artifacts<br/>- feature_importance.csv<br/>- confusion_matrix.png<br/>- roc_curve.png]
+        LogModel[Log Model<br/>mlflow.sklearn.log_model]
+
+        ExpInit --> LogParams
+        LogParams --> Training
+        Training --> LogMetrics
+        LogMetrics --> LogArtifacts
+        LogArtifacts --> LogModel
+    end
+
+    subgraph "3. Hyperparameter Tuning"
+        ParamGrid[Parameter Grid<br/>- n_estimators: 50,100,200<br/>- max_depth: 5,10,15<br/>- min_samples: 2,5,10]
+        GridSearch[Grid Search / Random Search<br/>Cross-validation]
+        BestParams[Select Best Model<br/>Highest ROC-AUC]
+
+        ParamGrid --> GridSearch
+        GridSearch -->|Multiple runs| ExpInit
+        GridSearch --> BestParams
+    end
+
+    subgraph "4. Model Registry"
+        Register[mlflow.register_model<br/>Name: churn_prediction_model]
+        Version[Model Version 1<br/>Metadata:<br/>- training_date<br/>- data_version<br/>- performance_metrics]
+        StageNone[Stage: None<br/>Newly registered]
+        StageStaging[Stage: Staging<br/>Pre-production testing]
+        StageProd[Stage: Production<br/>Serving live traffic]
+
+        Register --> Version
+        Version --> StageNone
+        StageNone -->|Promote| StageStaging
+        StageStaging -->|Validate & Promote| StageProd
+    end
+
+    subgraph "5. Model Deployment"
+        BatchInference[Batch Inference<br/>- Load model from registry<br/>- Score new data<br/>- Save predictions to Delta]
+        RealTimeServing[Real-Time Serving<br/>- REST API endpoint<br/>- <1 sec latency<br/>- Auto-scaling]
+        StreamingInference[Streaming Inference<br/>- Structured Streaming<br/>- Score events in real-time<br/>- Continuous predictions]
+
+        StageProd --> BatchInference
+        StageProd --> RealTimeServing
+        StageProd --> StreamingInference
+    end
+
+    subgraph "6. Monitoring & Retraining"
+        Monitor[Monitor Performance<br/>- Prediction accuracy<br/>- Feature drift<br/>- Data quality]
+        Drift[Detect Drift<br/>- ROC-AUC dropped 5%<br/>- New data distribution<br/>- Concept drift]
+        Alert[Send Alert<br/>Email, Slack, PagerDuty<br/>"Model performance degraded"]
+        Retrain[Trigger Retraining<br/>- Fetch recent data<br/>- Re-run training pipeline<br/>- Register new version]
+        ABTest[A/B Test<br/>- Compare new vs old model<br/>- Champion/Challenger<br/>- Gradual rollout]
+
+        BatchInference -.->|Collect metrics| Monitor
+        RealTimeServing -.->|Collect metrics| Monitor
+        Monitor --> Drift
+        Drift -->|If degraded| Alert
+        Alert --> Retrain
+        Retrain --> Register
+        StageProd --> ABTest
+    end
+
+    subgraph "7. Databricks AutoML (Optional)"
+        AutoMLStart[Databricks AutoML<br/>- Select dataset<br/>- Choose target column<br/>- Set timeout]
+        AutoMLRuns[Automated:<br/>- Try 10+ algorithms<br/>- Hyperparameter tuning<br/>- Feature engineering<br/>- Generate notebook]
+        AutoMLBest[Best Model<br/>- Auto-registered in MLflow<br/>- Code notebook provided<br/>- Deployment-ready]
+
+        RawData -.->|Alternative path| AutoMLStart
+        AutoMLStart --> AutoMLRuns
+        AutoMLRuns --> AutoMLBest
+        AutoMLBest --> Register
+    end
+
+    %% Main Flow
+    TrainTest --> ExpInit
+    LogModel --> Register
+    Retrain --> StageStaging
+
+    %% Styling
+    style ExpInit fill:#4caf50
+    style LogParams fill:#66bb6a
+    style Training fill:#66bb6a
+    style LogMetrics fill:#66bb6a
+    style LogArtifacts fill:#66bb6a
+    style LogModel fill:#66bb6a
+
+    style Register fill:#2196f3
+    style Version fill:#42a5f5
+    style StageStaging fill:#ffa726
+    style StageProd fill:#ef5350
+
+    style Monitor fill:#9c27b0
+    style Drift fill:#ba68c8
+    style Alert fill:#f44336
+    style Retrain fill:#ff9800
+
+    style AutoMLStart fill:#00bcd4
+    style AutoMLRuns fill:#26c6da
+    style AutoMLBest fill:#26c6da
+```
+
+---
+
+## MLflow Workflow Stages Explained
+
+### Stage 1: Data Preparation
+```python
+# Load and prepare data
+df = spark.table("customer_data")
+
+# Feature engineering
+features_df = df \
+    .withColumn("tenure_years", col("tenure_months") / 12) \
+    .withColumn("revenue_per_month", col("total_revenue") / col("tenure_months"))
+
+# Train/test split
+train_df, test_df = features_df.randomSplit([0.8, 0.2], seed=42)
+```
+
+---
+
+### Stage 2: Experiment Tracking
+```python
+import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import RandomForestClassifier
+
+# Start MLflow run
+with mlflow.start_run(run_name="rf_baseline"):
+    # Log parameters
+    params = {"n_estimators": 100, "max_depth": 10}
+    mlflow.log_params(params)
+
+    # Train model
+    model = RandomForestClassifier(**params)
+    model.fit(X_train, y_train)
+
+    # Evaluate
+    accuracy = model.score(X_test, y_test)
+    mlflow.log_metric("accuracy", accuracy)
+
+    # Log model
+    mlflow.sklearn.log_model(model, "model")
+```
+
+**MLflow automatically tracks**:
+- Git commit hash
+- User who ran experiment
+- Start/end time
+- Code version
+- Environment (Python packages)
+
+---
+
+### Stage 3: Hyperparameter Tuning
+```python
+param_grid = {
+    "n_estimators": [50, 100, 200],
+    "max_depth": [5, 10, 15]
+}
+
+best_auc = 0
+best_params = None
+
+for n_est in param_grid["n_estimators"]:
+    for depth in param_grid["max_depth"]:
+        with mlflow.start_run(run_name=f"rf_n{n_est}_d{depth}"):
+            model = RandomForestClassifier(n_estimators=n_est, max_depth=depth)
+            model.fit(X_train, y_train)
+
+            auc = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
+            mlflow.log_metric("roc_auc", auc)
+
+            if auc > best_auc:
+                best_auc = auc
+                best_params = {"n_estimators": n_est, "max_depth": depth}
+                mlflow.sklearn.log_model(model, "model")
+
+print(f"Best: {best_params} with AUC {best_auc}")
+```
+
+**View in UI**: MLflow Experiments page shows all runs sorted by metric.
+
+---
+
+### Stage 4: Model Registry
+```python
+# Get best run
+best_run = mlflow.search_runs(
+    order_by=["metrics.roc_auc DESC"],
+    max_results=1
+).iloc[0]
+
+# Register model
+model_uri = f"runs:/{best_run.run_id}/model"
+mv = mlflow.register_model(model_uri, "churn_prediction_model")
+
+print(f"Registered model version {mv.version}")
+
+# Add metadata
+from mlflow.tracking import MlflowClient
+client = MlflowClient()
+
+client.update_model_version(
+    name="churn_prediction_model",
+    version=mv.version,
+    description="Random Forest model trained on 2024-Q1 data. ROC-AUC: 0.97"
+)
+
+client.set_model_version_tag(
+    name="churn_prediction_model",
+    version=mv.version,
+    key="training_date",
+    value="2024-03-09"
+)
+```
+
+---
+
+### Stage 5: Stage Transitions
+```python
+# Transition to Staging
+client.transition_model_version_stage(
+    name="churn_prediction_model",
+    version=mv.version,
+    stage="Staging"
+)
+
+# Test in staging environment
+# ... validation tests ...
+
+# Transition to Production
+client.transition_model_version_stage(
+    name="churn_prediction_model",
+    version=mv.version,
+    stage="Production",
+    archive_existing_versions=True  # Move old prod version to Archived
+)
+```
+
+**Stages**:
+- **None**: Newly registered
+- **Staging**: Pre-production testing
+- **Production**: Serving live traffic
+- **Archived**: Old versions (inactive)
+
+---
+
+### Stage 6: Deployment Patterns
+
+#### Batch Inference
+```python
+# Load production model
+model = mlflow.sklearn.load_model("models:/churn_prediction_model/Production")
+
+# Score new customers
+new_customers = spark.table("new_customers")
+predictions = model.predict(new_customers.toPandas())
+
+# Save predictions
+predictions_df = new_customers.withColumn("churn_prediction", predictions)
+predictions_df.write.format("delta").save("/predictions/churn")
+```
+
+#### Real-Time Serving
+```python
+# Enable model serving in Databricks UI
+# Get API endpoint
+endpoint = "https://<workspace>/model/churn_prediction_model/Production/invocations"
+
+# Call API
+import requests
+response = requests.post(
+    endpoint,
+    headers={"Authorization": f"Bearer {token}"},
+    json={"dataframe_records": [{"feature1": 10, "feature2": 20}]}
+)
+
+prediction = response.json()
+```
+
+#### Streaming Inference
+```python
+# Load streaming data
+stream = spark.readStream.format("delta").load("/streaming/customers")
+
+# Define UDF for model inference
+model = mlflow.sklearn.load_model("models:/churn_prediction_model/Production")
+
+@pandas_udf("double")
+def predict_churn(features: pd.Series) -> pd.Series:
+    return pd.Series(model.predict(features))
+
+# Apply predictions
+predictions_stream = stream.withColumn("churn_prob", predict_churn(col("features")))
+
+# Write to Delta
+predictions_stream.writeStream.format("delta").start("/predictions/streaming")
+```
+
+---
+
+### Stage 7: Monitoring & Retraining
+
+```python
+# Monitor model performance
+predictions_df = spark.table("predictions.churn")
+
+# Calculate metrics
+actual_churn = predictions_df.select("actual_churn").collect()
+predicted_churn = predictions_df.select("churn_prediction").collect()
+
+current_auc = roc_auc_score(actual_churn, predicted_churn)
+baseline_auc = 0.97
+
+# Detect drift
+if current_auc < baseline_auc - 0.05:
+    print("🚨 ALERT: Model drift detected!")
+    print(f"   Baseline: {baseline_auc:.3f}")
+    print(f"   Current: {current_auc:.3f}")
+
+    # Trigger retraining
+    # ... retrain_pipeline() ...
+
+    # Register new version
+    new_model_uri = f"runs:/{new_run_id}/model"
+    mlflow.register_model(new_model_uri, "churn_prediction_model")
+
+    # A/B test new version
+    # ... gradual rollout ...
+```
+
+---
+
+## Databricks AutoML Alternative
+
+```python
+from databricks import automl
+
+# Run AutoML
+summary = automl.classify(
+    dataset=train_df,
+    target_col="churned",
+    primary_metric="f1",
+    timeout_minutes=30
+)
+
+# Get best model (auto-registered in MLflow)
+best_trial = summary.best_trial
+print(f"Best model: {best_trial.model_description}")
+print(f"Best F1: {best_trial.metrics['test_f1_score']:.3f}")
+
+# Load generated notebook
+notebook_path = summary.best_trial.notebook_path
+print(f"Generated code: {notebook_path}")
+```
+
+**AutoML Benefits**:
+- Tries 10+ algorithms automatically
+- Hyperparameter tuning included
+- Generates deployment-ready notebook
+- Fast prototyping (30 min → production model)
+
+---
+
+## Summary: MLflow Lifecycle
+
+1. **Experiment** → Track parameters, metrics, artifacts
+2. **Register** → Version control in Model Registry
+3. **Stage** → None → Staging → Production
+4. **Deploy** → Batch, real-time, or streaming
+5. **Monitor** → Track performance, detect drift
+6. **Retrain** → Automated retraining pipeline
+7. **A/B Test** → Gradual rollout of new versions
+
+**All managed in Databricks Unified Platform!**

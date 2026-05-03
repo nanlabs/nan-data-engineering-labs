@@ -1,0 +1,182 @@
+graph TB
+    subgraph "AWS Account Activity"
+        A1[EC2 Instances]
+        A2[S3 Storage]
+        A3[RDS Databases]
+        A4[Lambda Functions]
+        A5[Redshift Cluster]
+        A6[EMR Jobs]
+    end
+
+    subgraph "Cost Data Collection"
+        B1[AWS Cost Explorer API]
+        B2[Cost and Usage Report]
+        B3[CloudWatch Metrics]
+
+        A1 --> B1
+        A2 --> B1
+        A3 --> B1
+        A4 --> B1
+        A5 --> B1
+        A6 --> B1
+
+        A1 --> B2
+        A2 --> B2
+        A3 --> B2
+        A4 --> B2
+        A5 --> B2
+        A6 --> B2
+    end
+
+    subgraph "CUR Export Pipeline"
+        C1[CUR S3 Bucket]
+        C2[Glue Crawler]
+        C3[Glue Data Catalog]
+        C4[Athena]
+
+        B2 -->|Hourly parquet files| C1
+        C1 --> C2
+        C2 -->|Discover schema| C3
+        C3 --> C4
+    end
+
+    subgraph "Cost Allocation Dimensions"
+        D1[Resource Tags]
+        D2[Cost Center: data-engineering]
+        D3[Project: customer-360]
+        D4[Environment: prod/dev/test]
+        D5[Owner: team email]
+
+        D1 --> D2
+        D1 --> D3
+        D1 --> D4
+        D1 --> D5
+    end
+
+    B1 --> D1
+    B2 --> D1
+
+    subgraph "Cost Analysis Queries"
+        E1["Top 10 Services by Cost
+        SELECT line_item_product_code,
+               SUM(line_item_unblended_cost) as cost
+        FROM cur
+        WHERE year='2024' AND month='01'
+        GROUP BY line_item_product_code
+        ORDER BY cost DESC
+        LIMIT 10"]
+
+        E2["Cost by Environment
+        SELECT resource_tags_user_environment,
+               SUM(line_item_unblended_cost) as cost
+        FROM cur
+        WHERE year='2024' AND month='01'
+        GROUP BY resource_tags_user_environment"]
+
+        E3["Daily Cost Trend
+        SELECT line_item_usage_start_date,
+               SUM(line_item_unblended_cost) as daily_cost
+        FROM cur
+        WHERE year='2024' AND month='01'
+        GROUP BY line_item_usage_start_date
+        ORDER BY line_item_usage_start_date"]
+
+        E4["Untagged Resources
+        SELECT line_item_resource_id,
+               line_item_product_code,
+               SUM(line_item_unblended_cost) as cost
+        FROM cur
+        WHERE resource_tags_user_cost_center IS NULL
+          AND line_item_unblended_cost > 0
+        GROUP BY line_item_resource_id, line_item_product_code
+        ORDER BY cost DESC"]
+    end
+
+    C4 --> E1
+    C4 --> E2
+    C4 --> E3
+    C4 --> E4
+
+    subgraph "Cost Anomaly Detection"
+        F1["Detect Spikes > 20%
+        WITH daily_costs AS (
+          SELECT DATE(line_item_usage_start_date) as date,
+                 SUM(line_item_unblended_cost) as cost
+          FROM cur
+          GROUP BY DATE(line_item_usage_start_date)
+        ),
+        cost_with_prev AS (
+          SELECT date, cost,
+                 LAG(cost, 1) OVER (ORDER BY date) as prev_cost
+          FROM daily_costs
+        )
+        SELECT date, cost, prev_cost,
+               (cost - prev_cost) / prev_cost * 100 as pct_change
+        FROM cost_with_prev
+        WHERE (cost - prev_cost) / prev_cost > 0.20"]
+
+        F2[AWS Cost Anomaly Detection ML]
+        F3[CloudWatch Alarm]
+        F4[SNS Alert]
+    end
+
+    C4 --> F1
+    B1 --> F2
+    F1 --> F3
+    F2 --> F3
+    F3 --> F4
+
+    subgraph "Cost Dashboards"
+        G1[QuickSight Executive Dashboard]
+        G2[Monthly Spend: $125,430]
+        G3[Top Service: Redshift 35%]
+        G4[Cost by Team]
+        G5[Budget: 83% utilized]
+
+        G1 --> G2
+        G1 --> G3
+        G1 --> G4
+        G1 --> G5
+    end
+
+    C4 --> G1
+
+    subgraph "FinOps Reporting"
+        H1[Chargeback Report]
+        H2[Showback Report]
+        H3[Cost Optimization Opportunities]
+        H4[RI/SP Utilization]
+
+        H1 -->|Invoice teams| H2
+        H3 -->|Right-sizing, idle resources| H4
+    end
+
+    G1 --> H1
+    G1 --> H2
+    E1 --> H3
+    E2 --> H3
+
+    subgraph "Cost Governance Actions"
+        I1[Budget Alerts]
+        I2[Auto-tagging Lambda]
+        I3[Idle Resource Cleanup]
+        I4[RI/SP Recommendations]
+    end
+
+    F4 --> I1
+    E4 --> I2
+    E1 --> I3
+    H4 --> I4
+
+    style A1 fill:#4a90e2,color:#fff
+    style A2 fill:#4a90e2,color:#fff
+    style A3 fill:#4a90e2,color:#fff
+    style A4 fill:#4a90e2,color:#fff
+    style A5 fill:#4a90e2,color:#fff
+    style A6 fill:#4a90e2,color:#fff
+    style B2 fill:#7ed321,color:#fff
+    style C1 fill:#f5a623,color:#fff
+    style C4 fill:#bd10e0,color:#fff
+    style G1 fill:#50e3c2,color:#000
+    style F2 fill:#ff6b6b,color:#fff
+    style H1 fill:#ffd93d,color:#000

@@ -1,0 +1,88 @@
+{
+  "type": "record",
+  "name": "SensorReading",
+  "namespace": "com.training.streaming.iot",
+  "doc": "IoT sensor reading event",
+  "fields": [
+    {
+      "name": "sensor_id",
+      "type": "string",
+      "doc": "Unique sensor identifier"
+    },
+    {
+      "name": "device_id",
+      "type": "string",
+      "doc": "Device identifier"
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Reading timestamp in milliseconds since epoch"
+    },
+    {
+      "name": "sensor_type",
+      "type": {
+        "type": "enum",
+        "name": "SensorType",
+        "symbols": [
+          "TEMPERATURE",
+          "HUMIDITY",
+          "PRESSURE",
+          "MOTION",
+          "LIGHT",
+          "SOUND"
+        ]
+      },
+      "doc": "Type of sensor"
+    },
+    {
+      "name": "value",
+      "type": "double",
+      "doc": "Sensor reading value"
+    },
+    {
+      "name": "unit",
+      "type": "string",
+      "doc": "Unit of measurement (e.g., celsius, fahrenheit, percent)"
+    },
+    {
+      "name": "location",
+      "type": ["null", {
+        "type": "record",
+        "name": "Location",
+        "fields": [
+          {"name": "latitude", "type": "double"},
+          {"name": "longitude", "type": "double"},
+          {"name": "altitude", "type": ["null", "double"], "default": null}
+        ]
+      }],
+      "default": null,
+      "doc": "Sensor geographic location"
+    },
+    {
+      "name": "quality",
+      "type": {
+        "type": "enum",
+        "name": "ReadingQuality",
+        "symbols": ["GOOD", "FAIR", "POOR", "UNKNOWN"]
+      },
+      "default": "GOOD",
+      "doc": "Reading quality indicator"
+    },
+    {
+      "name": "battery_level",
+      "type": ["null", "double"],
+      "default": null,
+      "doc": "Device battery level (0-100)"
+    },
+    {
+      "name": "firmware_version",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Device firmware version"
+    }
+  ]
+}

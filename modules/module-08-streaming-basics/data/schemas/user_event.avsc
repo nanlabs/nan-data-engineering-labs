@@ -1,0 +1,129 @@
+{
+  "type": "record",
+  "name": "UserEvent",
+  "namespace": "com.training.streaming.events",
+  "doc": "User activity event",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string",
+      "doc": "Unique event identifier (UUID)"
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "EventType",
+        "symbols": [
+          "PAGE_VIEW",
+          "CLICK",
+          "PURCHASE",
+          "ADD_TO_CART",
+          "REMOVE_FROM_CART",
+          "SEARCH",
+          "LOGIN",
+          "LOGOUT",
+          "SIGNUP"
+        ]
+      },
+      "doc": "Type of user event"
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Event timestamp in milliseconds since epoch"
+    },
+    {
+      "name": "user_id",
+      "type": "string",
+      "doc": "User identifier"
+    },
+    {
+      "name": "session_id",
+      "type": "string",
+      "doc": "Session identifier"
+    },
+    {
+      "name": "page_url",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Page URL where event occurred"
+    },
+    {
+      "name": "referrer",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Referrer URL"
+    },
+    {
+      "name": "user_agent",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "User agent string"
+    },
+    {
+      "name": "ip_address",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Client IP address"
+    },
+    {
+      "name": "country",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "User country (ISO 3166-1 alpha-2)"
+    },
+    {
+      "name": "device_type",
+      "type": ["null", {
+        "type": "enum",
+        "name": "DeviceType",
+        "symbols": ["DESKTOP", "MOBILE", "TABLET", "OTHER"]
+      }],
+      "default": null,
+      "doc": "Device type"
+    },
+    {
+      "name": "product_id",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Product ID (for product-related events)"
+    },
+    {
+      "name": "category",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Product category"
+    },
+    {
+      "name": "amount",
+      "type": ["null", "double"],
+      "default": null,
+      "doc": "Transaction amount (for purchase events)"
+    },
+    {
+      "name": "currency",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Currency code (ISO 4217)"
+    },
+    {
+      "name": "search_query",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Search query text"
+    },
+    {
+      "name": "metadata",
+      "type": ["null", {
+        "type": "map",
+        "values": "string"
+      }],
+      "default": null,
+      "doc": "Additional event metadata"
+    }
+  ]
+}

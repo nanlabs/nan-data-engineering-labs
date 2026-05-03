@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/lambda-event.schema.json",
+  "title": "Lambda Event Schema",
+  "description": "Schema for validating Lambda function event inputs",
+  "type": "object",
+  "oneOf": [
+    {
+      "title": "S3 Event",
+      "properties": {
+        "Records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "eventVersion": {"type": "string"},
+              "eventSource": {"const": "aws:s3"},
+              "eventName": {
+                "type": "string",
+                "pattern": "^ObjectCreated:|ObjectRemoved:"
+              },
+              "s3": {
+                "type": "object",
+                "properties": {
+                  "bucket": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "arn": {"type": "string", "pattern": "^arn:aws:s3:::.+"}
+                    },
+                    "required": ["name"]
+                  },
+                  "object": {
+                    "type": "object",
+                    "properties": {
+                      "key": {"type": "string"},
+                      "size": {"type": "integer", "minimum": 0}
+                    },
+                    "required": ["key"]
+                  }
+                },
+                "required": ["bucket", "object"]
+              }
+            },
+            "required": ["eventSource", "eventName", "s3"]
+          }
+        }
+      },
+      "required": ["Records"]
+    },
+    {
+      "title": "DynamoDB Stream Event",
+      "properties": {
+        "Records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "eventSource": {"const": "aws:dynamodb"},
+              "eventName": {
+                "type": "string",
+                "enum": ["INSERT", "MODIFY", "REMOVE"]
+              },
+              "dynamodb": {
+                "type": "object",
+                "properties": {
+                  "Keys": {"type": "object"},
+                  "NewImage": {"type": "object"},
+                  "OldImage": {"type": "object"},
+                  "SequenceNumber": {"type": "string"},
+                  "SizeBytes": {"type": "integer"},
+                  "StreamViewType": {
+                    "type": "string",
+                    "enum": ["NEW_IMAGE", "OLD_IMAGE", "NEW_AND_OLD_IMAGES", "KEYS_ONLY"]
+                  }
+                }
+              }
+            },
+            "required": ["eventSource", "eventName", "dynamodb"]
+          }
+        }
+      },
+      "required": ["Records"]
+    },
+    {
+      "title": "EventBridge Event",
+      "properties": {
+        "version": {"type": "string"},
+        "id": {"type": "string", "format": "uuid"},
+        "detail-type": {"type": "string"},
+        "source": {"type": "string"},
+        "account": {"type": "string", "pattern": "^[0-9]{12}$"},
+        "time": {"type": "string", "format": "date-time"},
+        "region": {"type": "string"},
+        "detail": {
+          "type": "object",
+          "description": "Custom event payload"
+        }
+      },
+      "required": ["version", "id", "detail-type", "source", "time", "detail"]
+    },
+    {
+      "title": "API Gateway Event",
+      "properties": {
+        "httpMethod": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
+        },
+        "path": {"type": "string"},
+        "queryStringParameters": {
+          "type": ["object", "null"],
+          "additionalProperties": {"type": "string"}
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        },
+        "body": {
+          "type": ["string", "null"]
+        },
+        "isBase64Encoded": {"type": "boolean"}
+      },
+      "required": ["httpMethod", "path"]
+    },
+    {
+      "title": "SQS Event",
+      "properties": {
+        "Records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "messageId": {"type": "string"},
+              "receiptHandle": {"type": "string"},
+              "body": {"type": "string"},
+              "attributes": {
+                "type": "object",
+                "properties": {
+                  "ApproximateReceiveCount": {"type": "string"},
+                  "SentTimestamp": {"type": "string"},
+                  "SenderId": {"type": "string"}
+                }
+              },
+              "messageAttributes": {"type": "object"},
+              "eventSource": {"const": "aws:sqs"}
+            },
+            "required": ["messageId", "receiptHandle", "body", "eventSource"]
+          }
+        }
+      },
+      "required": ["Records"]
+    },
+    {
+      "title": "Step Functions Task Event",
+      "properties": {
+        "input": {
+          "type": "object",
+          "description": "Input data from Step Functions"
+        },
+        "executionArn": {
+          "type": "string",
+          "pattern": "^arn:aws:states:.+:execution:.+"
+        },
+        "stateMachineArn": {
+          "type": "string",
+          "pattern": "^arn:aws:states:.+:stateMachine:.+"
+        },
+        "taskToken": {
+          "type": "string",
+          "description": "Token for callback pattern"
+        }
+      },
+      "required": ["input"]
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+# ==================================================================================
+# Terraform Variables Example File
+# ==================================================================================
+# This file provides example values for all variables defined in variables.tf.
+# Copy this file to terraform.tfvars and customize the values for your environment.
+#
+# USAGE:
+#   cp terraform.tfvars.example terraform.tfvars
+#   # Edit terraform.tfvars with your values
+#   terraform plan
+#   terraform apply
+# ==================================================================================
+
+# ==================================================================================
+# Project Configuration
+# ==================================================================================
+
+# Name of the project (used as prefix for all resource names)
+# Must contain only lowercase letters, numbers, and hyphens
+project_name = "cloudmart-data-lake"
+
+# Environment name: dev, staging, or prod
+# This affects resource naming and potentially configurations
+environment = "dev"
+
+# Common tags applied to all resources
+# Customize these to match your organization's tagging strategy
+tags = {
+  Project     = "CloudMart Data Lake"
+  ManagedBy   = "Terraform"
+  Owner       = "Data Engineering Team"
+  CostCenter  = "Engineering"
+  Application = "Data Lake"
+  Department  = "Analytics"
+  Contact     = "data-engineering@cloudmart.com"
+}
+
+# ==================================================================================
+# AWS Configuration
+# ==================================================================================
+
+# AWS region for all resources
+# Choose a region close to your users or data sources for lower latency
+aws_region = "us-east-1"
+
+# ==================================================================================
+# S3 Configuration
+# ==================================================================================
+
+# Prefix for S3 bucket names to ensure global uniqueness
+# Use your organization name or AWS account identifier
+# Examples: "acme-corp", "mycompany", "aws-123456789012"
+s3_bucket_prefix = "acme-corp"
+
+# Optional: Override auto-generated bucket names (leave empty for auto-generation)
+# raw_data_bucket_name        = "acme-corp-cloudmart-raw-dev"
+# processed_data_bucket_name  = "acme-corp-cloudmart-processed-dev"
+# curated_data_bucket_name    = "acme-corp-cloudmart-curated-dev"
+
+# Enable versioning for S3 buckets (recommended for production)
+enable_s3_versioning = true
+
+# Enable lifecycle policies for cost optimization
+s3_lifecycle_enabled = true
+
+# Number of days to retain raw data before deletion
+# 365 = 1 year, 730 = 2 years, etc.
+raw_data_retention_days = 365
+
+# ==================================================================================
+# Lambda Configuration
+# ==================================================================================
+
+# Python runtime version for Lambda functions
+# Supported: python3.9, python3.10, python3.11, python3.12
+lambda_runtime = "python3.11"
+
+# Memory allocation for Lambda functions (in MB)
+# More memory = more CPU power and potentially faster execution
+# Range: 128 to 10240 MB
+lambda_memory_mb = 512
+
+# Timeout for Lambda functions (in seconds)
+# Max: 900 seconds (15 minutes)
+lambda_timeout_seconds = 300
+
+# Reserved concurrent executions (-1 for unreserved)
+# Set a positive number to reserve capacity and prevent throttling
+# Set to -1 to allow unrestricted scaling
+lambda_reserved_concurrent_executions = -1
+
+# ==================================================================================
+# AWS Glue Configuration
+# ==================================================================================
+
+# AWS Glue version for ETL jobs
+# 4.0 is the latest with better performance and features
+glue_version = "4.0"
+
+# Maximum Data Processing Units (DPU) for Glue jobs
+# 1 DPU = 4 vCPU and 16 GB memory
+# Range: 2 to 100
+glue_max_dpu = 2
+
+# Worker type for Glue jobs
+# G.1X: 4 vCPU, 16 GB memory (standard)
+# G.2X: 8 vCPU, 32 GB memory (memory intensive)
+# G.025X: 2 vCPU, 4 GB memory (cost effective for small jobs)
+glue_worker_type = "G.1X"
+
+# Number of workers for Glue jobs
+# Minimum: 2 (for parallelism)
+glue_number_of_workers = 2
+
+# Timeout for Glue jobs (in minutes)
+# Set based on expected job duration
+glue_job_timeout_minutes = 60
+
+# Enable job bookmarks for incremental processing
+# Highly recommended for production to avoid reprocessing data
+enable_glue_job_bookmarks = true
+
+# ==================================================================================
+# Athena Configuration
+# ==================================================================================
+
+# S3 bucket for Athena query results (leave empty for auto-generation)
+athena_output_bucket = ""
+
+# Number of days to retain Athena query results
+# Keep short to minimize storage costs
+athena_query_result_retention_days = 30
+
+# Bytes scanned cutoff per query (in bytes)
+# 10737418240 = 10 GB
+# Helps control query costs by preventing runaway queries
+athena_bytes_scanned_cutoff_per_query = 10737418240
+
+# ==================================================================================
+# CloudWatch Configuration
+# ==================================================================================
+
+# Number of days to retain CloudWatch logs
+# Valid values: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653
+# Shorter retention = lower costs
+cloudwatch_log_retention_days = 7
+
+# Enable CloudWatch alarms for monitoring
+enable_cloudwatch_alarms = true
+
+# Threshold for Lambda error count to trigger alarm
+# Alarm triggers when errors exceed this count within the evaluation period
+lambda_error_threshold = 5
+
+# Number of evaluation periods for alarms
+# 1 = immediate alert, 2+ = wait for consecutive periods
+alarm_evaluation_periods = 1
+
+# ==================================================================================
+# SNS Configuration
+# ==================================================================================
+
+# Email address for receiving alerts from SNS
+# IMPORTANT: You must confirm the subscription via email after deployment
+# Leave empty to skip email subscription
+alert_email = "data-engineering@cloudmart.com"
+
+# Enable encryption for SNS topics
+enable_sns_encryption = true
+
+# ==================================================================================
+# EventBridge Schedule Configuration
+# ==================================================================================
+
+# Schedule for raw data crawler
+# rate() examples: rate(5 minutes), rate(1 hour), rate(6 hours)
+# cron() examples: cron(0 12 * * ? *) = daily at noon UTC
+raw_crawler_schedule = "rate(6 hours)"
+
+# Schedule for processed data crawler
+# cron(0 2 * * ? *) = daily at 2:00 AM UTC
+processed_crawler_schedule = "cron(0 2 * * ? *)"
+
+# Schedule for curated data crawler
+# cron(0 3 * * ? *) = daily at 3:00 AM UTC
+curated_crawler_schedule = "cron(0 3 * * ? *)"
+
+# Enable automatic scheduling for Glue crawlers
+# Set to false to run crawlers manually only
+enable_crawler_schedules = true
+
+# ==================================================================================
+# Security Configuration
+# ==================================================================================
+
+# Enable encryption at rest for all services
+# Highly recommended for production environments
+enable_encryption_at_rest = true
+
+# Enable encryption in transit for all services
+enable_encryption_in_transit = true
+
+# ARN of custom KMS key for encryption (optional)
+# Leave empty to use AWS managed keys (simpler, no additional cost)
+# Specify a KMS key ARN for more control over encryption
+# Example: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+kms_key_arn = ""
+
+# ==================================================================================
+# NOTES AND BEST PRACTICES
+# ==================================================================================
+
+# 1. COST OPTIMIZATION:
+#    - Use smaller Lambda memory for simple operations (256-512 MB)
+#    - Set appropriate log retention (7-30 days for non-critical logs)
+#    - Enable lifecycle policies to transition old data to cheaper storage
+#    - Enable Glue job bookmarks to avoid reprocessing data
+#    - Monitor Athena query costs with bytes_scanned_cutoff
+
+# 2. SECURITY:
+#    - Always enable encryption at rest and in transit for production
+#    - Use specific email addresses for SNS alerts (not personal emails)
+#    - Review and customize IAM roles and policies as needed
+#    - Enable S3 bucket versioning for data recovery
+#    - Keep the terraform.tfvars file out of version control (add to .gitignore)
+
+# 3. RELIABILITY:
+#    - Enable job bookmarks for Glue jobs to handle failures gracefully
+#    - Set appropriate timeouts for Lambda and Glue jobs
+#    - Configure CloudWatch alarms for critical operations
+#    - Use reserved concurrency for critical Lambda functions
+
+# 4. MONITORING:
+#    - Subscribe to SNS alerts with a team distribution list
+#    - Review CloudWatch logs regularly
+#    - Monitor CloudWatch alarms and respond to issues
+#    - Check Glue job run history for failures
+
+# 5. DEPLOYMENT:
+#    - Start with 'dev' environment and validate before promoting to 'prod'
+#    - Always run 'terraform plan' before 'terraform apply'
+#    - Keep this file as terraform.tfvars.example and never commit terraform.tfvars
+#    - Use different values for dev/staging/prod environments

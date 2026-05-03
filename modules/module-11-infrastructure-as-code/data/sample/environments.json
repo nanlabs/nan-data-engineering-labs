@@ -1,0 +1,148 @@
+{
+  "environments": [
+    {
+      "name": "dev",
+      "region": "us-east-1",
+      "vpc_cidr": "10.0.0.0/16",
+      "availability_zones": ["us-east-1a", "us-east-1b"],
+      "public_subnet_cidrs": ["10.0.1.0/24", "10.0.2.0/24"],
+      "private_subnet_cidrs": ["10.0.10.0/24", "10.0.11.0/24"],
+      "database_subnet_cidrs": ["10.0.20.0/24", "10.0.21.0/24"],
+      "instance_types": {
+        "web": "t3.small",
+        "app": "t3.medium",
+        "db": "db.t3.small"
+      },
+      "auto_scaling": {
+        "min_size": 1,
+        "max_size": 3,
+        "desired_capacity": 1
+      },
+      "enable_nat_gateway": true,
+      "enable_vpn_gateway": false,
+      "enable_monitoring": true,
+      "backup_retention_days": 7,
+      "tags": {
+        "Environment": "Development",
+        "ManagedBy": "Terraform",
+        "CostCenter": "Engineering",
+        "Project": "DataPlatform"
+      }
+    },
+    {
+      "name": "staging",
+      "region": "us-east-1",
+      "vpc_cidr": "10.1.0.0/16",
+      "availability_zones": ["us-east-1a", "us-east-1b", "us-east-1c"],
+      "public_subnet_cidrs": ["10.1.1.0/24", "10.1.2.0/24", "10.1.3.0/24"],
+      "private_subnet_cidrs": ["10.1.10.0/24", "10.1.11.0/24", "10.1.12.0/24"],
+      "database_subnet_cidrs": ["10.1.20.0/24", "10.1.21.0/24", "10.1.22.0/24"],
+      "instance_types": {
+        "web": "t3.medium",
+        "app": "t3.large",
+        "db": "db.t3.medium"
+      },
+      "auto_scaling": {
+        "min_size": 2,
+        "max_size": 6,
+        "desired_capacity": 2
+      },
+      "enable_nat_gateway": true,
+      "enable_vpn_gateway": false,
+      "enable_monitoring": true,
+      "backup_retention_days": 14,
+      "tags": {
+        "Environment": "Staging",
+        "ManagedBy": "Terraform",
+        "CostCenter": "Engineering",
+        "Project": "DataPlatform"
+      }
+    },
+    {
+      "name": "prod",
+      "region": "us-east-1",
+      "vpc_cidr": "10.2.0.0/16",
+      "availability_zones": ["us-east-1a", "us-east-1b", "us-east-1c"],
+      "public_subnet_cidrs": ["10.2.1.0/24", "10.2.2.0/24", "10.2.3.0/24"],
+      "private_subnet_cidrs": ["10.2.10.0/24", "10.2.11.0/24", "10.2.12.0/24"],
+      "database_subnet_cidrs": ["10.2.20.0/24", "10.2.21.0/24", "10.2.22.0/24"],
+      "instance_types": {
+        "web": "t3.large",
+        "app": "c5.xlarge",
+        "db": "db.r5.large"
+      },
+      "auto_scaling": {
+        "min_size": 3,
+        "max_size": 10,
+        "desired_capacity": 3
+      },
+      "enable_nat_gateway": true,
+      "enable_vpn_gateway": true,
+      "enable_monitoring": true,
+      "backup_retention_days": 30,
+      "enable_multi_az": true,
+      "enable_deletion_protection": true,
+      "tags": {
+        "Environment": "Production",
+        "ManagedBy": "Terraform",
+        "CostCenter": "Production",
+        "Project": "DataPlatform",
+        "Compliance": "SOC2",
+        "DataClassification": "Confidential"
+      }
+    },
+    {
+      "name": "prod-dr",
+      "region": "us-west-2",
+      "vpc_cidr": "10.3.0.0/16",
+      "availability_zones": ["us-west-2a", "us-west-2b", "us-west-2c"],
+      "public_subnet_cidrs": ["10.3.1.0/24", "10.3.2.0/24", "10.3.3.0/24"],
+      "private_subnet_cidrs": ["10.3.10.0/24", "10.3.11.0/24", "10.3.12.0/24"],
+      "database_subnet_cidrs": ["10.3.20.0/24", "10.3.21.0/24", "10.3.22.0/24"],
+      "instance_types": {
+        "web": "t3.large",
+        "app": "c5.xlarge",
+        "db": "db.r5.large"
+      },
+      "auto_scaling": {
+        "min_size": 1,
+        "max_size": 10,
+        "desired_capacity": 1
+      },
+      "enable_nat_gateway": true,
+      "enable_vpn_gateway": true,
+      "enable_monitoring": true,
+      "backup_retention_days": 30,
+      "enable_multi_az": true,
+      "enable_deletion_protection": true,
+      "disaster_recovery": {
+        "enabled": true,
+        "primary_region": "us-east-1",
+        "failover_priority": 1,
+        "rto_minutes": 15,
+        "rpo_minutes": 5
+      },
+      "tags": {
+        "Environment": "Production-DR",
+        "ManagedBy": "Terraform",
+        "CostCenter": "Production",
+        "Project": "DataPlatform",
+        "Compliance": "SOC2",
+        "DataClassification": "Confidential",
+        "DisasterRecovery": "Secondary"
+      }
+    }
+  ],
+  "global_settings": {
+    "terraform_version": "~> 1.6.0",
+    "aws_provider_version": "~> 5.0",
+    "state_bucket": "terraform-state-dataplatform",
+    "state_dynamodb_table": "terraform-locks",
+    "state_kms_key_alias": "alias/terraform-state",
+    "default_tags": {
+      "ManagedBy": "Terraform",
+      "Organization": "DataEngineering",
+      "ContactEmail": "data-team@company.com"
+    }
+  }
+}

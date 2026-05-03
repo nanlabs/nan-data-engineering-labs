@@ -1,0 +1,164 @@
+version: '3.8'
+
+services:
+  # LocalStack for AWS service emulation (Kinesis, DynamoDB, Lambda, EventBridge)
+  localstack:
+    image: localstack/localstack:latest
+    container_name: advanced-architectures-localstack
+    ports:
+      - "4566:4566"  # LocalStack edge port
+      - "4571:4571"  # LocalStack legacy services
+    environment:
+      - SERVICES=s3,dynamodb,kinesis,lambda,sqs,sns,eventbridge,glue,athena,redshift,elasticache,emr,sts,iam
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - LAMBDA_EXECUTOR=docker
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - KINESIS_PROVIDER=kinesalite
+    volumes:
+      - "${PWD}/data/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - advanced-architectures
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis for CQRS read model (ElastiCache simulation)
+  redis:
+    image: redis:7-alpine
+    container_name: advanced-architectures-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - advanced-architectures
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # PostgreSQL for analytics (Redshift simulation)
+  postgres:
+    image: postgres:15-alpine
+    container_name: advanced-architectures-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=analytics
+      - POSTGRES_PASSWORD=analytics
+      - POSTGRES_DB=data_lakehouse
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - advanced-architectures
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U analytics"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Jupyter Notebook for interactive exercises
+  jupyter:
+    image: jupyter/pyspark-notebook:python-3.10
+    container_name: advanced-architectures-jupyter
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - GRANT_SUDO=yes
+    volumes:
+      - "${PWD}/exercises:/home/jovyan/exercises"
+      - "${PWD}/theory:/home/jovyan/theory"
+      - "${PWD}/data:/home/jovyan/data"
+    networks:
+      - advanced-architectures
+    command: start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
+
+  # Kafka for streaming exercises (Kappa architecture)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: advanced-architectures-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - advanced-architectures
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: advanced-architectures-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - advanced-architectures
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Kafka UI for monitoring
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: advanced-architectures-kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - advanced-architectures
+
+  # Grafana for monitoring dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: advanced-architectures-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_INSTALL_PLUGINS=redis-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./infrastructure/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - advanced-architectures
+
+networks:
+  advanced-architectures:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  grafana_data:

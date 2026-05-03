@@ -1,0 +1,95 @@
+graph TB
+    %% Architecture Comparison - Lambda vs Kappa vs Data Mesh vs CQRS
+
+    subgraph "Lambda Architecture"
+        L1[✅ Complete & Accurate<br/>Batch recomputes all]:::lambda
+        L2[✅ Handles Late Data<br/>Batch corrects speed]:::lambda
+        L3[❌ Complex<br/>2 code paths to maintain]:::lambda
+        L4[❌ Higher Cost<br/>Duplicate processing]:::lambda
+        L5[⚡ Latency: Seconds-Hours<br/>Speed + Batch]:::lambda
+    end
+
+    subgraph "Kappa Architecture"
+        K1[✅ Simple<br/>Single code path]:::kappa
+        K2[✅ Replayable<br/>Fix bugs by reprocessing]:::kappa
+        K3[✅ Real-time Native<br/>Stream-first design]:::kappa
+        K4[❌ Storage Cost<br/>365-day retention]:::kappa
+        K5[⚡ Latency: Milliseconds<br/>Stream only]:::kappa
+    end
+
+    subgraph "Data Mesh"
+        M1[✅ Scalable<br/>Domain autonomy]:::mesh
+        M2[✅ Ownership<br/>Teams own their data]:::mesh
+        M3[✅ Flexible<br/>Polyglot tech stack]:::mesh
+        M4[❌ Governance Overhead<br/>Federated complexity]:::mesh
+        M5[⚡ Latency: Varies<br/>Per domain design]:::mesh
+    end
+
+    subgraph "CQRS + Event Sourcing"
+        C1[✅ Audit Trail<br/>Full event history]:::cqrs
+        C2[✅ Scalable Reads<br/>Multiple projections]:::cqrs
+        C3[✅ Time Travel<br/>State at any time]:::cqrs
+        C4[❌ Eventual Consistency<br/>Read lag minutes]:::cqrs
+        C5[⚡ Latency: Mixed<br/>Writes fast, reads eventual]:::cqrs
+    end
+
+    %% Decision Factors
+    subgraph "Choose Lambda When"
+        DL1[🎯 Need batch accuracy<br/>+ real-time speed]:::decision
+        DL2[🎯 Late data is common<br/>recomputation needed]:::decision
+        DL3[🎯 Complex analytics<br/>require batch processing]:::decision
+    end
+
+    subgraph "Choose Kappa When"
+        DK1[🎯 Stream-native workload<br/>no batch requirements]:::decision
+        DK2[🎯 Need code simplicity<br/>single processing path]:::decision
+        DK3[🎯 Replayability important<br/>fix bugs by replaying]:::decision
+    end
+
+    subgraph "Choose Data Mesh When"
+        DM1[🎯 Large organization<br/>>50 data engineers]:::decision
+        DM2[🎯 Multiple domains<br/>independent teams]:::decision
+        DM3[🎯 Centralized team bottleneck<br/>need to scale ownership]:::decision
+    end
+
+    subgraph "Choose CQRS When"
+        DC1[🎯 Read/write separation<br/>different scale needs]:::decision
+        DC2[🎯 Multiple query patterns<br/>search, analytics, cache]:::decision
+        DC3[🎯 Audit requirements<br/>full event history needed]:::decision
+    end
+
+    %% Comparison Matrix
+    subgraph "Comparison Matrix"
+        CM1["| Architecture | Complexity | Latency | Cost | Scalability |<br/>|-------------|-----------|---------|------|------------|<br/>| Lambda | HIGH | Mixed | HIGH | MEDIUM |<br/>| Kappa | LOW | LOW | MEDIUM | HIGH |<br/>| Data Mesh | MEDIUM | Varies | MEDIUM | VERY HIGH |<br/>| CQRS | HIGH | Mixed | MEDIUM | HIGH |"]:::matrix
+    end
+
+    %% Real-world Examples
+    subgraph "Real-world Examples"
+        E1[Lambda: Netflix<br/>Video recommendations]:::example
+        E2[Kappa: Uber<br/>Surge pricing]:::example
+        E3[Mesh: Airbnb<br/>Host/Guest domains]:::example
+        E4[CQRS: Amazon<br/>Order management]:::example
+    end
+
+    %% Styling
+    classDef lambda fill:#3498DB,stroke:#2980B9,stroke-width:3px,color:#fff
+    classDef kappa fill:#2ECC71,stroke:#27AE60,stroke-width:3px,color:#fff
+    classDef mesh fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+    classDef cqrs fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff
+    classDef decision fill:#F39C12,stroke:#E67E22,stroke-width:2px,color:#fff
+    classDef matrix fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff,text-align:left
+    classDef example fill:#1ABC9C,stroke:#16A085,stroke-width:2px,color:#fff
+
+    %% Hybrid Approaches
+    subgraph "Hybrid Architectures"
+        H1[Lambda + CQRS<br/>Event-sourced batch+speed]:::hybrid
+        H2[Kappa + Data Mesh<br/>Stream domains]:::hybrid
+        H3[Data Mesh + CQRS<br/>Domain-owned events]:::hybrid
+    end
+
+    classDef hybrid fill:#95A5A6,stroke:#7F8C8D,stroke-width:2px,color:#fff
+
+    %% Migration Paths
+    L1 -.->|"Simplify"| K1
+    K1 -.->|"Scale org"| M1
+    M1 -.->|"Add read separation"| C1

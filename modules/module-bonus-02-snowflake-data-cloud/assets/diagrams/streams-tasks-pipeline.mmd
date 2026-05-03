@@ -1,0 +1,366 @@
+graph LR
+    %% ============================================================================
+    %% STREAMS & TASKS CDC PIPELINE
+    %% ============================================================================
+    %% This diagram illustrates Snowflake's native CDC (Change Data Capture)
+    %% implementation using Streams and Tasks for incremental data processing.
+    %%
+    %% Key Concepts:
+    %% - Streams: Track changes (INSERT/UPDATE/DELETE) on tables
+    %% - Tasks: Serverless scheduled jobs with DAG dependencies
+    %% - Medallion Architecture: Bronze → Silver → Gold
+    %% - Incremental Processing: Process only changed data (efficient)
+    %% ============================================================================
+
+    %% ============================================================================
+    %% BRONZE LAYER (Source Data)
+    %% ============================================================================
+    subgraph BronzeLayer["🥉 BRONZE LAYER (Raw Data Landing)"]
+        style BronzeLayer fill:#8B4513,stroke:#333,stroke-width:3px
+
+        SourceSystem[("💾 Source System<br/>━━━━━━━━━━━━<br/>OLTP Database<br/>APIs<br/>Kafka<br/>File uploads")]
+
+        BronzeTable[("📊 BRONZE_ORDERS<br/>━━━━━━━━━━━━━━━<br/>Raw data (1:1 copy)<br/>All data types as strings<br/>Timestamps preserved<br/>No transformations<br/><br/>Columns:<br/>- order_id<br/>- customer_id<br/>- amount<br/>- status<br/>- created_at<br/>- updated_at")]
+
+        LoadProcess["⬇️ Data Loading<br/>━━━━━━━━━━━━━━━<br/>COPY INTO bronze_orders<br/>FROM @external_stage<br/>FILE_FORMAT = csv<br/>ON_ERROR = 'CONTINUE';<br/><br/>Frequency: Every 5 min<br/>Volume: ~10K rows/batch"]
+
+        SourceSystem -->|"Continuous ingestion"| LoadProcess
+        LoadProcess -->|"Appends new data"| BronzeTable
+    end
+
+    %% ============================================================================
+    %% STREAM ON BRONZE
+    %% ============================================================================
+    subgraph BronzeStream["📡 STREAM: orders_bronze_stream"]
+        style BronzeStream fill:#4A90E2,stroke:#333,stroke-width:3px
+
+        StreamDef["Stream Definition<br/>━━━━━━━━━━━━━━━━━━━━━<br/>CREATE STREAM orders_bronze_stream<br/>ON TABLE bronze_orders<br/>SHOW_INITIAL_ROWS = FALSE;<br/><br/>Purpose: Capture all changes<br/>Types: INSERT, UPDATE, DELETE"]
+
+        StreamMeta["Change Metadata<br/>━━━━━━━━━━━━━━━━━━━━━<br/>METADATA$ACTION:<br/>  - 'INSERT' (new row)<br/>  - 'DELETE' (deleted row)<br/><br/>METADATA$ISUPDATE:<br/>  - TRUE (update = DELETE + INSERT)<br/>  - FALSE (pure insert/delete)<br/><br/>METADATA$ROW_ID:<br/>  - Unique row identifier"]
+
+        StreamData["Sample Stream Contents<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>order_id | amount | METADATA$ACTION<br/>  1001   |  $100  | INSERT<br/>  1002   |  $200  | INSERT<br/>  1003   |  $150  | DELETE (old value)<br/>  1003   |  $175  | INSERT (new value)<br/><br/>Offset: 4 rows pending"]
+
+        StreamDef --> StreamMeta
+        StreamMeta --> StreamData
+    end
+
+    BronzeTable -.->|"Tracks changes"| StreamDef
+
+    %% ============================================================================
+    %% TASK 1: BRONZE TO SILVER
+    %% ============================================================================
+    subgraph Task1["⚙️ TASK: process_bronze_to_silver"]
+        style Task1 fill:#7ED321,stroke:#333,stroke-width:3px
+
+        Task1Def["Task Definition<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE TASK process_bronze_to_silver<br/>  WAREHOUSE = etl_wh<br/>  SCHEDULE = '5 MINUTE'<br/>  WHEN SYSTEM$STREAM_HAS_DATA('orders_bronze_stream')<br/>AS<br/>  -- Transformation SQL here --;"]
+
+        Task1Logic["Transformation Logic<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>1. Read from stream (changed rows only)<br/>2. Data quality checks:<br/>   - Remove NULL order_ids<br/>   - Validate amount > 0<br/>   - Parse timestamps<br/>3. Data type conversions:<br/>   - amount: STRING → DECIMAL(10,2)<br/>   - created_at: STRING → TIMESTAMP<br/>4. Deduplication:<br/>   - Keep latest per order_id<br/>5. Handle updates:<br/>   - DELETE old version<br/>   - INSERT new version"]
+
+        Task1SQL["SQL Implementation<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>MERGE INTO silver_orders AS target<br/>USING (<br/>  SELECT DISTINCT<br/>    order_id::INT AS order_id,<br/>    customer_id::INT AS customer_id,<br/>    amount::DECIMAL(10,2) AS amount,<br/>    status,<br/>    TO_TIMESTAMP(created_at) AS created_at,<br/>    METADATA$ACTION AS dml_action<br/>  FROM orders_bronze_stream<br/>  QUALIFY ROW_NUMBER() OVER (<br/>    PARTITION BY order_id<br/>    ORDER BY updated_at DESC<br/>  ) = 1<br/>) AS source<br/>ON target.order_id = source.order_id<br/>WHEN MATCHED AND source.dml_action = 'DELETE'<br/>  THEN DELETE<br/>WHEN MATCHED THEN UPDATE SET<br/>  amount = source.amount,<br/>  status = source.status<br/>WHEN NOT MATCHED THEN INSERT VALUES<br/>  (source.order_id, source.customer_id, ...);<br/><br/>Execution: Every 5 min if stream has data"]
+
+        Task1Def --> Task1Logic
+        Task1Logic --> Task1SQL
+    end
+
+    StreamData -.->|"Consumed by task"| Task1Def
+
+    %% ============================================================================
+    %% SILVER LAYER (Cleaned Data)
+    %% ============================================================================
+    subgraph SilverLayer["🥈 SILVER LAYER (Cleaned & Validated)"]
+        style SilverLayer fill:#C0C0C0,stroke:#333,stroke-width:3px
+
+        SilverTable[("📊 SILVER_ORDERS<br/>━━━━━━━━━━━━━━━━━<br/>Cleaned data<br/>Proper data types<br/>Validated constraints<br/>No duplicates<br/><br/>Columns:<br/>- order_id (INT PK)<br/>- customer_id (INT)<br/>- amount (DECIMAL)<br/>- status (VARCHAR)<br/>- order_date (DATE)<br/>- created_at (TIMESTAMP)<br/>- updated_at (TIMESTAMP)<br/><br/>Quality: 99.9% accurate")]
+
+        SilverMetrics["Data Quality Metrics<br/>━━━━━━━━━━━━━━━━━━━━━<br/>✅ Null rate: < 0.1%<br/>✅ Duplicate rate: 0%<br/>✅ Schema compliance: 100%<br/>✅ Freshness: < 10 minutes<br/>✅ Completeness: 99.9%"]
+    end
+
+    Task1SQL -->|"Writes cleaned data"| SilverTable
+
+    %% ============================================================================
+    %% STREAM ON SILVER
+    %% ============================================================================
+    subgraph SilverStream["📡 STREAM: orders_silver_stream"]
+        style SilverStream fill:#F5A623,stroke:#333,stroke-width:3px
+
+        SilverStreamDef["Stream Definition<br/>━━━━━━━━━━━━━━━━━━━━━<br/>CREATE STREAM orders_silver_stream<br/>ON TABLE silver_orders<br/>APPEND_ONLY = FALSE;<br/><br/>Purpose: Track silver changes<br/>Feeds gold aggregations"]
+
+        SilverStreamData["Stream Content<br/>━━━━━━━━━━━━━━━━━━━━━<br/>Captures:<br/>- New orders (for daily totals)<br/>- Status changes (for metrics)<br/>- Amount updates (for revenue)<br/><br/>Offset: Auto-managed"]
+    end
+
+    SilverTable -.->|"Tracks changes"| SilverStreamDef
+    SilverStreamDef --> SilverStreamData
+
+    %% ============================================================================
+    %% TASK 2: SILVER TO GOLD
+    %% ============================================================================
+    subgraph Task2["⚙️ TASK: process_silver_to_gold"]
+        style Task2 fill:#BD10E0,stroke:#333,stroke-width:3px
+
+        Task2Def["Task Definition<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE TASK process_silver_to_gold<br/>  WAREHOUSE = etl_wh<br/>  AFTER process_bronze_to_silver  -- DAG!<br/>AS<br/>  -- Aggregation SQL here --;"]
+
+        Task2Logic["Aggregation Logic<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>1. Read from silver stream<br/>2. Calculate daily KPIs:<br/>   - Total revenue<br/>   - Order count<br/>   - Avg order value<br/>   - Customer count<br/>3. Group by date + dimensions<br/>4. MERGE into gold (upsert)<br/>5. Handle late-arriving data"]
+
+        Task2SQL["SQL Implementation<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>MERGE INTO gold_daily_sales AS target<br/>USING (<br/>  SELECT<br/>    DATE(order_date) AS sale_date,<br/>    COUNT(DISTINCT order_id) AS order_count,<br/>    COUNT(DISTINCT customer_id) AS customer_count,<br/>    SUM(amount) AS total_revenue,<br/>    AVG(amount) AS avg_order_value,<br/>    MAX(amount) AS max_order_value<br/>  FROM orders_silver_stream<br/>  WHERE METADATA$ACTION = 'INSERT'<br/>  GROUP BY DATE(order_date)<br/>) AS source<br/>ON target.sale_date = source.sale_date<br/>WHEN MATCHED THEN UPDATE SET<br/>  order_count = target.order_count + source.order_count,<br/>  total_revenue = target.total_revenue + source.total_revenue<br/>WHEN NOT MATCHED THEN INSERT VALUES<br/>  (source.sale_date, source.order_count, ...);<br/><br/>Execution: After Task 1 completes (DAG)"]
+
+        Task2Def --> Task2Logic
+        Task2Logic --> Task2SQL
+    end
+
+    Task1SQL -.->|"DAG dependency"| Task2Def
+    SilverStreamData -.->|"Consumed by task"| Task2Logic
+
+    %% ============================================================================
+    %% GOLD LAYER (Aggregated Metrics)
+    %% ============================================================================
+    subgraph GoldLayer["🥇 GOLD LAYER (Business Metrics)"]
+        style GoldLayer fill:#FFD700,stroke:#333,stroke-width:3px
+
+        GoldTable[("📊 GOLD_DAILY_SALES<br/>━━━━━━━━━━━━━━━━━━━<br/>Aggregated KPIs<br/>Pre-calculated metrics<br/>Dashboard-ready<br/><br/>Columns:<br/>- sale_date (DATE PK)<br/>- order_count (INT)<br/>- customer_count (INT)<br/>- total_revenue (DECIMAL)<br/>- avg_order_value (DECIMAL)<br/>- max_order_value (DECIMAL)<br/>- updated_at (TIMESTAMP)<br/><br/>Granularity: Daily")]
+
+        Dashboard["📈 BI Dashboard<br/>━━━━━━━━━━━━━━━━━━━<br/>Queries gold layer<br/>Sub-second response<br/>No compute-heavy joins<br/><br/>Metrics:<br/>- Revenue trends<br/>- Customer growth<br/>- Order volume<br/>- AOV evolution"]
+
+        GoldTable -->|"Powers analytics"| Dashboard
+    end
+
+    Task2SQL -->|"Writes metrics"| GoldTable
+
+    %% ============================================================================
+    %% MONITORING & OBSERVABILITY
+    %% ============================================================================
+    subgraph Monitoring["📊 MONITORING & OBSERVABILITY"]
+        style Monitoring fill:#E8F4F8,stroke:#3498DB,stroke-width:3px
+
+        TaskHistory["Task Execution History<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>SELECT<br/>    name,<br/>    state,  -- SUCCEEDED/FAILED/SKIPPED<br/>    scheduled_time,<br/>    completed_time,<br/>    error_code,<br/>    error_message<br/>FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY())<br/>WHERE name IN (<br/>    'process_bronze_to_silver',<br/>    'process_silver_to_gold'<br/>)<br/>ORDER BY scheduled_time DESC<br/>LIMIT 100;<br/><br/>Metrics: Success rate, duration, failures"]
+
+        StreamInfo["Stream Offset & Backlog<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>SELECT<br/>    SYSTEM$STREAM_HAS_DATA('orders_bronze_stream') AS has_data,<br/>    (<br/>      SELECT COUNT(*)<br/>      FROM orders_bronze_stream<br/>    ) AS pending_rows;<br/><br/>-- Check stream staleness<br/>SHOW STREAMS LIKE 'orders%';<br/><br/>Alert: If offset > 100K rows (backlog!)"]
+
+        PipelineHealth["Pipeline Health Dashboard<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Metrics to monitor:<br/>✅ Task success rate (target: 99.9%)<br/>✅ End-to-end latency (target: < 10 min)<br/>✅ Stream backlog (target: < 10K rows)<br/>✅ Data quality score (target: > 99%)<br/>✅ Cost per processed row<br/><br/>Alerting:<br/>- PagerDuty on task failure<br/>- Slack on SLA breach<br/>- Email on data quality drop"]
+    end
+
+    Task1SQL -.-> TaskHistory
+    Task2SQL -.-> TaskHistory
+    StreamData -.-> StreamInfo
+
+    %% ============================================================================
+    %% ADVANCED FEATURES
+    %% ============================================================================
+    subgraph AdvancedFeatures["🚀 ADVANCED FEATURES"]
+        style AdvancedFeatures fill:#FFF9E6,stroke:#F39C12,stroke-width:2px
+
+        Feature1["Serverless Tasks (No Warehouse)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE TASK serverless_task<br/>  USER_TASK_MANAGED_INITIAL_WAREHOUSE_SIZE = 'XSMALL'<br/>AS<br/>  SELECT ...<br/><br/>Benefit: No warehouse management<br/>Cost: Compute seconds only<br/>Use case: Simple transforms, low volume"]
+
+        Feature2["Task DAG (Dependencies)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Bronze Task → Silver Task → Gold Task<br/>                  ↓<br/>              Email Task<br/><br/>ALTER TASK silver_task<br/>  ADD AFTER bronze_task;<br/><br/>Benefit: Orchestration built-in<br/>No external tools (Airflow/dbt)"]
+
+        Feature3["Stream Types<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Standard Stream:<br/>  - Tracks all DML (INSERT/UPDATE/DELETE)<br/>  - APPEND_ONLY = FALSE<br/><br/>Append-Only Stream:<br/>  - Tracks only INSERTs<br/>  - APPEND_ONLY = TRUE<br/>  - Lower overhead<br/><br/>Use case: Event logs, immutable data"]
+
+        Feature4["Error Handling<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE TASK robust_task<br/>  WAREHOUSE = etl_wh<br/>  ERROR_INTEGRATION = my_notification<br/>  SCHEDULE = '5 MINUTE'<br/>AS<br/>BEGIN<br/>  INSERT INTO ...<br/>  EXCEPTION<br/>    WHEN OTHER THEN<br/>      INSERT INTO error_log VALUES (...);<br/>      RETURN 'ERROR';<br/>  END;<br/><br/>Benefit: Automatic retries, notifications"]
+
+        Feature5["Streams on Views<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE VIEW filtered_orders AS<br/>  SELECT * FROM orders WHERE status = 'PAID';<br/><br/>CREATE STREAM paid_orders_stream<br/>  ON VIEW filtered_orders;<br/><br/>Benefit: Selective CDC<br/>Use case: Process only relevant changes"]
+    end
+
+    %% ============================================================================
+    %% COMPLETE PIPELINE DEFINITION
+    %% ============================================================================
+    subgraph PipelineSetup["💻 COMPLETE PIPELINE SETUP"]
+        style PipelineSetup fill:#D5F4E6,stroke:#27AE60,stroke-width:3px
+
+        Setup1["-- Step 1: Create bronze table
+        CREATE TABLE bronze_orders (
+            order_id STRING,
+            customer_id STRING,
+            amount STRING,
+            status STRING,
+            created_at STRING,
+            updated_at STRING,
+            _loaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+        );"]
+
+        Setup2["-- Step 2: Create bronze stream
+        CREATE STREAM orders_bronze_stream
+        ON TABLE bronze_orders
+        SHOW_INITIAL_ROWS = FALSE;
+
+        -- Check stream works
+        INSERT INTO bronze_orders VALUES
+            ('1001', '5001', '100.00', 'PAID', '2026-03-09', '2026-03-09', CURRENT_TIMESTAMP());
+        SELECT * FROM orders_bronze_stream;"]
+
+        Setup3["-- Step 3: Create silver table
+        CREATE TABLE silver_orders (
+            order_id INT PRIMARY KEY,
+            customer_id INT,
+            amount DECIMAL(10,2),
+            status VARCHAR(50),
+            order_date DATE,
+            created_at TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+        );"]
+
+        Setup4["-- Step 4: Create Task 1 (bronze → silver)
+        CREATE TASK process_bronze_to_silver
+          WAREHOUSE = etl_wh
+          SCHEDULE = '5 MINUTE'
+          WHEN SYSTEM$STREAM_HAS_DATA('orders_bronze_stream')
+        AS
+          MERGE INTO silver_orders AS target
+          USING (
+              SELECT DISTINCT
+                  order_id::INT AS order_id,
+                  customer_id::INT AS customer_id,
+                  amount::DECIMAL(10,2) AS amount,
+                  status,
+                  TO_DATE(created_at) AS order_date,
+                  TO_TIMESTAMP(created_at) AS created_at,
+                  METADATA$ACTION AS dml_action
+              FROM orders_bronze_stream
+              QUALIFY ROW_NUMBER() OVER (
+                  PARTITION BY order_id
+                  ORDER BY updated_at DESC
+              ) = 1
+          ) AS source
+          ON target.order_id = source.order_id
+          WHEN MATCHED AND source.dml_action = 'DELETE' THEN DELETE
+          WHEN MATCHED THEN UPDATE SET
+              amount = source.amount,
+              status = source.status,
+              updated_at = CURRENT_TIMESTAMP()
+          WHEN NOT MATCHED THEN INSERT
+              (order_id, customer_id, amount, status, order_date, created_at, updated_at)
+          VALUES
+              (source.order_id, source.customer_id, source.amount,
+               source.status, source.order_date, source.created_at, CURRENT_TIMESTAMP());
+
+        -- Enable task
+        ALTER TASK process_bronze_to_silver RESUME;"]
+
+        Setup5["-- Step 5: Create silver stream
+        CREATE STREAM orders_silver_stream
+        ON TABLE silver_orders;"]
+
+        Setup6["-- Step 6: Create gold table
+        CREATE TABLE gold_daily_sales (
+            sale_date DATE PRIMARY KEY,
+            order_count INT,
+            customer_count INT,
+            total_revenue DECIMAL(12,2),
+            avg_order_value DECIMAL(10,2),
+            max_order_value DECIMAL(10,2),
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+        );"]
+
+        Setup7["-- Step 7: Create Task 2 (silver → gold)
+        CREATE TASK process_silver_to_gold
+          WAREHOUSE = etl_wh
+          AFTER process_bronze_to_silver  -- DAG dependency!
+        AS
+          MERGE INTO gold_daily_sales AS target
+          USING (
+              SELECT
+                  order_date AS sale_date,
+                  COUNT(DISTINCT order_id) AS order_count,
+                  COUNT(DISTINCT customer_id) AS customer_count,
+                  SUM(amount) AS total_revenue,
+                  AVG(amount) AS avg_order_value,
+                  MAX(amount) AS max_order_value
+              FROM orders_silver_stream
+              WHERE METADATA$ACTION = 'INSERT'
+              GROUP BY order_date
+          ) AS source
+          ON target.sale_date = source.sale_date
+          WHEN MATCHED THEN UPDATE SET
+              order_count = target.order_count + source.order_count,
+              customer_count = target.customer_count + source.customer_count,
+              total_revenue = target.total_revenue + source.total_revenue,
+              avg_order_value = (target.total_revenue + source.total_revenue) /
+                               NULLIF(target.order_count + source.order_count, 0),
+              max_order_value = GREATEST(target.max_order_value, source.max_order_value),
+              updated_at = CURRENT_TIMESTAMP()
+          WHEN NOT MATCHED THEN INSERT VALUES
+              (source.sale_date, source.order_count, source.customer_count,
+               source.total_revenue, source.avg_order_value, source.max_order_value,
+               CURRENT_TIMESTAMP());
+
+        -- Enable task (auto-runs after Task 1)
+        ALTER TASK process_silver_to_gold RESUME;"]
+
+        Setup8["-- Step 8: Test the pipeline
+        -- Insert test data
+        INSERT INTO bronze_orders VALUES
+            ('2001', '6001', '250.00', 'PAID', '2026-03-09', '2026-03-09', CURRENT_TIMESTAMP()),
+            ('2002', '6002', '350.00', 'PENDING', '2026-03-09', '2026-03-09', CURRENT_TIMESTAMP());
+
+        -- Wait 5 minutes for tasks to run
+
+        -- Verify silver
+        SELECT * FROM silver_orders WHERE order_id IN (2001, 2002);
+
+        -- Verify gold
+        SELECT * FROM gold_daily_sales WHERE sale_date = CURRENT_DATE();
+
+        -- Check task history
+        SELECT * FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY())
+        WHERE name LIKE 'process_%'
+        ORDER BY scheduled_time DESC
+        LIMIT 10;"]
+    end
+
+    %% ============================================================================
+    %% BENEFITS
+    %% ============================================================================
+    subgraph Benefits["✨ KEY BENEFITS"]
+        style Benefits fill:#FFE5E5,stroke:#E74C3C,stroke-width:2px
+
+        Benefit1["💰 Cost Efficiency<br/>━━━━━━━━━━━━━━━━━━━━━<br/>- Process only changed data (not full reload)<br/>- Example: 1M rows total, 1K changes/hour<br/>  → Process 0.1% of data (1000x efficiency)<br/>- Warehouse runs only when stream has data<br/>- Auto-suspend between runs"]
+
+        Benefit2["⚡ Real-Time Insights<br/>━━━━━━━━━━━━━━━━━━━━━<br/>- Near-real-time (5-min latency typical)<br/>- No batch windows (24/7 processing)<br/>- Data freshness < 10 minutes<br/>- Incremental updates to gold layer"]
+
+        Benefit3["🛠️ No External Tools<br/>━━━━━━━━━━━━━━━━━━━━━<br/>- Native Snowflake features (streams/tasks)<br/>- No Airflow, Kafka, dbt Cloud needed<br/>- Simplified architecture<br/>- Lower operational overhead"]
+
+        Benefit4["🔄 Automatic CDC<br/>━━━━━━━━━━━━━━━━━━━━━<br/>- Streams track changes automatically<br/>- No trigger logic to write<br/>- Handles INSERT/UPDATE/DELETE<br/>- Transaction-consistent snapshots"]
+
+        Benefit5["📊 Scalable & Reliable<br/>━━━━━━━━━━━━━━━━━━━━━<br/>- Tasks auto-retry on failure<br/>- DAG dependencies ensure order<br/>- Can scale to millions of rows/sec<br/>- Exactly-once processing semantics"]
+
+        Benefit6["🔍 Observable<br/>━━━━━━━━━━━━━━━━━━━━━<br/>- Built-in task history views<br/>- Stream offset monitoring<br/>- Query profile for debugging<br/>- Integration with alerts (email/SNS/webhook)"]
+    end
+
+    %% ============================================================================
+    %% NOTES
+    %% ============================================================================
+    %%
+    %% KEY CONCEPTS:
+    %%
+    %% 1. Streams are NOT triggers:
+    %%    - Streams are a table-like object that RECORDS changes
+    %%    - Reading from a stream advances the offset (consumes changes)
+    %%    - Multiple tasks can read same stream (create separate streams)
+    %%
+    %% 2. Stream offset management:
+    %%    - Offset advances ONLY when transaction commits successfully
+    %%    - If task fails, offset unchanged, data reprocessed next run
+    %%    - Ensures exactly-once processing (no data loss)
+    %%
+    %% 3. Task scheduling:
+    %%    - SCHEDULE = 'USING CRON 0 * * * * UTC' (cron syntax)
+    %%    - SCHEDULE = '5 MINUTE' (simple interval)
+    %%    - AFTER task_name (DAG dependency)
+    %%    - WHEN condition (e.g., SYSTEM$STREAM_HAS_DATA)
+    %%
+    %% 4. Serverless vs. Warehouse tasks:
+    %%    - Serverless: Snowflake manages compute, pay per second
+    %%    - Warehouse: You manage warehouse, more control
+    %%    - Serverless is simpler for most use cases
+    %%
+    %% 5. Cost optimization:
+    %%    - Use WHEN SYSTEM$STREAM_HAS_DATA to skip empty runs
+    %%    - Set auto-suspend to 60 seconds on ETL warehouses
+    %%    - Use Small/Medium warehouses (tasks are usually lightweight)
+    %%    - Monitor with TASK_HISTORY to identify expensive tasks
+    %%
+    %% PERFORMANCE TIPS:
+    %% - Use MERGE for upserts (more efficient than DELETE + INSERT)
+    %% - Add clustering keys on frequently joined/filtered columns
+    %% - Partition large streams by reading in batches (LIMIT)
+    %% - Use QUALIFY for deduplication (window functions optimized)
+    %%
+    %% ============================================================================

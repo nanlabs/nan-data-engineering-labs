@@ -1,0 +1,333 @@
+graph TB
+    subgraph "Resource Monitoring"
+        A1[CloudWatch Metrics Collection]
+        A2["EC2 Metrics:
+        - CPUUtilization
+        - NetworkIn/Out
+        - DiskReadOps/WriteOps
+        - Memory (CloudWatch Agent)"]
+
+        A3["RDS Metrics:
+        - DatabaseConnections
+        - ReadLatency/WriteLatency
+        - CPUUtilization
+        - FreeableMemory"]
+
+        A4["Redshift Metrics:
+        - CPUUtilization
+        - PercentageDiskSpaceUsed
+        - DatabaseConnections
+        - QueryDuration"]
+
+        A1 --> A2
+        A1 --> A3
+        A1 --> A4
+    end
+
+    subgraph "Analysis Period"
+        B1["Minimum: 14 days
+        Recommended: 30 days
+        Include peak periods:
+        - Month-end processing
+        - Quarterly reports
+        - Holiday traffic"]
+
+        B2["CloudWatch Statistics:
+        - Average: General utilization
+        - p99: Peak capacity needs
+        - p50: Typical usage
+        - Min/Max: Utilization range"]
+    end
+
+    A2 --> B1
+    A3 --> B1
+    A4 --> B1
+    B1 --> B2
+
+    subgraph "AWS Compute Optimizer"
+        C1[Compute Optimizer Analysis]
+        C2["Recommendation Engine:
+        - Machine learning models
+        - Historical utilization
+        - Performance risk assessment
+        - Cost impact estimation"]
+
+        C3["Recommendation Types:
+        - Downsize: Over-provisioned
+        - Upsize: Under-provisioned
+        - Change family: Different workload characteristics
+        - No change: Optimally sized"]
+
+        C1 --> C2 --> C3
+    end
+
+    B2 --> C1
+
+    subgraph "Right-Sizing Recommendations"
+        D1["Over-Provisioned Example:
+        Current: m5.4xlarge (16 vCPU, 64GB)
+        Avg CPU: 15%, Memory: 25%
+        Recommendation: m5.xlarge (4 vCPU, 16GB)
+        Savings: $336/month (60%)"]
+
+        D2["Under-Provisioned Example:
+        Current: t3.medium (2 vCPU, 4GB)
+        Avg CPU: 85%, p99 CPU: 95%
+        Recommendation: m5.large (2 vCPU, 8GB)
+        Cost increase: $35/month
+        Benefit: Better performance, avoid throttling"]
+
+        D3["Instance Family Change:
+        Current: m5.2xlarge (general purpose)
+        Workload: Memory-intensive (80% memory, 30% CPU)
+        Recommendation: r5.xlarge (memory-optimized)
+        Same memory, lower cost: $60/month savings"]
+
+        D4["Burstable Instances:
+        Current: m5.large (always-on capacity)
+        Usage: Low baseline, occasional spikes
+        Recommendation: t3.large (burstable)
+        Savings: $25/month (35%)
+        Note: Monitor CPU credits"]
+    end
+
+    C3 --> D1
+    C3 --> D2
+    C3 --> D3
+    C3 --> D4
+
+    subgraph "Decision Criteria"
+        E1{"CPU Utilization"}
+        E2["<10% → Downsize 2 levels
+        10-30% → Downsize 1 level
+        30-70% → Optimal
+        70-85% → Consider upsize
+        >85% → Upsize immediately"]
+
+        E3{"Memory Utilization"}
+        E4["<30% → Downsize or change family
+        30-70% → Optimal
+        >70% → Consider memory-optimized (r5)"]
+
+        E5{"Network Utilization"}
+        E6["High network (>5 Gbps) → Enhanced networking (c5n, m5n)
+        Low network → Standard instances"]
+
+        E1 --> E2
+        E3 --> E4
+        E5 --> E6
+    end
+
+    D1 --> E1
+    D1 --> E3
+    D2 --> E1
+    D3 --> E3
+
+    subgraph "Testing Workflow"
+        F1["1. Create Test Environment
+        Clone production instance
+        Apply right-sizing recommendation"]
+
+        F2["2. Performance Testing
+        Run typical workloads
+        Measure latency, throughput
+        Monitor error rates"]
+
+        F3["3. Load Testing
+        Simulate peak traffic
+        Verify capacity adequate
+        Check for bottlenecks"]
+
+        F4["4. Validation
+        Compare metrics: before vs after
+        Performance: ±5% acceptable
+        Cost: Calculate actual savings"]
+
+        F5["5. Production Deployment
+        Blue-green deployment
+        Monitor closely (24-48 hours)
+        Rollback plan ready"]
+
+        F1 --> F2 --> F3 --> F4 --> F5
+    end
+
+    E2 --> F1
+    E4 --> F1
+
+    subgraph "Auto Scaling Configuration"
+        G1[EC2 Auto Scaling Group]
+        G2["Target Tracking Policies:
+        - CPU: Target 60-70%
+        - Memory: Target 70-80%
+        - ALB RequestCount: Target 1000/instance"]
+
+        G3["Step Scaling:
+        CPU >80% for 5 min → +2 instances
+        CPU >90% for 2 min → +5 instances
+        CPU <40% for 10 min → -1 instance"]
+
+        G4["Scheduled Scaling:
+        Business hours (8am-6pm): Min 10, Max 50
+        Off-hours (6pm-8am): Min 3, Max 20
+        Weekends: Min 2, Max 10"]
+
+        G5["Cooldown Periods:
+        Scale-out: 60 seconds (fast response)
+        Scale-in: 300 seconds (avoid flapping)"]
+
+        G1 --> G2
+        G1 --> G3
+        G1 --> G4
+        G1 --> G5
+    end
+
+    subgraph "RDS Right-Sizing"
+        H1["RDS Specifics:
+        - Downtime for non-Aurora: 5-15 minutes
+        - Aurora: Zero-downtime resize
+        - Read replicas: No immediate impact"]
+
+        H2["Storage Optimization:
+        - gp3: Better performance/cost than gp2
+        - Provisioned IOPS: High-performance workloads
+        - AutoScaling: Enable for variable workloads"]
+
+        H3["Instance Type Changes:
+        Current: db.r5.4xlarge ($2.88/hr)
+        Utilization: CPU 20%, Memory 35%
+        Recommendation: db.r5.xlarge ($0.72/hr)
+        Savings: $1,555/month (75%)"]
+    end
+
+    subgraph "Redshift Right-Sizing"
+        I1["Resize Types:
+        - Elastic resize: 10-15 minutes downtime
+        - Classic resize: Hours, read-only
+        - Snapshot-restore-resize: Custom timing"]
+
+        I2["Concurrency Scaling:
+        Auto-add capacity for query spikes
+        Pay per-second for extra compute
+        Alternative to over-provisioning"]
+
+        I3["Node Type Changes:
+        Current: dc2.8xlarge (8 nodes) = $38,400/month
+        Workload: Mostly queries, light writes
+        Recommendation: ra3.4xlarge (4 nodes) = $20,736/month
+        Savings: $17,664/month (46%)
+        Benefit: Separate compute/storage scaling"]
+    end
+
+    subgraph "Cost Impact Analysis"
+        J1["Small Instance (t3.medium → t3.small)
+        Monthly savings: $15
+        Annual ROI: $180
+        Effort: 30 minutes
+        Priority: Low (unless hundreds)"]
+
+        J2["Medium Instance (m5.2xlarge → m5.xlarge)
+        Monthly savings: $144
+        Annual ROI: $1,728
+        Effort: 2 hours (test + deploy)
+        Priority: Medium"]
+
+        J3["Large Instance (r5.8xlarge → r5.4xlarge)
+        Monthly savings: $864
+        Annual ROI: $10,368
+        Effort: 4 hours (extensive testing)
+        Priority: High"]
+
+        J4["Data Warehouse (Redshift 8 nodes → 4 nodes)
+        Monthly savings: $17,664
+        Annual ROI: $211,968
+        Effort: 1 week (test + validation)
+        Priority: Critical"]
+    end
+
+    subgraph "Monitoring Post-Resize"
+        K1["Week 1: Daily checks
+        - Performance metrics
+        - Error rates
+        - User complaints"]
+
+        K2["Week 2-4: Weekly checks
+        - Trend analysis
+        - Cost validation
+        - Utilization patterns"]
+
+        K3["Ongoing: Monthly reviews
+        - Re-evaluate sizing
+        - Check for new recommendations
+        - Adjust auto-scaling policies"]
+
+        K1 --> K2 --> K3
+    end
+
+    F5 --> K1
+
+    subgraph "Real-World Examples"
+        L1["Dropbox
+        Challenge: 20,000 EC2 instances
+        Action: Compute Optimizer + automated right-sizing
+        Result: 25% compute cost reduction ($7M/year)"]
+
+        L2["Expedia
+        Challenge: Over-provisioned RDS for peak traffic
+        Action: Aurora Serverless with auto-scaling
+        Result: 50% database cost reduction"]
+
+        L3["Capital One
+        Challenge: Mixed workloads on uniform instances
+        Action: Workload-specific instance families
+        Result: 30% cost reduction, 20% performance improvement"]
+    end
+
+    subgraph "Common Pitfalls"
+        M1["❌ Aggressive downsizing
+        Risk: Performance degradation, outages
+        Solution: Conservative approach, thorough testing"]
+
+        M2["❌ Ignoring peak periods
+        Risk: Under-provisioned during critical times
+        Solution: Analyze 30+ days including peaks"]
+
+        M3["❌ No rollback plan
+        Risk: Extended downtime if issues arise
+        Solution: Snapshot before resize, test rollback"]
+
+        M4["❌ Manual scaling only
+        Risk: Overpaying during off-hours
+        Solution: Implement auto-scaling"]
+
+        M5["❌ One-time optimization
+        Risk: Resources drift over time
+        Solution: Monthly right-sizing reviews"]
+    end
+
+    subgraph "Right-Sizing KPIs"
+        N1["Average CPU Utilization
+        Target: 60-70% (headroom for spikes)"]
+
+        N2["Memory Utilization
+        Target: 70-80%"]
+
+        N3["Cost Savings
+        Target: 20-40% of compute spend"]
+
+        N4["Recommendation Coverage
+        Target: Review 100% of instances quarterly"]
+
+        N5["Time to Optimize
+        Target: <48 hours from recommendation to deployment"]
+    end
+
+    style A1 fill:#4a90e2,color:#fff
+    style C1 fill:#bd10e0,color:#fff
+    style D1 fill:#7ed321,color:#fff
+    style D2 fill:#ff6b6b,color:#fff
+    style D3 fill:#50e3c2,color:#000
+    style G1 fill:#ffd93d,color:#000
+    style J4 fill:#7ed321,color:#fff
+    style L1 fill:#bd10e0,color:#fff
+    style L2 fill:#bd10e0,color:#fff
+    style L3 fill:#bd10e0,color:#fff

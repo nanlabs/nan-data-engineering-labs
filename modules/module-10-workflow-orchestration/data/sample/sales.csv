@@ -1,0 +1,16 @@
+order_id,customer_id,product,category,amount,quantity,order_date,status
+ORD001,C001,Laptop,Electronics,1200.50,1,2024-01-15,completed
+ORD002,C002,Mouse,Electronics,25.00,2,2024-01-15,completed
+ORD003,C001,Keyboard,Electronics,75.00,1,2024-01-16,completed
+ORD004,C003,Monitor,Electronics,350.00,1,2024-01-16,pending
+ORD005,C002,Webcam,Electronics,89.99,1,2024-01-17,completed
+ORD006,C004,Desk Chair,Furniture,299.99,1,2024-01-17,completed
+ORD007,C005,Standing Desk,Furniture,599.00,1,2024-01-18,shipped
+ORD008,C003,USB Cable,Electronics,12.50,3,2024-01-18,completed
+ORD009,C006,Headphones,Electronics,149.99,1,2024-01-19,completed
+ORD010,C001,Mouse Pad,Electronics,19.99,2,2024-01-19,completed
+ORD011,C007,Notebook,Stationery,5.99,5,2024-01-20,completed
+ORD012,C008,External SSD,Electronics,189.00,1,2024-01-20,pending
+ORD013,C004,HDMI Cable,Electronics,15.99,2,2024-01-21,completed
+ORD014,C009,Office Lamp,Furniture,45.00,1,2024-01-21,completed
+ORD015,C010,Wireless Charger,Electronics,35.99,1,2024-01-22,shipped

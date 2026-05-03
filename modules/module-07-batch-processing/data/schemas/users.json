@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User",
+  "description": "User profile for batch processing exercises",
+  "type": "object",
+  "required": ["user_id", "email", "created_at", "country"],
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Unique user identifier",
+      "pattern": "^USER[0-9]{6}$",
+      "examples": ["USER000001"]
+    },
+    "email": {
+      "type": "string",
+      "description": "User email address",
+      "format": "email",
+      "examples": ["user@example.com"]
+    },
+    "name": {
+      "type": "string",
+      "description": "User full name",
+      "minLength": 2,
+      "maxLength": 100
+    },
+    "age": {
+      "type": "integer",
+      "description": "User age",
+      "minimum": 18,
+      "maximum": 100
+    },
+    "country": {
+      "type": "string",
+      "description": "Country code (ISO 3166-1 alpha-2)",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Account creation timestamp",
+      "format": "date-time"
+    },
+    "tier": {
+      "type": "string",
+      "description": "User tier/membership level",
+      "enum": ["bronze", "silver", "gold", "platinum"]
+    },
+    "total_spent": {
+      "type": "number",
+      "description": "Total lifetime spending",
+      "minimum": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "Whether user account is active"
+    }
+  }
+}

@@ -1,0 +1,88 @@
+# Module 15: Real-Time Analytics - Python Dependencies
+
+# Core AWS SDK
+boto3>=1.34.0
+botocore>=1.34.0
+awscli-local>=0.22
+
+# Apache Flink
+apache-flink>=1.18.0,<1.19.0
+apache-flink-libraries>=1.18.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+pyarrow>=14.0.0
+
+# Streaming data generation
+faker>=22.0.0
+
+# JSON processing
+ujson>=5.9.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.12.0
+pytest-cov>=4.1.0
+
+# Data validation
+pydantic>=2.5.0
+jsonschema>=4.20.0
+
+# Monitoring and metrics
+prometheus-client>=0.19.0
+py-cpuinfo>=9.0.0
+psutil>=5.9.0
+
+# Async I/O for ML scoring
+aiohttp>=3.9.0
+aiofiles>=23.2.0
+asyncio>=3.4.3
+
+# ML libraries (for Exercise 05)
+scikit-learn>=1.3.0
+joblib>=1.3.0
+
+# Time series processing
+river>=0.21.0  # Online learning library
+
+# Networking and HTTP
+requests>=2.31.0
+urllib3>=2.1.0
+
+# Configuration
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+
+# Logging and monitoring
+structlog>=23.3.0
+colorlog>=6.8.0
+
+# Development tools
+black>=23.12.0
+flake8>=7.0.0
+mypy>=1.8.0
+isort>=5.13.0
+
+# Jupyter (for exploration)
+jupyter>=1.0.0
+jupyterlab>=4.0.0
+ipython>=8.18.0
+
+# Data visualization (for dashboards)
+matplotlib>=3.8.0
+seaborn>=0.13.0
+plotly>=5.18.0
+
+# Time handling
+python-dateutil>=2.8.2
+pytz>=2023.3
+
+# Avro support (common in streaming)
+avro-python3>=1.10.2
+fastavro>=1.9.0
+
+# Utilities
+click>=8.1.7
+tqdm>=4.66.0

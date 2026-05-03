@@ -1,0 +1,444 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/dockerfile.schema.json",
+  "title": "Dockerfile Schema",
+  "description": "Schema for validating Dockerfile syntax and best practices",
+  "type": "object",
+  "required": ["instructions"],
+  "properties": {
+    "instructions": {
+      "type": "array",
+      "description": "Array of Dockerfile instructions",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["instruction", "arguments"],
+        "properties": {
+          "instruction": {
+            "type": "string",
+            "enum": [
+              "FROM", "RUN", "CMD", "LABEL", "EXPOSE", "ENV",
+              "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER",
+              "WORKDIR", "ARG", "ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL"
+            ],
+            "description": "Dockerfile instruction keyword"
+          },
+          "arguments": {
+            "description": "Arguments for the instruction"
+          },
+          "stage": {
+            "type": "string",
+            "description": "Build stage name (for multi-stage builds)"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "FROM": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "FROM"},
+        "arguments": {
+          "type": "object",
+          "required": ["image"],
+          "properties": {
+            "image": {
+              "type": "string",
+              "pattern": "^[a-z0-9./_-]+:[a-z0-9._-]+$",
+              "description": "Base image with tag",
+              "examples": ["python:3.11-slim", "node:18-alpine", "ubuntu:22.04"]
+            },
+            "as": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]*$",
+              "description": "Stage alias for multi-stage builds",
+              "examples": ["builder", "dependencies", "runtime"]
+            },
+            "platform": {
+              "type": "string",
+              "description": "Target platform",
+              "examples": ["linux/amd64", "linux/arm64"]
+            }
+          }
+        }
+      }
+    },
+    "RUN": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "RUN"},
+        "arguments": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Shell form: command string"
+            },
+            {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Exec form: command array",
+              "examples": [["apt-get", "update"], ["pip", "install", "-r", "requirements.txt"]]
+            }
+          ]
+        }
+      }
+    },
+    "CMD": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "CMD"},
+        "arguments": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {"type": "string"},
+              "minItems": 1,
+              "description": "Exec form (preferred)",
+              "examples": [["python", "app.py"], ["node", "server.js"]]
+            },
+            {
+              "type": "string",
+              "description": "Shell form"
+            }
+          ]
+        }
+      }
+    },
+    "ENTRYPOINT": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "ENTRYPOINT"},
+        "arguments": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {"type": "string"},
+              "minItems": 1,
+              "description": "Exec form (preferred)"
+            },
+            {
+              "type": "string",
+              "description": "Shell form"
+            }
+          ]
+        }
+      }
+    },
+    "COPY": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "COPY"},
+        "arguments": {
+          "type": "object",
+          "required": ["source", "destination"],
+          "properties": {
+            "source": {
+              "oneOf": [
+                {"type": "string"},
+                {"type": "array", "items": {"type": "string"}}
+              ],
+              "description": "Source file(s) or directory"
+            },
+            "destination": {
+              "type": "string",
+              "description": "Destination path in container"
+            },
+            "from": {
+              "type": "string",
+              "description": "Copy from another stage (multi-stage)",
+              "examples": ["builder", "dependencies"]
+            },
+            "chown": {
+              "type": "string",
+              "pattern": "^[a-z_][a-z0-9_-]*[$]?(:[a-z_][a-z0-9_-]*[$]?)?$",
+              "description": "Set ownership",
+              "examples": ["user:group", "1000:1000"]
+            },
+            "chmod": {
+              "type": "string",
+              "pattern": "^[0-7]{3,4}$",
+              "description": "Set file permissions",
+              "examples": ["755", "644"]
+            }
+          }
+        }
+      }
+    },
+    "ADD": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "ADD"},
+        "arguments": {
+          "type": "object",
+          "required": ["source", "destination"],
+          "properties": {
+            "source": {
+              "oneOf": [
+                {"type": "string"},
+                {"type": "array", "items": {"type": "string"}}
+              ],
+              "description": "Source (supports URLs and tar extraction)"
+            },
+            "destination": {"type": "string"},
+            "chown": {"type": "string"},
+            "chmod": {"type": "string"}
+          }
+        }
+      }
+    },
+    "ENV": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "ENV"},
+        "arguments": {
+          "type": "object",
+          "additionalProperties": {"type": "string"},
+          "description": "Environment variables as key-value pairs",
+          "examples": [
+            {"NODE_ENV": "production"},
+            {"PYTHONUNBUFFERED": "1"},
+            {"APP_HOME": "/app"}
+          ]
+        }
+      }
+    },
+    "ARG": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "ARG"},
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Build argument name"
+            },
+            "default": {
+              "type": "string",
+              "description": "Default value"
+            }
+          },
+          "required": ["name"]
+        }
+      }
+    },
+    "EXPOSE": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "EXPOSE"},
+        "arguments": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "integer", "minimum": 1, "maximum": 65535},
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9]{1,5}/(tcp|udp)$"
+                  }
+                ]
+              }
+            }
+          ],
+          "description": "Ports to expose",
+          "examples": [8080, [80, 443], ["8080/tcp", "53/udp"]]
+        }
+      }
+    },
+    "WORKDIR": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "WORKDIR"},
+        "arguments": {
+          "type": "string",
+          "description": "Working directory path",
+          "examples": ["/app", "/usr/src/app", "/opt/service"]
+        }
+      }
+    },
+    "USER": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "USER"},
+        "arguments": {
+          "type": "string",
+          "pattern": "^[a-z_][a-z0-9_-]*[$]?(:[a-z_][a-z0-9_-]*[$]?)?$",
+          "description": "User and optional group",
+          "examples": ["node", "appuser:appgroup", "1000:1000"]
+        }
+      }
+    },
+    "VOLUME": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "VOLUME"},
+        "arguments": {
+          "oneOf": [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}}
+          ],
+          "description": "Mount point(s)",
+          "examples": ["/data", ["/var/log", "/var/cache"]]
+        }
+      }
+    },
+    "LABEL": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "LABEL"},
+        "arguments": {
+          "type": "object",
+          "additionalProperties": {"type": "string"},
+          "description": "Metadata labels",
+          "examples": [
+            {
+              "maintainer": "devops@example.com",
+              "version": "1.0.0",
+              "description": "Application container"
+            }
+          ]
+        }
+      }
+    },
+    "HEALTHCHECK": {
+      "type": "object",
+      "required": ["instruction", "arguments"],
+      "properties": {
+        "instruction": {"const": "HEALTHCHECK"},
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "test": {
+              "oneOf": [
+                {"type": "string"},
+                {"type": "array", "items": {"type": "string"}}
+              ],
+              "description": "Health check command",
+              "examples": [
+                "CMD curl -f http://localhost:8080/health || exit 1",
+                ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+              ]
+            },
+            "interval": {
+              "type": "string",
+              "pattern": "^[0-9]+(s|m|h)$",
+              "default": "30s",
+              "description": "Time between checks"
+            },
+            "timeout": {
+              "type": "string",
+              "pattern": "^[0-9]+(s|m|h)$",
+              "default": "30s",
+              "description": "Max time for check to complete"
+            },
+            "start-period": {
+              "type": "string",
+              "pattern": "^[0-9]+(s|m|h)$",
+              "default": "0s",
+              "description": "Initialization time"
+            },
+            "retries": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 3,
+              "description": "Consecutive failures needed to report unhealthy"
+            }
+          },
+          "required": ["test"]
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "instructions": [
+        {
+          "instruction": "FROM",
+          "arguments": {
+            "image": "python:3.11-slim",
+            "as": "builder"
+          }
+        },
+        {
+          "instruction": "WORKDIR",
+          "arguments": "/app"
+        },
+        {
+          "instruction": "COPY",
+          "arguments": {
+            "source": "requirements.txt",
+            "destination": "."
+          }
+        },
+        {
+          "instruction": "RUN",
+          "arguments": "pip install --no-cache-dir -r requirements.txt"
+        },
+        {
+          "instruction": "FROM",
+          "arguments": {
+            "image": "python:3.11-slim",
+            "as": "runtime"
+          }
+        },
+        {
+          "instruction": "WORKDIR",
+          "arguments": "/app"
+        },
+        {
+          "instruction": "COPY",
+          "arguments": {
+            "source": ".",
+            "destination": ".",
+            "from": "builder"
+          }
+        },
+        {
+          "instruction": "RUN",
+          "arguments": ["adduser", "--disabled-password", "--gecos", "", "appuser"]
+        },
+        {
+          "instruction": "USER",
+          "arguments": "appuser"
+        },
+        {
+          "instruction": "EXPOSE",
+          "arguments": 8080
+        },
+        {
+          "instruction": "HEALTHCHECK",
+          "arguments": {
+            "test": ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"],
+            "interval": "30s",
+            "timeout": "5s",
+            "retries": 3
+          }
+        },
+        {
+          "instruction": "CMD",
+          "arguments": ["python", "app.py"]
+        }
+      ]
+    }
+  ]
+}

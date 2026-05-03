@@ -1,0 +1,874 @@
+```mermaid
+graph TB
+    %% Enterprise Data Lakehouse - Disaster Recovery Architecture
+    %% DR strategy with RTO/RPO targets and recovery procedures
+
+    subgraph "DR Strategy Overview"
+        DRObjectives[Disaster Recovery Objectives
+
+        Business Requirements:
+        - Maximum Tolerable Downtime MTD: 8 hours
+        - Recovery Time Objective RTO: 4 hours
+        - Recovery Point Objective RPO: 1 hour
+        - Data Loss Tolerance: Maximum 1 hour
+        - Service Level: 99.9% availability
+
+        DR Tiers by System:
+        - Critical Tier 1: RTO 1h RPO 15min
+          Gold zone, QuickSight dashboards
+        - Important Tier 2: RTO 4h RPO 1h
+          Silver zone, ETL pipelines
+        - Normal Tier 3: RTO 8h RPO 4h
+          Bronze zone, data ingestion
+        - Low Tier 4: RTO 24h RPO 24h
+          Raw zone, experimental workloads]
+
+        DRRegions[DR Region Architecture
+
+        Primary Region:
+        - AWS Region: us-east-1
+        - Availability: Active
+        - Workloads: 100% production
+        - Users: All users
+        - Cost: 100% of infrastructure
+
+        DR Region:
+        - AWS Region: us-west-2
+        - Availability: Warm standby
+        - Workloads: Critical systems ready
+        - Users: Failover only
+        - Cost: 30% of infrastructure
+        - Activation: 1-4 hours
+
+        Tertiary Backup:
+        - AWS Region: eu-west-1
+        - Availability: Cold standby
+        - Purpose: Data archive only
+        - Activation: 24+ hours]
+    end
+
+    subgraph "S3 Data Replication"
+        subgraph "Cross-Region Replication Configuration"
+            S3CRRSetup[S3 CRR Setup
+
+            Replication Rules:
+            - Source: All lakehouse buckets
+            - Destination: DR region mirrors
+            - Priority: Prefix-based
+            - Encryption: Replicate encrypted
+            - Storage class: Match source
+            - Ownership: Destination account
+            - Replication Time Control: Enabled
+
+            Authentication:
+            - IAM Role: S3ReplicationRole
+            - Permissions: Source read
+            - Permissions: Destination write
+            - Permissions: KMS access both regions]
+
+            RawZoneReplication[Raw Zone Replication
+
+            Source Bucket:
+            - Name: lakehouse-raw-us-east-1
+            - Region: us-east-1
+            - Size: 5 TB current
+            - Growth: 500 GB/day
+
+            Destination Bucket:
+            - Name: lakehouse-raw-us-west-2
+            - Region: us-west-2
+            - Storage class: S3 Standard
+            - Lifecycle: 7 days then delete
+
+            Replication Metrics:
+            - RPO Target: 1 hour
+            - RTC SLA: 99.99% within 15 min
+            - Avg Lag: 5 minutes
+            - Failed objects: Alert if > 0
+
+            Cost Optimization:
+            - Replicate: Latest partition only
+            - Skip: Archived partitions
+            - Lifecycle: Aggressive deletion
+            - Reason: Fast ingestion recovery]
+
+            BronzeZoneReplication[Bronze Zone Replication
+
+            Source Bucket:
+            - Name: lakehouse-bronze-us-east-1
+            - Region: us-east-1
+            - Size: 15 TB current
+            - Growth: 200 GB/day compressed
+
+            Destination Bucket:
+            - Name: lakehouse-bronze-us-west-2
+            - Region: us-west-2
+            - Storage class: S3 Standard
+            - Lifecycle: 90 days retention
+
+            Replication Metrics:
+            - RPO Target: 1 hour
+            - RTC: Enabled
+            - Avg Lag: 10 minutes
+            - Completeness: 99.99%
+
+            Priority Rules:
+            - High: Latest 7 days
+            - Medium: Last 30 days
+            - Low: Older partitions
+
+            Validation:
+            - Daily: Object count comparison
+            - Weekly: Checksum validation
+            - Monthly: Full sync verification]
+
+            SilverZoneReplication[Silver Zone Replication
+
+            Source Bucket:
+            - Name: lakehouse-silver-us-east-1
+            - Region: us-east-1
+            - Size: 30 TB Delta Lake
+            - Growth: 150 GB/day
+
+            Destination Bucket:
+            - Name: lakehouse-silver-us-west-2
+            - Region: us-west-2
+            - Storage class: S3 Intelligent-Tiering
+            - Lifecycle: 3 years retention
+
+            Delta Lake Considerations:
+            - Transaction logs: Replicate first
+            - Data files: Replicate after
+            - Checkpoints: Ensure consistency
+            - Table metadata: JSON files
+            - Time travel: Maintain history
+
+            Replication Metrics:
+            - RPO Target: 15 minutes Critical tier
+            - RTC: Enabled for all
+            - Avg Lag: 8 minutes
+            - Consistency: Delta log validated
+
+            Quality Checks:
+            - Row count: Match source
+            - Latest timestamp: Within RPO
+            - Table versions: Synchronized
+            - Partition count: Consistent]
+
+            GoldZoneReplication[Gold Zone Replication
+
+            Source Bucket:
+            - Name: lakehouse-gold-us-east-1
+            - Region: us-east-1
+            - Size: 8 TB aggregates
+            - Growth: 50 GB/day
+
+            Destination Bucket:
+            - Name: lakehouse-gold-us-west-2
+            - Region: us-west-2
+            - Storage class: S3 Standard
+            - Lifecycle: 7 years retention
+
+            Replication Priority:
+            - Critical: Executive dashboards
+            - High: Customer 360
+            - High: Financial metrics
+            - Medium: Operational reports
+            - Low: Historical archives
+
+            Replication Metrics:
+            - RPO Target: 15 minutes
+            - RTC: Enabled
+            - Avg Lag: 5 minutes
+            - SLA: 99.99% within 15 min
+
+            Business Impact:
+            - Dashboard data: Always current
+            - Real-time KPIs: Minimal lag
+            - Historical: Can tolerate lag
+            - Reports: Regenerate if needed]
+        end
+
+        subgraph "Replication Monitoring"
+            ReplicationMetrics[Replication Monitoring
+
+            CloudWatch Metrics:
+            - ReplicationLatency: Per bucket
+            - BytesPendingReplication: Alert > 100GB
+            - OperationsPendingReplication: Alert > 1000
+            - ReplicationErrors: Alert > 0
+            - ReplicatedBytes: Volume tracking
+            - ReplicatedObjects: Count tracking
+
+            Dashboards:
+            - Real-time replication status
+            - Lag by bucket and prefix
+            - Error rate trending
+            - Cost tracking
+            - Compliance SLA adherence
+
+            Alerts:
+            - P1: Replication lag > 1 hour
+            - P2: Failed objects detected
+            - P3: Lag > 30 minutes
+            - P3: Cost anomaly detected
+
+            Daily Reports:
+            - Replication summary
+            - SLA compliance
+            - Failed objects list
+            - Cost breakdown
+            - Capacity planning]
+
+            ReplicationTesting[Replication Testing
+
+            Continuous Testing:
+            - Canary objects: Hourly
+            - End-to-end: Verify in DR
+            - Latency: Measure actual
+            - Consistency: Checksum validation
+
+            Monthly Tests:
+            - Full bucket comparison
+            - Sample data validation
+            - Query result comparison
+            - Performance benchmarking
+
+            Quarterly DR Drills:
+            - Simulated regional failure
+            - Failover procedures
+            - Recovery time measurement
+            - Issue identification
+            - Runbook updates]
+        end
+    end
+
+    subgraph "Glue Catalog Backup & Restore"
+        subgraph "Catalog Backup Strategy"
+            CatalogBackup[Glue Catalog Backup
+
+            Backup Scope:
+            - Databases: All lakehouse databases
+            - Tables: All table definitions
+            - Partitions: Partition metadata
+            - Connections: JDBC connections
+            - Crawlers: Configuration
+            - Jobs: ETL job definitions
+            - Triggers: Workflow triggers
+            - Classifiers: Custom classifiers
+            - ML transforms: ML metadata
+
+            Backup Frequency:
+            - Incremental: Every 6 hours
+            - Full: Daily at 2 AM UTC
+            - On-demand: Before major changes
+            - Retention: 30 days daily
+            - Retention: 12 months monthly
+
+            Backup Method:
+            - AWS Backup: Automated service
+            - API Export: Custom script
+            - Version control: Git for code
+            - S3 storage: Backup bucket
+            - Encryption: KMS encrypted
+            - Cross-region: Replicate to DR]
+
+            CatalogExport[Catalog Export Process
+
+            Export Script:
+            - Language: Python boto3
+            - Frequency: Every 6 hours
+            - Trigger: EventBridge schedule
+            - Execution: Lambda function
+
+            Export Data:
+            - Format: JSON
+            - Structure: Hierarchical
+            - Compression: gzip
+            - Location: s3://backups/catalog/
+            - Naming: timestamp-database.json.gz
+
+            Export Content:
+            - Database metadata
+            - Table schemas
+            - Partition keys
+            - Storage descriptors
+            - SerDe information
+            - Table properties
+            - Column comments
+            - Statistics
+
+            Validation:
+            - Schema validation
+            - Completeness check
+            - Comparison with previous
+            - Alert on significant changes]
+
+            LakeFormationBackup[Lake Formation Backup
+
+            Permissions Export:
+            - Principals: All users/roles
+            - Databases: Permissions
+            - Tables: Permissions
+            - Columns: Cell-level security
+            - Data filters: Row/column filters
+            - LF-Tags: Tag associations
+
+            Export Format:
+            - JSON: Permission mappings
+            - CSV: Permission matrix
+            - Documentation: Human-readable
+
+            Frequency:
+            - Incremental: After each change
+            - Full: Daily backup
+            - Audit trail: All changes logged
+
+            Storage:
+            - S3: Backup bucket
+            - Encryption: KMS
+            - Versioning: Enabled
+            - Cross-region: Replicated
+
+            Recovery:
+            - Automated: Scripts available
+            - Manual: Step-by-step guide
+            - Validation: Permission testing
+            - Rollback: Previous versions]
+        end
+
+        subgraph "Catalog Restore Procedures"
+            CatalogRestore[Catalog Restore Process
+
+            Restore Scenarios:
+            1. Individual table corruption
+            2. Database deletion
+            3. Partition metadata loss
+            4. Regional disaster
+            5. Full catalog rebuild
+
+            Restore Steps:
+            Step 1: Identify backup point
+            - Determine: Last known good state
+            - Select: Appropriate backup
+            - Validate: Backup integrity
+
+            Step 2: Prepare target region
+            - DR region: us-west-2
+            - Create: Glue Data Catalog
+            - Configure: Same settings
+
+            Step 3: Import metadata
+            - Read: Backup JSON files
+            - Parse: Database definitions
+            - Create: Databases in order
+            - Create: Tables with schemas
+            - Add: Partitions
+
+            Step 4: Restore connections
+            - JDBC: Update endpoints
+            - Secrets: Restore credentials
+            - Test: Connectivity
+
+            Step 5: Restore permissions
+            - Lake Formation: Import grants
+            - IAM: Verify roles exist
+            - Test: Access controls
+
+            Step 6: Validation
+            - Count: Databases, tables
+            - Compare: Schema definitions
+            - Test: Sample queries
+            - Verify: Permissions work]
+
+            RestoreAutomation[Restore Automation
+
+            Restore Lambda:
+            - Function: CatalogRestoreFunction
+            - Trigger: Manual/Automated
+            - Inputs: Backup timestamp, target region
+            - Process: Parallel table creation
+            - Logging: Detailed progress
+            - Error handling: Retry logic
+            - Duration: ~30 minutes for full catalog
+
+            Restore Validation:
+            - Database count: Source vs target
+            - Table count: Source vs target
+            - Schema comparison: Column-level
+            - Partition counts: Validate
+            - Query testing: Sample queries
+            - Permission testing: Role checks
+
+            Rollback Plan:
+            - Pre-restore: Snapshot current state
+            - During restore: Track changes
+            - Post-restore: Validation gates
+            - Failure: Revert to pre-restore
+            - Success: Update DNS/endpoints]
+        end
+    end
+
+    subgraph "EMR Cluster Recovery"
+        subgraph "EMR Backup Strategy"
+            EMRConfiguration[EMR Configuration Backup
+
+            Infrastructure as Code:
+            - Method: CloudFormation/Terraform
+            - Repository: Git version control
+            - Files: Cluster configurations
+            - Files: Bootstrap actions
+            - Files: Step definitions
+            - Files: Security configurations
+            - Automated: CI/CD pipeline
+
+            Configuration Items:
+            - Cluster size: Node counts
+            - Instance types: EC2 types
+            - EMR version: Release label
+            - Applications: Spark, Hadoop, etc
+            - Bootstrap: Initialization scripts
+            - Steps: Job definitions
+            - Security: Encryption settings
+            - Networking: VPC, subnets, SGs
+            - IAM: Service roles, profiles
+            - Monitoring: CloudWatch configs
+
+            Change Management:
+            - All changes: Git commits
+            - Review: Pull request approval
+            - Testing: Dev environment first
+            - Deployment: Automated pipeline
+            - Rollback: Previous commit]
+
+            EMRDataBackup[EMR HDFS/EBS Backup
+
+            HDFS Data:
+            - Strategy: Not backed up
+            - Reason: Ephemeral processing
+            - All data: On S3 lakehouse
+            - Recovery: Re-process from S3
+
+            EBS Volumes:
+            - Root volume: AMI captured monthly
+            - Data volumes: Not backed up
+            - Log volumes: Sent to S3
+
+            Application State:
+            - Spark: Checkpoints on S3
+            - History: Logs on S3
+            - Metastore: External on RDS
+            - Hive: Uses Glue Catalog
+
+            Recovery Strategy:
+            - Launch: New cluster from IaC
+            - Mount: S3 lakehouse buckets
+            - Run: Jobs from beginning or checkpoint
+            - Duration: 20 minutes cluster spin-up]
+
+            EMRJobBackup[EMR Job Backup
+
+            Job Definitions:
+            - Spark jobs: Python/Scala code
+            - Repository: Git version control
+            - Artifacts: S3 for JARs/scripts
+            - Dependencies: requirements.txt
+            - Configuration: Job parameters
+
+            Backup Locations:
+            - Git: GitHub/CodeCommit
+            - S3: s3://code-artifacts/
+            - Cross-region: Replicated to DR
+
+            Job Metadata:
+            - Job history: CloudWatch Logs
+            - Performance: Metrics in S3
+            - Lineage: Data catalog
+
+            Recovery:
+            - Code: Pull from Git
+            - Deploy: To new cluster
+            - Parameters: From SSM Parameter Store
+            - Execute: Via Step Functions]
+        end
+
+        subgraph "EMR Recovery Procedures"
+            EMRFailoverPlan[EMR Cluster Failover
+
+            Failure Scenarios:
+            1. Node failure: Auto-replace
+            2. Cluster failure: Launch new
+            3. AZ failure: Launch in different AZ
+            4. Regional failure: DR region activation
+
+            Recovery Steps - Regional Disaster:
+
+            Step 1: Detect failure
+            - CloudWatch: Alarm triggers
+            - Health check: API unavailable
+            - Duration: 5 minutes detection
+
+            Step 2: Activate DR region
+            - Switch: Set DR active
+            - IAM: Verify roles in DR region
+            - Secrets: Available in DR region
+            - Duration: 5 minutes
+
+            Step 3: Launch DR cluster
+            - CloudFormation: Deploy stack
+            - Size: Match production specs
+            - Network: DR VPC/subnets
+            - Security: Same security groups
+            - Bootstrap: Run initialization
+            - Duration: 15 minutes
+
+            Step 4: Configure cluster
+            - Metastore: Point to DR RDS or Glue
+            - S3: Access DR replicated data
+            - Catalog: DR Glue Catalog
+            - Monitoring: CloudWatch DR region
+            - Duration: 5 minutes
+
+            Step 5: Resume jobs
+            - Checkpoints: Read from S3
+            - State: Resume from last checkpoint
+            - Backfill: Re-run failed jobs
+            - Monitor: Job completion
+            - Duration: Variable by job
+
+            Total RTO: ~30 minutes cluster ready
+            + job-specific recovery time]
+
+            EMRValidation[EMR Recovery Validation
+
+            Cluster Health:
+            - All nodes: Running state
+            - Applications: Spark, YARN healthy
+            - HDFS: Available
+            - Resource Manager: Accessible
+            - History Server: Running
+
+            Connectivity:
+            - S3 access: Test read/write
+            - Glue Catalog: Query metadata
+            - RDS Metastore: If external
+            - CloudWatch: Logs streaming
+            - IAM: Permissions validated
+
+            Job Testing:
+            - Run: Sample Spark job
+            - Verify: Reads from Silver zone
+            - Verify: Writes to Gold zone
+            - Check: Data quality
+            - Monitor: Performance metrics
+
+            Cut-over Criteria:
+            - All systems: Green status
+            - Test job: Successful
+            - Data quality: Verified
+            - Monitoring: Active
+            - Approval: Change manager]
+        end
+    end
+
+    subgraph "Complete DR Runbooks"
+        subgraph "Regional Failover Runbook"
+            RegionalFailover[Regional Disaster - Full Failover
+
+            Detection Phase 0-15 minutes:
+            1. Alarm: Multiple critical alerts
+            2. Verify: us-east-1 unavailable
+            3. Assess: Scope of outage
+            4. Declare: Disaster declared
+            5. Notify: DR team activated
+
+            Activation Phase 15-60 minutes:
+            6. DNS: Update Route 53 to DR region
+            7. S3: Verify replication current
+            8. Catalog: Verify DR Glue Catalog
+            9. EMR: Launch DR clusters
+            10. Lambda: Deploy DR functions
+            11. Step Functions: Deploy DR workflows
+            12. Athena: Configure workgroups
+            13. QuickSight: Point to DR dashboards
+            14. Monitoring: Switch to DR CloudWatch
+
+            Validation Phase 60-90 minutes:
+            15. Data: Validate replicated data
+            16. ETL: Run test pipeline
+            17. Query: Execute test queries
+            18. Dashboard: Verify QuickSight works
+            19. Access: Test user authentication
+            20. Permissions: Verify Lake Formation
+
+            Go-Live Phase 90-120 minutes:
+            21. Communication: Notify stakeholders
+            22. Users: Grant access to DR
+            23. Monitoring: Active alerting
+            24. Support: War room active
+            25. Documentation: Log all actions
+
+            Steady State Phase:
+            26. Monitor: All systems
+            27. Optimize: Performance tuning
+            28. Cleanup: Primary region when recovered
+            29. Root cause: Post-mortem analysis
+            30. Update: Runbooks with lessons learned
+
+            RTO Achievement: 2-4 hours full recovery]
+
+            DataLossScenario[Data Loss/Corruption Scenario
+
+            Accidental Deletion:
+            Impact: Critical table deleted
+
+            Response:
+            1. Immediate: Block further changes
+            2. Assess: What was deleted, when
+            3. S3 Versioning: Restore deleted objects
+            4. Glue Catalog: Restore table metadata
+            5. Validation: Verify data integrity
+            6. Testing: Run quality checks
+            7. Communication: Notify affected users
+            8. Post-mortem: Review and prevent
+
+            Recovery Time: 30-60 minutes
+            Data Loss: 0 with versioning
+
+            Data Corruption:
+            Impact: Bad data in Silver zone
+
+            Response:
+            1. Identify: Corruption timeframe
+            2. Quarantine: Mark bad partitions
+            3. S3: Delete corrupted data
+            4. Replay: Re-run ETL from Bronze
+            5. Validation: Quality checks pass
+            6. Replace: Swap in good data
+            7. Notify: Downstream consumers
+            8. Root cause: Fix bug in ETL
+
+            Recovery Time: 2-4 hours
+            Data Loss: Depends on checkpoints
+
+            Ransomware Attack:
+            Impact: Data encrypted/held hostage
+
+            Response:
+            1. Isolate: Cut network access
+            2. Assess: Scope of encryption
+            3. Restore: From S3 versioning
+            4. Restore: From cross-region backups
+            5. Rebuild: Catalog from backups
+            6. Scan: Security assessment
+            7. Harden: Enhanced security
+            8. Report: Security incident
+
+            Recovery Time: 4-8 hours
+            Data Loss: Max 1 hour RPO]
+        end
+
+        subgraph "Component Failure Runbooks"
+            GlueJobFailure[Glue Job Failure Runbook
+
+            Scenario: Critical ETL job fails
+
+            Immediate Actions 0-15 minutes:
+            1. Alert: On-call engineer paged
+            2. Review: CloudWatch Logs
+            3. Identify: Error message/stack trace
+            4. Assess: Impact on downstream
+            5. Communicate: Stakeholders notified
+
+            Diagnosis 15-30 minutes:
+            6. Root cause: Analyze logs
+            7. Data check: Validate input data
+            8. Schema: Check for drift
+            9. Resources: Check DPU allocation
+            10. Permissions: Verify IAM/Lake Formation
+
+            Resolution 30-90 minutes:
+            11. Fix: Apply correction
+            12. Test: Dev environment first
+            13. Deploy: To production
+            14. Rerun: Failed job with backfill
+            15. Monitor: Job completion
+
+            Validation 90-120 minutes:
+            16. Data quality: Run checks
+            17. Row count: Verify expected
+            18. Downstream: Check dependent jobs
+            19. Dashboards: Verify data updated
+            20. Close: Incident resolved
+
+            Prevention:
+            - Add: Data quality checks
+            - Update: Error handling
+            - Improve: Monitoring alerts
+            - Document: Lessons learned]
+
+            QuickSightOutage[QuickSight Dashboard Outage
+
+            Scenario: Business dashboards unavailable
+
+            Immediate Response 0-5 minutes:
+            1. Verify: QuickSight service status
+            2. Test: Alternative user access
+            3. Check: Network connectivity
+            4. Review: Recent changes
+
+            Troubleshooting 5-30 minutes:
+            5. Data source: Test Athena connection
+            6. Permissions: Verify IAM roles
+            7. Datasets: Refresh status
+            8. Queries: Check query execution
+            9. Lake Formation: Verify permissions
+
+            Workaround 30-60 minutes:
+            10. If QuickSight down: Use Athena directly
+            11. If data issue: Point to DR region
+            12. If permissions: Grant temporary access
+            13. Communication: Provide alternatives
+
+            Resolution:
+            14. Fix: Address root cause
+            15. Restore: Service functionality
+            16. Validate: All dashboards load
+            17. Test: User access works
+            18. Document: Incident details
+
+            RTO Target: 1 hour critical dashboards]
+        end
+    end
+
+    subgraph "DR Testing & Maintenance"
+        DRTestSchedule[DR Testing Schedule
+
+        Monthly Tests:
+        - Scope: Individual components
+        - Duration: 2-4 hours
+        - S3 replication: Validate lag
+        - Catalog restore: Test one database
+        - EMR launch: Spin up DR cluster
+        - Network: Verify connectivity
+        - Monitoring: Check alerts work
+        - Documentation: Update procedures
+
+        Quarterly Tests:
+        - Scope: Partial failover
+        - Duration: 4-8 hours
+        - Workload: Non-critical systems
+        - Users: Test group access
+        - ETL: Run subset of pipelines
+        - Queries: Performance testing
+        - Dashboards: Verify functionality
+        - Rollback: Return to primary
+
+        Annual Tests:
+        - Scope: Full DR drill
+        - Duration: 1-2 days
+        - Scenario: Complete regional failure
+        - Failover: All systems to DR
+        - Users: All users on DR region
+        - Operations: 24 hours on DR
+        - Validation: All services functional
+        - Failback: Return to primary
+        - Review: Comprehensive assessment
+        - Updates: Runbook improvements
+
+        Test Metrics:
+        - RTO achieved: Target vs actual
+        - RPO achieved: Data loss measured
+        - Success rate: % of tests passed
+        - Issues found: Count and severity
+        - Resolution time: Per issue
+        - Improvement: Quarter-over-quarter]
+
+        DRCostOptimization[DR Cost Optimization
+
+        Current Costs ~30% of primary:
+
+        S3 Replication:
+        - Cost: $5K/month
+        - Optimize: Lifecycle policies
+        - Optimize: Intelligent-Tiering
+        - Optimize: Selective replication
+
+        DR Compute Standby:
+        - Lambda: No cost until invoked
+        - Glue: No cost until jobs run
+        - EMR: No clusters running
+        - Athena: Pay per query
+        - Savings: ~80% vs active
+
+        DR Data Storage:
+        - S3 Standard: Critical data
+        - S3 IA: Warm data
+        - S3 Glacier: Archive
+        - Lifecycle: Automated transitions
+        - Cost: $8K/month
+
+        DR Services:
+        - Glue Catalog: Minimal cost
+        - Lake Formation: Free
+        - IAM: Free
+        - CloudWatch: ~$500/month
+
+        Total DR Cost: ~$15K/month
+        Primary Cost: ~$50K/month
+        DR Ratio: 30%
+
+        Further Optimization:
+        - Review: Monthly usage
+        - Eliminate: Unused resources
+        - Compress: Older data
+        - Automate: Clean up test resources]
+    end
+
+    %% Connections
+    DRObjectives --> S3CRRSetup
+    DRRegions --> S3CRRSetup
+
+    S3CRRSetup --> RawZoneReplication
+    S3CRRSetup --> BronzeZoneReplication
+    S3CRRSetup --> SilverZoneReplication
+    S3CRRSetup --> GoldZoneReplication
+
+    RawZoneReplication --> ReplicationMetrics
+    BronzeZoneReplication --> ReplicationMetrics
+    SilverZoneReplication --> ReplicationMetrics
+    GoldZoneReplication --> ReplicationMetrics
+
+    ReplicationMetrics --> ReplicationTesting
+
+    CatalogBackup --> CatalogExport
+    CatalogBackup --> LakeFormationBackup
+    CatalogExport --> CatalogRestore
+    LakeFormationBackup --> RestoreAutomation
+
+    EMRConfiguration --> EMRDataBackup
+    EMRDataBackup --> EMRJobBackup
+    EMRJobBackup --> EMRFailoverPlan
+    EMRFailoverPlan --> EMRValidation
+
+    RegionalFailover --> DataLossScenario
+    GlueJobFailure --> QuickSightOutage
+
+    DRObjectives --> DRTestSchedule
+    DRTestSchedule --> DRCostOptimization
+
+    %% Styling
+    classDef strategyStyle fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+    classDef replicationStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef catalogStyle fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef emrStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef runbookStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef testingStyle fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+
+    class DRObjectives,DRRegions strategyStyle
+    class S3CRRSetup,RawZoneReplication,BronzeZoneReplication,SilverZoneReplication,GoldZoneReplication,ReplicationMetrics,ReplicationTesting replicationStyle
+    class CatalogBackup,CatalogExport,LakeFormationBackup,CatalogRestore,RestoreAutomation catalogStyle
+    class EMRConfiguration,EMRDataBackup,EMRJobBackup,EMRFailoverPlan,EMRValidation emrStyle
+    class RegionalFailover,DataLossScenario,GlueJobFailure,QuickSightOutage runbookStyle
+    class DRTestSchedule,DRCostOptimization testingStyle
+```

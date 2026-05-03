@@ -1,0 +1,261 @@
+```mermaid
+graph TB
+    subgraph "Feature Comparison"
+        direction LR
+
+        Feature1[Compute<br/>Processing Engine]
+        Feature2[Storage<br/>Data Lake Format]
+        Feature3[Data Warehouse<br/>SQL Analytics]
+        Feature4[Orchestration<br/>Workflow Scheduling]
+        Feature5[Governance<br/>Data Catalog]
+        Feature6[ML Platform<br/>Training & Deployment]
+    end
+
+    subgraph "Databricks Solutions"
+        DB_Compute[Databricks Clusters<br/>- Unified Spark runtime<br/>- Auto-scaling<br/>- Photon Engine 10-50x faster<br/>- Serverless compute<br/>Cost: $0.40/DBU All-Purpose]
+
+        DB_Storage[Delta Lake<br/>- ACID transactions<br/>- Time travel<br/>- MERGE/UPSERT<br/>- Schema evolution<br/>- Z-ordering<br/>Cost: S3 storage only]
+
+        DB_Warehouse[Databricks SQL<br/>- Photon-powered<br/>- SQL Warehouses<br/>- Built-in visualization<br/>- Serverless SQL<br/>Cost: $0.22-0.88/DBU]
+
+        DB_Orchestration[Databricks Workflows<br/>- Multi-task DAGs<br/>- Job clusters auto-created<br/>- Integrated monitoring<br/>- Parameterized jobs<br/>Cost: $0.15/DBU Jobs Compute]
+
+        DB_Governance[Unity Catalog<br/>- 3-level namespace<br/>- Central metastore<br/>- Fine-grained ACLs<br/>- Data lineage<br/>- Delta Sharing<br/>Cost: Included]
+
+        DB_ML[Databricks ML<br/>- MLflow built-in<br/>- AutoML<br/>- Managed MLflow<br/>- Model serving<br/>- Feature Store<br/>Cost: Standard compute]
+    end
+
+    subgraph "AWS Native Solutions"
+        AWS_Compute1[Amazon EMR<br/>- Managed Hadoop/Spark<br/>- Manual scaling<br/>- No Photon<br/>- Custom AMI support<br/>Cost: EC2 + $0.05-0.27/hr]
+
+        AWS_Compute2[AWS Glue<br/>- Serverless ETL<br/>- Python/Scala<br/>- Auto-scaling<br/>- Limited Spark features<br/>Cost: $0.44/DPU-hour]
+
+        AWS_Storage1[Apache Parquet<br/>- Columnar format<br/>- No ACID<br/>- No time travel<br/>- Manual compaction<br/>Cost: S3 storage]
+
+        AWS_Storage2[Apache Iceberg/Hudi<br/>- ACID transactions<br/>- Time travel<br/>- Complex setup<br/>- Manual optimization<br/>Cost: S3 storage]
+
+        AWS_Warehouse1[Amazon Redshift<br/>- Columnar warehouse<br/>- Separate from lake<br/>- Data duplication cost<br/>- Pause/resume<br/>Cost: $0.25-6.80/hr]
+
+        AWS_Warehouse2[Amazon Athena<br/>- Serverless SQL<br/>- Query S3 directly<br/>- Pay per query<br/>- Limited optimization<br/>Cost: $5/TB scanned]
+
+        AWS_Orchestration1[AWS Step Functions<br/>- State machines<br/>- Complex setup<br/>- JSON definitions<br/>- Good integrations<br/>Cost: $25/1M transitions]
+
+        AWS_Orchestration2[Apache Airflow MWAA<br/>- Managed Airflow<br/>- Python DAGs<br/>- Requires setup<br/>- Good for complex flows<br/>Cost: $0.49/hr small]
+
+        AWS_Governance1[AWS Lake Formation<br/>- Centralized permissions<br/>- Table/column security<br/>- Limited lineage<br/>- AWS-only<br/>Cost: Included]
+
+        AWS_Governance2[AWS Glue Catalog<br/>- Metadata store<br/>- Basic cataloging<br/>- No Unity features<br/>- Regional<br/>Cost: $1/100K requests]
+
+        AWS_ML[Amazon SageMaker<br/>- Managed Jupyter<br/>- Training jobs<br/>- Model registry<br/>- Endpoints for serving<br/>- Separate from data pipeline<br/>Cost: $0.05-24.48/hr]
+    end
+
+    %% Connections
+    Feature1 --> DB_Compute
+    Feature1 --> AWS_Compute1
+    Feature1 --> AWS_Compute2
+
+    Feature2 --> DB_Storage
+    Feature2 --> AWS_Storage1
+    Feature2 --> AWS_Storage2
+
+    Feature3 --> DB_Warehouse
+    Feature3 --> AWS_Warehouse1
+    Feature3 --> AWS_Warehouse2
+
+    Feature4 --> DB_Orchestration
+    Feature4 --> AWS_Orchestration1
+    Feature4 --> AWS_Orchestration2
+
+    Feature5 --> DB_Governance
+    Feature5 --> AWS_Governance1
+    Feature5 --> AWS_Governance2
+
+    Feature6 --> DB_ML
+    Feature6 --> AWS_ML
+
+    %% Styling
+    style DB_Compute fill:#2196f3
+    style DB_Storage fill:#2196f3
+    style DB_Warehouse fill:#2196f3
+    style DB_Orchestration fill:#2196f3
+    style DB_Governance fill:#2196f3
+    style DB_ML fill:#2196f3
+
+    style AWS_Compute1 fill:#ff9800
+    style AWS_Compute2 fill:#ff9800
+    style AWS_Storage1 fill:#ff9800
+    style AWS_Storage2 fill:#ff9800
+    style AWS_Warehouse1 fill:#ff9800
+    style AWS_Warehouse2 fill:#ff9800
+    style AWS_Orchestration1 fill:#ff9800
+    style AWS_Orchestration2 fill:#ff9800
+    style AWS_Governance1 fill:#ff9800
+    style AWS_Governance2 fill:#ff9800
+    style AWS_ML fill:#ff9800
+```
+
+---
+
+## Detailed Comparison Matrix
+
+| Feature | Databricks | AWS Native | Winner |
+|---------|-----------|------------|--------|
+| **Compute** | Unified Spark + Photon (10-50x faster) | EMR (manual) or Glue (limited) | 🏆 Databricks |
+| **Storage** | Delta Lake (ACID, time travel, built-in) | Parquet (manual) or Iceberg (setup) | 🏆 Databricks |
+| **SQL** | Databricks SQL + Photon (fast, unified) | Redshift (separate) or Athena (slow) | 🏆 Databricks |
+| **Orchestration** | Workflows (integrated, simple) | Step Functions (complex) or MWAA (setup) | 🏆 Databricks |
+| **Governance** | Unity Catalog (advanced, multi-cloud) | Lake Formation (AWS-only, basic) | 🏆 Databricks |
+| **ML** | Databricks ML + MLflow (integrated) | SageMaker (separate, complex) | 🏆 Databricks |
+| **Cost (Small)** | $150-300/month | $100-200/month | 🏆 AWS |
+| **Cost (Large)** | $5K-20K/month (optimized) | $8K-30K/month | 🏆 Databricks |
+| **Setup Time** | 5 minutes | 2-4 weeks | 🏆 Databricks |
+| **Learning Curve** | Moderate | Steep (many services) | 🏆 Databricks |
+| **Flexibility** | Opinionated (best practices) | High (DIY everything) | 🏆 AWS |
+| **Multi-Cloud** | AWS, Azure, GCP | AWS only | 🏆 Databricks |
+
+---
+
+## Real-World Scenarios
+
+### Scenario 1: Small Startup
+**Requirements**: $500/month budget, 1 data engineer, quick start
+
+**Databricks**:
+- ✅ 5-minute setup
+- ✅ All features integrated
+- ✅ $150-300/month (Community + Trial)
+- ❌ Vendor dependency
+
+**AWS Native**:
+- ✅ More control
+- ✅ Pay-as-you-go
+- ❌ 2-4 weeks setup (EMR, Glue, Athena, Airflow)
+- ❌ $100-200/month (but 1 engineer's time costly)
+
+**Recommendation**: 🏆 **Databricks** (faster time-to-value)
+
+---
+
+### Scenario 2: Enterprise with AWS Commitment
+**Requirements**: $50K/month budget, 5 data engineers, AWS-only, existing AWS expertise
+
+**Databricks**:
+- ✅ Unified platform
+- ✅ Advanced features (Unity, Photon)
+- ❌ New platform to learn
+- ❌ $10K-20K/month Databricks cost
+
+**AWS Native**:
+- ✅ Leverage existing AWS knowledge
+- ✅ More flexibility
+- ✅ No additional vendor
+- ❌ Complex architecture (10+ services)
+- ❌ Requires dedicated team
+- ❌ $15K-30K/month (EMR, Redshift, MWAA, etc.)
+
+**Recommendation**: 🏆 **Databricks** (unless strong AWS commitment or existing EMR expertise)
+
+---
+
+### Scenario 3: Multi-Cloud Strategy
+**Requirements**: AWS + Azure, unified governance, 10 data engineers
+
+**Databricks**:
+- ✅ Same platform on AWS + Azure + GCP
+- ✅ Unity Catalog across clouds
+- ✅ Centralized governance
+- ✅ Single training/expertise
+
+**AWS Native**:
+- ❌ AWS-only (need separate Azure solution)
+- ❌ Different tools: Synapse Analytics (Azure), BigQuery (GCP)
+- ❌ Fragmented governance
+
+**Recommendation**: 🏆 **Databricks** (no other choice for multi-cloud)
+
+---
+
+## Cost Comparison (Medium Workload)
+
+### Databricks Monthly Cost
+```
+Compute (Jobs):    $3,000 (200 hours × $15/hr)
+Storage (Delta):   $100 (5TB × $0.02/GB)
+SQL Warehouse:     $500 (50 hours × $10/hr)
+Databricks Fee:    $2,000 (DBUs)
+-------------------------
+Total:             $5,600/month
+```
+
+### AWS Native Monthly Cost
+```
+EMR Compute:       $2,500 (200 hours × $12.50/hr)
+Redshift:          $2,000 (730 hours × $2.74/hr)
+Athena:            $800 (160TB scanned × $5/TB)
+MWAA:              $360 (730 hours × $0.49/hr)
+Storage (S3):      $100 (5TB)
+Glue Catalog:      $50
+-------------------------
+Total:             $5,810/month
+```
+
+**Analysis**: Similar cost, but Databricks includes:
+- Faster queries (Photon)
+- Integrated governance (Unity)
+- Easier maintenance (unified platform)
+
+---
+
+## When to Choose Databricks
+
+✅ **Choose Databricks if:**
+- Need fast time-to-market (< 1 week)
+- Want unified platform (less ops overhead)
+- Need advanced features (Unity Catalog, Photon, Delta Sharing)
+- Multi-cloud strategy
+- Limited data engineering team
+- Priority: Developer productivity
+
+---
+
+## When to Choose AWS Native
+
+✅ **Choose AWS Native if:**
+- Strong AWS expertise already
+- Need maximum flexibility/control
+- AWS-committed discount programs
+- Simple use cases (just ETL or just analytics)
+- Cost is primary concern (small scale)
+- Priority: Avoiding vendor lock-in
+
+---
+
+## Migration Path
+
+### AWS → Databricks
+1. **Lift & Shift**: EMR Spark code runs on Databricks (95% compatible)
+2. **Storage**: Keep data in S3, add Delta format
+3. **Orchestration**: Migrate Airflow DAGs to Workflows
+4. **Timeline**: 2-4 weeks
+
+### Databricks → AWS
+1. **Compute**: Migrate to EMR (Spark) or Glue (PySpark)
+2. **Storage**: Delta Lake → Iceberg or Hudi
+3. **Governance**: Export Unity Catalog → Lake Formation
+4. **Timeline**: 2-3 months
+
+---
+
+## Summary
+
+| Aspect | Databricks | AWS Native |
+|--------|-----------|------------|
+| **Best For** | Unified lakehouse, fast start | Custom solutions, AWS experts |
+| **Performance** | 10-50x faster (Photon) | Standard Spark/Presto |
+| **Complexity** | Low (1 platform) | High (10+ services) |
+| **Cost** | Medium-High | Low-Medium |
+| **Flexibility** | Opinionated | Highly flexible |
+| **Multi-Cloud** | ✅ Yes | ❌ AWS-only |
+| **Time-to-Value** | Days | Weeks-Months |
+
+**Bottom Line**: Databricks for productivity and advanced features, AWS Native for maximum control and cost optimization at small scale.

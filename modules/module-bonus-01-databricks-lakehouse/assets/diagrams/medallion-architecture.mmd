@@ -1,0 +1,278 @@
+```mermaid
+graph LR
+    subgraph "Data Sources"
+        API[REST APIs<br/>JSON]
+        DB[Databases<br/>CDC Streams]
+        Files[Files<br/>CSV, Parquet]
+        Stream[Event Streams<br/>Kafka, Kinesis]
+    end
+
+    subgraph "Bronze Layer: Raw Ingestion"
+        BronzeIngest[Ingest Raw Data<br/>Minimal Transformation]
+        BronzeTable[(Bronze Table<br/>delta.bronze_events<br/>Append-Only<br/>Immutable)]
+        BronzeAudit[Audit Columns:<br/>- ingestion_timestamp<br/>- source_file<br/>- _bronze_created_at]
+
+        BronzeIngest --> BronzeTable
+        BronzeIngest --> BronzeAudit
+    end
+
+    subgraph "Silver Layer: Cleaned & Validated"
+        SilverTransform[Data Transformation:<br/>- Validate schema<br/>- Remove duplicates<br/>- Standardize formats<br/>- Apply business rules]
+        SilverQuality[Data Quality Checks:<br/>- NOT NULL constraints<br/>- Value ranges<br/>- Referential integrity<br/>- Quarantine bad records]
+        SilverTable[(Silver Table<br/>delta.silver_events<br/>Deduplicated<br/>Idempotent)]
+
+        SilverTransform --> SilverQuality
+        SilverQuality --> SilverTable
+    end
+
+    subgraph "Gold Layer: Business Aggregations"
+        GoldAgg1[Aggregation:<br/>Daily Active Users]
+        GoldAgg2[Aggregation:<br/>Revenue by Region]
+        GoldAgg3[Aggregation:<br/>Conversion Funnel]
+
+        GoldTable1[(Gold Table<br/>delta.gold_dau<br/>Pre-Aggregated)]
+        GoldTable2[(Gold Table<br/>delta.gold_revenue<br/>Optimized for BI)]
+        GoldTable3[(Gold Table<br/>delta.gold_funnel<br/>Denormalized)]
+
+        GoldAgg1 --> GoldTable1
+        GoldAgg2 --> GoldTable2
+        GoldAgg3 --> GoldTable3
+    end
+
+    subgraph "Data Quality & Monitoring"
+        DQ[Data Quality Metrics:<br/>- Completeness<br/>- Timeliness<br/>- Accuracy]
+        Monitor[Monitoring:<br/>- Record counts<br/>- Processing time<br/>- Error rates]
+        Alert[Alerts:<br/>- SLA breaches<br/>- Quality failures]
+
+        DQ --> Monitor
+        Monitor --> Alert
+    end
+
+    subgraph "Consumption Layer"
+        BI[BI Tools<br/>Tableau, Power BI]
+        Analytics[Data Science<br/>ML Models]
+        API2[APIs<br/>Applications]
+        Reports[Reports<br/>Dashboards]
+    end
+
+    %% Data Flow
+    API --> BronzeIngest
+    DB --> BronzeIngest
+    Files --> BronzeIngest
+    Stream --> BronzeIngest
+
+    BronzeTable -->|Read Stream<br/>or Batch| SilverTransform
+    SilverTable -->|Aggregations| GoldAgg1
+    SilverTable -->|Aggregations| GoldAgg2
+    SilverTable -->|Aggregations| GoldAgg3
+
+    %% Quality Monitoring
+    BronzeTable -.->|Monitor| DQ
+    SilverTable -.->|Monitor| DQ
+    GoldTable1 -.->|Monitor| DQ
+
+    %% Consumption
+    GoldTable1 --> BI
+    GoldTable2 --> BI
+    GoldTable3 --> BI
+    SilverTable --> Analytics
+    GoldTable1 --> API2
+    GoldTable2 --> Reports
+
+    %% Styling
+    style BronzeTable fill:#8d6e63
+    style BronzeIngest fill:#a1887f
+    style BronzeAudit fill:#a1887f
+
+    style SilverTable fill:#5c6bc0
+    style SilverTransform fill:#7986cb
+    style SilverQuality fill:#7986cb
+
+    style GoldTable1 fill:#ffd54f
+    style GoldTable2 fill:#ffd54f
+    style GoldTable3 fill:#ffd54f
+    style GoldAgg1 fill:#ffecb3
+    style GoldAgg2 fill:#ffecb3
+    style GoldAgg3 fill:#ffecb3
+
+    style DQ fill:#81c784
+    style Monitor fill:#81c784
+    style Alert fill:#ef5350
+```
+
+---
+
+## Medallion Architecture Principles
+
+### 🥉 Bronze Layer (Raw)
+**Purpose**: Capture raw data exactly as received
+
+**Characteristics**:
+- **Append-Only**: Never update or delete (immutable audit trail)
+- **Minimal Transformation**: Only add metadata (timestamps, source)
+- **Preserve All Data**: Keep even "bad" records for reprocessing
+- **Schema-On-Read**: Store as-is, validate later
+
+**Example**:
+```python
+# Bronze ingestion
+raw_df = spark.read.json(source_path)
+
+bronze_df = raw_df \
+    .withColumn("ingestion_timestamp", current_timestamp()) \
+    .withColumn("source_file", input_file_name()) \
+    .withColumn("_bronze_created_at", current_timestamp())
+
+bronze_df.write.format("delta").mode("append").save("/bronze/events")
+```
+
+**Use Cases**:
+- Compliance & audit (preserve original data)
+- Reprocess pipeline from scratch if needed
+- Investigate data quality issues
+
+---
+
+### 🥈 Silver Layer (Cleaned)
+**Purpose**: Cleaned, validated, and conformed data
+
+**Characteristics**:
+- **Data Quality**: Validate schema, remove nulls, check ranges
+- **Deduplication**: Remove duplicate records
+- **Standardization**: Consistent formats (dates, country codes, etc.)
+- **Idempotent**: Can reprocess safely (MERGE not APPEND)
+- **Business Rules**: Apply domain logic
+
+**Example**:
+```python
+# Silver transformation
+silver_df = bronze_df \
+    .filter(col("user_id").isNotNull()) \
+    .withColumn("event_timestamp", to_timestamp(col("event_timestamp"))) \
+    .withColumn("country", upper(col("country"))) \
+    .dropDuplicates(["event_id"])
+
+# Data quality checks
+assert silver_df.filter(col("user_id").isNull()).count() == 0
+assert silver_df.count() == silver_df.select("event_id").distinct().count()
+
+# Write with MERGE (idempotent)
+delta_table.alias("target").merge(
+    silver_df.alias("source"),
+    "target.event_id = source.event_id"
+).whenMatchedUpdateAll().whenNotMatchedInsertAll().execute()
+```
+
+**Use Cases**:
+- Data science feature engineering
+- Joins between tables
+- Input to Gold aggregations
+
+---
+
+### 🥇 Gold Layer (Aggregated)
+**Purpose**: Business-ready, aggregated metrics
+
+**Characteristics**:
+- **Pre-Aggregated**: Summary tables (daily, monthly, etc.)
+- **Denormalized**: Star schema, optimized for queries
+- **Business Logic**: KPIs, metrics, reports
+- **Query Performance**: OPTIMIZE + ZORDER for fast BI queries
+
+**Example**:
+```python
+# Gold aggregation
+gold_dau = silver_df.groupBy("event_date", "country") \
+    .agg(
+        countDistinct("user_id").alias("active_users"),
+        count("*").alias("total_events"),
+        sum("revenue").alias("total_revenue")
+    )
+
+gold_dau.write.format("delta").mode("overwrite").save("/gold/daily_active_users")
+
+# Optimize for BI queries
+spark.sql("OPTIMIZE gold.daily_active_users ZORDER BY (event_date, country)")
+```
+
+**Use Cases**:
+- BI dashboards (Tableau, Power BI)
+- Executive reports
+- API endpoints for applications
+
+---
+
+## Processing Patterns
+
+### Batch Processing
+```python
+# Bronze (append)
+bronze_df.write.mode("append").save("/bronze/events")
+
+# Silver (merge for idempotency)
+delta_table.merge(silver_df, condition).execute()
+
+# Gold (overwrite or merge)
+gold_df.write.mode("overwrite").save("/gold/metrics")
+```
+
+### Streaming Processing
+```python
+# Bronze stream
+spark.readStream.format("json").load(stream_source) \
+    .writeStream.format("delta").start("/bronze/events")
+
+# Silver stream
+spark.readStream.format("delta").load("/bronze/events") \
+    .transform(clean_data) \
+    .writeStream.format("delta").start("/silver/events")
+
+# Gold stream (aggregations)
+spark.readStream.format("delta").load("/silver/events") \
+    .groupBy(window("timestamp", "5 minutes"), "country") \
+    .agg(count("*")) \
+    .writeStream.format("delta").start("/gold/metrics")
+```
+
+---
+
+## Best Practices
+
+| Layer | Transformation | Mode | Partitioning | Optimization |
+|-------|----------------|------|--------------|--------------|
+| **Bronze** | Minimal (add metadata) | Append | By ingestion_date | Auto-compact ON |
+| **Silver** | Validate, dedupe, standardize | Merge | By business date | OPTIMIZE weekly |
+| **Gold** | Aggregate, denormalize | Overwrite | By metric date | OPTIMIZE + ZORDER |
+
+---
+
+## Data Quality Checkpoints
+
+```python
+# Bronze → Silver
+bronze_count = spark.table("bronze.events").count()
+silver_count = spark.table("silver.events").count()
+assert silver_count <= bronze_count  # Some records may be filtered
+
+# Silver → Gold
+silver_revenue = spark.table("silver.events").agg(sum("revenue")).collect()[0][0]
+gold_revenue = spark.table("gold.revenue").agg(sum("total_revenue")).collect()[0][0]
+assert abs(silver_revenue - gold_revenue) < 0.01  # Tolerate rounding
+```
+
+---
+
+## When to Use Each Layer
+
+**Query from Bronze**: ❌ Never (for production use cases)
+- Reason: Contains duplicates, bad data, inconsistent formats
+
+**Query from Silver**: ✅ For data science, ad-hoc analysis
+- Reason: Clean data, but not pre-aggregated
+
+**Query from Gold**: ✅ For BI, dashboards, reports
+- Reason: Pre-aggregated, optimized, business-ready
+
+---
+
+**Summary**: Bronze → Silver → Gold = Raw → Cleaned → Aggregated

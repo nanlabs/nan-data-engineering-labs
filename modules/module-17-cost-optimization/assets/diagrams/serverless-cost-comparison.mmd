@@ -1,0 +1,368 @@
+graph TB
+    subgraph "Compute Models"
+        A1["Traditional: EC2/ECS
+        Pay for uptime (hours)
+        Fixed capacity
+        Manual scaling"]
+
+        A2["Serverless: Lambda/Fargate
+        Pay per execution
+        Auto-scaling
+        No server management"]
+    end
+
+    subgraph "Lambda Pricing Model"
+        B1["Request Charges
+        $0.20 per 1M requests
+        First 1M requests/month free"]
+
+        B2["Duration Charges
+        $0.0000166667 per GB-second
+        First 400,000 GB-seconds/month free"]
+
+        B3["Example: 3M requests/month
+        Avg duration: 500ms
+        Memory: 512MB (0.5GB)
+
+        Request cost: (3M - 1M) × $0.20/1M = $0.40
+        Duration cost: 3M × 0.5s × 0.5GB × $0.0000166667 = $12.50
+        Total: $12.90/month"]
+
+        B4["Provisioned Concurrency (optional)
+        $0.0000041667 per GB-second
+        $0.015 per GB-hour
+        Use case: Eliminate cold starts"]
+    end
+
+    A2 --> B1
+    A2 --> B2
+    B1 --> B3
+    B2 --> B3
+    B3 --> B4
+
+    subgraph "Fargate Pricing Model"
+        C1["vCPU Pricing
+        $0.04048 per vCPU per hour"]
+
+        C2["Memory Pricing
+        $0.004445 per GB per hour"]
+
+        C3["Example: 0.5 vCPU, 1GB RAM
+        24/7 for 30 days
+
+        vCPU: 0.5 × $0.04048 × 730 = $14.78
+        Memory: 1 × $0.004445 × 730 = $3.24
+        Total: $18.02/month per container"]
+
+        C4["Fargate Spot (70% discount)
+        Interruptible workloads
+        $5.41/month for same config"]
+    end
+
+    A2 --> C1
+    A2 --> C2
+    C1 --> C3
+    C2 --> C3
+    C3 --> C4
+
+    subgraph "EC2 Baseline Comparison"
+        D1["t3.medium (2 vCPU, 4GB)
+        On-Demand: $0.0416/hour
+        Monthly: $30.37
+        Reserved (3yr): $14.40/month (53% savings)"]
+
+        D2["m5.large (2 vCPU, 8GB)
+        On-Demand: $0.096/hour
+        Monthly: $70.08
+        Reserved (3yr): $33.22/month (53% savings)"]
+
+        D3["Break-even Analysis:
+        Lambda cheaper when <100 hours/month usage
+        Fargate cheaper when variable workload
+        EC2 cheaper when >500 hours/month (with RI)"]
+    end
+
+    A1 --> D1
+    A1 --> D2
+    D1 --> D3
+    D2 --> D3
+
+    subgraph "Use Case 1: API Backend"
+        E1["Workload:
+        10M API requests/month
+        Avg response time: 200ms
+        Traffic pattern: Variable (10x spike)"]
+
+        E2["Lambda Option:
+        Requests: 10M × $0.20/1M = $2.00
+        Duration: 10M × 0.2s × 0.5GB × $0.0000166667 = $16.67
+        Total: $18.67/month
+
+        Pros: Auto-scale, no cold starts concern
+        Cons: 29-second timeout limit"]
+
+        E3["Fargate Option:
+        Min: 2 containers (low traffic)
+        Peak: 20 containers (spike)
+        Avg: 5 containers
+
+        Cost: 5 × $18.02 × 730h = $65,773... wait, recalculating
+        Cost: 5 containers × $18.02 = $90.10/month
+
+        Pros: Longer runtime, VPC control
+        Cons: More expensive for low-utilization"]
+
+        E4["EC2 Option (m5.large with ALB):
+        Min: 2 instances (HA)
+        Peak: 10 instances (auto-scale)
+        Reserved: 2 × $33.22 = $66.44
+        On-Demand (avg 3 extra): 3 × $70.08 × 30% util = $63.07
+        ALB: $16.20 + data transfer
+        Total: ~$145/month
+
+        Pros: Predictable cost, full control
+        Cons: Over-provisioned, complex management"]
+
+        E1 --> E2
+        E1 --> E3
+        E1 --> E4
+
+        E5["Winner: Lambda
+        Lowest cost: $18.67/month
+        Best fit: Variable traffic, short duration"]
+    end
+
+    E2 --> E5
+    E3 --> E5
+    E4 --> E5
+
+    subgraph "Use Case 2: Batch ETL Processing"
+        F1["Workload:
+        Daily ETL job: 4 hours
+        Monthly: 120 hours
+        Memory: 8GB
+        CPU: 2 vCPU"]
+
+        F2["Lambda Option:
+        ❌ Not suitable
+        Reason: 15-minute max execution time
+
+        Alternative: Step Functions + Lambda
+        Cost: ~$50-80/month
+        Complexity: High (orchestration)"]
+
+        F3["Fargate Option:
+        2 vCPU × 120h × $0.04048 = $9.72
+        8 GB × 120h × $0.004445 = $4.27
+        Total: $13.99/month
+
+        Pros: Simple, pay-per-use
+        Cons: Slower startup than EC2"]
+
+        F4["EC2 Spot Option:
+        m5.xlarge (4 vCPU, 16GB)
+        Spot: $0.064/hour (70% discount)
+        Cost: 120h × $0.064 = $7.68/month
+
+        Pros: Lowest cost, best performance
+        Cons: Interruption risk (low for 4h jobs)"]
+
+        F5["EMR Serverless Option:
+        Billed per vCPU-hour and GB-hour
+        Cost: ~$30-50/month for 120h
+
+        Pros: Spark ecosystem, auto-scaling
+        Cons: Higher cost than Fargate/Spot"]
+
+        F1 --> F2
+        F1 --> F3
+        F1 --> F4
+        F1 --> F5
+
+        F6["Winner: EC2 Spot
+        Lowest cost: $7.68/month
+        Best fit: Batch jobs, fault-tolerant"]
+    end
+
+    F3 --> F6
+    F4 --> F6
+    F5 --> F6
+
+    subgraph "Use Case 3: Analytics Queries"
+        G1["Workload:
+        Ad-hoc Athena queries
+        100 queries/day, 3TB scanned/month"]
+
+        G2["Athena Option:
+        $5 per TB scanned
+        Cost: 3TB × $5 = $15/month
+
+        Pros: No infrastructure, serverless
+        Cons: Cost increases with data scanned"]
+
+        G3["EMR Option (m5.xlarge cluster):
+        3 nodes × $0.096/hour
+        Run 8 hours/day × 30 days = 240h
+        Cost: 3 × 240h × $0.096 = $69.12
+
+        Pros: Faster queries, more control
+        Cons: Higher fixed cost"]
+
+        G4["Redshift Serverless:
+        Base RPUs: 32 (min)
+        Usage: 8 hours/day
+        Cost: 32 RPU × 240h × $0.36/RPU-hour = $2,764.80/month
+
+        Pros: Best performance, BI tool integration
+        Cons: Much more expensive"]
+
+        G1 --> G2
+        G1 --> G3
+        G1 --> G4
+
+        G5["Winner: Athena
+        Lowest cost: $15/month
+        Best fit: Ad-hoc queries, infrequent access
+
+        Alternative: EMR for >200h/month queries"]
+    end
+
+    G2 --> G5
+    G3 --> G5
+    G4 --> G5
+
+    subgraph "Use Case 4: Streaming Data Processing"
+        H1["Workload:
+        Real-time event processing
+        100K events/hour, 24/7"]
+
+        H2["Lambda + Kinesis:
+        Kinesis: 10 shards × $0.015/hour = $109.50
+        Lambda: 72M requests × $0.20/1M = $14.40
+        Duration: 72M × 0.1s × 0.5GB × $0.0000166667 = $60
+        Total: $183.90/month
+
+        Pros: Fully managed, auto-scaling
+        Cons: Cold start latency"]
+
+        H3["Fargate + Kafka (MSK):
+        MSK: 3 brokers × t3.small = $49.14
+        Fargate: 2 consumers × $18.02 = $36.04
+        Total: $85.18/month
+
+        Pros: Lower latency, more control
+        Cons: Complex setup"]
+
+        H4["EC2 + Kafka (self-managed):
+        3 × t3.small brokers = $21.90
+        2 × t3.small consumers = $14.60
+        Storage: 100GB × $0.10 = $10
+        Total: $46.50/month
+
+        Pros: Lowest cost, full control
+        Cons: High operational overhead"]
+
+        H1 --> H2
+        H1 --> H3
+        H1 --> H4
+
+        H5["Winner: Depends on scale
+        Small (<100K/hour): Lambda + Kinesis
+        Medium (100K-1M/hour): Fargate + MSK
+        Large (>1M/hour): EC2 + self-managed Kafka"]
+    end
+
+    H2 --> H5
+    H3 --> H5
+    H4 --> H5
+
+    subgraph "TCO Decision Matrix"
+        I1{"Monthly Usage Hours"}
+        I2["<100 hours → Serverless (Lambda/Fargate)"]
+        I3["100-300 hours → Fargate or Spot EC2"]
+        I4["300-500 hours → EC2 with Savings Plan"]
+        I5[">500 hours (24/7) → EC2 Reserved Instances"]
+
+        I1 --> I2
+        I1 --> I3
+        I1 --> I4
+        I1 --> I5
+    end
+
+    subgraph "Cost Optimization Strategies"
+        J1["Lambda Optimization:
+        ✅ Right-size memory (CPU scales with memory)
+        ✅ Reduce package size (<50MB)
+        ✅ Use Provisioned Concurrency only if needed
+        ✅ Implement caching (reduce invocations)"]
+
+        J2["Fargate Optimization:
+        ✅ Use Fargate Spot for fault-tolerant workloads
+        ✅ Right-size vCPU and memory
+        ✅ Use Graviton2 (arm64) for 20% savings
+        ✅ Implement auto-scaling"]
+
+        J3["EC2 Optimization:
+        ✅ Reserved Instances for baseline
+        ✅ Spot for batch/fault-tolerant
+        ✅ Auto-scaling for variable load
+        ✅ Hibernate instead of stop (save EBS)"]
+    end
+
+    subgraph "Real-World Examples"
+        K1["Netflix
+        Architecture: 700+ microservices
+        Mix: 70% EC2 (RIs), 20% Lambda, 10% Fargate
+        Strategy: Right tool for right job
+        Result: $100M+ annual savings"]
+
+        K2["Coca-Cola (Freestyle App)
+        Before: EC2 instances (always-on)
+        After: Lambda + API Gateway
+        Result: 60% cost reduction, $13K → $5K/month"]
+
+        K3["Thomson Reuters
+        Workload: Document processing
+        Before: EMR cluster 24/7 ($12K/month)
+        After: Lambda + Step Functions (on-demand)
+        Result: 90% cost reduction ($12K → $1.2K/month)"]
+    end
+
+    subgraph "Hidden Costs"
+        L1["Serverless Hidden Costs:
+        - Data transfer: $0.09/GB outbound
+        - NAT Gateway: $0.045/hour + $0.045/GB
+        - CloudWatch Logs: $0.50/GB ingested
+        - VPC endpoints: $0.01/hour"]
+
+        L2["EC2 Hidden Costs:
+        - EBS volumes: $0.10/GB-month
+        - Load balancers: $18/month + data processing
+        - Data transfer: $0.09/GB outbound
+        - Elastic IPs: $3.60/month if unattached"]
+    end
+
+    subgraph "Cost Monitoring KPIs"
+        M1["Cost per Transaction
+        Target: <$0.001 for high-volume APIs"]
+
+        M2["Infrastructure Utilization
+        Target: >70% for always-on resources"]
+
+        M3["Serverless Adoption
+        Target: >50% for variable workloads"]
+
+        M4["Total Cost Trend
+        Target: Flat or decreasing as traffic grows"]
+    end
+
+    style A2 fill:#7ed321,color:#fff
+    style B3 fill:#50e3c2,color:#000
+    style C3 fill:#50e3c2,color:#000
+    style E5 fill:#7ed321,color:#fff
+    style F6 fill:#7ed321,color:#fff
+    style G5 fill:#7ed321,color:#fff
+    style H5 fill:#ffd93d,color:#000
+    style K1 fill:#bd10e0,color:#fff
+    style K2 fill:#bd10e0,color:#fff
+    style K3 fill:#bd10e0,color:#fff

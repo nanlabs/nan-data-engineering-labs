@@ -1,0 +1,253 @@
+graph TB
+    subgraph "Data Ingestion"
+        A1[Raw Data Upload]
+        A2[Application Logs]
+        A3[Event Streams]
+        A4[Database Backups]
+    end
+
+    subgraph "S3 Storage Classes"
+        B1["S3 Standard
+        $0.023/GB/month
+        Millisecond latency
+        99.99% availability"]
+
+        B2["S3 Standard-IA
+        $0.0125/GB/month
+        Millisecond latency
+        99.9% availability
+        $0.01/GB retrieval"]
+
+        B3["S3 Glacier Instant Retrieval
+        $0.004/GB/month
+        Millisecond latency
+        Min 90 days storage"]
+
+        B4["S3 Glacier Flexible Retrieval
+        $0.0036/GB/month
+        Minutes-hours retrieval
+        Min 90 days storage"]
+
+        B5["S3 Glacier Deep Archive
+        $0.00099/GB/month
+        12-48 hours retrieval
+        Min 180 days storage"]
+
+        B6["S3 Intelligent-Tiering
+        $0.0025/1000 objects automation
+        Automatic cost optimization
+        No retrieval fees"]
+    end
+
+    A1 --> B1
+    A2 --> B1
+    A3 --> B1
+    A4 --> B1
+
+    subgraph "Lifecycle Rules"
+        C1["Rule 1: Analytics Data
+        Day 0-30: Standard
+        Day 31-90: Standard-IA
+        Day 91-365: Glacier Instant
+        Day 366+: Glacier Deep Archive"]
+
+        C2["Rule 2: Application Logs
+        Day 0-7: Standard
+        Day 8-90: Standard-IA
+        Day 91+: Glacier Flexible
+        Day 365+: Delete"]
+
+        C3["Rule 3: Compliance Backups
+        Day 0: Standard
+        Day 1-365: Glacier Flexible
+        Day 366-2555: Deep Archive (7 years)
+        Day 2555+: Delete"]
+
+        C4["Rule 4: Temporary Data
+        Day 0-7: Standard
+        Day 7+: Delete
+        Abort incomplete multipart uploads after 7 days"]
+    end
+
+    subgraph "S3 Intelligent-Tiering"
+        D1["Frequent Access Tier
+        $0.023/GB
+        Accessed in last 30 days"]
+
+        D2["Infrequent Access Tier
+        $0.0125/GB
+        Not accessed 30+ days"]
+
+        D3["Archive Instant Access
+        $0.004/GB
+        Not accessed 90+ days"]
+
+        D4["Archive Access Tier
+        $0.0036/GB
+        Not accessed 180+ days
+        Optional activation"]
+
+        D5["Deep Archive Access
+        $0.00099/GB
+        Not accessed 180+ days
+        Optional activation"]
+
+        D1 -->|30 days no access| D2
+        D2 -->|90 days no access| D3
+        D3 -->|180 days no access| D4
+        D4 -->|180 days no access| D5
+    end
+
+    B6 --> D1
+
+    subgraph "Access Pattern Analysis"
+        E1[S3 Storage Lens]
+        E2["Metrics:
+        - Access frequency
+        - Object size distribution
+        - Storage class usage
+        - Lifecycle rule effectiveness"]
+
+        E3["Recommendations:
+        - Transition to IA: 500GB
+        - Delete incomplete uploads: 50GB
+        - Enable Intelligent-Tiering: 2TB"]
+
+        E1 --> E2
+        E2 --> E3
+    end
+
+    B1 --> E1
+    B2 --> E1
+    B3 --> E1
+
+    subgraph "Lifecycle Transitions"
+        F1[Standard] -->|30 days| F2[Standard-IA]
+        F2 -->|90 days| F3[Glacier Instant]
+        F3 -->|365 days| F4[Glacier Flexible]
+        F4 -->|2 years| F5[Deep Archive]
+        F5 -->|7 years| F6[Delete]
+    end
+
+    C1 --> F1
+    C2 --> F1
+    C3 --> F1
+
+    subgraph "Cost Comparison Example"
+        G1["Scenario: 10TB Data Lake
+        Avg age: 180 days
+        Access: 20% hot, 80% cold"]
+
+        G2["Option 1: All Standard
+        10,000 GB × $0.023 = $230/month
+        Annual: $2,760"]
+
+        G3["Option 2: Lifecycle Policy
+        2TB Standard (30d) = $46
+        3TB Standard-IA (60d) = $37.50
+        5TB Glacier (90d+) = $18
+        Monthly: $101.50
+        Annual: $1,218
+        Savings: 56% ($1,542/year)"]
+
+        G4["Option 3: Intelligent-Tiering
+        2TB Frequent = $46
+        8TB Infrequent/Archive = $60
+        Automation fee = $25
+        Monthly: $131
+        Annual: $1,572
+        Savings: 43% ($1,188/year)"]
+
+        G1 --> G2
+        G1 --> G3
+        G1 --> G4
+    end
+
+    subgraph "Best Practices"
+        H1["✅ Use Lifecycle Policies
+        Automate transitions, reduce manual work"]
+
+        H2["✅ Enable versioning carefully
+        Noncurrent versions cost same as current"]
+
+        H3["✅ Monitor with Storage Lens
+        Weekly review of storage patterns"]
+
+        H4["✅ Delete incomplete uploads
+        Can waste 10-20% of storage costs"]
+
+        H5["✅ Choose right class for workload
+        Frequent access: Standard
+        Infrequent: IA or Intelligent-Tiering
+        Archive: Glacier variants"]
+
+        H6["✅ Consider retrieval costs
+        Glacier retrieval: $0.02-0.10/GB
+        Factor in access patterns"]
+    end
+
+    subgraph "Real-World Examples"
+        I1["Airbnb
+        Challenge: 20PB data lake, high costs
+        Solution: Lifecycle + Intelligent-Tiering
+        Result: 72% reduction ($8M → $2.2M/year)"]
+
+        I2["Netflix
+        Challenge: 80PB S3 storage
+        Solution: Custom lifecycle by content type
+        Result: 60% in archive classes, $15M/year savings"]
+
+        I3["Zillow
+        Challenge: Property images and logs
+        Solution: Intelligent-Tiering for images,
+                 90-day delete for logs
+        Result: 45% storage cost reduction"]
+    end
+
+    subgraph "Implementation Steps"
+        J1["1. Analyze Access Patterns
+        Use S3 Storage Lens (7-14 days)"]
+
+        J2["2. Define Lifecycle Rules
+        By prefix, tags, object size"]
+
+        J3["3. Test in Non-Prod
+        Validate retrieval times, costs"]
+
+        J4["4. Implement in Production
+        Gradual rollout by bucket"]
+
+        J5["5. Monitor and Optimize
+        Monthly review, adjust transitions"]
+
+        J1 --> J2 --> J3 --> J4 --> J5
+    end
+
+    subgraph "Cost Optimization Metrics"
+        K1["Storage Cost per GB
+        Target: <$0.01/GB/month"]
+
+        K2["Archive Percentage
+        Target: >60% in IA/Glacier"]
+
+        K3["Lifecycle Rule Coverage
+        Target: 100% of buckets"]
+
+        K4["Incomplete Upload Waste
+        Target: <1% of storage"]
+    end
+
+    style A1 fill:#4a90e2,color:#fff
+    style A2 fill:#4a90e2,color:#fff
+    style A3 fill:#4a90e2,color:#fff
+    style A4 fill:#4a90e2,color:#fff
+    style B1 fill:#ff6b6b,color:#fff
+    style B2 fill:#ffd93d,color:#000
+    style B3 fill:#50e3c2,color:#000
+    style B4 fill:#7ed321,color:#fff
+    style B5 fill:#4a90e2,color:#fff
+    style B6 fill:#bd10e0,color:#fff
+    style G3 fill:#7ed321,color:#fff
+    style I1 fill:#50e3c2,color:#000
+    style I2 fill:#50e3c2,color:#000
+    style I3 fill:#50e3c2,color:#000

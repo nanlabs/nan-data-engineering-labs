@@ -1,0 +1,30 @@
+# Events Ingestion Lambda Requirements
+
+# AWS SDK
+boto3>=1.26.0
+botocore>=1.29.0
+
+# Data Processing
+pandas>=1.5.0
+numpy>=1.23.0
+
+# Parquet Support
+pyarrow>=10.0.0
+
+# Encoding Detection
+chardet>=5.0.0
+
+# Date/Time Utilities
+python-dateutil>=2.8.2
+
+# Testing
+pytest>=7.2.0
+pytest-mock>=3.10.0
+moto>=4.0.0
+
+# Type Checking
+mypy>=0.991
+
+# Linting
+pylint>=2.15.0
+flake8>=6.0.0

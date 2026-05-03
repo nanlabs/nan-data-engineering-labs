@@ -1,0 +1,283 @@
+graph TB
+    %% ========================================================================
+    %% HIGH-LEVEL ARCHITECTURE: REAL-TIME ANALYTICS PLATFORM
+    %% ========================================================================
+    %% This diagram shows the complete system architecture for a real-time
+    %% rideshare analytics platform processing events from multiple sources
+    %% ========================================================================
+
+    %% Event Sources Layer
+    subgraph EventSources["🌍 Event Sources"]
+        direction TB
+        MobileApp["📱 Mobile App<br/>User Requests<br/>~10K concurrent users"]
+        DriverApp["🚗 Driver App<br/>Location Updates<br/>~5K active drivers"]
+        PaymentSystem["💳 Payment System<br/>Transaction Events<br/>~3K payments/min"]
+        RatingSystem["⭐ Rating System<br/>Review Events<br/>~2K ratings/min"]
+    end
+
+    %% Ingestion Layer
+    subgraph IngestionLayer["📥 Ingestion Layer - Kinesis Data Streams"]
+        direction TB
+
+        subgraph RideStream["Rides Stream"]
+            RideKinesis["Kinesis: rides_stream<br/>Shards: 2<br/>Retention: 24h<br/>Encryption: KMS"]
+            RideThroughput["Throughput:<br/>20K events/sec<br/>20 MB/sec"]
+        end
+
+        subgraph LocationStream["Locations Stream"]
+            LocationKinesis["Kinesis: locations_stream<br/>Shards: 2<br/>Retention: 24h<br/>Encryption: KMS"]
+            LocationThroughput["Throughput:<br/>25K events/sec<br/>15 MB/sec"]
+        end
+
+        subgraph PaymentStream["Payments Stream"]
+            PaymentKinesis["Kinesis: payments_stream<br/>Shards: 1<br/>Retention: 24h<br/>Encryption: KMS"]
+            PaymentThroughput["Throughput:<br/>3K events/sec<br/>3 MB/sec"]
+        end
+
+        subgraph RatingStream["Ratings Stream"]
+            RatingKinesis["Kinesis: ratings_stream<br/>Shards: 1<br/>Retention: 24h<br/>Encryption: KMS"]
+            RatingThroughput["Throughput:<br/>2K events/sec<br/>1 MB/sec"]
+        end
+    end
+
+    %% Real-Time Processing Layer
+    subgraph ProcessingLayer["⚡ Real-Time Processing Layer"]
+        direction TB
+
+        subgraph LambdaProcessors["Lambda Processors"]
+            RideProcessor["λ Ride Processor<br/>Memory: 512 MB<br/>Timeout: 60s<br/>Batch: 100<br/>Parallelization: 10"]
+            LocationProcessor["λ Location Processor<br/>Memory: 512 MB<br/>Timeout: 60s<br/>Batch: 100<br/>Parallelization: 10"]
+            PaymentProcessor["λ Payment Processor<br/>Memory: 512 MB<br/>Timeout: 60s<br/>Batch: 100<br/>Parallelization: 10"]
+            RatingProcessor["λ Rating Processor<br/>Memory: 512 MB<br/>Timeout: 60s<br/>Batch: 100<br/>Parallelization: 10"]
+        end
+
+        subgraph Analytics["Kinesis Data Analytics (Flink)"]
+            SurgePricing["📊 Surge Pricing App<br/>KPU: 1<br/>SQL: Windowed aggregation<br/>Window: 5 min tumbling"]
+            RealTimeMetrics["📈 Real-Time Metrics App<br/>KPU: 1<br/>SQL: Rolling aggregates<br/>Window: 1 min sliding"]
+            HotSpots["🌡️ Hot Spots App<br/>KPU: 1<br/>SQL: Geospatial clustering<br/>Window: 10 min session"]
+        end
+
+        subgraph ErrorHandling["Error Handling"]
+            DLQ["☠️ Dead Letter Queue<br/>SQS<br/>Retention: 14 days"]
+            ErrorProcessor["λ Error Processor<br/>Retry logic<br/>Alert on threshold"]
+        end
+    end
+
+    %% Storage Layer
+    subgraph StorageLayer["💾 Storage Layer"]
+        direction TB
+
+        subgraph HotStorage["Hot Storage - DynamoDB"]
+            RidesTable["📋 rides_state<br/>PK: ride_id<br/>GSI: status-timestamp<br/>TTL: 7 days<br/>Billing: PAY_PER_REQUEST"]
+            DriversTable["🚗 driver_availability<br/>PK: driver_id<br/>GSI: location<br/>Stream: ENABLED<br/>Billing: PAY_PER_REQUEST"]
+            MetricsTable["📊 aggregated_metrics<br/>PK: metric_name<br/>SK: timestamp<br/>TTL: 30 days<br/>Billing: PAY_PER_REQUEST"]
+        end
+
+        subgraph ColdStorage["Cold Storage - S3"]
+            StreamArchive["🗄️ streaming-archive<br/>Partitioning: year/month/day/hour<br/>Format: Parquet<br/>Lifecycle: Glacier after 90 days"]
+            AnalyticsOutput["📂 analytics-output<br/>Aggregated results<br/>QuickSight source<br/>Format: Parquet"]
+            KinesisOutput["📁 kinesis-analytics-output<br/>Flink application results<br/>Format: JSON/Parquet"]
+        end
+
+        subgraph CDC["Change Data Capture"]
+            RidesStream_["DynamoDB Stream<br/>rides_state"]
+            DriversStream_["DynamoDB Stream<br/>driver_availability"]
+            MetricsStream_["DynamoDB Stream<br/>aggregated_metrics"]
+        end
+    end
+
+    %% Orchestration Layer
+    subgraph OrchestrationLayer["🎼 Orchestration Layer"]
+        direction TB
+
+        subgraph StepFunctions["Step Functions"]
+            DailyAggregation["📅 Daily Aggregation<br/>Schedule: 0 0 * * *<br/>Steps: Extract→Transform→Load<br/>Duration: ~30 min"]
+            WeeklyReporting["📊 Weekly Reporting<br/>Schedule: 0 0 * * 0<br/>Steps: Aggregate→Report→Notify<br/>Duration: ~1 hour"]
+        end
+
+        subgraph EventBridge["EventBridge"]
+            CronRules["⏰ Cron Rules<br/>daily-aggregation-rule<br/>weekly-reporting-rule"]
+            EventRules["📮 Event Rules<br/>dynamodb-stream-rule<br/>error-notification-rule"]
+        end
+
+        subgraph Glue["AWS Glue"]
+            GlueJobs["🔄 ETL Jobs<br/>historical-batch-processing<br/>data-quality-checks<br/>Format: Parquet"]
+            GlueCatalog["📚 Data Catalog<br/>rides_archive table<br/>locations_archive table<br/>payments_archive table"]
+        end
+    end
+
+    %% Analytics & Visualization Layer
+    subgraph VisualizationLayer["📊 Analytics & Visualization Layer"]
+        direction TB
+
+        subgraph QuickSight["Amazon QuickSight"]
+            Dashboards["📈 Dashboards<br/>- Real-Time Ride Monitoring<br/>- Driver Performance<br/>- Revenue Analytics<br/>- Customer Satisfaction"]
+            SPICE["⚡ SPICE Engine<br/>In-memory cache<br/>Auto-refresh: every 5 min"]
+            Datasets["📊 Datasets<br/>- rides_current (DynamoDB)<br/>- rides_historical (Athena)<br/>- aggregated_metrics"]
+        end
+
+        subgraph Athena["Amazon Athena"]
+            AthenaQueries["🔍 SQL Queries<br/>Historical analysis<br/>Ad-hoc exploration<br/>Cost optimization queries"]
+            QueryResult["📁 Query Results<br/>s3://athena-results/<br/>Lifecycle: 90 days"]
+        end
+    end
+
+    %% Monitoring & Observability Layer
+    subgraph MonitoringLayer["🔍 Monitoring & Observability"]
+        direction TB
+
+        subgraph CloudWatch["CloudWatch"]
+            Metrics["📊 Metrics<br/>- Lambda invocations/errors<br/>- Kinesis throughput/latency<br/>- DynamoDB read/write units<br/>- Custom business metrics"]
+            Logs["📝 Logs<br/>- Lambda logs (7 days)<br/>- Kinesis logs (30 days)<br/>- Application logs<br/>- Structured JSON"]
+            Alarms["🚨 Alarms<br/>- Error rate > 5%<br/>- Latency > 1 second<br/>- Kinesis iterator age > 60s<br/>- DynamoDB throttling"]
+        end
+
+        subgraph SNS["SNS Notifications"]
+            AlertTopics["📧 Alert Topics<br/>- critical-alerts<br/>- warning-alerts<br/>- info-notifications"]
+            Subscriptions["📨 Subscriptions<br/>- Email<br/>- Slack webhook<br/>- PagerDuty"]
+        end
+
+        subgraph XRay["AWS X-Ray"]
+            Tracing["🔎 Distributed Tracing<br/>End-to-end request tracking<br/>Performance bottlenecks<br/>Error analysis"]
+            ServiceMap["🗺️ Service Map<br/>Component dependencies<br/>Latency visualization"]
+        end
+    end
+
+    %% Security & Compliance Layer
+    subgraph SecurityLayer["🔐 Security & Compliance"]
+        direction TB
+
+        IAM["🔑 IAM Roles & Policies<br/>- lambda_kinesis_role<br/>- analytics_role<br/>- step_functions_role<br/>Principle: Least Privilege"]
+        KMS["🔒 KMS Encryption<br/>- Customer managed keys<br/>- Automatic key rotation<br/>- Audit logging"]
+        VPC["🌐 VPC Configuration<br/>- Private subnets<br/>- VPC endpoints<br/>- Security groups<br/>- NACLs"]
+        CloudTrail["📜 CloudTrail<br/>API call logging<br/>Compliance auditing<br/>Security analysis"]
+        Secrets["🔐 Secrets Manager<br/>API keys<br/>Database credentials<br/>Third-party tokens"]
+    end
+
+    %% Data Flow Connections - Event Sources to Ingestion
+    MobileApp -->|"POST /rides<br/>ride_requested<br/>ride_started<br/>ride_completed"| RideKinesis
+    DriverApp -->|"PUT /location<br/>GPS coordinates<br/>Every 5 seconds<br/>GeoJSON"| LocationKinesis
+    PaymentSystem -->|"POST /payments<br/>payment_initiated<br/>payment_completed<br/>payment_failed"| PaymentKinesis
+    RatingSystem -->|"POST /ratings<br/>driver_rating<br/>ride_rating<br/>1-5 stars"| RatingKinesis
+
+    %% Data Flow Connections - Ingestion to Processing
+    RideKinesis -->|"Event Source Mapping<br/>Batch: 100 records<br/>MaxAge: 60s"| RideProcessor
+    LocationKinesis -->|"Event Source Mapping<br/>Batch: 100 records<br/>MaxAge: 30s"| LocationProcessor
+    PaymentKinesis -->|"Event Source Mapping<br/>Batch: 100 records<br/>MaxAge: 60s"| PaymentProcessor
+    RatingKinesis -->|"Event Source Mapping<br/>Batch: 100 records<br/>MaxAge: 60s"| RatingProcessor
+
+    %% Data Flow Connections - Processing to Analytics
+    RideKinesis -->|"Continuous SQL<br/>SELECT * FROM rides"| SurgePricing
+    LocationKinesis -->|"Continuous SQL<br/>Tumbling window"| HotSpots
+    RideKinesis -->|"Continuous SQL<br/>Sliding window"| RealTimeMetrics
+
+    %% Data Flow Connections - Processing to Storage
+    RideProcessor -->|"PutItem<br/>UpdateItem<br/>Conditional writes"| RidesTable
+    LocationProcessor -->|"PutItem<br/>Geohash indexing"| DriversTable
+    PaymentProcessor -->|"TransactWriteItems<br/>ACID guarantees"| RidesTable
+    RatingProcessor -->|"UpdateItem<br/>Atomic counters"| RidesTable
+
+    %% Data Flow Connections - Processing to Archive
+    RideProcessor -->|"PutObject<br/>Partitioned by date<br/>Parquet format"| StreamArchive
+    LocationProcessor -->|"PutObject<br/>Compressed<br/>Columnar"| StreamArchive
+    PaymentProcessor -->|"PutObject<br/>Encrypted<br/>Audit trail"| StreamArchive
+    RatingProcessor -->|"PutObject<br/>Aggregated<br/>Daily"| StreamArchive
+
+    %% Data Flow Connections - Analytics Output
+    SurgePricing -->|"Flink output<br/>Surge multipliers<br/>JSON"| KinesisOutput
+    RealTimeMetrics -->|"Flink output<br/>Aggregated metrics<br/>Parquet"| AnalyticsOutput
+    HotSpots -->|"Flink output<br/>Hot zones<br/>GeoJSON"| KinesisOutput
+
+    %% Data Flow Connections - CDC to Archive
+    RidesTable -->|"DynamoDB Stream<br/>NEW_AND_OLD_IMAGES"| RidesStream_
+    DriversTable -->|"DynamoDB Stream<br/>NEW_AND_OLD_IMAGES"| DriversStream_
+    MetricsTable -->|"DynamoDB Stream<br/>KEYS_ONLY"| MetricsStream_
+
+    RidesStream_ -->|"Lambda trigger<br/>Archive changes"| StreamArchive
+    DriversStream_ -->|"Lambda trigger<br/>State transitions"| StreamArchive
+
+    %% Data Flow Connections - Error Handling
+    RideProcessor -.->|"On error<br/>Retry 3x"| DLQ
+    LocationProcessor -.->|"On error<br/>Retry 3x"| DLQ
+    PaymentProcessor -.->|"On error<br/>Retry 3x"| DLQ
+    RatingProcessor -.->|"On error<br/>Retry 3x"| DLQ
+
+    DLQ -->|"SQS trigger<br/>Manual inspection"| ErrorProcessor
+    ErrorProcessor -->|"Publish alert<br/>Critical errors"| AlertTopics
+
+    %% Data Flow Connections - Orchestration
+    EventBridge -->|"Cron: daily<br/>StartExecution"| DailyAggregation
+    EventBridge -->|"Cron: weekly<br/>StartExecution"| WeeklyReporting
+
+    DailyAggregation -->|"InvokeFunction<br/>Pass parameters"| GlueJobs
+    WeeklyReporting -->|"InvokeFunction<br/>Date range"| GlueJobs
+
+    GlueJobs -->|"SELECT * FROM<br/>Partition pruning"| GlueCatalog
+    GlueCatalog -->|"Table metadata<br/>Schema evolution"| StreamArchive
+    GlueJobs -->|"PutObject<br/>Aggregated results"| AnalyticsOutput
+
+    %% Data Flow Connections - Visualization
+    RidesTable -->|"PartiQL queries<br/>Real-time data"| Datasets
+    MetricsTable -->|"GetItem<br/>Latest metrics"| Datasets
+    StreamArchive -->|"Athena SQL<br/>Historical data"| AthenaQueries
+    AnalyticsOutput -->|"S3 manifest<br/>Incremental refresh"| Datasets
+
+    AthenaQueries -->|"Query results<br/>CSV/Parquet"| QueryResult
+    QueryResult -->|"Import dataset<br/>Scheduled refresh"| Datasets
+
+    Datasets -->|"Load to SPICE<br/>Optimize performance"| SPICE
+    SPICE -->|"Fast queries<br/>Interactive viz"| Dashboards
+
+    %% Data Flow Connections - Monitoring
+    RideProcessor -->|"PutMetricData<br/>Custom metrics"| Metrics
+    LocationProcessor -->|"PutMetricData<br/>Processing time"| Metrics
+    PaymentProcessor -->|"PutMetricData<br/>Success rate"| Metrics
+    RatingProcessor -->|"PutMetricData<br/>Event count"| Metrics
+
+    RideProcessor -->|"console.log<br/>Structured JSON"| Logs
+    LocationProcessor -->|"console.log<br/>Error traces"| Logs
+    PaymentProcessor -->|"console.log<br/>Audit events"| Logs
+    RatingProcessor -->|"console.log<br/>Debug info"| Logs
+
+    Metrics -->|"Threshold breach<br/>>=3 datapoints"| Alarms
+    Alarms -->|"Publish message<br/>SNS notification"| AlertTopics
+
+    RideProcessor -->|"X-Ray SDK<br/>Trace segments"| Tracing
+    LocationProcessor -->|"X-Ray SDK<br/>Subsegments"| Tracing
+    Tracing -->|"Aggregate traces<br/>Service graph"| ServiceMap
+
+    %% Security Connections
+    IAM -.->|"Assume role<br/>Permissions"| RideProcessor
+    IAM -.->|"Assume role<br/>Permissions"| LocationProcessor
+    IAM -.->|"Assume role<br/>Permissions"| SurgePricing
+    IAM -.->|"Assume role<br/>Permissions"| DailyAggregation
+
+    KMS -.->|"Encrypt/Decrypt<br/>Data keys"| RideKinesis
+    KMS -.->|"Encrypt/Decrypt<br/>At rest"| RidesTable
+    KMS -.->|"Encrypt/Decrypt<br/>SSE-KMS"| StreamArchive
+
+    CloudTrail -.->|"Monitor API calls<br/>Audit trail"| IAM
+    CloudTrail -.->|"Monitor API calls<br/>Security analysis"| KMS
+
+    Secrets -.->|"GetSecretValue<br/>Rotation"| PaymentProcessor
+
+    %% Styling
+    classDef eventSource fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef kinesis fill:#ff9800,stroke:#e65100,stroke-width:3px
+    classDef lambda fill:#ff6f00,stroke:#e65100,stroke-width:2px
+    classDef analytics fill:#9c27b0,stroke:#4a148c,stroke-width:2px
+    classDef storage fill:#4caf50,stroke:#1b5e20,stroke-width:2px
+    classDef orchestration fill:#2196f3,stroke:#0d47a1,stroke-width:2px
+    classDef visualization fill:#00bcd4,stroke:#006064,stroke-width:2px
+    classDef monitoring fill:#f44336,stroke:#b71c1c,stroke-width:2px
+    classDef security fill:#607d8b,stroke:#263238,stroke-width:2px
+
+    class MobileApp,DriverApp,PaymentSystem,RatingSystem eventSource
+    class RideKinesis,LocationKinesis,PaymentKinesis,RatingKinesis kinesis
+    class RideProcessor,LocationProcessor,PaymentProcessor,RatingProcessor,ErrorProcessor lambda
+    class SurgePricing,RealTimeMetrics,HotSpots analytics
+    class RidesTable,DriversTable,MetricsTable,StreamArchive,AnalyticsOutput,KinesisOutput storage
+    class DailyAggregation,WeeklyReporting,CronRules,EventRules,GlueJobs,GlueCatalog orchestration
+    class Dashboards,SPICE,Datasets,AthenaQueries visualization
+    class Metrics,Logs,Alarms,AlertTopics,Tracing,ServiceMap monitoring
+    class IAM,KMS,VPC,CloudTrail,Secrets security

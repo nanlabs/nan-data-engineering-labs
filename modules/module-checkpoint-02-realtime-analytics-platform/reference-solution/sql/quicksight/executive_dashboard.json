@@ -1,0 +1,940 @@
+{
+  "TemplateId": "executive-dashboard-v1",
+  "Name": "Executive Analytics Dashboard",
+  "Description": "High-level executive dashboard with strategic KPIs, growth metrics, forecasts, and city performance analysis",
+  "Version": {
+    "Status": "CREATION_SUCCESSFUL",
+    "VersionNumber": 1,
+    "CreatedTime": "2026-03-09T00:00:00Z"
+  },
+  "AwsAccountId": "${AWS_ACCOUNT_ID}",
+  "DataSetReferences": [
+    {
+      "DataSetPlaceholder": "ExecutiveMetricsDataSet",
+      "DataSetArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:dataset/executive-metrics",
+      "DataSource": {
+        "Type": "ATHENA",
+        "Arn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:datasource/executive-athena",
+        "ConnectionProperties": {
+          "Database": "ride_analytics",
+          "Catalog": "AwsDataCatalog",
+          "WorkGroup": "primary"
+        }
+      },
+      "ImportMode": "SPICE",
+      "RefreshSchedule": {
+        "ScheduleId": "executive-daily-refresh",
+        "ScheduleFrequency": {
+          "Interval": "DAILY",
+          "TimeOfTheDay": "06:00",
+          "RefreshType": "FULL_REFRESH"
+        },
+        "ScheduleArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:dataset/executive-metrics/refresh-schedule/daily",
+        "StartAfterDateTime": "2026-03-09T06:00:00Z"
+      },
+      "CustomSql": {
+        "DataSourceArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:datasource/executive-athena",
+        "Name": "ExecutiveMetricsQuery",
+        "SqlQuery": "WITH daily_metrics AS (SELECT date_trunc('day', timestamp) as day, city, COUNT(DISTINCT passenger_id) as active_users, COUNT(*) as total_rides, SUM(fare) as revenue, AVG(rating) as avg_rating, COUNT(DISTINCT CASE WHEN status = 'completed' THEN ride_id END) as completed_rides, COUNT(DISTINCT CASE WHEN status = 'cancelled' THEN ride_id END) as cancelled_rides FROM rides WHERE timestamp >= date_add('month', -6, current_timestamp) GROUP BY date_trunc('day', timestamp), city), user_retention AS (SELECT day, city, COUNT(DISTINCT passenger_id) as returning_users FROM rides r1 WHERE EXISTS (SELECT 1 FROM rides r2 WHERE r2.passenger_id = r1.passenger_id AND date_trunc('day', r2.timestamp) < date_trunc('day', r1.timestamp) AND r2.timestamp >= date_add('month', -6, current_timestamp)) AND timestamp >= date_add('month', -6, current_timestamp) GROUP BY date_trunc('day', timestamp), city) SELECT dm.day, dm.city, dm.active_users, dm.total_rides, dm.revenue, dm.avg_rating, dm.completed_rides, dm.cancelled_rides, COALESCE(ur.returning_users, 0) as returning_users, CAST(COALESCE(ur.returning_users, 0) AS DOUBLE) / NULLIF(dm.active_users, 0) as retention_rate FROM daily_metrics dm LEFT JOIN user_retention ur ON dm.day = ur.day AND dm.city = ur.city ORDER BY dm.day DESC, dm.city"
+      },
+      "Columns": [
+        {
+          "Name": "day",
+          "Type": "DATETIME"
+        },
+        {
+          "Name": "city",
+          "Type": "STRING"
+        },
+        {
+          "Name": "active_users",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "total_rides",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "revenue",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "avg_rating",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "completed_rides",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "cancelled_rides",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "returning_users",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "retention_rate",
+          "Type": "DECIMAL"
+        }
+      ]
+    }
+  ],
+  "Sheets": [
+    {
+      "SheetId": "executive-overview-sheet",
+      "Name": "Executive Overview",
+      "Visuals": [
+        {
+          "VisualId": "wau-kpi",
+          "Type": "KPI",
+          "Title": "Weekly Active Users",
+          "Subtitle": "Last 7 days",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "wau_value",
+                  "Column": {
+                    "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                    "ColumnName": "active_users"
+                  },
+                  "AggregationFunction": {
+                    "SumAggregation": {}
+                  }
+                }
+              }
+            ],
+            "TargetValues": [
+              {
+                "ConstantValue": 100000
+              }
+            ],
+            "TrendGroups": [
+              {
+                "DateDimension": {
+                  "FieldId": "day_trend",
+                  "Column": {
+                    "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                    "ColumnName": "day"
+                  },
+                  "DateGranularity": "WEEK"
+                }
+              }
+            ]
+          },
+          "ConditionalFormatting": {
+            "ConditionalFormattingOptions": [
+              {
+                "PrimaryValue": {
+                  "TextColor": {
+                    "Solid": {
+                      "Expression": "IF({wau_value} >= 100000, '#00A355', IF({wau_value} >= 75000, '#FFB81C', '#D32F2F'))"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "Layout": {
+            "LayoutId": "exec-layout-1",
+            "Position": {
+              "X": 0,
+              "Y": 0,
+              "Width": 6,
+              "Height": 4
+            }
+          }
+        },
+        {
+          "VisualId": "total-revenue-kpi",
+          "Type": "KPI",
+          "Title": "Total Revenue",
+          "Subtitle": "Last 30 days",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "revenue_value",
+                  "Column": {
+                    "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                    "ColumnName": "revenue"
+                  },
+                  "AggregationFunction": {
+                    "SumAggregation": {}
+                  },
+                  "FormatConfiguration": {
+                    "NumberFormatConfiguration": {
+                      "FormatString": "$#,##0"
+                    }
+                  }
+                }
+              }
+            ],
+            "TargetValues": [
+              {
+                "ConstantValue": 1500000
+              }
+            ],
+            "TrendGroups": [
+              {
+                "DateDimension": {
+                  "FieldId": "revenue_trend",
+                  "Column": {
+                    "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                    "ColumnName": "day"
+                  },
+                  "DateGranularity": "MONTH"
+                }
+              }
+            ]
+          },
+          "Layout": {
+            "LayoutId": "exec-layout-2",
+            "Position": {
+              "X": 6,
+              "Y": 0,
+              "Width": 6,
+              "Height": 4
+            }
+          }
+        },
+        {
+          "VisualId": "mom-growth-kpi",
+          "Type": "KPI",
+          "Title": "MoM Growth",
+          "Subtitle": "Revenue growth rate",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "growth_value",
+                  "Column": {
+                    "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                    "ColumnName": "revenue"
+                  },
+                  "AggregationFunction": {
+                    "PercentileAggregation": {
+                      "PercentileValue": 50
+                    }
+                  },
+                  "FormatConfiguration": {
+                    "NumberFormatConfiguration": {
+                      "FormatString": "0.0%"
+                    }
+                  }
+                }
+              }
+            ],
+            "TargetValues": [
+              {
+                "ConstantValue": 0.15
+              }
+            ]
+          },
+          "Layout": {
+            "LayoutId": "exec-layout-3",
+            "Position": {
+              "X": 12,
+              "Y": 0,
+              "Width": 6,
+              "Height": 4
+            }
+          }
+        },
+        {
+          "VisualId": "retention-rate-kpi",
+          "Type": "KPI",
+          "Title": "User Retention Rate",
+          "Subtitle": "Returning users percentage",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "retention_value",
+                  "Column": {
+                    "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                    "ColumnName": "retention_rate"
+                  },
+                  "AggregationFunction": {
+                    "AverageAggregation": {}
+                  },
+                  "FormatConfiguration": {
+                    "NumberFormatConfiguration": {
+                      "FormatString": "0.0%"
+                    }
+                  }
+                }
+              }
+            ],
+            "TargetValues": [
+              {
+                "ConstantValue": 0.60
+              }
+            ]
+          },
+          "ConditionalFormatting": {
+            "ConditionalFormattingOptions": [
+              {
+                "PrimaryValue": {
+                  "TextColor": {
+                    "Solid": {
+                      "Expression": "IF({retention_value} >= 0.60, '#00A355', IF({retention_value} >= 0.45, '#FFB81C', '#D32F2F'))"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "Layout": {
+            "LayoutId": "exec-layout-4",
+            "Position": {
+              "X": 18,
+              "Y": 0,
+              "Width": 6,
+              "Height": 4
+            }
+          }
+        },
+        {
+          "VisualId": "revenue-trend-chart",
+          "Type": "LineChart",
+          "Title": "Revenue Trend Analysis",
+          "Subtitle": "6-month revenue progression with forecast",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "LineChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "DateDimension": {
+                    "FieldId": "day_category",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "day"
+                    },
+                    "DateGranularity": "WEEK"
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "revenue_line",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "revenue"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "ChartConfiguration": {
+            "LineChartConfiguration": {
+              "Legend": {
+                "Visibility": "VISIBLE",
+                "Position": "BOTTOM"
+              },
+              "DataLabels": {
+                "Visibility": "HIDDEN"
+              },
+              "Type": "LINE",
+              "ForecastConfigurations": [
+                {
+                  "ForecastProperties": {
+                    "PeriodsForward": 4,
+                    "PeriodsBackward": 0,
+                    "UpperBoundary": null,
+                    "LowerBoundary": null,
+                    "PredictionInterval": 95,
+                    "Seasonality": "AUTOMATIC"
+                  },
+                  "Scenario": "WHAT_IF_SCENARIO"
+                }
+              ],
+              "TrendLines": [
+                {
+                  "TrendLineType": "LINEAR"
+                }
+              ]
+            }
+          },
+          "Layout": {
+            "LayoutId": "exec-layout-5",
+            "Position": {
+              "X": 0,
+              "Y": 4,
+              "Width": 16,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "user-growth-chart",
+          "Type": "AreaChart",
+          "Title": "User Growth",
+          "Subtitle": "Active vs Returning users",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "AreaChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "DateDimension": {
+                    "FieldId": "user_day",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "day"
+                    },
+                    "DateGranularity": "DAY"
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "active_users_area",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "active_users"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                },
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "returning_users_area",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "returning_users"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "ChartConfiguration": {
+            "AreaChartConfiguration": {
+              "Legend": {
+                "Visibility": "VISIBLE",
+                "Position": "RIGHT"
+              },
+              "DataLabels": {
+                "Visibility": "HIDDEN"
+              }
+            }
+          },
+          "Layout": {
+            "LayoutId": "exec-layout-6",
+            "Position": {
+              "X": 16,
+              "Y": 4,
+              "Width": 8,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "top-cities-revenue",
+          "Type": "BarChart",
+          "Title": "Top Cities by Revenue",
+          "Subtitle": "Last 30 days performance",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "BarChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_category",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "city_revenue",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "revenue"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    },
+                    "FormatConfiguration": {
+                      "NumberFormatConfiguration": {
+                        "FormatString": "$#,##0"
+                      }
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "ChartConfiguration": {
+            "BarChartConfiguration": {
+              "Orientation": "HORIZONTAL",
+              "Legend": {
+                "Visibility": "HIDDEN"
+              },
+              "DataLabels": {
+                "Visibility": "VISIBLE"
+              },
+              "SortConfiguration": {
+                "CategorySort": [
+                  {
+                    "FieldSort": {
+                      "FieldId": "city_revenue",
+                      "Direction": "DESC"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "Layout": {
+            "LayoutId": "exec-layout-7",
+            "Position": {
+              "X": 0,
+              "Y": 12,
+              "Width": 8,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "completion-rate-gauge",
+          "Type": "GaugeChart",
+          "Title": "Ride Completion Rate",
+          "Subtitle": "Success metric",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "GaugeChartAggregatedFieldWells": {
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "completion_rate",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "completed_rides"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "TargetValues": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "total_rides_target",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "total_rides"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "ChartConfiguration": {
+            "GaugeChartConfiguration": {
+              "DataLabels": {
+                "Visibility": "VISIBLE"
+              },
+              "GaugeChartOptions": {
+                "PrimaryValueDisplayType": "ACTUAL",
+                "Arc": {
+                  "ArcAngle": 180
+                },
+                "ArcAxis": {
+                  "Range": {
+                    "Min": 0,
+                    "Max": 100
+                  }
+                }
+              }
+            }
+          },
+          "Layout": {
+            "LayoutId": "exec-layout-8",
+            "Position": {
+              "X": 8,
+              "Y": 12,
+              "Width": 8,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "retention-heatmap",
+          "Type": "HeatMap",
+          "Title": "Retention Rate by City",
+          "Subtitle": "Weekly retention patterns",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "HeatMapAggregatedFieldWells": {
+              "Rows": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_row",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ],
+              "Columns": [
+                {
+                  "DateDimension": {
+                    "FieldId": "week_column",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "day"
+                    },
+                    "DateGranularity": "WEEK"
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "retention_heatmap",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "retention_rate"
+                    },
+                    "AggregationFunction": {
+                      "AverageAggregation": {}
+                    },
+                    "FormatConfiguration": {
+                      "NumberFormatConfiguration": {
+                        "FormatString": "0.0%"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "ChartConfiguration": {
+            "HeatMapConfiguration": {
+              "Legend": {
+                "Visibility": "VISIBLE"
+              },
+              "DataLabels": {
+                "Visibility": "VISIBLE"
+              },
+              "ColorScale": {
+                "ColorFillType": "GRADIENT",
+                "Colors": [
+                  {
+                    "Color": "#D32F2F"
+                  },
+                  {
+                    "Color": "#FFB81C"
+                  },
+                  {
+                    "Color": "#00A355"
+                  }
+                ]
+              }
+            }
+          },
+          "Layout": {
+            "LayoutId": "exec-layout-9",
+            "Position": {
+              "X": 16,
+              "Y": 12,
+              "Width": 8,
+              "Height": 8
+            }
+          }
+        }
+      ],
+      "Layouts": [
+        {
+          "LayoutId": "executive-main-layout",
+          "LayoutName": "Executive Overview Layout",
+          "Configuration": {
+            "GridLayout": {
+              "CanvasSizeOptions": {
+                "ScreenCanvasSizeOptions": {
+                  "ResizeOption": "RESPONSIVE"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "SheetId": "city-performance-sheet",
+      "Name": "City Performance",
+      "Visuals": [
+        {
+          "VisualId": "city-comparison-table",
+          "Type": "PivotTable",
+          "Title": "City Performance Matrix",
+          "Subtitle": "Comprehensive metrics by city",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "PivotTableAggregatedFieldWells": {
+              "Rows": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_row_pivot",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ],
+              "Columns": [],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "active_users_pivot",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "active_users"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                },
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "revenue_pivot",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "revenue"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                },
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "rides_pivot",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "total_rides"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                },
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "rating_pivot",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "avg_rating"
+                    },
+                    "AggregationFunction": {
+                      "AverageAggregation": {}
+                    }
+                  }
+                },
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "retention_pivot",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "retention_rate"
+                    },
+                    "AggregationFunction": {
+                      "AverageAggregation": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "Layout": {
+            "LayoutId": "city-layout-1",
+            "Position": {
+              "X": 0,
+              "Y": 0,
+              "Width": 24,
+              "Height": 10
+            }
+          }
+        },
+        {
+          "VisualId": "city-growth-comparison",
+          "Type": "ComboChart",
+          "Title": "City Revenue & User Growth",
+          "Subtitle": "Comparative performance trends",
+          "DataSetIdentifier": "ExecutiveMetricsDataSet",
+          "FieldWells": {
+            "ComboChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "DateDimension": {
+                    "FieldId": "week_cat",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "day"
+                    },
+                    "DateGranularity": "WEEK"
+                  }
+                }
+              ],
+              "BarValues": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "revenue_bar_city",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "revenue"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "LineValues": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "users_line_city",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "active_users"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "Colors": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_color",
+                    "Column": {
+                      "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "Layout": {
+            "LayoutId": "city-layout-2",
+            "Position": {
+              "X": 0,
+              "Y": 10,
+              "Width": 24,
+              "Height": 10
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "FilterGroups": [
+    {
+      "FilterGroupId": "date-filter-executive",
+      "Filters": [
+        {
+          "FilterId": "date-range-exec",
+          "FilterName": "Time Period",
+          "FilterType": "TIME_RANGE_FILTER",
+          "Column": {
+            "DataSetIdentifier": "ExecutiveMetricsDataSet",
+            "ColumnName": "day"
+          },
+          "TimeRangeFilter": {
+            "FilterId": "date-range-exec",
+            "Column": {
+              "DataSetIdentifier": "ExecutiveMetricsDataSet",
+              "ColumnName": "day"
+            },
+            "IncludeMinimum": true,
+            "IncludeMaximum": true,
+            "RangeMinimumValue": {
+              "RollingDate": {
+                "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                "Expression": "date_add('month', -6, current_timestamp)"
+              }
+            },
+            "RangeMaximumValue": {
+              "RollingDate": {
+                "DataSetIdentifier": "ExecutiveMetricsDataSet",
+                "Expression": "current_timestamp"
+              }
+            },
+            "NullOption": "NON_NULLS_ONLY"
+          }
+        }
+      ],
+      "ScopeConfiguration": {
+        "AllSheets": {}
+      }
+    }
+  ],
+  "Parameters": [
+    {
+      "Name": "TargetWAU",
+      "ValueType": "INTEGER",
+      "DefaultValues": {
+        "IntegerStaticValues": [100000]
+      }
+    },
+    {
+      "Name": "TargetMonthlyRevenue",
+      "ValueType": "DECIMAL",
+      "DefaultValues": {
+        "DecimalStaticValues": [1500000.0]
+      }
+    },
+    {
+      "Name": "TargetRetentionRate",
+      "ValueType": "DECIMAL",
+      "DefaultValues": {
+        "DecimalStaticValues": [0.60]
+      }
+    }
+  ],
+  "ThemeArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:theme/MIDNIGHT",
+  "Permissions": [
+    {
+      "Principal": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:group/default/Executives",
+      "Actions": [
+        "quicksight:DescribeDashboard",
+        "quicksight:ListDashboardVersions",
+        "quicksight:QueryDashboard"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+graph TB
+    %% IAM Security Architecture - Identity & Access Management
+
+    subgraph "Identity Sources"
+        IS1[Corporate SAML IdP<br/>Active Directory]:::identity
+        IS2[Social Login<br/>Google/Facebook]:::identity
+        IS3[AWS IAM Users<br/>Root/Service Accounts]:::identity
+    end
+
+    subgraph "Identity Federation"
+        FED1[AWS Cognito<br/>User Pool]:::cognito
+        FED2[SAML 2.0<br/>AssumeRoleWithSAML]:::cognito
+        FED3[OIDC<br/>AssumeRoleWithWebIdentity]:::cognito
+    end
+
+    IS1 --> FED2
+    IS2 --> FED3
+    IS3 --> FED1
+
+    subgraph "IAM Roles & Policies"
+        ROLE1[Data Engineer Role<br/>Trust Policy]:::role
+        ROLE2[Data Scientist Role<br/>Read-Only Policy]:::role
+        ROLE3[Data Analyst Role<br/>Athena + QuickSight]:::role
+        ROLE4[Service Role<br/>Glue Job Execution]:::role
+    end
+
+    FED1 --> ROLE1
+    FED2 --> ROLE2
+    FED3 --> ROLE3
+
+    subgraph "Permission Boundaries"
+        PB1[Maximum Permissions<br/>Cannot exceed boundary]:::boundary
+        PB2["Allowed:<br/>• S3 read/write<br/>• Glue catalog access<br/>• Athena queries"]:::boundary
+        PB3["Denied:<br/>• IAM modifications<br/>• Delete S3 buckets<br/>• KMS key deletion"]:::boundary
+    end
+
+    ROLE1 --> PB1
+    ROLE2 --> PB1
+    ROLE3 --> PB1
+    PB1 --> PB2
+    PB1 --> PB3
+
+    subgraph "Service Control Policies (SCPs)"
+        SCP1[Organization Root<br/>Master Account]:::scp
+        SCP2["Deny Actions:<br/>• Leave Organization<br/>• Disable CloudTrail<br/>• Disable GuardDuty"]:::scp
+        SCP3["Enforce Tags:<br/>• Project<br/>• Environment<br/>• Owner"]:::scp
+    end
+
+    PB1 --> SCP1
+    SCP1 --> SCP2
+    SCP1 --> SCP3
+
+    subgraph "Resource-Based Policies"
+        RBP1[S3 Bucket Policy<br/>data-lake-prod]:::resource
+        RBP2["Allow:<br/>• GetObject (VPC Endpoint only)<br/>• PutObject (specific roles)"]:::resource
+        RBP3["Deny:<br/>• Public access<br/>• Unencrypted uploads<br/>• Cross-region replication"]:::resource
+    end
+
+    ROLE1 --> RBP1
+    RBP1 --> RBP2
+    RBP1 --> RBP3
+
+    subgraph "Cross-Account Access"
+        XA1[Account A: Dev<br/>111122223333]:::xaccount
+        XA2[Account B: Prod<br/>444455556666]:::xaccount
+        XA3["AssumeRole:<br/>arn:aws:iam::444455556666:role/DataAccessRole"]:::xaccount
+    end
+
+    ROLE1 -.->|"Assume role"| XA1
+    XA1 --> XA2
+    XA2 --> XA3
+
+    subgraph "Access Examples"
+        EX1["Data Engineer:<br/>• S3 read/write (all)<br/>• Glue job creation<br/>• Athena queries<br/>• KMS encrypt/decrypt"]:::example
+
+        EX2["Data Scientist:<br/>• S3 read-only<br/>• Athena queries<br/>• SageMaker notebooks<br/>• No delete permissions"]:::example
+
+        EX3["Data Analyst:<br/>• Athena queries (specific databases)<br/>• QuickSight dashboards<br/>• No raw data access<br/>• Masked PII only"]:::example
+    end
+
+    ROLE1 --> EX1
+    ROLE2 --> EX2
+    ROLE3 --> EX3
+
+    %% Styling
+    classDef identity fill:#4A90E2,stroke:#2E6FA8,stroke-width:3px,color:#fff
+    classDef cognito fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+    classDef role fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff
+    classDef boundary fill:#E67E22,stroke:#CA6F1E,stroke-width:3px,color:#fff
+    classDef scp fill:#16A085,stroke:#138D75,stroke-width:3px,color:#fff
+    classDef resource fill:#F39C12,stroke:#E67E22,stroke-width:3px,color:#fff
+    classDef xaccount fill:#7ED321,stroke:#5A9E18,stroke-width:3px,color:#fff
+    classDef example fill:#1ABC9C,stroke:#17A589,stroke-width:2px,color:#fff,text-align:left
+
+    %% IAM Policy Evaluation Logic
+    subgraph "Policy Evaluation Order"
+        EVAL["1. Explicit DENY → Block<br/>2. Service Control Policy (SCP)<br/>3. Permission Boundary<br/>4. Identity-based Policy<br/>5. Resource-based Policy<br/>6. Session Policy<br/><br/>Default: DENY (unless explicit ALLOW)"]:::eval
+    end
+
+    classDef eval fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff,text-align:left
+
+    %% Best Practices
+    subgraph "IAM Best Practices"
+        BP["✅ Use roles instead of users<br/>✅ Enable MFA for privileged access<br/>✅ Rotate credentials regularly (90 days)<br/>✅ Least privilege (grant minimum needed)<br/>✅ Use permission boundaries<br/>✅ Audit with Access Analyzer<br/>✅ Enforce tagging policies<br/>❌ Never share credentials<br/>❌ Avoid long-term access keys<br/>❌ No wildcard (*) in production"]:::bp
+    end
+
+    classDef bp fill:#27AE60,stroke:#229954,stroke-width:2px,color:#fff,text-align:left

@@ -1,0 +1,123 @@
+{
+  "type": "record",
+  "name": "EventStoreRecord",
+  "namespace": "com.training.clouddata.module18.eventstore",
+  "doc": "Schema for persisting events in Event Store (DynamoDB/Kafka)",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string",
+      "doc": "Globally unique event identifier (UUID)"
+    },
+    {
+      "name": "aggregate_id",
+      "type": "string",
+      "doc": "Aggregate root identifier (e.g., ORD_123456)"
+    },
+    {
+      "name": "aggregate_type",
+      "type": {
+        "type": "enum",
+        "name": "AggregateType",
+        "symbols": [
+          "Order",
+          "Customer",
+          "Product",
+          "Payment",
+          "Shipment"
+        ]
+      },
+      "doc": "Type of aggregate"
+    },
+    {
+      "name": "event_type",
+      "type": "string",
+      "doc": "Event type name (e.g., OrderPlaced, PaymentProcessed)"
+    },
+    {
+      "name": "timestamp",
+      "type": "long",
+      "logicalType": "timestamp-millis",
+      "doc": "Event timestamp (milliseconds since epoch)"
+    },
+    {
+      "name": "version",
+      "type": "int",
+      "doc": "Aggregate version number (1-based, for optimistic concurrency control)"
+    },
+    {
+      "name": "payload",
+      "type": "bytes",
+      "doc": "Event payload (JSON serialized as bytes for flexibility)"
+    },
+    {
+      "name": "metadata",
+      "type": {
+        "type": "record",
+        "name": "EventMetadata",
+        "fields": [
+          {
+            "name": "user_id",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "User who triggered the event"
+          },
+          {
+            "name": "correlation_id",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "Correlation ID for tracing requests across services"
+          },
+          {
+            "name": "causation_id",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "ID of the event/command that caused this event"
+          },
+          {
+            "name": "ip_address",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "Client IP address"
+          },
+          {
+            "name": "user_agent",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "Client user agent"
+          },
+          {
+            "name": "source_service",
+            "type": ["null", "string"],
+            "default": null,
+            "doc": "Service that generated the event"
+          }
+        ]
+      },
+      "doc": "Event metadata for tracing and auditing"
+    },
+    {
+      "name": "partition_key",
+      "type": "string",
+      "doc": "Partition key for distributed storage (typically aggregate_id)"
+    },
+    {
+      "name": "schema_version",
+      "type": "int",
+      "default": 1,
+      "doc": "Schema version for evolution tracking"
+    },
+    {
+      "name": "is_snapshot",
+      "type": "boolean",
+      "default": false,
+      "doc": "Flag indicating if this is a snapshot event (for performance optimization)"
+    },
+    {
+      "name": "snapshot_version",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Aggregate version at snapshot time (null for regular events)"
+    }
+  ]
+}

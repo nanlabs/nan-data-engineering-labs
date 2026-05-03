@@ -1,0 +1,271 @@
+[
+  {
+    "event_type": "page_view",
+    "timestamp": "2024-03-08T10:15:30.123Z",
+    "user_id": "user_001",
+    "session_id": "sess_abc123",
+    "page_url": "/products/laptop-15",
+    "referrer": "https://google.com/search",
+    "device": "desktop",
+    "browser": "Chrome",
+    "country": "US",
+    "city": "New York"
+  },
+  {
+    "event_type": "click",
+    "timestamp": "2024-03-08T10:15:45.456Z",
+    "user_id": "user_001",
+    "session_id": "sess_abc123",
+    "element_id": "add_to_cart_btn",
+    "page_url": "/products/laptop-15",
+    "product_id": "prod_1001",
+    "product_name": "Laptop 15inch Pro",
+    "product_price": 1299.99
+  },
+  {
+    "event_type": "add_to_cart",
+    "timestamp": "2024-03-08T10:15:46.789Z",
+    "user_id": "user_001",
+    "session_id": "sess_abc123",
+    "product_id": "prod_1001",
+    "product_name": "Laptop 15inch Pro",
+    "product_price": 1299.99,
+    "quantity": 1,
+    "cart_value": 1299.99
+  },
+  {
+    "event_type": "purchase",
+    "timestamp": "2024-03-08T10:18:22.123Z",
+    "user_id": "user_001",
+    "session_id": "sess_abc123",
+    "order_id": "order_50001",
+    "total_amount": 1299.99,
+    "payment_method": "credit_card",
+    "items": [
+      {
+        "product_id": "prod_1001",
+        "product_name": "Laptop 15inch Pro",
+        "quantity": 1,
+        "price": 1299.99
+      }
+    ]
+  },
+  {
+    "event_type": "sensor_reading",
+    "timestamp": "2024-03-08T10:20:00.000Z",
+    "device_id": "sensor_003",
+    "sensor_type": "temperature",
+    "value": 22.5,
+    "unit": "celsius",
+    "location": "warehouse_a",
+    "rack_id": "rack_12"
+  },
+  {
+    "event_type": "sensor_reading",
+    "timestamp": "2024-03-08T10:20:01.000Z",
+    "device_id": "sensor_004",
+    "sensor_type": "humidity",
+    "value": 45.2,
+    "unit": "percent",
+    "location": "warehouse_a",
+    "rack_id": "rack_12"
+  },
+  {
+    "event_type": "sensor_reading",
+    "timestamp": "2024-03-08T10:20:02.000Z",
+    "device_id": "sensor_005",
+    "sensor_type": "pressure",
+    "value": 1013.25,
+    "unit": "hPa",
+    "location": "warehouse_b",
+    "rack_id": "rack_05"
+  },
+  {
+    "event_type": "stock_trade",
+    "timestamp": "2024-03-08T10:25:15.123Z",
+    "symbol": "AAPL",
+    "trade_id": "trade_7001",
+    "price": 175.50,
+    "volume": 100,
+    "trade_type": "buy",
+    "exchange": "NASDAQ",
+    "trader_id": "trader_042"
+  },
+  {
+    "event_type": "stock_trade",
+    "timestamp": "2024-03-08T10:25:15.456Z",
+    "symbol": "GOOGL",
+    "trade_id": "trade_7002",
+    "price": 2850.75,
+    "volume": 50,
+    "trade_type": "sell",
+    "exchange": "NASDAQ",
+    "trader_id": "trader_103"
+  },
+  {
+    "event_type": "stock_trade",
+    "timestamp": "2024-03-08T10:25:16.789Z",
+    "symbol": "MSFT",
+    "trade_id": "trade_7003",
+    "price": 410.25,
+    "volume": 200,
+    "trade_type": "buy",
+    "exchange": "NASDAQ",
+    "trader_id": "trader_042"
+  },
+  {
+    "event_type": "login",
+    "timestamp": "2024-03-08T10:30:00.000Z",
+    "user_id": "user_999",
+    "session_id": "sess_sus001",
+    "ip_address": "203.0.113.45",
+    "country": "RU",
+    "city": "Moscow",
+    "device": "mobile",
+    "success": true
+  },
+  {
+    "event_type": "payment_attempt",
+    "timestamp": "2024-03-08T10:30:30.000Z",
+    "user_id": "user_999",
+    "session_id": "sess_sus001",
+    "transaction_id": "txn_fraud_001",
+    "amount": 999.99,
+    "currency": "USD",
+    "payment_method": "credit_card",
+    "card_last4": "1234",
+    "success": false,
+    "failure_reason": "insufficient_funds"
+  },
+  {
+    "event_type": "payment_attempt",
+    "timestamp": "2024-03-08T10:31:00.000Z",
+    "user_id": "user_999",
+    "session_id": "sess_sus001",
+    "transaction_id": "txn_fraud_002",
+    "amount": 899.99,
+    "currency": "USD",
+    "payment_method": "credit_card",
+    "card_last4": "1234",
+    "success": false,
+    "failure_reason": "invalid_cvv"
+  },
+  {
+    "event_type": "payment_attempt",
+    "timestamp": "2024-03-08T10:31:30.000Z",
+    "user_id": "user_999",
+    "session_id": "sess_sus001",
+    "transaction_id": "txn_fraud_003",
+    "amount": 799.99,
+    "currency": "USD",
+    "payment_method": "credit_card",
+    "card_last4": "5678",
+    "success": true,
+    "merchant_id": "merchant_555"
+  },
+  {
+    "event_type": "anomaly_detected",
+    "timestamp": "2024-03-08T10:32:00.000Z",
+    "anomaly_type": "fraud_pattern",
+    "severity": "high",
+    "related_user": "user_999",
+    "related_session": "sess_sus001",
+    "pattern": "rapid_failed_payments_then_success",
+    "confidence": 0.95
+  },
+  {
+    "event_type": "page_view",
+    "timestamp": "2024-03-08T10:35:00.000Z",
+    "user_id": "user_002",
+    "session_id": "sess_xyz789",
+    "page_url": "/products/smartphone-pro",
+    "referrer": "https://facebook.com/ads",
+    "device": "mobile",
+    "browser": "Safari",
+    "country": "CA",
+    "city": "Toronto"
+  },
+  {
+    "event_type": "click",
+    "timestamp": "2024-03-08T10:35:15.000Z",
+    "user_id": "user_002",
+    "session_id": "sess_xyz789",
+    "element_id": "product_image",
+    "page_url": "/products/smartphone-pro",
+    "product_id": "prod_2001",
+    "product_name": "Smartphone Pro Max",
+    "product_price": 999.99
+  },
+  {
+    "event_type": "sensor_reading",
+    "timestamp": "2024-03-08T10:40:00.000Z",
+    "device_id": "sensor_101",
+    "sensor_type": "temperature",
+    "value": 85.5,
+    "unit": "celsius",
+    "location": "data_center_1",
+    "rack_id": "rack_a1",
+    "alert": "high_temperature"
+  },
+  {
+    "event_type": "sensor_reading",
+    "timestamp": "2024-03-08T10:40:01.000Z",
+    "device_id": "sensor_101",
+    "sensor_type": "temperature",
+    "value": 87.2,
+    "unit": "celsius",
+    "location": "data_center_1",
+    "rack_id": "rack_a1",
+    "alert": "high_temperature"
+  },
+  {
+    "event_type": "sensor_reading",
+    "timestamp": "2024-03-08T10:40:02.000Z",
+    "device_id": "sensor_101",
+    "sensor_type": "temperature",
+    "value": 89.8,
+    "unit": "celsius",
+    "location": "data_center_1",
+    "rack_id": "rack_a1",
+    "alert": "critical_temperature"
+  },
+  {
+    "event_type": "stock_trade",
+    "timestamp": "2024-03-08T10:45:00.000Z",
+    "symbol": "TSLA",
+    "trade_id": "trade_8001",
+    "price": 185.25,
+    "volume": 500,
+    "trade_type": "buy",
+    "exchange": "NASDAQ",
+    "trader_id": "trader_201"
+  },
+  {
+    "event_type": "add_to_cart",
+    "timestamp": "2024-03-08T10:50:00.000Z",
+    "user_id": "user_003",
+    "session_id": "sess_def456",
+    "product_id": "prod_3001",
+    "product_name": "Wireless Headphones",
+    "product_price": 199.99,
+    "quantity": 2,
+    "cart_value": 399.98
+  },
+  {
+    "event_type": "purchase",
+    "timestamp": "2024-03-08T10:52:30.000Z",
+    "user_id": "user_003",
+    "session_id": "sess_def456",
+    "order_id": "order_50002",
+    "total_amount": 399.98,
+    "payment_method": "paypal",
+    "items": [
+      {
+        "product_id": "prod_3001",
+        "product_name": "Wireless Headphones",
+        "quantity": 2,
+        "price": 199.99
+      }
+    ]
+  }
+]

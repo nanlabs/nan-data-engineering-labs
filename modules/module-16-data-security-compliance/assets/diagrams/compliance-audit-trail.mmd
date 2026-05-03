@@ -1,0 +1,132 @@
+graph TB
+    %% Compliance & Audit Trail - Logging and Regulatory Compliance
+
+    subgraph "AWS Services Activity"
+        ACT1[IAM User Actions<br/>AssumeRole, GetObject]:::activity
+        ACT2[Data Access<br/>S3, Redshift, Athena]:::activity
+        ACT3[Configuration Changes<br/>Security Groups, IAM]:::activity
+        ACT4[API Calls<br/>All AWS services]:::activity
+    end
+
+    subgraph "AWS CloudTrail"
+        CT1[Management Events<br/>Who did what?]:::cloudtrail
+        CT2[Data Events<br/>S3 GetObject, PutObject]:::cloudtrail
+        CT3[Insights Events<br/>Unusual activity detection]:::cloudtrail
+        CT4[Event History<br/>90 days (default)]:::cloudtrail
+    end
+
+    ACT1 --> CT1
+    ACT2 --> CT2
+    ACT3 --> CT1
+    ACT4 --> CT1
+
+    CT1 --> CT4
+    CT2 --> CT4
+    CT3 --> CT4
+
+    subgraph "Long-Term Storage"
+        S3_1[S3 Bucket<br/>cloudtrail-logs]:::storage
+        S3_2[Lifecycle Policy<br/>Glacier after 90 days]:::storage
+        S3_3[Retention<br/>7 years (compliance)]:::storage
+        S3_4[Encryption<br/>SSE-KMS]:::storage
+    end
+
+    CT4 --> S3_1
+    S3_1 --> S3_2
+    S3_2 --> S3_3
+    S3_3 --> S3_4
+
+    subgraph "AWS Config"
+        CFG1[Resource Configuration<br/>Track changes]:::config
+        CFG2[Compliance Rules<br/>CIS Benchmarks]:::config
+        CFG3[Configuration Snapshots<br/>Point-in-time state]:::config
+        CFG4[Remediation Actions<br/>Auto-fix violations]:::config
+    end
+
+    ACT3 --> CFG1
+    CFG1 --> CFG2
+    CFG2 --> CFG3
+    CFG3 --> CFG4
+
+    subgraph "Compliance Frameworks"
+        COMP1[GDPR<br/>Data Protection Regulation]:::framework
+        COMP2[HIPAA<br/>Healthcare Privacy]:::framework
+        COMP3[SOC 2<br/>Trust Service Criteria]:::framework
+        COMP4[PCI-DSS<br/>Payment Card Security]:::framework
+        COMP5[ISO 27001<br/>Information Security]:::framework
+    end
+
+    CFG2 --> COMP1
+    CFG2 --> COMP2
+    CFG2 --> COMP3
+    CFG2 --> COMP4
+    CFG2 --> COMP5
+
+    subgraph "Compliance Checks"
+        CHECK1["GDPR Requirements:<br/>• Data encryption<br/>• Access logging<br/>• Right to erasure<br/>• Data portability<br/>• Breach notification (72h)"]:::check
+
+        CHECK2["HIPAA Requirements:<br/>• PHI encryption<br/>• Access controls<br/>• Audit logs (6 years)<br/>• BAA with AWS<br/>• HITRUST certification"]:::check
+
+        CHECK3["PCI-DSS Requirements:<br/>• Cardholder data encryption<br/>• Network segmentation<br/>• Access control (least privilege)<br/>• Log monitoring<br/>• Quarterly scans"]:::check
+    end
+
+    COMP1 --> CHECK1
+    COMP2 --> CHECK2
+    COMP4 --> CHECK3
+
+    subgraph "Automated Remediation"
+        REM1[EventBridge Rule<br/>Config rule violation]:::remediation
+        REM2[Lambda Function<br/>Fix non-compliant resource]:::remediation
+        REM3[SNS Notification<br/>Alert security team]:::remediation
+        REM4[Jira Ticket<br/>Track remediation]:::remediation
+    end
+
+    CFG4 --> REM1
+    REM1 --> REM2
+    REM1 --> REM3
+    REM2 --> REM4
+
+    subgraph "Audit Analysis"
+        AUD1[Athena Queries<br/>Analyze CloudTrail logs]:::audit
+        AUD2[QuickSight Dashboard<br/>Visual compliance reports]:::audit
+        AUD3[Anomaly Detection<br/>Unusual access patterns]:::audit
+    end
+
+    S3_1 --> AUD1
+    AUD1 --> AUD2
+    AUD1 --> AUD3
+
+    %% Styling
+    classDef activity fill:#4A90E2,stroke:#2E6FA8,stroke-width:3px,color:#fff
+    classDef cloudtrail fill:#FF9900,stroke:#CC7A00,stroke-width:3px,color:#fff
+    classDef storage fill:#27AE60,stroke:#229954,stroke-width:3px,color:#fff
+    classDef config fill:#3498DB,stroke:#2980B9,stroke-width:3px,color:#fff
+    classDef framework fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+    classDef check fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff,text-align:left
+    classDef remediation fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff
+    classDef audit fill:#1ABC9C,stroke:#17A589,stroke-width:3px,color:#fff
+
+    %% Sample Audit Queries
+    subgraph "Athena Audit Queries"
+        QUERY["-- Who accessed sensitive S3 bucket?<br/>SELECT useridentity.principalid, eventtime, sourceipaddress<br/>FROM cloudtrail_logs<br/>WHERE eventname IN ('GetObject', 'PutObject')<br/>  AND requestparameters LIKE '%sensitive-data%'<br/>  AND eventtime > current_date - interval '30' day;<br/><br/>-- Failed login attempts<br/>SELECT COUNT(*), useridentity.principalid<br/>FROM cloudtrail_logs<br/>WHERE eventname = 'ConsoleLogin'<br/>  AND errorcode = 'Failed authentication'<br/>GROUP BY useridentity.principalid<br/>HAVING COUNT(*) > 10;"]:::query
+    end
+
+    classDef query fill:#F39C12,stroke:#E67E22,stroke-width:2px,color:#fff,text-align:left
+
+    AUD1 --> QUERY
+
+    %% Compliance Reporting
+    subgraph "Compliance Reports"
+        REP["Daily Report:<br/>• Non-compliant resources<br/>• New violations<br/>• Remediation status<br/><br/>Monthly Report:<br/>• Compliance score<br/>• Trend analysis<br/>• Root cause analysis<br/><br/>Annual Audit:<br/>• Certification preparation<br/>• External auditor review<br/>• Evidence collection"]:::report
+    end
+
+    classDef report fill:#16A085,stroke:#138D75,stroke-width:2px,color:#fff,text-align:left
+
+    AUD2 --> REP
+
+    %% Cost & Retention
+    subgraph "Cost & Retention"
+        COST["CloudTrail Cost (per month):<br/>• Management events: $2/100K<br/>• Data events: $0.10/100K<br/>• Insights: $0.35/100K<br/><br/>Config Cost:<br/>• Configuration item: $0.003<br/>• Rule evaluation: $0.001<br/><br/>Storage (7-year retention):<br/>• S3 Standard: $0.023/GB<br/>• S3 Glacier: $0.004/GB<br/>• Total for 1 TB: $50/month"]:::cost
+    end
+
+    classDef cost fill:#E67E22,stroke:#CA6F1E,stroke-width:2px,color:#fff,text-align:left

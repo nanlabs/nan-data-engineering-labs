@@ -1,0 +1,118 @@
+graph TB
+    %% Polyglot Persistence - Multiple Database Types for Different Needs
+
+    subgraph "Application Layer"
+        APP1[Order Service<br/>Spring Boot]:::app
+        APP2[User Service<br/>Node.js]:::app
+        APP3[Analytics Service<br/>Python]:::app
+        APP4[Search Service<br/>Elasticsearch API]:::app
+    end
+
+    subgraph "Event Store - DynamoDB"
+        ES1[Event Log<br/>Append-only]:::dynamo
+        ES2[Partition Key: aggregate_id<br/>Sort Key: version]:::dynamo
+        ES3[Characteristics:<br/>• Single-digit ms latency<br/>• Unlimited scale<br/>• Pay per request]:::dynamo
+        ES4[Use Cases:<br/>• Event sourcing<br/>• Session store<br/>• Shopping cart]:::dynamo
+    end
+
+    subgraph "Operational Database - PostgreSQL"
+        PG1[Relational Tables<br/>ACID Transactions]:::postgres
+        PG2[Users, Products, Orders<br/>Foreign Keys]:::postgres
+        PG3[Characteristics:<br/>• Strong consistency<br/>• Complex joins<br/>• ACID guarantees]:::postgres
+        PG4[Use Cases:<br/>• Transactional data<br/>• Business logic<br/>• Referential integrity]:::postgres
+    end
+
+    subgraph "Cache Layer - ElastiCache Redis"
+        RC1[In-Memory KV Store<br/>Sub-millisecond]:::redis
+        RC2[Read Models<br/>Materialized Views]:::redis
+        RC3[Characteristics:<br/>• Ultra-fast reads<br/>• TTL expiration<br/>• Pub/Sub messaging]:::redis
+        RC4[Use Cases:<br/>• Session cache<br/>• Real-time leaderboards<br/>• API rate limiting]:::redis
+    end
+
+    subgraph "Analytics Warehouse - Redshift"
+        RS1[Columnar Storage<br/>Massively Parallel]:::redshift
+        RS2[Star Schema<br/>Fact + Dimension Tables]:::redshift
+        RS3[Characteristics:<br/>• Petabyte scale<br/>• Complex aggregations<br/>• SQL-based]:::redshift
+        RS4[Use Cases:<br/>• Business intelligence<br/>• Historical analysis<br/>• Data science queries]:::redshift
+    end
+
+    subgraph "Search Index - Elasticsearch"
+        EL1[Inverted Index<br/>Full-Text Search]:::elastic
+        EL2[Product Catalog<br/>Fuzzy Matching]:::elastic
+        EL3[Characteristics:<br/>• Fast text search<br/>• Faceted navigation<br/>• Relevance scoring]:::elastic
+        EL4[Use Cases:<br/>• Product search<br/>• Log analytics<br/>• Autocomplete]:::elastic
+    end
+
+    subgraph "Data Lake - S3"
+        S31[Object Storage<br/>Raw + Processed]:::s3
+        S32[Parquet + Avro<br/>Columnar Formats]:::s3
+        S33[Characteristics:<br/>• Unlimited scale<br/>• Low cost ($0.023/GB)<br/>• Athena queries]:::s3
+        S34[Use Cases:<br/>• Long-term storage<br/>• ML datasets<br/>• Compliance archives]:::s3
+    end
+
+    %% Application Connections
+    APP1 --> ES1
+    APP1 --> PG1
+    APP1 --> RC1
+
+    APP2 --> PG1
+    APP2 --> RC1
+
+    APP3 --> RS1
+    APP3 --> S31
+
+    APP4 --> EL1
+
+    %% Data Flow
+    ES1 -.->|"Stream CDC<br/>Kinesis"| RC1
+    ES1 -.->|"Batch ETL<br/>Glue"| RS1
+
+    PG1 -.->|"Real-time<br/>Debezium"| RC1
+    PG1 -.->|"Daily export<br/>S3"| S31
+
+    S31 -.->|"Glue ETL<br/>Transform"| RS1
+    S31 -.->|"Athena queries<br/>Ad-hoc"| RS1
+
+    RC1 -.->|"Search indexing<br/>Logstash"| EL1
+
+    %% Styling
+    classDef app fill:#3498DB,stroke:#2980B9,stroke-width:3px,color:#fff
+    classDef dynamo fill:#FF9900,stroke:#CC7A00,stroke-width:3px,color:#fff
+    classDef postgres fill:#336791,stroke:#2A5478,stroke-width:3px,color:#fff
+    classDef redis fill:#DC382D,stroke:#B02E24,stroke-width:3px,color:#fff
+    classDef redshift fill:#8C4FFF,stroke:#6D3ECC,stroke-width:3px,color:#fff
+    classDef elastic fill:#00BFB3,stroke:#009A8F,stroke-width:3px,color:#fff
+    classDef s3 fill:#569A31,stroke:#447827,stroke-width:3px,color:#fff
+
+    %% Database Selection Guide
+    subgraph "Database Selection Guide"
+        G1[Transaction? → PostgreSQL<br/>Simple KV? → DynamoDB<br/>Cache? → Redis<br/>Search? → Elasticsearch<br/>Analytics? → Redshift<br/>Archive? → S3]:::guide
+    end
+
+    classDef guide fill:#F39C12,stroke:#E67E22,stroke-width:2px,color:#fff
+
+    %% CAP Theorem
+    subgraph "CAP Theorem Trade-offs"
+        CAP1[PostgreSQL: CA<br/>Consistency + Availability]:::cap
+        CAP2[DynamoDB: AP<br/>Availability + Partition tolerance]:::cap
+        CAP3[Redis: CP<br/>Consistency + Partition tolerance]:::cap
+    end
+
+    classDef cap fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff
+
+    %% Performance Comparison
+    subgraph "Latency Comparison"
+        L1[Redis: <1ms]:::perf1
+        L2[DynamoDB: 1-10ms]:::perf2
+        L3[PostgreSQL: 10-100ms]:::perf3
+        L4[Elasticsearch: 50-200ms]:::perf4
+        L5[Redshift: 1-10s]:::perf5
+        L6[S3 Athena: 10-60s]:::perf6
+    end
+
+    classDef perf1 fill:#27AE60,stroke:#229954,stroke-width:2px,color:#fff
+    classDef perf2 fill:#2ECC71,stroke:#28B463,stroke-width:2px,color:#fff
+    classDef perf3 fill:#F39C12,stroke:#E67E22,stroke-width:2px,color:#fff
+    classDef perf4 fill:#E67E22,stroke:#D35400,stroke-width:2px,color:#fff
+    classDef perf5 fill:#E74C3C,stroke:#C0392B,stroke-width:2px,color:#fff
+    classDef perf6 fill:#C0392B,stroke:#A93226,stroke-width:2px,color:#fff

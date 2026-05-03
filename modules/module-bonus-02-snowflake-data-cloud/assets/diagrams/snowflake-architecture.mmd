@@ -1,0 +1,293 @@
+graph TB
+    %% ============================================================================
+    %% SNOWFLAKE THREE-LAYER ARCHITECTURE
+    %% ============================================================================
+    %% This diagram illustrates Snowflake's unique architecture with complete
+    %% separation of storage, compute, and cloud services layers.
+    %%
+    %% Key Concepts:
+    %% - Storage Layer: Efficient data organization with micro-partitions
+    %% - Compute Layer: Elastic virtual warehouses for query processing
+    %% - Cloud Services Layer: Metadata, security, optimization
+    %% ============================================================================
+
+    %% User Access Point
+    User[👤 User/Application]
+
+    %% ============================================================================
+    %% CLOUD SERVICES LAYER (Green) - Brain of Snowflake
+    %% ============================================================================
+    subgraph CloudServices["☁️ CLOUD SERVICES LAYER (Always-On, Serverless)"]
+        style CloudServices fill:#7ED321,stroke:#333,stroke-width:3px
+
+        %% Authentication & Authorization
+        subgraph Security["🔒 Security & Access Control"]
+            Auth[Authentication<br/>- Username/Password<br/>- Key Pair<br/>- OAuth<br/>- SAML/SSO]
+            Authz[Authorization<br/>- RBAC (Roles)<br/>- ABAC (Policies)<br/>- Row-Level Security<br/>- Column Masking]
+            Encrypt[Encryption<br/>- At Rest: AES-256<br/>- In Transit: TLS 1.2+<br/>- Key Management]
+        end
+
+        %% Query Processing Intelligence
+        subgraph QueryMgmt["⚙️ Query Management"]
+            Optimizer[Query Optimizer<br/>- Execution Plans<br/>- Cost Estimation<br/>- Partition Pruning<br/>- Join Optimization]
+            ResultCache[Result Cache<br/>- 24-hour retention<br/>- Instant results<br/>- No compute cost]
+            TxnMgr[Transaction Manager<br/>- ACID compliance<br/>- Snapshot Isolation<br/>- Multi-version Concurrency]
+        end
+
+        %% Metadata Intelligence
+        subgraph MetadataMgmt["📊 Metadata Management"]
+            MetaStore[(Metadata Store<br/>- Table schemas<br/>- Statistics<br/>- Partition info<br/>- Access history)]
+            InfoSchema[Information Schema<br/>- TABLES<br/>- COLUMNS<br/>- QUERY_HISTORY<br/>- WAREHOUSE_LOAD]
+            ChangeTracking[Change Tracking<br/>- Time Travel<br/>- Streams<br/>- Data Lineage]
+        end
+    end
+
+    %% ============================================================================
+    %% COMPUTE LAYER (Orange) - Processing Power
+    %% ============================================================================
+    subgraph ComputeLayer["🔥 COMPUTE LAYER (Virtual Warehouses - Pay per Second)"]
+        style ComputeLayer fill:#F5A623,stroke:#333,stroke-width:3px
+
+        %% Single-Cluster Warehouses
+        subgraph SingleCluster["Single-Cluster Warehouses"]
+            XSmall[X-Small<br/>💰 1 credit/hour<br/>💻 16 GB RAM<br/>⚡ 1 cluster]
+            Small[Small<br/>💰 2 credits/hour<br/>💻 32 GB RAM<br/>⚡ 1 cluster]
+            Medium[Medium<br/>💰 4 credits/hour<br/>💻 64 GB RAM<br/>⚡ 1 cluster]
+            Large[Large<br/>💰 8 credits/hour<br/>💻 128 GB RAM<br/>⚡ 1 cluster]
+            XLarge[X-Large<br/>💰 16 credits/hour<br/>💻 256 GB RAM<br/>⚡ 1 cluster]
+            XXLarge[2X-Large<br/>💰 32 credits/hour<br/>💻 512 GB RAM<br/>⚡ 1 cluster]
+            XXXL[3X-Large<br/>💰 64 credits/hour<br/>💻 1024 GB RAM<br/>⚡ 1 cluster]
+            XXXXL[4X-Large+<br/>💰 128+ credits/hour<br/>💻 2048+ GB RAM<br/>⚡ Up to 6X-Large]
+        end
+
+        %% Multi-Cluster Warehouse
+        subgraph MultiCluster["Multi-Cluster Warehouses (Auto-Scaling)"]
+            MC1["Cluster 1<br/>(Always On)"]
+            MC2["Cluster 2<br/>(Auto-Start)"]
+            MC3["Cluster 3<br/>(Auto-Start)"]
+            MCN["Cluster N<br/>(Up to 10)"]
+
+            LoadBalancer{Load Balancer<br/>Query Queue}
+
+            LoadBalancer --> MC1
+            LoadBalancer --> MC2
+            LoadBalancer --> MC3
+            LoadBalancer -.-> MCN
+        end
+
+        %% Warehouse Features
+        subgraph WHFeatures["Warehouse Features"]
+            AutoSuspend[⏸️ Auto-Suspend<br/>- Idle timeout: 60s-3600s<br/>- No compute cost when suspended<br/>- Storage always accessible]
+            AutoResume[▶️ Auto-Resume<br/>- Instant activation on query<br/>- Transparent to users<br/>- Cold start: ~5-10 seconds]
+            Isolation[🔒 Workload Isolation<br/>- Dedicated resources<br/>- No resource contention<br/>- Independent scaling]
+        end
+    end
+
+    %% ============================================================================
+    %% STORAGE LAYER (Blue) - Data Persistence
+    %% ============================================================================
+    subgraph StorageLayer["💾 STORAGE LAYER (Cloud-Native Object Storage)"]
+        style StorageLayer fill:#4A90E2,stroke:#333,stroke-width:3px
+
+        %% Data Organization
+        subgraph DataOrg["📦 Data Organization"]
+            Database1[(Database: SALES_DB)]
+            Schema1[(Schema: BRONZE)]
+            Schema2[(Schema: SILVER)]
+            Schema3[(Schema: GOLD)]
+
+            Database1 --> Schema1
+            Database1 --> Schema2
+            Database1 --> Schema3
+        end
+
+        %% Micro-partitions
+        subgraph MicroPartitions["⚡ Micro-partitions (Automatic)"]
+            MP1["Partition 1<br/>📊 50-500 MB compressed<br/>📈 16MB uncompressed avg<br/>🔢 Columnar format"]
+            MP2["Partition 2<br/>📊 Contains rows 100K-200K<br/>📋 Min/Max: 2023-01-01 to 2023-01-31"]
+            MP3["Partition 3<br/>📊 Bloom filters<br/>🔍 Fast lookups"]
+            MP4["Partition N<br/>📊 Immutable<br/>🔒 Copy-on-write"]
+
+            Schema1 --> MP1
+            Schema1 --> MP2
+            Schema1 --> MP3
+            Schema1 --> MP4
+        end
+
+        %% Metadata per Partition
+        subgraph PartitionMeta["📋 Partition Metadata (Automatic Clustering)"]
+            Meta1["Metadata Store:<br/>- Column min/max values<br/>- NULL counts<br/>- Distinct value estimates<br/>- Bloom filter indexes"]
+            Meta2["Pruning Benefits:<br/>- Skip irrelevant partitions<br/>- Reduce scan volume by 90%+<br/>- No indexes needed"]
+        end
+
+        %% Storage Features
+        subgraph StorageFeatures["Storage Features"]
+            Compression["🗜️ Compression<br/>- Columnar format<br/>- LZ4/Zstandard<br/>- 3-10x compression<br/>- Automatic optimization"]
+
+            TimeTravelStorage["⏰ Time Travel Storage<br/>- Standard: 1 day retention<br/>- Enterprise: 0-90 days<br/>- Fail-safe: +7 days<br/>- Storage cost applies"]
+
+            Cloning["📋 Zero-Copy Cloning<br/>- Instant metadata copy<br/>- No data duplication<br/>- Copy-on-write updates<br/>- Cost only for changes"]
+        end
+
+        %% Cloud Storage Backend
+        subgraph CloudStorage["☁️ Cloud Provider Backend"]
+            S3["AWS S3<br/>(Primary)"]
+            Azure["Azure Blob<br/>(Primary)"]
+            GCS["Google Cloud Storage<br/>(Primary)"]
+
+            S3 -.->|"Stores micro-partitions"| MP1
+            Azure -.->|"Stores micro-partitions"| MP2
+            GCS -.->|"Stores micro-partitions"| MP3
+        end
+    end
+
+    %% ============================================================================
+    %% CONNECTIONS BETWEEN LAYERS
+    %% ============================================================================
+
+    %% User to Cloud Services
+    User -->|"1. Connect & Authenticate"| Auth
+    Auth --> Authz
+    Authz -->|"2. Submit Query"| Optimizer
+
+    %% Cloud Services to Compute
+    Optimizer -->|"3. Generate Execution Plan"| XSmall
+    Optimizer -->|"3. Generate Execution Plan"| Medium
+    Optimizer -->|"3. Generate Execution Plan"| LoadBalancer
+
+    MetaStore <-->|"Partition Pruning Info"| Optimizer
+
+    %% Compute to Storage
+    XSmall <-->|"4. Read/Write Micro-partitions"| MP1
+    Medium <-->|"4. Read/Write Micro-partitions"| MP2
+    MC1 <-->|"4. Read/Write Micro-partitions"| MP3
+    MC2 <-->|"4. Read/Write Micro-partitions"| MP4
+
+    %% Results Back to User
+    XSmall -.->|"5. Query Results"| ResultCache
+    ResultCache -.->|"6. Cached Response (Free)"| User
+
+    %% Metadata Flow
+    MP1 -.->|"Partition Statistics"| MetaStore
+    MP2 -.->|"Partition Statistics"| MetaStore
+    MP3 -.->|"Partition Statistics"| MetaStore
+    MP4 -.->|"Partition Statistics"| MetaStore
+
+    %% Transaction Management
+    TxnMgr <--> MP1
+    TxnMgr <--> MP2
+
+    %% ============================================================================
+    %% ARCHITECTURE BENEFITS
+    %% ============================================================================
+    subgraph Benefits["✨ KEY ARCHITECTURE BENEFITS"]
+        style Benefits fill:#FFE5E5,stroke:#E74C3C,stroke-width:2px
+
+        Benefit1["💰 PAY FOR WHAT YOU USE<br/>- Storage billed separately ($/TB)<br/>- Compute billed per second<br/>- No idle compute costs<br/>- Credits never expire"]
+
+        Benefit2["⚡ ELASTIC SCALE<br/>- Scale up: Bigger warehouses<br/>- Scale out: More clusters<br/>- Auto-suspend/resume<br/>- Near-instant scaling"]
+
+        Benefit3["🔄 INDEPENDENT SCALING<br/>- Add compute without data copy<br/>- Run multiple warehouses<br/>- Isolate workloads<br/>- No resource contention"]
+
+        Benefit4["🛡️ ZERO ADMINISTRATION<br/>- No indexes to maintain<br/>- No vacuum/ANALYZE<br/>- Automatic clustering<br/>- Self-optimizing"]
+
+        Benefit5["🔒 ENTERPRISE SECURITY<br/>- End-to-end encryption<br/>- Network policies<br/>- Private connectivity<br/>- Compliance: SOC 2, HIPAA, PCI"]
+
+        Benefit6["🌐 MULTI-CLOUD READY<br/>- AWS, Azure, GCP<br/>- Cross-cloud replication<br/>- Data sharing across clouds<br/>- No vendor lock-in"]
+    end
+
+    %% ============================================================================
+    %% USAGE PATTERNS
+    %% ============================================================================
+    subgraph UsagePatterns["📈 COMMON USAGE PATTERNS"]
+        style UsagePatterns fill:#E8F4F8,stroke:#3498DB,stroke-width:2px
+
+        Pattern1["🔬 Development/Testing<br/>- Use X-Small warehouse<br/>- Auto-suspend after 5 minutes<br/>- Clone production data<br/>- Cost: ~$2-5/day"]
+
+        Pattern2["📊 BI Dashboards<br/>- Use Small/Medium warehouse<br/>- Leverage result cache<br/>- Auto-scaling for peak hours<br/>- Cost: ~$50-200/month"]
+
+        Pattern3["🏭 ETL/ELT Processing<br/>- Use Large/X-Large warehouse<br/>- Scale up for complex transforms<br/>- Auto-suspend between jobs<br/>- Cost: ~$500-2000/month"]
+
+        Pattern4["🔥 High-Concurrency Analytics<br/>- Multi-cluster warehouse<br/>- Economy mode auto-scaling<br/>- Separate warehouses by team<br/>- Cost: ~$2000-10000/month"]
+
+        Pattern5["🚀 Data Science/ML<br/>- Use X-Large+ warehouse<br/>- Dedicated compute resources<br/>- Integration with Snowpark<br/>- Cost: ~$1000-5000/month"]
+    end
+
+    %% ============================================================================
+    %% COST OPTIMIZATION TIPS
+    %% ============================================================================
+    subgraph CostTips["💡 COST OPTIMIZATION TIPS"]
+        style CostTips fill:#FFF9E6,stroke:#F39C12,stroke-width:2px
+
+        Tip1["✅ Set auto-suspend to 5-10 minutes (not hours)"]
+        Tip2["✅ Use result cache - it's free!"]
+        Tip3["✅ Start with X-Small, scale up as needed"]
+        Tip4["✅ Use clustering keys for large tables (>100GB)"]
+        Tip5["✅ Partition pruning saves 90%+ scan costs"]
+        Tip6["✅ Monitor with QUERY_HISTORY view"]
+        Tip7["✅ Use resource monitors to set spending limits"]
+        Tip8["✅ Compress data aggressively (columnar helps)"]
+    end
+
+    %% ============================================================================
+    %% NOTES
+    %% ============================================================================
+    %%
+    %% EXPLANATION OF KEY TERMS:
+    %%
+    %% 1. MICRO-PARTITIONS:
+    %%    - Snowflake's fundamental storage unit
+    %%    - Automatically created and managed (no user intervention)
+    %%    - Immutable: Updates create new partitions (copy-on-write)
+    %%    - Columnar format enables high compression and fast scans
+    %%    - Metadata includes min/max, bloom filters for pruning
+    %%
+    %% 2. VIRTUAL WAREHOUSES:
+    %%    - Compute clusters (EC2/VMs) that execute queries
+    %%    - Isolated: No sharing between warehouses
+    %%    - Sizes: X-Small (1 credit/hour) to 6X-Large (512 credits/hour)
+    %%    - Can run multiple warehouses on same data simultaneously
+    %%
+    %% 3. CLOUD SERVICES LAYER:
+    %%    - Always-on, serverless (included in 10% of compute cost)
+    %%    - Handles metadata, optimization, security, coordination
+    %%    - Shared across all warehouses
+    %%    - No direct user management required
+    %%
+    %% 4. SEPARATION OF STORAGE AND COMPUTE:
+    %%    - Traditional databases couple them (scale together, expensive)
+    %%    - Snowflake decouples: Scale independently
+    %%    - Benefit: Pay for storage 24/7, compute only when querying
+    %%    - Example: 10TB data, query 1 hour/day = $23/month storage + $2/day compute
+    %%               vs. traditional DB needing always-on instance = $500+/month
+    %%
+    %% 5. RESULT CACHE:
+    %%    - Stores exact query results for 24 hours
+    %%    - If query matches exactly (same SQL, same data), instant return
+    %%    - No warehouse needed, no cost
+    %%    - Invalidated when underlying data changes
+    %%
+    %% QUERY EXECUTION FLOW:
+    %% 1. User connects via JDBC/ODBC/Python connector
+    %% 2. Authentication through Cloud Services
+    %% 3. Query optimizer checks result cache (if hit, return immediately)
+    %% 4. If cache miss, optimizer generates execution plan
+    %% 5. Plan uses metadata to prune partitions (skip irrelevant data)
+    %% 6. Warehouse (compute) reads needed micro-partitions from storage
+    %% 7. Warehouse processes query (filter, join, aggregate)
+    %% 8. Results cached and returned to user
+    %% 9. Warehouse auto-suspends after idle timeout
+    %%
+    %% CREDIT COSTS (varies by region/cloud):
+    %% - On-Demand: $2-4 per credit
+    %% - X-Small: 1 credit/hour = $2-4/hour
+    %% - Large: 8 credits/hour = $16-32/hour
+    %% - Auto-suspend saves money: 10 min query on Large = ~$2.67
+    %%
+    %% STORAGE COSTS:
+    %% - Active data: $23-40/TB/month (compressed)
+    %% - Time Travel: +$23-40/TB/month (if 90-day retention)
+    %% - Fail-safe: +$23-40/TB/month (always 7 days)
+    %% - Total cost example: 1TB with 90-day time travel = ~$92/month
+    %%
+    %% ============================================================================

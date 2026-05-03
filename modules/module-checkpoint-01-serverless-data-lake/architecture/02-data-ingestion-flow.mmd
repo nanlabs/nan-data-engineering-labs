@@ -1,0 +1,484 @@
+```mermaid
+flowchart TB
+    %% ============================================================================
+    %% DATA INGESTION FLOW: CloudMart Serverless Data Lake
+    %% ============================================================================
+    %% This diagram details the complete ingestion pipeline from file arrival
+    %% through validation, processing, partitioning, and storage in Bronze zone.
+    %% Includes error handling, retry logic, and monitoring.
+    %% ============================================================================
+
+    %% Define Styles
+    classDef startStyle fill:#C8E6C9,stroke:#4CAF50,stroke-width:3px,color:#1B5E20
+    classDef processStyle fill:#BBDEFB,stroke:#2196F3,stroke-width:2px,color:#0D47A1
+    classDef decisionStyle fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px,color:#F57F17
+    classDef errorStyle fill:#FFCDD2,stroke:#F44336,stroke-width:2px,color:#B71C1C
+    classDef successStyle fill:#C5E1A5,stroke:#7CB342,stroke-width:2px,color:#33691E
+    classDef storageStyle fill:#FFE0B2,stroke:#FF9800,stroke-width:2px,color:#E65100
+    classDef monitorStyle fill:#B2DFDB,stroke:#009688,stroke-width:2px,color:#004D40
+
+    %% ============================================================================
+    %% DATA SOURCE UPLOAD
+    %% ============================================================================
+
+    Start([🚀 Data Source Upload<br/>════════════════<br/>Files arrive from:<br/>• Sales System<br/>• CRM<br/>• Product System<br/>• Web Analytics])
+
+    %% ============================================================================
+    %% S3 LANDING BUCKET
+    %% ============================================================================
+
+    subgraph LandingZone["📦 S3 LANDING ZONE"]
+        direction TB
+
+        LandingBucket["s3://cloudmart-landing/<br/>═══════════════════<br/>Structure:<br/>├─ sales/<br/>├─ customers/<br/>├─ products/<br/>└─ web-events/<br/><br/>Lifecycle: Auto-delete 7 days"]
+
+        S3EventConfig["⚙️ S3 Event Configuration<br/>───────────────────<br/>Event Type: s3:ObjectCreated:*<br/>Prefix Filter: Enabled<br/>Suffix Filter: .csv, .json, .parquet<br/>Destination: Lambda Function<br/>Batch Size: 1 (single file)"]
+    end
+
+    %% ============================================================================
+    %% EVENT TRIGGER
+    %% ============================================================================
+
+    S3Event["📨 S3 Event Notification<br/>═════════════════════<br/>{<br/>  'eventName': 'ObjectCreated:Put',<br/>  'bucket': 'cloudmart-landing',<br/>  'key': 'sales/2026/03/09/data.csv',<br/>  'size': 15728640,<br/>  'timestamp': '2026-03-09T10:30:00Z'<br/>}"]
+
+    %% ============================================================================
+    %% LAMBDA INGESTION FUNCTION
+    %% ============================================================================
+
+    subgraph LambdaFunction["⚡ LAMBDA INGESTION FUNCTION"]
+        direction TB
+
+        LambdaConfig["Configuration<br/>───────────────<br/>Runtime: Python 3.9<br/>Memory: 1024 MB<br/>Timeout: 300s<br/>Concurrency: 100<br/>Environment Variables:<br/>├─ BRONZE_BUCKET<br/>├─ ERROR_BUCKET<br/>└─ LOG_LEVEL"]
+
+        InitLambda["🔧 Initialize<br/>────────────<br/>• Load environment vars<br/>• Initialize S3 client<br/>• Setup logging<br/>• Start execution timer"]
+
+        ParseEvent["📋 Parse S3 Event<br/>─────────────────<br/>Extract:<br/>• Bucket name<br/>• Object key<br/>• File size<br/>• Event time<br/>• Request ID"]
+
+        ExtractMetadata["🔍 Extract File Metadata<br/>───────────────────────<br/>Parse from key:<br/>• Data source (sales/customers/etc)<br/>• Upload date<br/>• File format (.csv/.json/.parquet)<br/><br/>Validate key structure:<br/>  {source}/{year}/{month}/{day}/{filename}"]
+    end
+
+    %% ============================================================================
+    %% VALIDATION STAGE
+    %% ============================================================================
+
+    subgraph ValidationStage["✅ VALIDATION STAGE"]
+        direction TB
+
+        ValidateFormat["🎯 Validate File Format<br/>══════════════════════<br/>Check file extension:<br/>• CSV: .csv<br/>• JSON: .json<br/>• Parquet: .parquet<br/><br/>Verify MIME type:<br/>• text/csv<br/>• application/json<br/>• application/octet-stream"]
+
+        ValidateSize["📏 Validate File Size<br/>════════════════════<br/>Checks:<br/>• Min size: 1 KB<br/>• Max size: 100 MB<br/>• Empty file detection<br/><br/>Lambda memory check:<br/>• Available memory > file size * 3"]
+
+        ValidateSchema["📐 Validate Schema<br/>═══════════════════<br/>Read first 1000 rows<br/><br/>CSV:<br/>• Check header row<br/>• Verify required columns<br/>• Validate data types<br/><br/>JSON:<br/>• Parse structure<br/>• Check required fields<br/>• Validate nested objects<br/><br/>Parquet:<br/>• Read metadata<br/>• Check schema version"]
+
+        ValidateContent["🔎 Validate Content<br/>════════════════════<br/>Data Quality Checks:<br/>• No completely null rows<br/>• Key fields not empty<br/>• Date formats valid<br/>• Numeric ranges OK<br/>• No malicious content"]
+
+        CheckDuplicate["🔁 Check for Duplicates<br/>═══════════════════════<br/>Generate file hash (MD5)<br/><br/>Query DynamoDB:<br/>• Table: file-registry<br/>• Key: hash + source<br/>• Check last 24 hours<br/><br/>If duplicate:<br/>  Log and skip processing"]
+    end
+
+    %% ============================================================================
+    %% DECISION POINTS
+    %% ============================================================================
+
+    DecisionFormat{{"🔀 Format Valid?"}}
+    DecisionSize{{"🔀 Size Valid?"}}
+    DecisionSchema{{"🔀 Schema Valid?"}}
+    DecisionContent{{"🔀 Content Valid?"}}
+    DecisionDuplicate{{"🔀 Duplicate?"}}
+
+    %% ============================================================================
+    %% PROCESSING STAGE
+    %% ============================================================================
+
+    subgraph ProcessingStage["🔄 PROCESSING STAGE"]
+        direction TB
+
+        ReadFile["📖 Read Source File<br/>═════════════════════<br/>Download from Landing S3<br/><br/>Stream for large files:<br/>• Chunk size: 10 MB<br/>• Memory efficient<br/><br/>Parse data:<br/>• CSV → DataFrame<br/>• JSON → Dict/List<br/>• Parquet → DataFrame"]
+
+        EnrichMetadata["➕ Enrich Metadata<br/>═════════════════════<br/>Add audit columns:<br/>• ingestion_timestamp<br/>• source_system<br/>• file_name<br/>• file_size<br/>• processing_id (UUID)<br/>• data_lake_zone (bronze)<br/>• record_count<br/>• data_quality_score"]
+
+        DeterminePartition["📅 Determine Partition Path<br/>════════════════════════════<br/>Extract event date from:<br/>1. Event timestamp (preferred)<br/>2. File modification time<br/>3. Filename parsing<br/><br/>Generate partition:<br/>  year={YYYY}/month={MM}/day={DD}<br/><br/>Example:<br/>  year=2026/month=03/day=09/"]
+
+        ConvertFormat["🔄 Format Conversion<br/>════════════════════<br/>Standardize to Parquet:<br/>• CSV → Parquet<br/>• JSON → Parquet<br/>• Parquet → Keep as-is<br/><br/>Compression: Snappy<br/>Options:<br/>• schema consistency<br/>• preserve nulls<br/>• date/time normalization"]
+
+        GenerateFileName["📝 Generate Target Filename<br/>═══════════════════════════════<br/>Format:<br/>  {source}_{timestamp}_{uuid}.parquet<br/><br/>Example:<br/>  sales_20260309_103000_a4b2c.parquet<br/><br/>Ensures uniqueness<br/>Sortable by time<br/>Traceable to source"]
+    end
+
+    %% ============================================================================
+    %% BRONZE STORAGE
+    %% ============================================================================
+
+    subgraph BronzeStorage["🥉 BRONZE ZONE STORAGE"]
+        direction TB
+
+        WriteBronze["💾 Write to Bronze S3<br/>══════════════════════<br/>Target bucket:<br/>  s3://cloudmart-bronze/<br/><br/>Full path:<br/>  {source}/year={Y}/month={M}/day={D}/<br/>    {filename}.parquet<br/><br/>Options:<br/>• Server-side encryption (SSE-KMS)<br/>• Storage class: Standard<br/>• Metadata tags<br/>• Object ACL: Private"]
+
+        UpdateRegistry["📝 Update File Registry<br/>═══════════════════════════<br/>DynamoDB Table: file-registry<br/><br/>Record:<br/>  {<br/>    'file_hash': 'md5...',<br/>    'source_key': 's3://...',<br/>    'target_key': 's3://bronze/...',<br/>    'status': 'success',<br/>    'ingestion_time': '2026-03-09...',<br/>    'record_count': 15000,<br/>    'file_size': 15728640<br/>  }"]
+
+        BronzeSuccess["✅ Bronze Ingestion Complete<br/>═══════════════════════════════<br/>• File stored in Bronze<br/>• Registry updated<br/>• Metrics published<br/>• Ready for ETL processing"]
+    end
+
+    %% ============================================================================
+    %% ERROR HANDLING
+    %% ============================================================================
+
+    subgraph ErrorHandling["🚨 ERROR HANDLING"]
+        direction TB
+
+        CategorizeError["🏷️ Categorize Error<br/>════════════════════<br/>Categories:<br/>• INVALID_FORMAT<br/>• SIZE_VIOLATION<br/>• SCHEMA_MISMATCH<br/>• CONTENT_ERROR<br/>• DUPLICATE_FILE<br/>• PROCESSING_FAILURE<br/>• NETWORK_ERROR<br/>• PERMISSION_ERROR"]
+
+        LogError["📋 Log Error Details<br/>═══════════════════════<br/>CloudWatch Logs:<br/>• Error category<br/>• Full stack trace<br/>• File metadata<br/>• Validation results<br/>• Timestamp<br/>• Request ID<br/><br/>Log Level: ERROR"]
+
+        MoveToError["🗂️ Move to Error Bucket<br/>══════════════════════════<br/>Target:<br/>  s3://cloudmart-errors/<br/><br/>Path:<br/>  {error-category}/{date}/{filename}<br/><br/>Include error manifest:<br/>  {filename}_error.json<br/>    - error_type<br/>    - error_message<br/>    - original_location<br/>    - validation_report"]
+
+        CheckRetryable["🔁 Check if Retryable?<br/>════════════════════════<br/>Retryable errors:<br/>• Network timeout<br/>• S3 throttling<br/>• Temporary service issues<br/><br/>Non-retryable:<br/>• Schema mismatch<br/>• Invalid format<br/>• Content validation fail"]
+
+        RetryLogic["⏰ Retry with Backoff<br/>═══════════════════════<br/>Exponential backoff:<br/>• Retry 1: After 5 seconds<br/>• Retry 2: After 15 seconds<br/>• Retry 3: After 45 seconds<br/><br/>Max retries: 3<br/><br/>If still failing:<br/>  → Move to error bucket<br/>  → Send alert"]
+
+        SendAlert["📧 Send Alert<br/>═══════════════<br/>SNS Topic:<br/>  data-ingestion-errors<br/><br/>Recipients:<br/>• Data Engineering team<br/>• On-call engineer<br/><br/>Include:<br/>• Error summary<br/>• File details<br/>• S3 location<br/>• Action required"]
+    end
+
+    DecisionRetryable{{"🔀 Retryable<br/>Error?"}}
+    DecisionRetryCount{{"🔀 Retry<br/>Count < 3?"}}
+
+    %% ============================================================================
+    %% MONITORING & METRICS
+    %% ============================================================================
+
+    subgraph MonitoringMetrics["📊 MONITORING & METRICS"]
+        direction TB
+
+        PublishMetrics["📈 Publish CloudWatch Metrics<br/>═══════════════════════════════<br/>Standard Metrics:<br/>• Lambda Invocations<br/>• Lambda Duration<br/>• Lambda Errors<br/>• Lambda Concurrent Executions<br/><br/>Custom Metrics:<br/>• Files Processed (by source)<br/>• Files Failed (by error type)<br/>• Data Volume Ingested (bytes)<br/>• Record Count<br/>• Validation Success Rate<br/>• Average Processing Time<br/>• Duplicate Files Detected"]
+
+        UpdateDashboard["📺 Update CloudWatch Dashboard<br/>═════════════════════════════════<br/>Real-time widgets:<br/>• Ingestion rate (files/hour)<br/>• Error rate (percentage)<br/>• Processing latency (P50/P95/P99)<br/>• Data volume trend<br/>• Success vs failures<br/>• Cost per GB ingested"]
+
+        CheckThresholds["⚠️ Check Alarm Thresholds<br/>═══════════════════════════════<br/>Alarms configured:<br/>• Error rate > 5% (5 min)<br/>• Processing time > 60s (P95)<br/>• Failed files > 10 (5 min)<br/>• Memory utilization > 90%<br/>• Throttling errors > 0<br/><br/>Actions:<br/>• SNS notification<br/>• Create incident ticket<br/>• Auto-scaling trigger (if needed)"]
+    end
+
+    %% ============================================================================
+    %% CLEANUP
+    %% ============================================================================
+
+    subgraph Cleanup["🧹 CLEANUP"]
+        direction TB
+
+        DeleteFromLanding["🗑️ Delete from Landing<br/>═══════════════════════════<br/>After successful Bronze write:<br/>• Delete original file<br/>• Update S3 inventory<br/><br/>Retention policy:<br/>• Success: Immediate delete<br/>• Error: Keep 7 days (lifecycle)<br/><br/>Cost savings:<br/>• ~$0.023/GB/month saved"]
+
+        FlushLogs["📤 Flush Logs to CloudWatch<br/>═══════════════════════════════<br/>Ensure all logs written:<br/>• Execution summary<br/>• Performance metrics<br/>• Error details (if any)<br/><br/>Log retention:<br/>• Default: 30 days<br/>• Error logs: 90 days"]
+    end
+
+    %% ============================================================================
+    %% END STATE
+    %% ============================================================================
+
+    End([🏁 Ingestion Complete<br/>═══════════════════<br/>File in Bronze zone<br/>Registry updated<br/>Metrics published<br/>Ready for ETL])
+
+    %% ============================================================================
+    %% MAIN FLOW CONNECTIONS
+    %% ============================================================================
+
+    Start -->|"Upload file"| LandingBucket
+    LandingBucket -->|"Auto-configure"| S3EventConfig
+    S3EventConfig -->|"Trigger"| S3Event
+    S3Event -->|"Invoke Lambda"| InitLambda
+
+    InitLambda --> ParseEvent
+    ParseEvent --> ExtractMetadata
+    ExtractMetadata --> ValidateFormat
+
+    %% Validation Flow
+    ValidateFormat --> DecisionFormat
+    DecisionFormat -->|"❌ No"| CategorizeError
+    DecisionFormat -->|"✅ Yes"| ValidateSize
+
+    ValidateSize --> DecisionSize
+    DecisionSize -->|"❌ No"| CategorizeError
+    DecisionSize -->|"✅ Yes"| ValidateSchema
+
+    ValidateSchema --> DecisionSchema
+    DecisionSchema -->|"❌ No"| CategorizeError
+    DecisionSchema -->|"✅ Yes"| ValidateContent
+
+    ValidateContent --> DecisionContent
+    DecisionContent -->|"❌ No"| CategorizeError
+    DecisionContent -->|"✅ Yes"| CheckDuplicate
+
+    CheckDuplicate --> DecisionDuplicate
+    DecisionDuplicate -->|"✅ Yes"| LogError
+    DecisionDuplicate -->|"❌ No"| ReadFile
+
+    %% Processing Flow
+    ReadFile --> EnrichMetadata
+    EnrichMetadata --> DeterminePartition
+    DeterminePartition --> ConvertFormat
+    ConvertFormat --> GenerateFileName
+    GenerateFileName --> WriteBronze
+
+    %% Success Path
+    WriteBronze --> UpdateRegistry
+    UpdateRegistry --> BronzeSuccess
+    BronzeSuccess --> PublishMetrics
+    PublishMetrics --> UpdateDashboard
+    UpdateDashboard --> CheckThresholds
+    CheckThresholds --> DeleteFromLanding
+    DeleteFromLanding --> FlushLogs
+    FlushLogs --> End
+
+    %% Error Handling Flow
+    CategorizeError --> LogError
+    LogError --> MoveToError
+    MoveToError --> CheckRetryable
+
+    CheckRetryable --> DecisionRetryable
+    DecisionRetryable -->|"✅ Yes"| DecisionRetryCount
+    DecisionRetryable -->|"❌ No"| SendAlert
+
+    DecisionRetryCount -->|"✅ Yes"| RetryLogic
+    DecisionRetryCount -->|"❌ No"| SendAlert
+
+    RetryLogic -->|"Retry processing"| ReadFile
+
+    SendAlert --> PublishMetrics
+
+    %% ============================================================================
+    %% STYLING
+    %% ============================================================================
+
+    class Start,End startStyle
+    class InitLambda,ParseEvent,ExtractMetadata,ReadFile,EnrichMetadata,DeterminePartition,ConvertFormat,GenerateFileName,PublishMetrics,UpdateDashboard,CheckThresholds processStyle
+    class ValidateFormat,ValidateSize,ValidateSchema,ValidateContent,CheckDuplicate processStyle
+    class DecisionFormat,DecisionSize,DecisionSchema,DecisionContent,DecisionDuplicate,DecisionRetryable,DecisionRetryCount decisionStyle
+    class CategorizeError,LogError,MoveToError,CheckRetryable,RetryLogic,SendAlert errorStyle
+    class WriteBronze,UpdateRegistry,BronzeSuccess,DeleteFromLanding,FlushLogs successStyle
+    class LandingBucket,S3EventConfig,S3Event storageStyle
+    class LambdaConfig monitorStyle
+
+```
+
+---
+
+## Ingestion Flow Summary
+
+### Pipeline Stages
+
+1. **Upload Stage**
+   - Data sources upload files to S3 landing buckets
+   - Organized by source type (sales, customers, products, web-events)
+   - Automatic lifecycle policy (7-day retention)
+
+2. **Trigger Stage**
+   - S3 event notifications on ObjectCreated
+   - Immediate Lambda invocation
+   - Event contains file metadata
+
+3. **Initialization Stage**
+   - Lambda function cold/warm start
+   - Environment configuration
+   - S3 client initialization
+   - Logging setup
+
+4. **Validation Stage** (5 checks)
+   - **Format Validation:** Check file extension and MIME type
+   - **Size Validation:** Verify file size within limits (1KB - 100MB)
+   - **Schema Validation:** Validate structure and required fields
+   - **Content Validation:** Data quality checks on sample
+   - **Duplicate Detection:** Check MD5 hash in registry
+
+5. **Processing Stage**
+   - Read and parse source file
+   - Enrich with metadata (timestamps, source info)
+   - Determine partition path (year/month/day)
+   - Convert to Parquet format with Snappy compression
+   - Generate unique target filename
+
+6. **Storage Stage**
+   - Write to Bronze S3 bucket with encryption
+   - Update file registry in DynamoDB
+   - Publish success metrics to CloudWatch
+
+7. **Cleanup Stage**
+   - Delete file from landing bucket
+   - Flush all logs to CloudWatch
+   - Complete execution
+
+### Error Handling
+
+**Error Categories:**
+- `INVALID_FORMAT`: Unsupported file type
+- `SIZE_VIOLATION`: File too large or too small
+- `SCHEMA_MISMATCH`: Missing required fields
+- `CONTENT_ERROR`: Data quality issues
+- `DUPLICATE_FILE`: Already processed (same hash)
+- `PROCESSING_FAILURE`: Exception during processing
+- `NETWORK_ERROR`: S3 or network issues
+- `PERMISSION_ERROR`: IAM permission denied
+
+**Error Flow:**
+1. Categorize error type
+2. Log detailed error information
+3. Move file to error bucket with manifest
+4. Check if error is retryable
+5. If retryable: Apply exponential backoff (3 attempts)
+6. If non-retryable or max retries: Send SNS alert
+7. Update metrics with failure
+
+**Retry Strategy:**
+- Attempt 1: Immediate
+- Attempt 2: After 5 seconds
+- Attempt 3: After 15 seconds
+- Attempt 4: After 45 seconds
+- Max attempts: 3
+- Only for transient errors (network, throttling)
+
+### Validation Rules
+
+**File Format:**
+- Allowed: `.csv`, `.json`, `.parquet`
+- MIME type verification
+- Magic number check for Parquet
+
+**File Size:**
+- Minimum: 1 KB (not empty)
+- Maximum: 100 MB (Lambda memory limit)
+- Memory check: Available > size * 3
+
+**Schema Rules:**
+- CSV: Must have header row with expected columns
+- JSON: Required fields must exist
+- Parquet: Schema version compatibility
+
+**Content Rules:**
+- No completely null rows
+- Key fields (ID, date) must be populated
+- Date formats: ISO 8601 or configurable
+- Numeric fields within expected ranges
+- String length limits
+
+### Performance Characteristics
+
+**Processing Time:**
+- Small files (< 1 MB): ~2-3 seconds
+- Medium files (1-10 MB): ~5-10 seconds
+- Large files (10-100 MB): ~30-60 seconds
+
+**Throughput:**
+- Concurrent Lambda executions: 100
+- Files per hour: ~36,000 (theoretical max)
+- Typical load: ~1,000 files/hour
+- Peak capacity: ~10,000 files/hour
+
+**Latency Breakdown:**
+- Event trigger: < 100ms
+- Lambda cold start: ~1-2 seconds
+- Lambda warm start: < 100ms
+- Validation: ~1-2 seconds
+- Processing: ~2-10 seconds (size dependent)
+- S3 write: ~500ms
+- Total (warm): ~3-15 seconds
+
+### Monitoring Metrics
+
+**Standard Lambda Metrics:**
+- Invocations (count)
+- Duration (milliseconds)
+- Errors (count)
+- Throttles (count)
+- Concurrent executions (count)
+
+**Custom Business Metrics:**
+- Files processed by source (count)
+- Files failed by error type (count)
+- Data volume ingested (bytes)
+- Record count (count)
+- Validation success rate (percentage)
+- Duplicate detection rate (percentage)
+
+**Operational Metrics:**
+- Average processing time (seconds)
+- P95/P99 processing time (seconds)
+- Memory utilization (MB, percentage)
+- Cost per file (dollars)
+- Cost per GB (dollars)
+
+### Cost Optimization
+
+**Lambda Optimization:**
+- Memory: 1024 MB (balanced performance/cost)
+- Ephemeral storage: 512 MB (default)
+- Architecture: ARM64 (Graviton2, 20% cheaper)
+
+**S3 Optimization:**
+- Landing bucket: 7-day auto-delete
+- One-time read pattern
+- Multipart upload for large files
+
+**Data Transfer:**
+- Same region (no transfer cost)
+- VPC endpoint (optional, avoids NAT gateway)
+
+### Security Controls
+
+**Lambda Execution Role:**
+```json
+{
+  "Effect": "Allow",
+  "Action": [
+    "s3:GetObject",
+    "s3:ListBucket"
+  ],
+  "Resource": [
+    "arn:aws:s3:::cloudmart-landing",
+    "arn:aws:s3:::cloudmart-landing/*"
+  ]
+},
+{
+  "Effect": "Allow",
+  "Action": [
+    "s3:PutObject",
+    "s3:PutObjectAcl"
+  ],
+  "Resource": [
+    "arn:aws:s3:::cloudmart-bronze/*",
+    "arn:aws:s3:::cloudmart-errors/*"
+  ]
+},
+{
+  "Effect": "Allow",
+  "Action": [
+    "kms:Decrypt",
+    "kms:GenerateDataKey"
+  ],
+  "Resource": "arn:aws:kms:*:*:key/*"
+}
+```
+
+**S3 Bucket Policies:**
+- Deny unencrypted uploads
+- Enforce SSL/TLS
+- Block public access
+- Restrict by IAM role
+
+### Troubleshooting Guide
+
+**Issue: High error rate**
+- Check CloudWatch Logs for error patterns
+- Review validation thresholds
+- Verify source data quality
+- Check schema definitions
+
+**Issue: Slow processing**
+- Review file sizes
+- Check memory utilization
+- Verify network connectivity
+- Consider increasing Lambda memory
+
+**Issue: Duplicate files**
+- Check file naming convention
+- Review hash generation logic
+- Verify DynamoDB registry
+- Check for race conditions
+
+**Issue: Missing files in Bronze**
+- Check Lambda execution logs
+- Verify IAM permissions
+- Review S3 event configuration
+- Check error bucket

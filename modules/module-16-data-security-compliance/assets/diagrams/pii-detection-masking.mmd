@@ -1,0 +1,117 @@
+graph TB
+    %% PII Detection & Masking - Data Protection Workflow
+
+    subgraph "Raw Data with PII"
+        RAW["Customer Records:<br/>name: John Doe<br/>ssn: 123-45-6789<br/>email: john@example.com<br/>phone: +1-555-123-4567<br/>credit_card: 4532-1234-5678-9010"]:::raw
+    end
+
+    subgraph "PII Detection"
+        DET1[Amazon Macie<br/>S3 Bucket Scan]:::detect
+        DET2[Amazon Comprehend<br/>NLP Entity Recognition]:::detect
+        DET3[AWS Glue<br/>FindMatches ML]:::detect
+        DET4[Regex Patterns<br/>Custom Rules]:::detect
+    end
+
+    RAW --> DET1
+    RAW --> DET2
+    RAW --> DET3
+    RAW --> DET4
+
+    subgraph "PII Classification"
+        CLASS["High Sensitivity:<br/>• SSN<br/>• Credit Card<br/>• Passport Number<br/><br/>Medium Sensitivity:<br/>• Email<br/>• Phone<br/>• Address<br/><br/>Low Sensitivity:<br/>• Name<br/>• Age<br/>• Gender"]:::classify
+    end
+
+    DET1 --> CLASS
+    DET2 --> CLASS
+    DET3 --> CLASS
+    DET4 --> CLASS
+
+    subgraph "Masking Strategies"
+        MASK1[Full Masking<br/>123-45-6789 → ***-**-****]:::mask
+        MASK2[Partial Masking<br/>4532-1234-5678-9010 → ****-****-****-9010]:::mask
+        MASK3[Hashing<br/>john@example.com → 8f14e45fceea167a]:::mask
+        MASK4[Tokenization<br/>SSN → TOKEN_ABC123XYZ]:::mask
+    end
+
+    CLASS --> MASK1
+    CLASS --> MASK2
+    CLASS --> MASK3
+    CLASS --> MASK4
+
+    subgraph "Dynamic Data Masking"
+        DDM1["Redshift Dynamic DDM:<br/>CREATE MASKING POLICY ssn_mask<br/>USING ('XXX-XX-' || RIGHT(ssn, 4));<br/><br/>Apply to Column:<br/>ALTER TABLE customers<br/>ATTACH MASKING POLICY ssn_mask<br/>ON ssn TO ROLE analyst;"]:::ddm
+
+        DDM2["Athena View-Based Masking:<br/>CREATE VIEW customers_masked AS<br/>SELECT<br/>  customer_id,<br/>  name,<br/>  CASE<br/>    WHEN current_user = 'admin' THEN ssn<br/>    ELSE 'XXX-XX-' || SUBSTR(ssn, -4)<br/>  END as ssn<br/>FROM customers;"]:::ddm
+    end
+
+    MASK1 --> DDM1
+    MASK2 --> DDM2
+
+    subgraph "Tokenization Service"
+        TOK1[Token Vault<br/>DynamoDB]:::token
+        TOK2[Mapping Table<br/>SSN ↔ Token]:::token
+        TOK3[Detokenization API<br/>Authorized only]:::token
+    end
+
+    MASK4 --> TOK1
+    TOK1 --> TOK2
+    TOK2 --> TOK3
+
+    subgraph "Anonymization Techniques"
+        ANON1["K-Anonymity:<br/>• Group records (k=5)<br/>• Suppress unique IDs<br/>• Generalize age (25 → 20-30)"]:::anon
+
+        ANON2["Differential Privacy:<br/>• Add statistical noise<br/>• ε-differential privacy (ε=0.1)<br/>• Preserve aggregate accuracy"]:::anon
+
+        ANON3["Pseudonymization:<br/>• Replace with fake data<br/>• Consistent across datasets<br/>• Reversible with key"]:::anon
+    end
+
+    CLASS --> ANON1
+    CLASS --> ANON2
+    CLASS --> ANON3
+
+    subgraph "Output Data"
+        OUT1[Masked Data<br/>For Analytics]:::output
+        OUT2[Anonymous Data<br/>For ML Training]:::output
+        OUT3[Tokenized Data<br/>For Storage]:::output
+        OUT4[Audit Log<br/>Who accessed what]:::output
+    end
+
+    DDM1 --> OUT1
+    ANON2 --> OUT2
+    TOK3 --> OUT3
+    DET1 --> OUT4
+
+    %% Styling
+    classDef raw fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff,text-align:left
+    classDef detect fill:#3498DB,stroke:#2980B9,stroke-width:3px,color:#fff
+    classDef classify fill:#9B59B6,stroke:#8E44AD,stroke-width:2px,color:#fff,text-align:left
+    classDef mask fill:#27AE60,stroke:#229954,stroke-width:3px,color:#fff
+    classDef ddm fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff,text-align:left
+    classDef token fill:#F39C12,stroke:#E67E22,stroke-width:3px,color:#fff
+    classDef anon fill:#16A085,stroke:#138D75,stroke-width:2px,color:#fff,text-align:left
+    classDef output fill:#1ABC9C,stroke:#17A589,stroke-width:3px,color:#fff
+
+    %% PII Detection Accuracy
+    subgraph "Detection Methods Comparison"
+        COMP["Macie (ML):<br/>• Accuracy: 95%+<br/>• Cost: $1/GB scanned<br/>• Best for: S3 data discovery<br/><br/>Comprehend (NLP):<br/>• Accuracy: 90%+<br/>• Cost: $0.0005/100 chars<br/>• Best for: Text documents<br/><br/>Regex (Rules):<br/>• Accuracy: 80% (depends on patterns)<br/>• Cost: Free<br/>• Best for: Known formats (SSN, CC)"]:::comp
+    end
+
+    classDef comp fill:#E67E22,stroke:#CA6F1E,stroke-width:2px,color:#fff,text-align:left
+
+    DET4 --> COMP
+
+    %% GDPR Compliance
+    subgraph "GDPR Right to Erasure"
+        GDPR["1. User requests deletion<br/>2. Identify all PII records<br/>3. Pseudonymize (if retention needed)<br/>4. Delete original data<br/>5. Update audit trail<br/>6. Confirm deletion (30 days)"]:::gdpr
+    end
+
+    classDef gdpr fill:#2C3E50,stroke:#1C2833,stroke-width:2px,color:#fff,text-align:left
+
+    OUT4 --> GDPR
+
+    %% Real-World Examples
+    subgraph "Industry Examples"
+        EX["Healthcare (HIPAA):<br/>• Mask patient SSN for researchers<br/>• K-anonymity for medical records<br/><br/>Finance (PCI-DSS):<br/>• Tokenize credit cards<br/>• Store only last 4 digits<br/><br/>Retail (GDPR):<br/>• Pseudonymize customer IDs<br/>• Delete on request (30 days)"]:::example
+    end
+
+    classDef example fill:#7ED321,stroke:#5A9E18,stroke-width:2px,color:#fff,text-align:left

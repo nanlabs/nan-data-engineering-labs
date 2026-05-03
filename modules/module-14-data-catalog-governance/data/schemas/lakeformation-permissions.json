@@ -1,0 +1,439 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AWS Lake Formation Permission Grant",
+  "description": "JSON schema for defining Lake Formation permission grants",
+  "type": "object",
+  "required": ["Principal", "Resource", "Permissions"],
+  "properties": {
+    "Principal": {
+      "type": "object",
+      "description": "Entity receiving the permissions",
+      "oneOf": [
+        {
+          "required": ["DataLakePrincipalIdentifier"],
+          "properties": {
+            "DataLakePrincipalIdentifier": {
+              "type": "string",
+              "description": "IAM principal ARN or special identifier",
+              "pattern": "^(arn:aws:iam::\\d{12}:(role|user)/[a-zA-Z0-9+=,.@_-]+|IAM_ALLOWED_PRINCIPALS)$",
+              "examples": [
+                "arn:aws:iam::123456789012:role/DataEngineer",
+                "arn:aws:iam::123456789012:user/alice",
+                "IAM_ALLOWED_PRINCIPALS"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Resource": {
+      "type": "object",
+      "description": "Resource being granted access to",
+      "oneOf": [
+        {
+          "required": ["Catalog"],
+          "properties": {
+            "Catalog": {
+              "type": "object",
+              "description": "Entire data catalog",
+              "additionalProperties": false
+            }
+          }
+        },
+        {
+          "required": ["Database"],
+          "properties": {
+            "Database": {
+              "type": "object",
+              "required": ["Name"],
+              "properties": {
+                "CatalogId": {
+                  "type": "string",
+                  "pattern": "^\\d{12}$",
+                  "description": "AWS account ID (defaults to current account)",
+                  "examples": ["123456789012"]
+                },
+                "Name": {
+                  "type": "string",
+                  "description": "Database name",
+                  "pattern": "^[a-z0-9_]+$",
+                  "examples": ["dev_sales_bronze_db", "prod_analytics_db"]
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": ["Table"],
+          "properties": {
+            "Table": {
+              "type": "object",
+              "required": ["DatabaseName", "Name"],
+              "properties": {
+                "CatalogId": {
+                  "type": "string",
+                  "pattern": "^\\d{12}$",
+                  "description": "AWS account ID"
+                },
+                "DatabaseName": {
+                  "type": "string",
+                  "description": "Database name",
+                  "pattern": "^[a-z0-9_]+$",
+                  "examples": ["dev_sales_bronze_db"]
+                },
+                "Name": {
+                  "type": "string",
+                  "description": "Table name or wildcard",
+                  "pattern": "^([a-z0-9_]+|ALL_TABLES)$",
+                  "examples": ["sales_transactions", "ALL_TABLES"]
+                },
+                "TableWildcard": {
+                  "type": "object",
+                  "description": "Grant on all tables in database",
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": ["TableWithColumns"],
+          "properties": {
+            "TableWithColumns": {
+              "type": "object",
+              "required": ["DatabaseName", "Name"],
+              "properties": {
+                "CatalogId": {
+                  "type": "string",
+                  "pattern": "^\\d{12}$"
+                },
+                "DatabaseName": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_]+$"
+                },
+                "Name": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_]+$"
+                },
+                "ColumnNames": {
+                  "type": "array",
+                  "description": "Specific columns to grant access to",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9_]+$"
+                  },
+                  "minItems": 1,
+                  "examples": [["transaction_id", "total_amount", "category"]]
+                },
+                "ColumnWildcard": {
+                  "type": "object",
+                  "description": "Grant on all columns",
+                  "properties": {
+                    "ExcludedColumnNames": {
+                      "type": "array",
+                      "description": "Columns to exclude from grant",
+                      "items": {
+                        "type": "string"
+                      },
+                      "examples": [["customer_email", "customer_phone", "ssn"]]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": ["DataLocation"],
+          "properties": {
+            "DataLocation": {
+              "type": "object",
+              "required": ["ResourceArn"],
+              "properties": {
+                "CatalogId": {
+                  "type": "string",
+                  "pattern": "^\\d{12}$"
+                },
+                "ResourceArn": {
+                  "type": "string",
+                  "pattern": "^arn:aws:s3:::[a-z0-9][a-z0-9.-]{1,61}[a-z0-9](/.*)?$",
+                  "description": "S3 bucket or path ARN",
+                  "examples": [
+                    "arn:aws:s3:::my-data-lake",
+                    "arn:aws:s3:::my-data-lake/bronze/sales/"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": ["LFTag"],
+          "properties": {
+            "LFTag": {
+              "type": "object",
+              "required": ["TagKey", "TagValues"],
+              "properties": {
+                "CatalogId": {
+                  "type": "string",
+                  "pattern": "^\\d{12}$"
+                },
+                "TagKey": {
+                  "type": "string",
+                  "description": "LF-Tag key name",
+                  "pattern": "^[a-zA-Z0-9_]+$",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "examples": ["DataSensitivity", "DataDomain", "Environment"]
+                },
+                "TagValues": {
+                  "type": "array",
+                  "description": "LF-Tag values to grant",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9_-]+$"
+                  },
+                  "minItems": 1,
+                  "maxItems": 50,
+                  "examples": [["Confidential", "Internal"], ["Sales", "Marketing"]]
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": ["LFTagPolicy"],
+          "properties": {
+            "LFTagPolicy": {
+              "type": "object",
+              "required": ["ResourceType", "Expression"],
+              "properties": {
+                "CatalogId": {
+                  "type": "string",
+                  "pattern": "^\\d{12}$"
+                },
+                "ResourceType": {
+                  "type": "string",
+                  "enum": ["DATABASE", "TABLE"],
+                  "description": "Type of resource for tag-based policy"
+                },
+                "Expression": {
+                  "type": "array",
+                  "description": "Tag expressions (AND logic between items)",
+                  "items": {
+                    "type": "object",
+                    "required": ["TagKey", "TagValues"],
+                    "properties": {
+                      "TagKey": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z0-9_]+$"
+                      },
+                      "TagValues": {
+                        "type": "array",
+                        "description": "Tag values (OR logic within array)",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "minItems": 1,
+                  "maxItems": 5,
+                  "examples": [
+                    [
+                      {"TagKey": "DataDomain", "TagValues": ["Sales"]},
+                      {"TagKey": "DataSensitivity", "TagValues": ["Internal", "Confidential"]}
+                    ]
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Permissions": {
+      "type": "array",
+      "description": "Permissions to grant",
+      "items": {
+        "type": "string",
+        "enum": [
+          "ALL",
+          "SELECT",
+          "ALTER",
+          "DROP",
+          "DELETE",
+          "INSERT",
+          "DESCRIBE",
+          "CREATE_DATABASE",
+          "CREATE_TABLE",
+          "DATA_LOCATION_ACCESS",
+          "CREATE_TAG",
+          "ALTER_TAG",
+          "DELETE_TAG",
+          "DESCRIBE_TAG",
+          "ASSOCIATE_TAG"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "examples": [["SELECT"], ["SELECT", "DESCRIBE"], ["ALL"]]
+    },
+    "PermissionsWithGrantOption": {
+      "type": "array",
+      "description": "Permissions that can be re-granted to others",
+      "items": {
+        "type": "string",
+        "enum": [
+          "ALL",
+          "SELECT",
+          "ALTER",
+          "DROP",
+          "DELETE",
+          "INSERT",
+          "DESCRIBE",
+          "CREATE_DATABASE",
+          "CREATE_TABLE",
+          "DATA_LOCATION_ACCESS",
+          "CREATE_TAG",
+          "ALTER_TAG",
+          "DELETE_TAG",
+          "DESCRIBE_TAG",
+          "ASSOCIATE_TAG"
+        ]
+      },
+      "uniqueItems": true,
+      "examples": [[], ["SELECT"]]
+    },
+    "DataCellsFilter": {
+      "type": "object",
+      "description": "Row-level security filter",
+      "required": ["TableCatalogId", "DatabaseName", "TableName", "Name"],
+      "properties": {
+        "TableCatalogId": {
+          "type": "string",
+          "pattern": "^\\d{12}$"
+        },
+        "DatabaseName": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "TableName": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "Name": {
+          "type": "string",
+          "description": "Filter name",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "maxLength": 255
+        },
+        "RowFilter": {
+          "type": "object",
+          "description": "SQL-like row filter expression",
+          "properties": {
+            "FilterExpression": {
+              "type": "string",
+              "description": "SQL WHERE clause (without WHERE keyword)",
+              "maxLength": 2048,
+              "examples": [
+                "region = 'US-EAST'",
+                "total_amount > 100 AND status = 'completed'",
+                "year = '2024' AND category IN ('Electronics', 'Books')"
+              ]
+            },
+            "AllRowsWildcard": {
+              "type": "object",
+              "description": "Grant access to all rows",
+              "additionalProperties": false
+            }
+          }
+        },
+        "ColumnWildcard": {
+          "type": "object",
+          "properties": {
+            "ExcludedColumnNames": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "ColumnNames": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "Principal": {
+        "DataLakePrincipalIdentifier": "arn:aws:iam::123456789012:role/DataEngineer"
+      },
+      "Resource": {
+        "Database": {
+          "Name": "dev_sales_bronze_db"
+        }
+      },
+      "Permissions": ["ALL"],
+      "PermissionsWithGrantOption": []
+    },
+    {
+      "Principal": {
+        "DataLakePrincipalIdentifier": "arn:aws:iam::123456789012:role/DataAnalyst"
+      },
+      "Resource": {
+        "TableWithColumns": {
+          "DatabaseName": "dev_sales_silver_db",
+          "Name": "sales_transactions_clean",
+          "ColumnWildcard": {
+            "ExcludedColumnNames": ["customer_email_masked", "customer_phone_masked"]
+          }
+        }
+      },
+      "Permissions": ["SELECT", "DESCRIBE"],
+      "PermissionsWithGrantOption": []
+    },
+    {
+      "Principal": {
+        "DataLakePrincipalIdentifier": "arn:aws:iam::123456789012:role/DataScientist"
+      },
+      "Resource": {
+        "LFTagPolicy": {
+          "ResourceType": "TABLE",
+          "Expression": [
+            {"TagKey": "DataDomain", "TagValues": ["Sales"]},
+            {"TagKey": "DataSensitivity", "TagValues": ["Internal"]},
+            {"TagKey": "QualityLevel", "TagValues": ["Gold"]}
+          ]
+        }
+      },
+      "Permissions": ["SELECT", "DESCRIBE"],
+      "PermissionsWithGrantOption": []
+    },
+    {
+      "Principal": {
+        "DataLakePrincipalIdentifier": "arn:aws:iam::123456789012:role/RegionalAnalyst"
+      },
+      "Resource": {
+        "Table": {
+          "DatabaseName": "dev_sales_silver_db",
+          "Name": "sales_transactions_clean"
+        }
+      },
+      "Permissions": ["SELECT"],
+      "PermissionsWithGrantOption": [],
+      "DataCellsFilter": {
+        "TableCatalogId": "123456789012",
+        "DatabaseName": "dev_sales_silver_db",
+        "TableName": "sales_transactions_clean",
+        "Name": "east_region_only",
+        "RowFilter": {
+          "FilterExpression": "region = 'US-EAST'"
+        },
+        "ColumnNames": ["date", "transaction_id", "category", "total_amount", "region"]
+      }
+    }
+  ]
+}

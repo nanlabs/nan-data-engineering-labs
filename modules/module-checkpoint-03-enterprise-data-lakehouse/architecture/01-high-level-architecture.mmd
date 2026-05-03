@@ -1,0 +1,494 @@
+```mermaid
+graph TB
+    %% Enterprise Data Lakehouse - High Level Architecture
+    %% Complete system showing data sources to visualization
+
+    subgraph "Data Sources Layer"
+        RDS[(Amazon RDS
+        PostgreSQL
+        Transactional Data)]
+
+        DynamoDB[(Amazon DynamoDB
+        User Sessions
+        Real-time Events)]
+
+        S3Files[(S3 Landing Zone
+        CSV/JSON Files
+        External Data)]
+
+        API1[External APIs
+        Weather Data
+        Market Data]
+
+        API2[SaaS Applications
+        Salesforce
+        HubSpot]
+
+        StreamData[Kinesis Data Streams
+        IoT Sensors
+        Clickstream]
+
+        SQS[Amazon SQS
+        Async Messages
+        Event Queue]
+    end
+
+    subgraph "Ingestion & Orchestration Layer"
+        EventBridge[Amazon EventBridge
+        Event Router
+        Schedule Triggers]
+
+        StepFunctions[AWS Step Functions
+        Workflow Orchestration
+        State Machine]
+
+        Lambda1[AWS Lambda
+        File Processor
+        Data Validator]
+
+        Lambda2[AWS Lambda
+        API Extractor
+        Rate Limiter]
+
+        Lambda3[AWS Lambda
+        Stream Processor
+        Record Transformer]
+
+        GlueJob1[AWS Glue Job
+        Batch Ingestion
+        Large Datasets]
+
+        GlueJob2[AWS Glue Job
+        CDC Processing
+        Change Capture]
+
+        GlueCrawler1[AWS Glue Crawler
+        Schema Discovery
+        Metadata Extraction]
+
+        DMS[AWS Database Migration
+        Service DMS
+        Change Data Capture]
+
+        Firehose[Kinesis Data Firehose
+        Stream Buffering
+        S3 Delivery]
+    end
+
+    subgraph "Lakehouse Storage Layer - S3"
+        subgraph "Raw Zone Bucket A"
+            RawDB[Raw Database
+            /raw/rds/
+            Original Format
+            7 Day Retention]
+
+            RawEvents[Raw Events
+            /raw/events/
+            JSON Format
+            7 Day Retention]
+
+            RawFiles[Raw Files
+            /raw/files/
+            Various Formats
+            30 Day Retention]
+
+            RawAPI[Raw API Data
+            /raw/api/
+            JSON/XML
+            7 Day Retention]
+        end
+
+        subgraph "Bronze Zone Bucket B"
+            BronzeDB[Bronze Database
+            /bronze/rds/
+            Parquet + Snappy
+            90 Day Retention]
+
+            BronzeEvents[Bronze Events
+            /bronze/events/
+            Parquet Partitioned
+            90 Day Retention]
+
+            BronzeFiles[Bronze Files
+            /bronze/files/
+            Standardized Schema
+            90 Day Retention]
+
+            BronzeAPI[Bronze API
+            /bronze/api/
+            Parquet Format
+            90 Day Retention]
+
+            BronzeValidation[Validation Metadata
+            Quality Metrics
+            Row Counts]
+        end
+
+        subgraph "Silver Zone Bucket C"
+            SilverCustomers[Silver Customers
+            Delta Lake Format
+            SCD Type 2
+            Deduplication]
+
+            SilverOrders[Silver Orders
+            Delta Lake Format
+            Joined & Enriched
+            Business Rules]
+
+            SilverProducts[Silver Products
+            Delta Lake Format
+            Master Data
+            Cleaned]
+
+            SilverEvents[Silver Events
+            Delta Lake Format
+            Sessionized
+            Aggregated]
+
+            SilverTransactions[Silver Transactions
+            Delta Lake Format
+            Validated
+            Normalized]
+
+            SilverMetrics[Data Quality Metrics
+            Completeness
+            Accuracy
+            Timeliness]
+        end
+
+        subgraph "Gold Zone Bucket D"
+            GoldSales[Gold Sales Facts
+            Star Schema
+            Daily/Monthly Agg
+            Business Metrics]
+
+            GoldCustomer360[Gold Customer 360
+            Integrated View
+            KPIs
+            Segmentation]
+
+            GoldFinancial[Gold Financial
+            Revenue Metrics
+            Cost Analysis
+            Profitability]
+
+            GoldMarketing[Gold Marketing
+            Campaign Performance
+            Attribution
+            ROI]
+
+            GoldOperational[Gold Operational
+            Inventory Metrics
+            Supply Chain
+            Logistics]
+
+            GoldExecutive[Gold Executive
+            Dashboard Data
+            Trends
+            Forecasts]
+        end
+    end
+
+    subgraph "Metadata & Governance Layer"
+        GlueCatalog[AWS Glue Data Catalog
+        Metadata Repository
+        Schema Versions
+        Partitions]
+
+        LakeFormation[AWS Lake Formation
+        Fine-grained Access
+        Column Security
+        Row Filters]
+
+        DataQuality[AWS Glue Data Quality
+        Data Profiling
+        Quality Rules
+        Anomaly Detection]
+
+        Macie[Amazon Macie
+        PII Detection
+        Sensitive Data
+        Classification]
+
+        Tags[Tag Management
+        Cost Allocation
+        Data Classification
+        Business Glossary]
+    end
+
+    subgraph "Processing & Query Layer"
+        Athena[Amazon Athena
+        Serverless SQL
+        Interactive Queries
+        ACID Transactions]
+
+        EMRSpark[EMR Spark Cluster
+        Distributed Processing
+        ML Pipelines
+        Complex Transformations]
+
+        EMRPresto[EMR Presto
+        Federated Queries
+        Fast Analytics
+        Multi-source]
+
+        Redshift[Amazon Redshift
+        Spectrum
+        External Tables
+        BI Workloads]
+
+        GlueNotebook[AWS Glue Studio
+        ETL Development
+        Visual Editor
+        Data Preview]
+
+        SageMaker[Amazon SageMaker
+        ML Training
+        Feature Store
+        Model Deployment]
+    end
+
+    subgraph "Analytics & Visualization Layer"
+        QuickSight[Amazon QuickSight
+        Dashboards
+        Reports
+        SPICE Engine]
+
+        Tableau[Tableau Server
+        Advanced Viz
+        Self-service BI
+        Enterprise Reports]
+
+        Jupyter[Jupyter Notebooks
+        Data Science
+        Ad-hoc Analysis
+        Python/R]
+
+        PowerBI[Power BI
+        Microsoft Integration
+        Excel Reports
+        Desktop/Service]
+
+        APIGateway[API Gateway
+        Data APIs
+        REST Endpoints
+        App Integration]
+    end
+
+    subgraph "Monitoring & Operations Layer"
+        CloudWatch[Amazon CloudWatch
+        Metrics
+        Alarms
+        Dashboards]
+
+        CloudTrail[AWS CloudTrail
+        Audit Logs
+        API Calls
+        Compliance]
+
+        XRay[AWS X-Ray
+        Distributed Tracing
+        Performance
+        Debug]
+
+        SNS[Amazon SNS
+        Notifications
+        Alerts
+        Escalation]
+
+        CloudWatchLogs[CloudWatch Logs
+        Application Logs
+        Query Logs
+        Error Tracking]
+
+        Config[AWS Config
+        Resource Tracking
+        Compliance Rules
+        Change History]
+    end
+
+    subgraph "Security & Compliance Layer"
+        IAM[AWS IAM
+        Users & Roles
+        Policies
+        Federation]
+
+        KMS[AWS KMS
+        Encryption Keys
+        Key Rotation
+        Envelope Encryption]
+
+        SecretsManager[Secrets Manager
+        Credentials
+        API Keys
+        Connection Strings]
+
+        WAF[AWS WAF
+        API Protection
+        Rate Limiting
+        IP Filtering]
+
+        SecurityHub[Security Hub
+        Security Posture
+        Findings
+        Remediation]
+
+        GuardDuty[Amazon GuardDuty
+        Threat Detection
+        Anomaly Detection
+        Security Monitoring]
+    end
+
+    subgraph "Backup & DR Layer"
+        S3Replication[S3 Cross-Region
+        Replication
+        Disaster Recovery
+        Geographic Redundancy]
+
+        Backup[AWS Backup
+        Automated Backups
+        Retention Policies
+        Point-in-time Recovery]
+
+        DRRegion[(DR Region
+        us-west-2
+        Standby Resources
+        Hot/Warm Standby)]
+    end
+
+    %% Data Flow Connections - Sources to Ingestion
+    RDS -->|DMS CDC| DMS
+    DMS -->|Change Logs| Lambda1
+    DynamoDB -->|DynamoDB Streams| Lambda3
+    S3Files -->|S3 Event| Lambda1
+    API1 -->|HTTP/REST| Lambda2
+    API2 -->|OAuth/API| Lambda2
+    StreamData -->|Real-time| Firehose
+    SQS -->|Messages| Lambda3
+
+    %% Orchestration
+    EventBridge -->|Schedule| StepFunctions
+    EventBridge -->|Trigger| Lambda1
+    EventBridge -->|Trigger| Lambda2
+    StepFunctions -->|Execute| GlueJob1
+    StepFunctions -->|Execute| GlueJob2
+
+    %% Ingestion to Raw Zone
+    Lambda1 -->|Write| RawDB
+    Lambda1 -->|Write| RawFiles
+    Lambda2 -->|Write| RawAPI
+    Lambda3 -->|Write| RawEvents
+    GlueJob1 -->|Batch Load| RawDB
+    GlueJob2 -->|CDC Load| RawDB
+    Firehose -->|Stream Buffer| RawEvents
+
+    %% Raw to Bronze Transformation
+    RawDB -->|Glue ETL| BronzeDB
+    RawEvents -->|Glue ETL| BronzeEvents
+    RawFiles -->|Glue ETL| BronzeFiles
+    RawAPI -->|Glue ETL| BronzeAPI
+    GlueCrawler1 -->|Catalog| BronzeDB
+    GlueCrawler1 -->|Catalog| BronzeEvents
+
+    %% Bronze to Silver Transformation
+    BronzeDB -->|EMR Spark| SilverCustomers
+    BronzeDB -->|EMR Spark| SilverOrders
+    BronzeEvents -->|EMR Spark| SilverEvents
+    BronzeFiles -->|EMR Spark| SilverProducts
+    BronzeAPI -->|EMR Spark| SilverTransactions
+
+    %% Silver to Gold Aggregation
+    SilverCustomers -->|Athena CTAS| GoldCustomer360
+    SilverOrders -->|EMR Spark| GoldSales
+    SilverEvents -->|EMR Spark| GoldMarketing
+    SilverTransactions -->|EMR Spark| GoldFinancial
+    SilverProducts -->|EMR Spark| GoldOperational
+    GoldSales -->|Aggregation| GoldExecutive
+    GoldFinancial -->|Aggregation| GoldExecutive
+
+    %% Metadata & Governance
+    BronzeDB -.->|Register| GlueCatalog
+    SilverCustomers -.->|Register| GlueCatalog
+    GoldSales -.->|Register| GlueCatalog
+    GlueCatalog -->|Permissions| LakeFormation
+    GlueCatalog -->|Profiling| DataQuality
+    SilverCustomers -.->|Scan| Macie
+    DataQuality -->|Quality Scores| SilverMetrics
+
+    %% Query Layer Access
+    GlueCatalog -->|Schema| Athena
+    GlueCatalog -->|Schema| EMRSpark
+    GlueCatalog -->|Schema| Redshift
+
+    SilverCustomers -->|Query| Athena
+    GoldSales -->|Query| Athena
+    GoldCustomer360 -->|Query| EMRSpark
+    GoldFinancial -->|Query| Redshift
+
+    %% Analytics & Visualization
+    Athena -->|JDBC| QuickSight
+    EMRSpark -->|Results| Jupyter
+    Redshift -->|ODBC| Tableau
+    Athena -->|Query Results| PowerBI
+    GoldExecutive -->|REST| APIGateway
+
+    %% Monitoring Connections
+    Lambda1 -.->|Logs| CloudWatchLogs
+    GlueJob1 -.->|Logs| CloudWatchLogs
+    EMRSpark -.->|Metrics| CloudWatch
+    Athena -.->|Query Logs| CloudWatchLogs
+
+    CloudWatchLogs -->|Alerts| SNS
+    CloudWatch -->|Alarms| SNS
+
+    %% Audit & Compliance
+    LakeFormation -.->|Access Logs| CloudTrail
+    S3Files -.->|API Calls| CloudTrail
+    IAM -.->|Auth Events| CloudTrail
+
+    %% Security Integration
+    KMS -->|Encrypt| RawDB
+    KMS -->|Encrypt| BronzeDB
+    KMS -->|Encrypt| SilverCustomers
+    KMS -->|Encrypt| GoldSales
+
+    IAM -->|Authorize| LakeFormation
+    IAM -->|Policies| Lambda1
+    SecretsManager -->|Credentials| Lambda2
+
+    %% DR & Backup
+    RawDB -.->|Replicate| S3Replication
+    BronzeDB -.->|Replicate| S3Replication
+    SilverCustomers -.->|Replicate| S3Replication
+    GoldSales -.->|Replicate| S3Replication
+    S3Replication -->|Store| DRRegion
+
+    GlueCatalog -.->|Backup| Backup
+
+    %% Styling
+    classDef sourceStyle fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef ingestionStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef rawStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef bronzeStyle fill:#cd7f32,stroke:#8b4513,stroke-width:2px,color:#fff
+    classDef silverStyle fill:#c0c0c0,stroke:#696969,stroke-width:2px
+    classDef goldStyle fill:#ffd700,stroke:#b8860b,stroke-width:2px
+    classDef governanceStyle fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef queryStyle fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+    classDef vizStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef monitorStyle fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef securityStyle fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    classDef drStyle fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+
+    class RDS,DynamoDB,S3Files,API1,API2,StreamData,SQS sourceStyle
+    class EventBridge,StepFunctions,Lambda1,Lambda2,Lambda3,GlueJob1,GlueJob2,GlueCrawler1,DMS,Firehose ingestionStyle
+    class RawDB,RawEvents,RawFiles,RawAPI rawStyle
+    class BronzeDB,BronzeEvents,BronzeFiles,BronzeAPI,BronzeValidation bronzeStyle
+    class SilverCustomers,SilverOrders,SilverProducts,SilverEvents,SilverTransactions,SilverMetrics silverStyle
+    class GoldSales,GoldCustomer360,GoldFinancial,GoldMarketing,GoldOperational,GoldExecutive goldStyle
+    class GlueCatalog,LakeFormation,DataQuality,Macie,Tags governanceStyle
+    class Athena,EMRSpark,EMRPresto,Redshift,GlueNotebook,SageMaker queryStyle
+    class QuickSight,Tableau,Jupyter,PowerBI,APIGateway vizStyle
+    class CloudWatch,CloudTrail,XRay,SNS,CloudWatchLogs,Config monitorStyle
+    class IAM,KMS,SecretsManager,WAF,SecurityHub,GuardDuty securityStyle
+    class S3Replication,Backup,DRRegion drStyle
+```

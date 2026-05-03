@@ -1,0 +1,128 @@
+```mermaid
+graph TB
+    subgraph "Delta Lake Table"
+        subgraph "_delta_log/ (Transaction Log)"
+            V0["00000000000000000000.json<br/>Version 0<br/>Operation: CREATE TABLE<br/>Schema, Partitions, Config"]
+            V1["00000000000000000001.json<br/>Version 1<br/>Operation: WRITE<br/>Add: file1.parquet<br/>Stats: min/max, count"]
+            V2["00000000000000000002.json<br/>Version 2<br/>Operation: WRITE<br/>Add: file2.parquet, file3.parquet<br/>Stats: min/max, count"]
+            V3["00000000000000000003.json<br/>Version 3<br/>Operation: DELETE<br/>Remove: file1.parquet<br/>Add: file4.parquet"]
+            CP10["00000000000000000010.checkpoint.parquet<br/>Checkpoint (every 10 commits)<br/>Consolidated state"]
+
+            V0 --> V1
+            V1 --> V2
+            V2 --> V3
+            V3 -.-> CP10
+        end
+
+        subgraph "Data Files (Parquet)"
+            File1[file1.parquet<br/>REMOVED v3]
+            File2[file2.parquet<br/>ACTIVE]
+            File3[file3.parquet<br/>ACTIVE]
+            File4[file4.parquet<br/>ACTIVE v3]
+        end
+    end
+
+    subgraph "ACID Transaction Flow"
+        T1[1. Begin Transaction]
+        T2[2. Read Latest Version<br/>from _delta_log/]
+        T3[3. Write New Data Files<br/>to Parquet]
+        T4[4. Prepare Commit JSON<br/>with file metadata]
+        T5[5. Atomic Commit<br/>Write next version.json]
+        T6[6. Transaction Complete<br/>Visible to readers]
+
+        T1 --> T2
+        T2 --> T3
+        T3 --> T4
+        T4 --> T5
+        T5 --> T6
+    end
+
+    subgraph "Time Travel Mechanics"
+        TT1[Query with<br/>versionAsOf=1]
+        TT2[Read files from<br/>_delta_log/00...001.json]
+        TT3[Reconstruct table state:<br/>file1.parquet]
+
+        TT1 --> TT2
+        TT2 --> TT3
+    end
+
+    subgraph "Optimizations"
+        Opt1[Data Skipping<br/>min/max statistics<br/>avoid reading files]
+        Opt2[Z-Ordering<br/>co-locate related data<br/>multi-dimensional clustering]
+        Opt3[File Compaction<br/>OPTIMIZE command<br/>merge small files]
+        Opt4[VACUUM<br/>delete old versions<br/>reclaim storage]
+    end
+
+    %% Transaction log details
+    V1 -.->|References| File1
+    V2 -.->|References| File2
+    V2 -.->|References| File3
+    V3 -.->|Removes| File1
+    V3 -.->|Adds| File4
+
+    %% Transaction flow to log
+    T5 -.->|Creates| V3
+
+    %% Time travel
+    TT2 -.->|Reads| V1
+    TT3 -.->|Accesses| File1
+
+    style V0 fill:#e3f2fd
+    style V1 fill:#e3f2fd
+    style V2 fill:#e3f2fd
+    style V3 fill:#e3f2fd
+    style CP10 fill:#fff9c4
+
+    style File1 fill:#ffebee
+    style File2 fill:#e8f5e9
+    style File3 fill:#e8f5e9
+    style File4 fill:#e8f5e9
+
+    style T5 fill:#c8e6c9
+    style TT2 fill:#fff9c4
+```
+
+**Key Concepts:**
+
+## Transaction Log Structure
+- **Version Files**: Sequential JSON files (00000000000000000000.json)
+- **Each Commit**: Atomic write of new version file
+- **Operations**: CREATE, WRITE, DELETE, UPDATE, MERGE, OPTIMIZE
+- **Metadata**: Schema, partitions, statistics (min/max/count)
+
+## ACID Guarantees
+1. **Atomicity**: All-or-nothing commits (atomic file write)
+2. **Consistency**: Schema enforcement, constraints
+3. **Isolation**: Snapshot isolation (readers see consistent view)
+4. **Durability**: JSON log persists all changes
+
+## Time Travel
+- Read any historical version: `versionAsOf=N` or `timestampAsOf='2024-01-01'`
+- Reconstruct table state from transaction log
+- Useful for: Audit, rollback, reproduce ML experiments
+
+## Optimizations
+- **Data Skipping**: 10-100x faster queries (skip irrelevant files)
+- **Z-Ordering**: 2-10x speedup for multi-column filters
+- **File Compaction**: Merge small files → fewer metadata operations
+- **VACUUM**: Remove old file versions (after 7 days default)
+
+## Checkpoints
+- Every 10 commits: Consolidate transaction log
+- Faster startup: Read checkpoint instead of 1000s of JSON files
+- Parquet format: Efficient columnar storage
+
+---
+
+**Example Transaction Log Entry:**
+```json
+{
+  "add": {
+    "path": "part-00001.parquet",
+    "size": 1024000,
+    "modificationTime": 1704067200000,
+    "dataChange": true,
+    "stats": "{\"numRecords\":10000,\"minValues\":{\"id\":1},\"maxValues\":{\"id\":10000}}"
+  }
+}
+```

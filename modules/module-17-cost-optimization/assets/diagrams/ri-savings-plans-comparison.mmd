@@ -1,0 +1,289 @@
+graph TB
+    subgraph "Compute Purchasing Options"
+        A1["On-Demand
+        Pay-per-second
+        No commitment
+        Baseline: 100% cost"]
+
+        A2["Reserved Instances
+        1-year or 3-year commitment
+        Save 40-72%
+        Specific instance type + region"]
+
+        A3["Savings Plans
+        1-year or 3-year commitment
+        Save 40-72%
+        Flexible instance family, region, OS"]
+
+        A4["Spot Instances
+        Up to 90% discount
+        Interruptible workloads
+        2-minute termination notice"]
+    end
+
+    subgraph "Reserved Instances Types"
+        B1["Standard RI
+        Max savings: 72% (3yr All Upfront)
+        No instance type changes
+        Convertible: No
+        Use case: Stable production workloads"]
+
+        B2["Convertible RI
+        Max savings: 54% (3yr All Upfront)
+        Change instance type, family, OS, tenancy
+        Exchange for another Convertible RI
+        Use case: Flexible capacity needs"]
+
+        B3["Payment Options:
+        - All Upfront: Max discount
+        - Partial Upfront: Balanced
+        - No Upfront: Monthly payments"]
+    end
+
+    A2 --> B1
+    A2 --> B2
+    A2 --> B3
+
+    subgraph "Savings Plans Types"
+        C1["Compute Savings Plans
+        Save up to 66%
+        Flexibility: Any instance family, region, OS, tenancy
+        Applies to: EC2, Lambda, Fargate
+        Use case: Maximum flexibility"]
+
+        C2["EC2 Instance Savings Plans
+        Save up to 72%
+        Flexibility: Instance size, OS, tenancy within family
+        Applies to: EC2 only
+        Use case: Committed to instance family"]
+
+        C3["SageMaker Savings Plans
+        Save up to 64%
+        Applies to: SageMaker instances
+        Use case: ML training/inference workloads"]
+    end
+
+    A3 --> C1
+    A3 --> C2
+    A3 --> C3
+
+    subgraph "Decision Matrix"
+        D1{"Workload Characteristics"}
+        D2["Stable 24/7?"]
+        D3["Predictable usage?"]
+        D4["Fault-tolerant?"]
+        D5["Flexibility needed?"]
+
+        D1 --> D2
+        D1 --> D3
+        D1 --> D4
+        D1 --> D5
+
+        D2 -->|Yes| E1[Reserved Instance or Savings Plan]
+        D2 -->|No| E2[On-Demand or Spot]
+
+        D3 -->|Yes| E1
+        D3 -->|No| E2
+
+        D4 -->|Yes| E3[Spot Instances]
+        D4 -->|No| E1
+
+        D5 -->|High| E4[Compute Savings Plan]
+        D5 -->|Low| E5[EC2 Instance Savings Plan or Standard RI]
+    end
+
+    subgraph "Cost Comparison: m5.4xlarge (16 vCPU, 64GB RAM)"
+        F1["On-Demand
+        $0.768/hour × 730 hours
+        Monthly: $560.64
+        Annual: $6,727.68
+        Baseline: 100%"]
+
+        F2["Standard RI (1yr Partial Upfront)
+        Upfront: $2,748
+        Hourly: $0.313
+        Monthly: $228.49 + upfront
+        Annual: $3,490
+        Savings: 48%"]
+
+        F3["Standard RI (3yr All Upfront)
+        Upfront: $5,859 total
+        Hourly: $0.224
+        Annual: $1,953
+        Savings: 71%"]
+
+        F4["Compute Savings Plan (1yr)
+        Commitment: $0.35/hour
+        Monthly: $255.50
+        Annual: $3,066
+        Savings: 54%"]
+
+        F5["Spot Instance (avg 70% discount)
+        $0.23/hour (varies)
+        Monthly: $167.90
+        Annual: $2,014.80
+        Savings: 70%
+        Risk: Interruption"]
+    end
+
+    subgraph "Utilization Breakeven"
+        G1["On-Demand baseline: 100%
+        RI/SP breakeven: ~15-20% utilization"]
+
+        G2["Example: $6,000 Standard RI (3yr)
+        Breakeven: 20% usage = 146 hours/month
+        Profitable: >146 hours/month
+        Break-even: ≤146 hours (use On-Demand)"]
+
+        G3["Recommendation:
+        >50% monthly utilization → RI/SP
+        20-50% utilization → Mix RI/SP + On-Demand
+        <20% utilization → On-Demand only"]
+    end
+
+    subgraph "Hybrid Strategy Example"
+        H1["Data Platform: 50 EC2 instances
+        Baseline load: 30 instances (24/7)
+        Peak load: +20 instances (business hours)"]
+
+        H2["Optimal Mix:
+        30 instances → Standard RI (3yr)
+        10 instances → Compute Savings Plan (1yr)
+        10 instances → On-Demand"]
+
+        H3["Cost Breakdown:
+        30 × $1,953 = $58,590 (RI)
+        10 × $3,066 = $30,660 (SP)
+        10 × $2,000 (50% util) = $20,000 (On-Demand)
+        Annual total: $109,250
+        vs All On-Demand: $336,384
+        Savings: $227,134 (67%)"]
+    end
+
+    H1 --> H2 --> H3
+
+    subgraph "Spot Instance Best Practices"
+        I1["✅ Use for batch processing
+        EMR, Glue, ECS Batch"]
+
+        I2["✅ Implement checkpointing
+        Save state every 5-10 minutes"]
+
+        I3["✅ Diversify instance types
+        Request multiple families (m5, c5, r5)"]
+
+        I4["✅ Handle interruptions
+        EC2 Spot Instance Interruption Notice
+        2-minute warning via CloudWatch"]
+
+        I5["✅ Target 70-80% Spot
+        Mix with On-Demand for reliability"]
+
+        I6["✅ Use Spot Fleet
+        Automatic fallback to On-Demand"]
+    end
+
+    subgraph "RI/SP Monitoring"
+        J1[Cost Explorer RI/SP Reports]
+        J2["Metrics:
+        - Utilization: Target >95%
+        - Coverage: Target >80% eligible usage
+        - Expiration: Upcoming expirations"]
+
+        J3["Alerts:
+        - Utilization <90% for 7 days
+        - RIs expiring in 30 days
+        - Underutilized RIs (waste)"]
+
+        J1 --> J2 --> J3
+    end
+
+    subgraph "Real-World Examples"
+        K1["Netflix
+        Strategy: 3yr RIs for core infrastructure,
+                 1yr Compute SPs for experimentation,
+                 80% Spot for batch ETL
+        Result: $100M annual savings"]
+
+        K2["Lyft
+        Strategy: EC2 Instance SPs (committed to c5 family),
+                 Spot for ML training
+        Result: 60% compute cost reduction"]
+
+        K3["Pinterest
+        Strategy: Convertible RIs for flexibility,
+                 Spot for Spark jobs
+        Result: 50% savings on analytical workloads"]
+    end
+
+    subgraph "Common Mistakes"
+        L1["❌ Over-committing
+        Buy RIs without usage analysis
+        Impact: Pay for unused capacity"]
+
+        L2["❌ Wrong instance type
+        Standard RI for changing workload
+        Solution: Use Compute SP or Convertible RI"]
+
+        L3["❌ Ignoring expiration
+        RIs expire, revert to On-Demand
+        Solution: 30-day expiration alerts"]
+
+        L4["❌ No Spot strategy
+        All On-Demand for interruptible work
+        Solution: 70-80% Spot for batch jobs"]
+
+        L5["❌ No monitoring
+        Low utilization goes unnoticed
+        Solution: Weekly RI/SP utilization review"]
+    end
+
+    subgraph "Implementation Workflow"
+        M1["1. Analyze Usage (30 days)
+        Cost Explorer → Rightsizing Recommendations"]
+
+        M2["2. Identify Steady-State
+        Baseline: 24/7 workloads
+        Variable: Bursty workloads"]
+
+        M3["3. Calculate Commitment
+        RI/SP for 70-80% of baseline
+        Keep 20-30% On-Demand buffer"]
+
+        M4["4. Choose RI/SP Type
+        Maximum flexibility: Compute SP
+        Committed family: EC2 Instance SP
+        Maximum discount: Standard RI"]
+
+        M5["5. Purchase and Monitor
+        Buy incrementally (start with 50%)
+        Monitor utilization weekly
+        Adjust quarterly"]
+
+        M1 --> M2 --> M3 --> M4 --> M5
+    end
+
+    subgraph "Cost Optimization KPIs"
+        N1["RI/SP Coverage
+        Target: >80% of On-Demand usage"]
+
+        N2["RI/SP Utilization
+        Target: >95% of purchased capacity"]
+
+        N3["Spot Adoption
+        Target: >70% for fault-tolerant workloads"]
+
+        N4["Total Compute Savings
+        Target: 50-70% vs All On-Demand"]
+    end
+
+    style A1 fill:#ff6b6b,color:#fff
+    style A2 fill:#7ed321,color:#fff
+    style A3 fill:#50e3c2,color:#000
+    style A4 fill:#ffd93d,color:#000
+    style F3 fill:#7ed321,color:#fff
+    style F5 fill:#ffd93d,color:#000
+    style H3 fill:#50e3c2,color:#000
+    style K1 fill:#bd10e0,color:#fff
+    style K2 fill:#bd10e0,color:#fff
+    style K3 fill:#bd10e0,color:#fff

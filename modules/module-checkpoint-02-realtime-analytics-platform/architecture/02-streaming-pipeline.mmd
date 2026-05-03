@@ -1,0 +1,269 @@
+graph TB
+    %% ========================================================================
+    %% STREAMING PIPELINE ARCHITECTURE: DETAILED VIEW
+    %% ========================================================================
+    %% Shows the complete data flow from event producers through ingestion,
+    %% processing, transformation, and storage with error handling
+    %% ========================================================================
+
+    %% Event Producers
+    subgraph Producers["📱 Event Producers"]
+        direction TB
+
+        subgraph RideProducers["Ride Event Producers"]
+            MobileUsers["Mobile Users<br/>10K concurrent<br/>ride_requested<br/>ride_completed"]
+            DispatchSystem["Dispatch System<br/>ride_assigned<br/>ride_accepted"]
+        end
+
+        subgraph LocationProducers["Location Event Producers"]
+            DriverDevices["Driver Devices<br/>5K active drivers<br/>GPS every 5s<br/>~25K events/sec"]
+        end
+
+        subgraph PaymentProducers["Payment Event Producers"]
+            PaymentGateway["Payment Gateway<br/>Stripe/PayPal<br/>Webhooks<br/>~3K events/sec"]
+        end
+
+        subgraph RatingProducers["Rating Event Producers"]
+            RatingApp["Rating Module<br/>Post-ride surveys<br/>In-app ratings<br/>~2K events/sec"]
+        end
+    end
+
+    %% Kinesis Data Streams with Sharding Details
+    subgraph KinesisIngestion["📥 Kinesis Data Streams - Sharded Ingestion"]
+        direction TB
+
+        subgraph RidesStreamDetail["Rides Stream - rides_stream"]
+            RideShard1["Shard 0:<br/>Capacity: 1 MB/s write<br/>1000 records/s<br/>Hash: 0 - 50%<br/>Status: ACTIVE"]
+            RideShard2["Shard 1:<br/>Capacity: 1 MB/s write<br/>1000 records/s<br/>Hash: 50% - 100%<br/>Status: ACTIVE"]
+            RidePartitioning["Partitioning Strategy:<br/>Key: ride_id<br/>Algorithm: MD5 hash<br/>Hot shard handling: enabled"]
+        end
+
+        subgraph LocationsStreamDetail["Locations Stream - locations_stream"]
+            LocationShard1["Shard 0:<br/>Capacity: 1 MB/s write<br/>1000 records/s<br/>Hash: 0 - 50%<br/>Status: ACTIVE"]
+            LocationShard2["Shard 1:<br/>Capacity: 1 MB/s write<br/>1000 records/s<br/>Hash: 50% - 100%<br/>Status: ACTIVE"]
+            LocationPartitioning["Partitioning Strategy:<br/>Key: driver_id<br/>Maintains order per driver<br/>Random distribution"]
+        end
+
+        subgraph PaymentsStreamDetail["Payments Stream - payments_stream"]
+            PaymentShard1["Shard 0:<br/>Capacity: 1 MB/s write<br/>1000 records/s<br/>Hash: 0 - 100%<br/>Status: ACTIVE"]
+            PaymentPartitioning["Partitioning Strategy:<br/>Key: payment_id<br/>Single shard sufficient<br/>Auto-scaling enabled"]
+        end
+
+        subgraph RatingsStreamDetail["Ratings Stream - ratings_stream"]
+            RatingShard1["Shard 0:<br/>Capacity: 1 MB/s write<br/>1000 records/s<br/>Hash: 0 - 100%<br/>Status: ACTIVE"]
+            RatingPartitioning["Partitioning Strategy:<br/>Key: rating_id<br/>Low volume stream<br/>Cost optimized"]
+        end
+
+        subgraph StreamMetrics["Stream Metrics & Monitoring"]
+            StreamHealth["Health Checks:<br/>- Iterator age < 60s<br/>- Write throughput < 80%<br/>- GetRecords latency < 200ms<br/>- ProvisionedThroughputExceeded = 0"]
+        end
+    end
+
+    %% Lambda Consumers with Detailed Configuration
+    subgraph LambdaConsumers["⚡ Lambda Consumer Functions"]
+        direction TB
+
+        subgraph RideConsumer["Ride Processor Configuration"]
+            RideFunction["Lambda: ride-processor<br/>Runtime: Python 3.11<br/>Memory: 512 MB<br/>Timeout: 60s<br/>Concurrency: 100"]
+            RideESM["Event Source Mapping:<br/>Batch size: 100<br/>Batch window: 10s<br/>Parallelization: 10<br/>MaxAge: 60s<br/>OnFailure: SQS DLQ<br/>Retry: 3 attempts"]
+            RideLogic["Processing Logic:<br/>1. Validate event schema<br/>2. Enrich with driver data<br/>3. Calculate metrics<br/>4. Update DynamoDB<br/>5. Archive to S3"]
+        end
+
+        subgraph LocationConsumer["Location Processor Configuration"]
+            LocationFunction["Lambda: location-processor<br/>Runtime: Python 3.11<br/>Memory: 512 MB<br/>Timeout: 60s<br/>Concurrency: 100"]
+            LocationESM["Event Source Mapping:<br/>Batch size: 100<br/>Batch window: 5s<br/>Parallelization: 10<br/>MaxAge: 30s<br/>OnFailure: SQS DLQ<br/>Bisect on error: true"]
+            LocationLogic["Processing Logic:<br/>1. Parse GPS coordinates<br/>2. Geohash encoding<br/>3. Update driver location<br/>4. Check geofence rules<br/>5. Trigger surge pricing"]
+        end
+
+        subgraph PaymentConsumer["Payment Processor Configuration"]
+            PaymentFunction["Lambda: payment-processor<br/>Runtime: Python 3.11<br/>Memory: 512 MB<br/>Timeout: 60s<br/>Concurrency: 50"]
+            PaymentESM["Event Source Mapping:<br/>Batch size: 100<br/>Batch window: 10s<br/>Parallelization: 5<br/>MaxAge: 60s<br/>OnFailure: SQS DLQ<br/>Idempotency: enabled"]
+            PaymentLogic["Processing Logic:<br/>1. Validate payment data<br/>2. Check fraud rules<br/>3. Update ride payment<br/>4. Emit event to SNS<br/>5. Archive transaction"]
+        end
+
+        subgraph RatingConsumer["Rating Processor Configuration"]
+            RatingFunction["Lambda: rating-processor<br/>Runtime: Python 3.11<br/>Memory: 256 MB<br/>Timeout: 30s<br/>Concurrency: 20"]
+            RatingESM["Event Source Mapping:<br/>Batch size: 50<br/>Batch window: 20s<br/>Parallelization: 5<br/>MaxAge: 120s<br/>OnFailure: SQS DLQ<br/>StartingPosition: LATEST"]
+            RatingLogic["Processing Logic:<br/>1. Validate rating value<br/>2. Update driver rating<br/>3. Calculate averages<br/>4. Flag low ratings<br/>5. Notify drivers"]
+        end
+    end
+
+    %% Kinesis Data Analytics Applications
+    subgraph AnalyticsApps["📊 Kinesis Data Analytics - Stream Processing"]
+        direction TB
+
+        subgraph SurgePricingApp["Surge Pricing Analytics"]
+            SurgeConfig["Configuration:<br/>Application: surge-pricing<br/>Runtime: Flink 1.15<br/>KPU: 1 (4 GB memory)<br/>Parallelism: 2"]
+            SurgeSQL["Flink SQL Query:<br/>SELECT region,<br/>  COUNT(*) as ride_count,<br/>  AVG(wait_time) as avg_wait<br/>FROM rides_stream<br/>GROUP BY TUMBLE(event_time, INTERVAL '5' MINUTE),<br/>  region<br/>HAVING ride_count > 100"]
+            SurgeOutput["Output:<br/>Destination: kinesis-analytics-output<br/>Format: JSON<br/>Trigger: surge multiplier update"]
+        end
+
+        subgraph MetricsApp["Real-Time Metrics Analytics"]
+            MetricsConfig["Configuration:<br/>Application: real-time-metrics<br/>Runtime: Flink 1.15<br/>KPU: 1 (4 GB memory)<br/>Parallelism: 2"]
+            MetricsSQL["Flink SQL Query:<br/>SELECT<br/>  COUNT(DISTINCT ride_id) as rides,<br/>  SUM(fare_amount) as revenue,<br/>  AVG(trip_duration) as avg_duration<br/>FROM rides_stream<br/>GROUP BY HOP(event_time, INTERVAL '1' MINUTE,<br/>  INTERVAL '5' MINUTE)"]
+            MetricsOutput["Output:<br/>Destination: aggregated_metrics<br/>Format: Parquet<br/>Update: every 1 minute"]
+        end
+
+        subgraph HotSpotsApp["Hot Spots Detection"]
+            HotSpotsConfig["Configuration:<br/>Application: hot-spots<br/>Runtime: Flink 1.15<br/>KPU: 1 (4 GB memory)<br/>Parallelism: 2"]
+            HotSpotsSQL["Flink SQL Query:<br/>SELECT geohash,<br/>  COUNT(*) as location_count<br/>FROM locations_stream<br/>GROUP BY SESSION(event_time, INTERVAL '10' MINUTE),<br/>  geohash<br/>HAVING location_count > 50"]
+            HotSpotsOutput["Output:<br/>Destination: hot-spots-output<br/>Format: GeoJSON<br/>Visualization: QuickSight map"]
+        end
+    end
+
+    %% State Management
+    subgraph StateManagement["💾 State Management - DynamoDB"]
+        direction TB
+
+        subgraph RidesState["Rides State Table"]
+            RidesSchema["Schema:<br/>PK: ride_id (String)<br/>SK: - (none)<br/>Attributes: status, driver_id,<br/>  user_id, start_time, end_time,<br/>  fare, payment_status"]
+            RidesGSI["GSI: status-timestamp-index<br/>PK: status<br/>SK: timestamp<br/>Projection: ALL<br/>Use: Query rides by status"]
+            RidesTTL["TTL: ttl_timestamp<br/>Expiration: 7 days<br/>Archive: Before deletion"]
+        end
+
+        subgraph DriversState["Drivers State Table"]
+            DriversSchema["Schema:<br/>PK: driver_id (String)<br/>SK: - (none)<br/>Attributes: status, location,<br/>  current_ride, rating,<br/>  total_rides"]
+            DriversGSI["GSI: location-index<br/>PK: geohash (String)<br/>SK: status<br/>Projection: ALL<br/>Use: Find nearby drivers"]
+            DriversStream["DynamoDB Stream:<br/>Type: NEW_AND_OLD_IMAGES<br/>Use: CDC to S3<br/>Retention: 24 hours"]
+        end
+
+        subgraph MetricsState["Metrics State Table"]
+            MetricsSchema["Schema:<br/>PK: metric_name (String)<br/>SK: timestamp (Number)<br/>Attributes: value, unit,<br/>  dimensions"]
+            MetricsCapacity["Capacity Mode:<br/>Billing: PAY_PER_REQUEST<br/>Auto-scaling: N/A<br/>Cost optimization"]
+            MetricsTTL["TTL: ttl_timestamp<br/>Expiration: 30 days<br/>Archive: Aggregated only"]
+        end
+    end
+
+    %% Archive Storage
+    subgraph ArchiveStorage["🗄️ Archive Storage - S3"]
+        direction TB
+
+        subgraph RidesArchive["Rides Archive Bucket"]
+            RidesPath["Path Structure:<br/>s3://streaming-archive/rides/<br/>  year=2026/month=03/day=09/<br/>  hour=14/rides-xxxxx.parquet"]
+            RidesFormat["Format Details:<br/>Compression: SNAPPY<br/>Row group: 128 MB<br/>Page size: 1 MB<br/>Encoding: DICT + RLE"]
+            RidesLifecycle["Lifecycle Policy:<br/>Standard: 0-90 days<br/>Glacier: 90-365 days<br/>Deep Archive: 365+ days<br/>Delete: Never (compliance)"]
+        end
+
+        subgraph LocationsArchive["Locations Archive Bucket"]
+            LocationsPath["Path Structure:<br/>s3://streaming-archive/locations/<br/>  year=2026/month=03/day=09/<br/>  hour=14/locations-xxxxx.parquet"]
+            LocationsFormat["Format Details:<br/>Compression: SNAPPY<br/>Geospatial: H3 index<br/>Precision: 9 (street level)<br/>Optimization: Spatial indexing"]
+            LocationsLifecycle["Lifecycle Policy:<br/>Standard: 0-30 days<br/>Glacier: 30-90 days<br/>Delete: After 90 days<br/>Reason: High volume, less value"]
+        end
+
+        subgraph PaymentsArchive["Payments Archive Bucket"]
+            PaymentsPath["Path Structure:<br/>s3://streaming-archive/payments/<br/>  year=2026/month=03/day=09/<br/>  hour=14/payments-xxxxx.parquet"]
+            PaymentsFormat["Format Details:<br/>Encryption: SSE-KMS<br/>Key: payments-key<br/>Audit: Enabled<br/>Compliance: PCI-DSS"]
+            PaymentsLifecycle["Lifecycle Policy:<br/>Standard: 0-365 days<br/>Glacier: 365-2555 days (7 years)<br/>Delete: After 2555 days<br/>Reason: Regulatory requirement"]
+        end
+    end
+
+    %% Error Handling and Retry Logic
+    subgraph ErrorHandling["☠️ Error Handling & Retry Strategy"]
+        direction TB
+
+        subgraph DLQManagement["Dead Letter Queues"]
+            RideDLQ["SQS: ride-dlq<br/>Retention: 14 days<br/>Max receives: 1<br/>Alarm: > 10 messages"]
+            LocationDLQ["SQS: location-dlq<br/>Retention: 14 days<br/>Max receives: 1<br/>Alarm: > 10 messages"]
+            PaymentDLQ["SQS: payment-dlq<br/>Retention: 14 days<br/>Max receives: 1<br/>Alarm: > 5 messages"]
+            RatingDLQ["SQS: rating-dlq<br/>Retention: 14 days<br/>Max receives: 1<br/>Alarm: > 10 messages"]
+        end
+
+        subgraph RetryStrategy["Retry Configuration"]
+            ImmediateRetry["Lambda Retry (Automatic):<br/>Attempts: 2<br/>Delay: Exponential<br/>Max delay: 5 minutes<br/>Bisect on error: true"]
+            DLQProcessing["DLQ Processing (Manual):<br/>Lambda: dlq-processor<br/>Trigger: CloudWatch alarm<br/>Action: Manual review + reprocess<br/>Notification: SNS to ops team"]
+        end
+
+        subgraph ErrorMetrics["Error Monitoring"]
+            ErrorDashboard["CloudWatch Dashboard:<br/>- Total errors by function<br/>- DLQ depth trending<br/>- Retry success rate<br/>- Error types (by exception)"]
+            ErrorAlarms["CloudWatch Alarms:<br/>- Error rate > 5%<br/>- DLQ depth > threshold<br/>- Iterator age > 60s<br/>- Throttled requests > 0"]
+        end
+    end
+
+    %% Data Flow Connections
+    MobileUsers -->|"HTTP POST<br/>partition_key: ride_id"| RideShard1
+    MobileUsers -->|"HTTP POST<br/>partition_key: ride_id"| RideShard2
+    DispatchSystem -->|"HTTP POST<br/>partition_key: ride_id"| RideShard1
+    DispatchSystem -->|"HTTP POST<br/>partition_key: ride_id"| RideShard2
+
+    DriverDevices -->|"HTTP PUT<br/>partition_key: driver_id"| LocationShard1
+    DriverDevices -->|"HTTP PUT<br/>partition_key: driver_id"| LocationShard2
+
+    PaymentGateway -->|"Webhook<br/>partition_key: payment_id"| PaymentShard1
+
+    RatingApp -->|"HTTP POST<br/>partition_key: rating_id"| RatingShard1
+
+    %% Kinesis to Lambda ESM
+    RideShard1 -->|"GetRecords<br/>Enhanced fan-out"| RideESM
+    RideShard2 -->|"GetRecords<br/>Enhanced fan-out"| RideESM
+    RideESM -->|"Invoke<br/>Async batch"| RideFunction
+
+    LocationShard1 -->|"GetRecords<br/>Enhanced fan-out"| LocationESM
+    LocationShard2 -->|"GetRecords<br/>Enhanced fan-out"| LocationESM
+    LocationESM -->|"Invoke<br/>Async batch"| LocationFunction
+
+    PaymentShard1 -->|"GetRecords<br/>Polling"| PaymentESM
+    PaymentESM -->|"Invoke<br/>Async batch"| PaymentFunction
+
+    RatingShard1 -->|"GetRecords<br/>Polling"| RatingESM
+    RatingESM -->|"Invoke<br/>Async batch"| RatingFunction
+
+    %% Lambda to State Management
+    RideFunction -->|"PutItem<br/>UpdateItem<br/>ConditionExpression"| RidesSchema
+    LocationFunction -->|"UpdateItem<br/>location + timestamp"| DriversSchema
+    PaymentFunction -->|"UpdateItem<br/>payment_status"| RidesSchema
+    RatingFunction -->|"UpdateItem<br/>Atomic counter"| DriversSchema
+
+    RideFunction -->|"PutMetricData<br/>Custom metrics"| MetricsSchema
+    LocationFunction -->|"PutMetricData<br/>Position updates/sec"| MetricsSchema
+
+    %% Lambda to Archive
+    RideFunction -->|"PutObject<br/>Buffered writes"| RidesPath
+    LocationFunction -->|"PutObject<br/>Buffered writes"| LocationsPath
+    PaymentFunction -->|"PutObject<br/>Immediate write"| PaymentsPath
+    RatingFunction -->|"PutObject<br/>Aggregated write"| RidesPath
+
+    %% Kinesis to Analytics
+    RideShard1 -->|"Continuous query<br/>Flink consumer"| SurgeSQL
+    RideShard2 -->|"Continuous query<br/>Flink consumer"| SurgeSQL
+
+    LocationShard1 -->|"Continuous query<br/>Flink consumer"| HotSpotsSQL
+    LocationShard2 -->|"Continuous query<br/>Flink consumer"| HotSpotsSQL
+
+    RideShard1 -->|"Continuous query<br/>Flink consumer"| MetricsSQL
+    RideShard2 -->|"Continuous query<br/>Flink consumer"| MetricsSQL
+
+    %% Analytics to Output
+    SurgeSQL -->|"Sink connector<br/>JSON format"| SurgeOutput
+    MetricsSQL -->|"Sink connector<br/>Parquet format"| MetricsOutput
+    HotSpotsSQL -->|"Sink connector<br/>GeoJSON format"| HotSpotsOutput
+
+    %% Error Flows
+    RideFunction -.->|"On failure<br/>After 2 retries"| RideDLQ
+    LocationFunction -.->|"On failure<br/>After 2 retries"| LocationDLQ
+    PaymentFunction -.->|"On failure<br/>After 2 retries"| PaymentDLQ
+    RatingFunction -.->|"On failure<br/>After 2 retries"| RatingDLQ
+
+    RideDLQ -->|"Alarm triggered"| ErrorDashboard
+    LocationDLQ -->|"Alarm triggered"| ErrorDashboard
+    PaymentDLQ -->|"Alarm triggered"| ErrorDashboard
+    RatingDLQ -->|"Alarm triggered"| ErrorDashboard
+
+    ErrorDashboard -->|"Threshold breach"| ErrorAlarms
+    ErrorAlarms -->|"Publish to SNS"| DLQProcessing
+
+    %% Styling
+    classDef producer fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef kinesis fill:#ff9800,stroke:#e65100,stroke-width:3px
+    classDef lambda fill:#ff6f00,stroke:#e65100,stroke-width:2px
+    classDef analytics fill:#9c27b0,stroke:#4a148c,stroke-width:2px
+    classDef state fill:#4caf50,stroke:#1b5e20,stroke-width:2px
+    classDef archive fill:#8bc34a,stroke:#33691e,stroke-width:2px
+    classDef error fill:#f44336,stroke:#b71c1c,stroke-width:2px
+
+    class MobileUsers,DispatchSystem,DriverDevices,PaymentGateway,RatingApp producer
+    class RideShard1,RideShard2,LocationShard1,LocationShard2,PaymentShard1,RatingShard1 kinesis
+    class RideFunction,LocationFunction,PaymentFunction,RatingFunction lambda
+    class SurgeSQL,MetricsSQL,HotSpotsSQL analytics
+    class RidesSchema,DriversSchema,MetricsSchema state
+    class RidesPath,LocationsPath,PaymentsPath archive
+    class RideDLQ,LocationDLQ,PaymentDLQ,RatingDLQ,ErrorDashboard error

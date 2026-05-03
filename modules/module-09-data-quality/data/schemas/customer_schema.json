@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Customer Schema",
+  "description": "Schema for customer data with data quality rules",
+  "type": "object",
+  "properties": {
+    "customer_id": {
+      "type": "integer",
+      "description": "Unique customer identifier",
+      "minimum": 1
+    },
+    "first_name": {
+      "type": "string",
+      "description": "Customer first name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "last_name": {
+      "type": "string",
+      "description": "Customer last name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "email": {
+      "type": "string",
+      "description": "Customer email address",
+      "format": "email",
+      "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Customer phone number",
+      "minLength": 10
+    },
+    "date_of_birth": {
+      "type": "string",
+      "description": "Customer date of birth (YYYY-MM-DD)",
+      "format": "date"
+    },
+    "registration_date": {
+      "type": "string",
+      "description": "Account registration date (YYYY-MM-DD)",
+      "format": "date"
+    },
+    "country": {
+      "type": "string",
+      "description": "ISO country code",
+      "minLength": 2,
+      "maxLength": 3
+    },
+    "city": {
+      "type": "string",
+      "description": "Customer city",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "zipcode": {
+      "type": "string",
+      "description": "Postal/ZIP code"
+    },
+    "account_status": {
+      "type": "string",
+      "description": "Account status",
+      "enum": ["active", "inactive", "suspended", "pending"]
+    }
+  },
+  "required": [
+    "customer_id",
+    "first_name",
+    "last_name",
+    "email",
+    "registration_date",
+    "account_status"
+  ],
+  "additionalProperties": false,
+
+  "qualityRules": {
+    "completeness": {
+      "critical_columns": ["customer_id", "email", "registration_date"],
+      "threshold": 0.95
+    },
+    "uniqueness": {
+      "unique_columns": ["customer_id", "email"]
+    },
+    "validity": {
+      "email_format": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+      "phone_min_length": 10,
+      "allowed_statuses": ["active", "inactive", "suspended", "pending"]
+    },
+    "consistency": {
+      "registration_date_after_birth": true,
+      "date_of_birth_not_future": true
+    },
+    "accuracy": {
+      "min_age": 18,
+      "max_age": 120
+    }
+  }
+}

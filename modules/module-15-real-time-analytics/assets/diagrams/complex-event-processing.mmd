@@ -1,0 +1,96 @@
+graph TB
+    %% Complex Event Processing - Pattern Detection with Flink CEP
+
+    subgraph "Event Stream"
+        E1[Event: Login<br/>user=123, ts=10:00]:::event
+        E2[Event: ViewProduct<br/>user=123, ts=10:02]:::event
+        E3[Event: AddToCart<br/>user=123, ts=10:04]:::event
+        E4[Event: HighValuePurchase<br/>user=123, amount=5000, ts=10:05]:::event
+        E5[Event: ShippingChange<br/>user=123, new_address, ts=10:06]:::event
+    end
+
+    E1 --> E2 --> E3 --> E4 --> E5
+
+    subgraph "CEP Pattern Definition"
+        P1["PATTERN: Fraud Detection<br/>Login → HighValuePurchase → ShippingChange<br/>WITHIN 10 MINUTES"]:::pattern
+
+        P2["CONDITIONS:<br/>• Login from new IP<br/>• Purchase > $1000<br/>• Shipping address != billing<br/>• All within 10 min window"]:::pattern
+    end
+
+    E5 --> P1
+    P1 --> P2
+
+    subgraph "Flink CEP Library"
+        CEP1[Pattern Stream<br/>PatternStream API]:::cep
+        CEP2[Pattern Matching<br/>State Machine]:::cep
+        CEP3[Event Buffer<br/>Sliding Window]:::cep
+        CEP4[Match Results<br/>Matched Sequences]:::cep
+    end
+
+    P2 --> CEP1
+    CEP1 --> CEP2
+    CEP2 --> CEP3
+    CEP3 --> CEP4
+
+    subgraph "Pattern Examples"
+        EX1["1. Account Takeover<br/>Login(new_device) → PasswordChange → EmailChange<br/>WITHIN 5 MINUTES"]:::example
+
+        EX2["2. Impossible Travel<br/>Login(NY, 10:00) → Login(LA, 10:30)<br/>DISTANCE > 3000 miles in 30 min"]:::example
+
+        EX3["3. Velocity Check<br/>Purchase → Purchase → Purchase<br/>3 purchases WITHIN 1 MINUTE"]:::example
+
+        EX4["4. Abandonment<br/>AddToCart → ViewCart → (NO Checkout)<br/>WITHIN 1 HOUR → Send reminder"]:::example
+    end
+
+    CEP4 --> EX1
+    CEP4 --> EX2
+    CEP4 --> EX3
+    CEP4 --> EX4
+
+    subgraph "Flink SQL - MATCH_RECOGNIZE"
+        SQL["SELECT *<br/>FROM transactions<br/>MATCH_RECOGNIZE (<br/>  PARTITION BY user_id<br/>  ORDER BY event_time<br/>  MEASURES<br/>    A.event_time AS login_time,<br/>    C.event_time AS purchase_time,<br/>    C.amount AS purchase_amount<br/>  ONE ROW PER MATCH<br/>  AFTER MATCH SKIP TO NEXT ROW<br/>  PATTERN (A B* C)<br/>  WITHIN INTERVAL '10' MINUTE<br/>  DEFINE<br/>    A AS A.event_type = 'login',<br/>    B AS B.event_type IN ('view_product', 'add_to_cart'),<br/>    C AS C.event_type = 'purchase' AND C.amount > 1000<br/>)"]:::sql
+    end
+
+    EX1 --> SQL
+
+    subgraph "Pattern Actions"
+        ACT1[Alert: Send to Security Team<br/>SNS Topic]:::action
+        ACT2[Block: Temporary Account Lock<br/>DynamoDB Flag]:::action
+        ACT3[Score: Update Fraud Score<br/>SageMaker Endpoint]:::action
+        ACT4[Log: Write to Audit Trail<br/>S3 Parquet]:::action
+    end
+
+    SQL --> ACT1
+    SQL --> ACT2
+    SQL --> ACT3
+    SQL --> ACT4
+
+    subgraph "Real-World Implementations"
+        RW1["PayPal: Fraud detection<br/>80% fraud reduction<br/>500M events/day"]:::realworld
+
+        RW2["Uber: Driver behavior<br/>Detect unsafe driving<br/>Pattern: HardBrake → Swerve → Acceleration"]:::realworld
+
+        RW3["Netflix: Viewing patterns<br/>Detect account sharing<br/>Pattern: Login(IP_A) → Stream → Login(IP_B)<br/>WITHIN 5 MINUTES"]:::realworld
+    end
+
+    ACT4 --> RW1
+    ACT4 --> RW2
+    ACT4 --> RW3
+
+    %% Styling
+    classDef event fill:#4A90E2,stroke:#2E6FA8,stroke-width:2px,color:#fff
+    classDef pattern fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff
+    classDef cep fill:#E6526F,stroke:#C7455B,stroke-width:3px,color:#fff
+    classDef example fill:#7ED321,stroke:#5A9E18,stroke-width:2px,color:#fff
+    classDef sql fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff,text-align:left
+    classDef action fill:#F5A623,stroke:#C17F1A,stroke-width:3px,color:#fff
+    classDef realworld fill:#9B59B6,stroke:#8E44AD,stroke-width:2px,color:#fff
+
+    %% CEP Operators
+    subgraph "CEP Operators"
+        OP["• next(): Strict contiguity (A → B)<br/>• followedBy(): Relaxed (A ... B)<br/>• followedByAny(): Non-deterministic<br/>• notNext(): Negative pattern (NOT B after A)<br/>• within(): Time constraint<br/>• times(): Repetition (A{3} = A A A)<br/>• oneOrMore(): A+ (at least once)<br/>• timesOrMore(): A{2,} (2 or more)"]:::operator
+    end
+
+    classDef operator fill:#1ABC9C,stroke:#16A085,stroke-width:2px,color:#fff,text-align:left
+
+    CEP2 --> OP

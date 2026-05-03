@@ -1,0 +1,152 @@
+[
+  {
+    "customer_id": "CUST-001",
+    "full_name": "John Michael Smith",
+    "ssn": "123-45-6789",
+    "date_of_birth": "1985-03-15",
+    "email": "john.smith@example.com",
+    "phone": "+1-555-123-4567",
+    "address": {
+      "street": "123 Main Street",
+      "city": "San Francisco",
+      "state": "CA",
+      "zip": "94102",
+      "country": "USA"
+    },
+    "credit_card": {
+      "number": "4532-1234-5678-9010",
+      "cvv": "123",
+      "expiry": "12/2025"
+    },
+    "medical": {
+      "patient_id": "MRN-12345",
+      "diagnosis": "Type 2 Diabetes",
+      "medications": ["Metformin", "Insulin"]
+    },
+    "financial": {
+      "account_number": "987654321",
+      "routing_number": "021000021",
+      "annual_income": 125000
+    }
+  },
+  {
+    "customer_id": "CUST-002",
+    "full_name": "Maria Elena Rodriguez",
+    "ssn": "234-56-7890",
+    "date_of_birth": "1990-07-22",
+    "email": "maria.rodriguez@example.com",
+    "phone": "+1-555-234-5678",
+    "address": {
+      "street": "456 Oak Avenue",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "90001",
+      "country": "USA"
+    },
+    "credit_card": {
+      "number": "5425-2334-3010-9876",
+      "cvv": "456",
+      "expiry": "06/2026"
+    },
+    "medical": {
+      "patient_id": "MRN-23456",
+      "diagnosis": "Hypertension",
+      "medications": ["Lisinopril", "Amlodipine"]
+    },
+    "financial": {
+      "account_number": "876543210",
+      "routing_number": "026009593",
+      "annual_income": 98000
+    }
+  },
+  {
+    "customer_id": "CUST-003",
+    "full_name": "David Lee Chen",
+    "ssn": "345-67-8901",
+    "date_of_birth": "1982-11-08",
+    "email": "david.chen@example.com",
+    "phone": "+1-555-345-6789",
+    "address": {
+      "street": "789 Pine Road",
+      "city": "Seattle",
+      "state": "WA",
+      "zip": "98101",
+      "country": "USA"
+    },
+    "credit_card": {
+      "number": "3782-822463-10005",
+      "cvv": "789",
+      "expiry": "03/2027"
+    },
+    "medical": {
+      "patient_id": "MRN-34567",
+      "diagnosis": "Asthma",
+      "medications": ["Albuterol", "Fluticasone"]
+    },
+    "financial": {
+      "account_number": "765432109",
+      "routing_number": "125000024",
+      "annual_income": 142000
+    }
+  },
+  {
+    "customer_id": "CUST-004",
+    "full_name": "Sarah Johnson Williams",
+    "ssn": "456-78-9012",
+    "date_of_birth": "1995-02-14",
+    "email": "sarah.williams@example.com",
+    "phone": "+1-555-456-7890",
+    "address": {
+      "street": "321 Elm Street",
+      "city": "Austin",
+      "state": "TX",
+      "zip": "73301",
+      "country": "USA"
+    },
+    "credit_card": {
+      "number": "6011-1111-1111-1117",
+      "cvv": "321",
+      "expiry": "09/2025"
+    },
+    "medical": {
+      "patient_id": "MRN-45678",
+      "diagnosis": "Anxiety Disorder",
+      "medications": ["Sertraline", "Buspirone"]
+    },
+    "financial": {
+      "account_number": "654321098",
+      "routing_number": "111000025",
+      "annual_income": 87000
+    }
+  },
+  {
+    "customer_id": "CUST-005",
+    "full_name": "Michael James Taylor",
+    "ssn": "567-89-0123",
+    "date_of_birth": "1978-09-30",
+    "email": "michael.taylor@example.com",
+    "phone": "+1-555-567-8901",
+    "address": {
+      "street": "654 Maple Drive",
+      "city": "Boston",
+      "state": "MA",
+      "zip": "02108",
+      "country": "USA"
+    },
+    "credit_card": {
+      "number": "3056-9309-0259-04",
+      "cvv": "654",
+      "expiry": "11/2026"
+    },
+    "medical": {
+      "patient_id": "MRN-56789",
+      "diagnosis": "Chronic Back Pain",
+      "medications": ["Ibuprofen", "Gabapentin"]
+    },
+    "financial": {
+      "account_number": "543210987",
+      "routing_number": "011401533",
+      "annual_income": 156000
+    }
+  }
+]

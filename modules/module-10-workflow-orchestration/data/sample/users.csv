@@ -1,0 +1,11 @@
+id,name,email,age,city,registration_date,status
+1,Ana García,ana.garcia@example.com,28,Madrid,2024-01-15,active
+2,Carlos López,carlos.lopez@example.com,35,Barcelona,2024-01-16,active
+3,María Rodríguez,maria.rodriguez@example.com,42,Valencia,2024-01-17,active
+4,Juan Martínez,juan.martinez@example.com,31,Sevilla,2024-01-18,inactive
+5,Laura Sánchez,laura.sanchez@example.com,26,Bilbao,2024-01-19,active
+6,Pedro González,pedro.gonzalez@example.com,39,Málaga,2024-01-20,active
+7,Isabel Fernández,isabel.fernandez@example.com,33,Zaragoza,2024-01-21,active
+8,Miguel Torres,miguel.torres@example.com,45,Murcia,2024-01-22,inactive
+9,Carmen Díaz,carmen.diaz@example.com,29,Palma,2024-01-23,active
+10,José Ruiz,jose.ruiz@example.com,37,Córdoba,2024-01-24,active

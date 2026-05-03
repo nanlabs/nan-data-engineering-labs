@@ -1,0 +1,775 @@
+{
+  "resources": [
+    {
+      "resource_type": "EC2 Instance",
+      "resource_id": "i-0123456789abcdef0",
+      "resource_name": "prod-data-platform-01",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "data-platform",
+        "Environment": "prod",
+        "Owner": "john.doe@company.com",
+        "Application": "Spark Cluster",
+        "Backup": "Daily",
+        "Compliance": "SOC2"
+      },
+      "monthly_cost": 69.12,
+      "validation": "valid",
+      "notes": "Production instance with all required tags"
+    },
+    {
+      "resource_type": "EC2 Instance",
+      "resource_id": "i-9876543210fedcba0",
+      "resource_name": "dev-batch-worker-01",
+      "tags": {
+        "CostCenter": "CC-67890",
+        "Team": "Data",
+        "Project": "batch-processing",
+        "Environment": "dev",
+        "Owner": "jane.smith@company.com",
+        "Application": "ETL Worker",
+        "PurchaseType": "Spot",
+        "Expiration": "2024-12-31"
+      },
+      "monthly_cost": 70.56,
+      "validation": "valid",
+      "notes": "Development instance using Spot, scheduled for expiration"
+    },
+    {
+      "resource_type": "EC2 Instance",
+      "resource_id": "i-abcdef0123456789a",
+      "resource_name": "dev-api-test",
+      "tags": {
+        "CostCenter": "CC-54321",
+        "Team": "Engineering",
+        "Project": "api-backend",
+        "Environment": "dev",
+        "Owner": "dev-team@company.com"
+      },
+      "monthly_cost": 29.95,
+      "validation": "warning",
+      "notes": "Missing Application tag (optional but recommended)"
+    },
+    {
+      "resource_type": "EC2 Instance",
+      "resource_id": "i-fedcba9876543210b",
+      "resource_name": "test-temp-instance",
+      "tags": {
+        "Team": "Engineering",
+        "Project": "api-backend",
+        "Environment": "test",
+        "Owner": "test-user@company.com"
+      },
+      "monthly_cost": 14.98,
+      "validation": "invalid",
+      "notes": "Missing required CostCenter tag"
+    },
+    {
+      "resource_type": "S3 Bucket",
+      "resource_id": "s3-bucket-data-lake",
+      "resource_name": "company-data-lake-prod",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Data",
+        "Project": "data-lake",
+        "Environment": "prod",
+        "Owner": "data-team@company.com",
+        "Application": "Data Lake",
+        "DataClassification": "Internal",
+        "Retention": "7years"
+      },
+      "monthly_cost": 351.21,
+      "validation": "valid",
+      "notes": "Standard storage with proper lifecycle policies"
+    },
+    {
+      "resource_type": "S3 Bucket",
+      "resource_id": "s3-bucket-archives",
+      "resource_name": "company-archives-prod",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Data",
+        "Project": "archives",
+        "Environment": "prod",
+        "Owner": "data-team@company.com",
+        "Application": "Archive Storage",
+        "DataClassification": "Confidential",
+        "Retention": "10years"
+      },
+      "monthly_cost": 278.06,
+      "validation": "valid",
+      "notes": "Multi-tier storage: IA + Glacier + Deep Archive"
+    },
+    {
+      "resource_type": "S3 Bucket",
+      "resource_id": "s3-bucket-logs",
+      "resource_name": "company-logs-prod",
+      "tags": {
+        "CostCenter": "CC-99999",
+        "Team": "DevOps",
+        "Project": "logging",
+        "Environment": "prod",
+        "Owner": "devops@company.com"
+      },
+      "monthly_cost": 58.42,
+      "validation": "warning",
+      "notes": "Missing Application tag, consider adding Retention policy"
+    },
+    {
+      "resource_type": "RDS Instance",
+      "resource_id": "db-prod-analytics",
+      "resource_name": "analytics-postgres-prod",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Data",
+        "Project": "analytics",
+        "Environment": "prod",
+        "Owner": "data-team@company.com",
+        "Application": "Analytics DB",
+        "Engine": "PostgreSQL-14",
+        "MultiAZ": "true",
+        "Backup": "Daily"
+      },
+      "monthly_cost": 138.24,
+      "validation": "valid",
+      "notes": "Production database with Multi-AZ and daily backups"
+    },
+    {
+      "resource_type": "RDS Instance",
+      "resource_id": "db-dev-test",
+      "resource_name": "test-mysql-dev",
+      "tags": {
+        "CostCenter": "CC-54321",
+        "Team": "Engineering",
+        "Project": "api-backend",
+        "Environment": "dev",
+        "Owner": "dev-team@company.com",
+        "Engine": "MySQL-8.0"
+      },
+      "monthly_cost": 48.96,
+      "validation": "warning",
+      "notes": "Development database, consider stopping during off-hours"
+    },
+    {
+      "resource_type": "Lambda Function",
+      "resource_id": "arn:aws:lambda:us-east-1:123456789012:function:etl-processor",
+      "resource_name": "etl-processor",
+      "tags": {
+        "CostCenter": "CC-67890",
+        "Team": "Data",
+        "Project": "etl-pipeline",
+        "Environment": "prod",
+        "Owner": "data-team@company.com",
+        "Application": "ETL Processor",
+        "Runtime": "Python3.11",
+        "Memory": "1024"
+      },
+      "monthly_cost": 15.60,
+      "validation": "valid",
+      "notes": "Serverless ETL with efficient memory configuration"
+    },
+    {
+      "resource_type": "Lambda Function",
+      "resource_id": "arn:aws:lambda:us-east-1:123456789012:function:api-handler",
+      "resource_name": "api-handler",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "api-backend",
+        "Environment": "prod",
+        "Owner": "backend-team@company.com",
+        "Application": "API Gateway Handler",
+        "Runtime": "Python3.11",
+        "Memory": "512"
+      },
+      "monthly_cost": 12.24,
+      "validation": "valid",
+      "notes": "Low-latency API handler with right-sized memory"
+    },
+    {
+      "resource_type": "Lambda Function",
+      "resource_id": "arn:aws:lambda:us-east-1:123456789012:function:cleanup-automation",
+      "resource_name": "cleanup-automation",
+      "tags": {
+        "Team": "FinOps",
+        "Project": "cost-optimization",
+        "Environment": "prod"
+      },
+      "monthly_cost": 2.50,
+      "validation": "invalid",
+      "notes": "Missing required tags: CostCenter, Owner"
+    },
+    {
+      "resource_type": "DynamoDB Table",
+      "resource_id": "users-table",
+      "resource_name": "users-prod",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "api-backend",
+        "Environment": "prod",
+        "Owner": "backend-team@company.com",
+        "Application": "User Management",
+        "BillingMode": "PAY_PER_REQUEST",
+        "PointInTimeRecovery": "Enabled"
+      },
+      "monthly_cost": 89.52,
+      "validation": "valid",
+      "notes": "On-demand billing with PITR for compliance"
+    },
+    {
+      "resource_type": "DynamoDB Table",
+      "resource_id": "orders-table",
+      "resource_name": "orders-prod",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "api-backend",
+        "Environment": "prod",
+        "Owner": "backend-team@company.com",
+        "Application": "Order Management",
+        "BillingMode": "PAY_PER_REQUEST"
+      },
+      "monthly_cost": 149.50,
+      "validation": "valid",
+      "notes": "High-traffic table with on-demand scaling"
+    },
+    {
+      "resource_type": "Glue Job",
+      "resource_id": "glue-job-daily-etl",
+      "resource_name": "daily-etl-processor",
+      "tags": {
+        "CostCenter": "CC-67890",
+        "Team": "Data",
+        "Project": "etl-pipeline",
+        "Environment": "prod",
+        "Owner": "data-team@company.com",
+        "Application": "Daily ETL",
+        "JobType": "PythonShell",
+        "Schedule": "cron(0 2 * * ? *)"
+      },
+      "monthly_cost": 33.00,
+      "validation": "valid",
+      "notes": "Python Shell job (cheaper than Spark for small datasets)"
+    },
+    {
+      "resource_type": "Glue Crawler",
+      "resource_id": "glue-crawler-data-lake",
+      "resource_name": "data-lake-crawler",
+      "tags": {
+        "CostCenter": "CC-67890",
+        "Team": "Data",
+        "Project": "data-lake",
+        "Environment": "prod",
+        "Owner": "data-team@company.com",
+        "Application": "Glue Catalog",
+        "Schedule": "weekly"
+      },
+      "monthly_cost": 6.60,
+      "validation": "valid",
+      "notes": "Weekly crawler for schema updates"
+    },
+    {
+      "resource_type": "Redshift Cluster",
+      "resource_id": "redshift-cluster-prod",
+      "resource_name": "analytics-warehouse",
+      "tags": {
+        "CostCenter": "CC-67890",
+        "Team": "Data",
+        "Project": "warehouse",
+        "Environment": "prod",
+        "Owner": "data-team@company.com",
+        "Application": "Analytics Warehouse",
+        "NodeType": "dc2.large",
+        "NumberOfNodes": "2"
+      },
+      "monthly_cost": 360.00,
+      "validation": "valid",
+      "notes": "2-node cluster, consider RA3 with managed storage for cost optimization"
+    },
+    {
+      "resource_type": "ALB",
+      "resource_id": "app/prod-api-alb/50dc6c495c0c9188",
+      "resource_name": "prod-api-alb",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "api-backend",
+        "Environment": "prod",
+        "Owner": "backend-team@company.com",
+        "Application": "API Load Balancer"
+      },
+      "monthly_cost": 16.20,
+      "validation": "valid",
+      "notes": "Application Load Balancer with healthy target utilization"
+    },
+    {
+      "resource_type": "CloudFront Distribution",
+      "resource_id": "d1234567890abc",
+      "resource_name": "cdn-prod",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "cdn",
+        "Environment": "prod",
+        "Owner": "platform-team@company.com",
+        "Application": "Content Delivery"
+      },
+      "monthly_cost": 912.68,
+      "validation": "valid",
+      "notes": "High data transfer, consider S3 Transfer Acceleration alternatives"
+    },
+    {
+      "resource_type": "NAT Gateway",
+      "resource_id": "nat-0123456789abcdef0",
+      "resource_name": "nat-gateway-us-east-1a",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "networking",
+        "Environment": "prod",
+        "Owner": "platform-team@company.com"
+      },
+      "monthly_cost": 45.00,
+      "validation": "warning",
+      "notes": "High data processing charges, consider VPC endpoints for AWS services"
+    }
+  ],
+  "tagging_best_practices": {
+    "required_tags": [
+      "CostCenter",
+      "Team",
+      "Project",
+      "Environment",
+      "Owner"
+    ],
+    "optional_tags": [
+      "Application",
+      "Expiration",
+      "Backup",
+      "Compliance",
+      "DataClassification",
+      "PurchaseType"
+    ],
+    "tag_validation_rules": {
+      "CostCenter": {
+        "format": "CC-XXXXX",
+        "description": "5-digit cost center code with CC- prefix",
+        "examples": ["CC-12345", "CC-67890", "CC-99999"]
+      },
+      "Team": {
+        "format": "String",
+        "description": "Team name from organizational structure",
+        "examples": ["Engineering", "Data", "DevOps", "FinOps", "Product"]
+      },
+      "Project": {
+        "format": "kebab-case",
+        "description": "Project name matching JIRA/GitHub project",
+        "examples": ["data-platform", "api-backend", "etl-pipeline", "data-lake"]
+      },
+      "Environment": {
+        "format": "Enum",
+        "description": "Environment type from approved list",
+        "allowed_values": ["prod", "staging", "dev", "test", "sandbox"],
+        "examples": ["prod", "dev", "test"]
+      },
+      "Owner": {
+        "format": "Email",
+        "description": "Email address or distribution list for resource owner",
+        "examples": ["john.doe@company.com", "data-team@company.com"],
+        "validation_regex": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+      },
+      "Application": {
+        "format": "String",
+        "description": "Application or service name",
+        "examples": ["Spark Cluster", "API Gateway Handler", "ETL Worker"]
+      },
+      "Expiration": {
+        "format": "ISO 8601 Date",
+        "description": "Date when temporary resource should be deleted",
+        "examples": ["2024-12-31", "2025-06-30"],
+        "validation_regex": "^\\d{4}-\\d{2}-\\d{2}$"
+      }
+    },
+    "common_mistakes": [
+      {
+        "mistake": "Inconsistent casing",
+        "example": "costcenter instead of CostCenter",
+        "fix": "Use exact tag names with proper casing"
+      },
+      {
+        "mistake": "Missing required tags",
+        "example": "Only 3 out of 5 required tags",
+        "fix": "Ensure all 5 required tags are present"
+      },
+      {
+        "mistake": "Invalid email format",
+        "example": "Owner: john.doe",
+        "fix": "Use full email address: john.doe@company.com"
+      },
+      {
+        "mistake": "Non-standard environment values",
+        "example": "Environment: production (should be prod)",
+        "fix": "Use approved values: prod, staging, dev, test, sandbox"
+      },
+      {
+        "mistake": "Spaces in tag values",
+        "example": "Team: Data Engineering Team",
+        "fix": "Use consistent short names: Team: Data"
+      }
+    ]
+  },
+  "validation_test_cases": [
+    {
+      "test_name": "valid_all_required_tags",
+      "resource_id": "i-0123456789abcdef0",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "data-platform",
+        "Environment": "prod",
+        "Owner": "john.doe@company.com"
+      },
+      "expected_result": "valid",
+      "reason": "All 5 required tags present with valid formats"
+    },
+    {
+      "test_name": "invalid_missing_cost_center",
+      "resource_id": "i-test-missing-cc",
+      "tags": {
+        "Team": "Engineering",
+        "Project": "api-backend",
+        "Environment": "test",
+        "Owner": "test@company.com"
+      },
+      "expected_result": "invalid",
+      "reason": "Missing required CostCenter tag"
+    },
+    {
+      "test_name": "invalid_wrong_owner_format",
+      "resource_id": "i-test-bad-owner",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "test",
+        "Environment": "dev",
+        "Owner": "john.doe"
+      },
+      "expected_result": "invalid",
+      "reason": "Owner must be valid email address"
+    },
+    {
+      "test_name": "invalid_wrong_environment",
+      "resource_id": "i-test-bad-env",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "test",
+        "Environment": "production",
+        "Owner": "test@company.com"
+      },
+      "expected_result": "invalid",
+      "reason": "Environment must be one of: prod, staging, dev, test, sandbox (not 'production')"
+    },
+    {
+      "test_name": "valid_with_optional_tags",
+      "resource_id": "i-test-optional",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Data",
+        "Project": "ml-training",
+        "Environment": "dev",
+        "Owner": "ml@company.com",
+        "Application": "ML Training",
+        "PurchaseType": "Spot",
+        "Expiration": "2024-12-31"
+      },
+      "expected_result": "valid",
+      "reason": "All required tags plus optional tags with valid formats"
+    },
+    {
+      "test_name": "warning_missing_optional",
+      "resource_id": "i-test-no-optional",
+      "tags": {
+        "CostCenter": "CC-12345",
+        "Team": "Engineering",
+        "Project": "test-project",
+        "Environment": "dev",
+        "Owner": "test@company.com"
+      },
+      "expected_result": "warning",
+      "reason": "Valid but missing recommended tags (Application recommended for cost tracking)"
+    },
+    {
+      "test_name": "invalid_case_sensitivity",
+      "resource_id": "i-test-case",
+      "tags": {
+        "costcenter": "CC-12345",
+        "team": "Engineering",
+        "project": "test",
+        "environment": "dev",
+        "owner": "test@company.com"
+      },
+      "expected_result": "invalid",
+      "reason": "Tag names are case-sensitive, must use exact casing (CostCenter not costcenter)"
+    }
+  ],
+  "cost_allocation_examples": {
+    "by_cost_center": {
+      "CC-12345": {
+        "name": "Engineering",
+        "total_monthly_cost": 1638.84,
+        "resources": ["i-0123456789abcdef0", "s3-bucket-data-lake", "s3-bucket-archives", "db-prod-analytics", "users-table", "orders-table", "cloudfront-prod", "alb-prod"],
+        "percentage_of_total": 68.5
+      },
+      "CC-67890": {
+        "name": "Data Engineering",
+        "total_monthly_cost": 596.98,
+        "resources": ["i-9876543210fedcba0", "lambda-etl-processor", "glue-job-daily-etl", "glue-crawler-data-lake", "redshift-cluster-prod"],
+        "percentage_of_total": 25.0
+      },
+      "CC-54321": {
+        "name": "Development",
+        "total_monthly_cost": 93.89,
+        "resources": ["i-abcdef0123456789a", "i-fedcba9876543210b", "db-dev-test"],
+        "percentage_of_total": 3.9
+      },
+      "CC-99999": {
+        "name": "Operations",
+        "total_monthly_cost": 58.42,
+        "resources": ["s3-bucket-logs"],
+        "percentage_of_total": 2.4
+      }
+    },
+    "by_team": {
+      "Engineering": {
+        "total_monthly_cost": 1285.23,
+        "percentage_of_total": 53.7
+      },
+      "Data": {
+        "total_monthly_cost": 955.96,
+        "percentage_of_total": 40.0
+      },
+      "DevOps": {
+        "total_monthly_cost": 58.42,
+        "percentage_of_total": 2.4
+      },
+      "FinOps": {
+        "total_monthly_cost": 2.50,
+        "percentage_of_total": 0.1
+      }
+    },
+    "by_environment": {
+      "prod": {
+        "total_monthly_cost": 2179.23,
+        "percentage_of_total": 91.1
+      },
+      "dev": {
+        "total_monthly_cost": 163.92,
+        "percentage_of_total": 6.8
+      },
+      "test": {
+        "total_monthly_cost": 14.98,
+        "percentage_of_total": 0.6
+      }
+    },
+    "by_project": {
+      "data-platform": {
+        "total_monthly_cost": 420.48,
+        "percentage_of_total": 17.6
+      },
+      "api-backend": {
+        "total_monthly_cost": 448.62,
+        "percentage_of_total": 18.8
+      },
+      "etl-pipeline": {
+        "total_monthly_cost": 120.70,
+        "percentage_of_total": 5.0
+      },
+      "data-lake": {
+        "total_monthly_cost": 357.81,
+        "percentage_of_total": 15.0
+      },
+      "analytics": {
+        "total_monthly_cost": 138.50,
+        "percentage_of_total": 5.8
+      }
+    }
+  },
+  "tagging_compliance_metrics": {
+    "total_resources": 20,
+    "fully_tagged": 15,
+    "partially_tagged": 3,
+    "untagged": 2,
+    "compliance_rate": 75.0,
+    "target_compliance_rate": 95.0,
+    "gap": 20.0,
+    "resources_needing_tags": [
+      {
+        "resource_id": "i-fedcba9876543210b",
+        "missing_tags": ["CostCenter"],
+        "priority": "high"
+      },
+      {
+        "resource_id": "lambda-cleanup-automation",
+        "missing_tags": ["CostCenter", "Owner"],
+        "priority": "high"
+      },
+      {
+        "resource_id": "i-abcdef0123456789a",
+        "missing_tags": ["Application"],
+        "priority": "low"
+      },
+      {
+        "resource_id": "s3-bucket-logs",
+        "missing_tags": ["Application"],
+        "priority": "low"
+      },
+      {
+        "resource_id": "db-dev-test",
+        "missing_tags": ["Application"],
+        "priority": "low"
+      }
+    ]
+  },
+  "automation_examples": {
+    "tag_enforcement_scp": {
+      "description": "Service Control Policy to require tags on resource creation",
+      "policy": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Deny",
+            "Action": [
+              "ec2:RunInstances",
+              "rds:CreateDBInstance",
+              "s3:CreateBucket"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringNotLike": {
+                "aws:RequestTag/CostCenter": "CC-*"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "auto_tag_lambda": {
+      "description": "Lambda function to auto-tag resources with default values",
+      "trigger": "CloudTrail event for RunInstances, CreateDBInstance, CreateBucket",
+      "tags_applied": {
+        "CreatedBy": "${aws:username}",
+        "CreatedDate": "${event.responseElements.launchTime}",
+        "ManagedBy": "Terraform"
+      }
+    },
+    "tag_compliance_report": {
+      "description": "Daily report of resources missing required tags",
+      "schedule": "cron(0 9 * * ? *)",
+      "output": "CSV report sent to finops@company.com",
+      "includes": ["resource_id", "resource_type", "missing_tags", "estimated_monthly_cost"]
+    }
+  },
+  "cost_optimization_opportunities": [
+    {
+      "resource_id": "redshift-cluster-prod",
+      "current_cost": 360.00,
+      "recommendation": "Upgrade to RA3 node type with managed storage",
+      "potential_savings": 108.00,
+      "savings_percentage": 30,
+      "implementation_effort": "Medium",
+      "notes": "RA3 nodes separate compute from storage, better for scaling"
+    },
+    {
+      "resource_id": "d1234567890abc",
+      "current_cost": 912.68,
+      "recommendation": "Implement S3 Transfer Acceleration for direct uploads instead of CloudFront data transfer",
+      "potential_savings": 273.80,
+      "savings_percentage": 30,
+      "implementation_effort": "Low",
+      "notes": "CloudFront data transfer is expensive for non-cacheable content"
+    },
+    {
+      "resource_id": "db-dev-test",
+      "current_cost": 48.96,
+      "recommendation": "Stop database during off-hours (18h/day savings, 6h runtime)",
+      "potential_savings": 36.72,
+      "savings_percentage": 75,
+      "implementation_effort": "Low",
+      "notes": "Development database not needed 24/7, use EventBridge scheduler"
+    },
+    {
+      "resource_id": "nat-0123456789abcdef0",
+      "current_cost": 45.00,
+      "recommendation": "Replace with VPC endpoints for S3, DynamoDB, and other AWS services",
+      "potential_savings": 31.50,
+      "savings_percentage": 70,
+      "implementation_effort": "Medium",
+      "notes": "VPC endpoints eliminate NAT Gateway data processing charges for AWS services"
+    },
+    {
+      "resource_id": "i-0123456789abcdef0",
+      "current_cost": 69.12,
+      "recommendation": "Purchase 3-year Reserved Instance",
+      "potential_savings": 34.56,
+      "savings_percentage": 50,
+      "implementation_effort": "Low",
+      "notes": "Steady 24/7 usage, excellent RI candidate"
+    }
+  ],
+  "tagging_automation_scripts": {
+    "bulk_tag_resources": {
+      "description": "Tag multiple resources at once using AWS CLI",
+      "command": "aws resourcegroupstaggingapi tag-resources --resource-arn-list $(cat resource-arns.txt) --tags CostCenter=CC-12345,Team=Engineering",
+      "use_case": "Apply tags to existing resources in bulk"
+    },
+    "tag_compliance_check": {
+      "description": "Check tag compliance across all resources",
+      "command": "aws resourcegroupstaggingapi get-resources --tag-filters Key=CostCenter,Values='' | jq '.ResourceTagMappingList | length'",
+      "use_case": "Find resources missing CostCenter tag"
+    },
+    "enforce_tags_on_creation": {
+      "description": "Use AWS Config rule to check tags on new resources",
+      "config_rule": "required-tags",
+      "parameters": {
+        "tag1Key": "CostCenter",
+        "tag2Key": "Team",
+        "tag3Key": "Project",
+        "tag4Key": "Environment",
+        "tag5Key": "Owner"
+      },
+      "action": "Auto-remediation with Lambda or manual approval"
+    }
+  },
+  "cost_allocation_report_example": {
+    "report_date": "2024-01-31",
+    "total_monthly_cost": 2392.11,
+    "cost_by_cost_center": [
+      {"cost_center": "CC-12345", "name": "Engineering", "cost": 1638.84, "percentage": 68.5},
+      {"cost_center": "CC-67890", "name": "Data Engineering", "cost": 596.98, "percentage": 25.0},
+      {"cost_center": "CC-54321", "name": "Development", "cost": 93.89, "percentage": 3.9},
+      {"cost_center": "CC-99999", "name": "Operations", "cost": 58.42, "percentage": 2.4},
+      {"cost_center": "Untagged", "name": "Unallocated", "cost": 3.98, "percentage": 0.2}
+    ],
+    "untagged_costs": 3.98,
+    "untagged_percentage": 0.2,
+    "compliance_status": "Good (99.8% tagged)",
+    "action_items": [
+      "Tag 2 resources missing CostCenter",
+      "Add Application tag to 3 resources for better granularity",
+      "Review high-cost CloudFront for optimization"
+    ]
+  },
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2024-01-31",
+    "total_resources": 20,
+    "total_monthly_cost": 2392.11,
+    "tagging_compliance": "75% (target 95%)",
+    "optimization_opportunities": 5,
+    "potential_monthly_savings": 484.58,
+    "notes": "Sample data for Module 17 Cost Optimization exercises and validation tests"
+  }
+}

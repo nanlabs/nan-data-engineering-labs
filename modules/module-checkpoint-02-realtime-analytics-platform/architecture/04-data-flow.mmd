@@ -1,0 +1,302 @@
+sequenceDiagram
+    %% ========================================================================
+    %% DATA FLOW SEQUENCE DIAGRAM: EVENT LIFECYCLE
+    %% ========================================================================
+    %% Shows the complete journey of an event from creation through
+    %% visualization, including timing, latency, and error handling
+    %% ========================================================================
+
+    participant User as 📱 Mobile App<br/>(User)
+    participant Driver as 🚗 Driver App<br/>(Driver)
+    participant API as 🌐 API Gateway<br/>(REST/WebSocket)
+    participant Kinesis as 📨 Kinesis<br/>Data Streams
+    participant Lambda as ⚡ Lambda<br/>Processor
+    participant DynamoDB as 💾 DynamoDB<br/>(State)
+    participant S3 as 🗄️ S3<br/>(Archive)
+    participant Analytics as 📊 Kinesis<br/>Analytics
+    participant QuickSight as 📈 QuickSight<br/>(Dashboards)
+    participant CloudWatch as 🔍 CloudWatch<br/>(Monitoring)
+    participant SNS as 📧 SNS<br/>(Alerts)
+
+    %% ========================================================================
+    %% SCENARIO 1: Ride Request Flow (Happy Path)
+    %% ========================================================================
+
+    Note over User,SNS: SCENARIO 1: Ride Request (Happy Path)
+    Note over User,SNS: Expected End-to-End Latency: < 1 second
+
+    User->>+API: POST /rides<br/>{user_id, pickup, dropoff}<br/>Timestamp: T+0ms
+    Note right of User: User requests ride<br/>Location: geo coordinates<br/>Payment method attached
+
+    API->>API: Validate request<br/>Auth: JWT token<br/>Schema validation<br/>Timestamp: T+10ms
+
+    API->>+Kinesis: PutRecord(rides_stream)<br/>partition_key: ride_id<br/>data: ride_requested event<br/>Timestamp: T+25ms
+    Note right of Kinesis: Stream: rides_stream<br/>Shard selection: Hash(ride_id)<br/>Encryption: KMS
+
+    Kinesis-->>API: RecordId: xxxxx<br/>SequenceNumber: 12345<br/>ShardId: shardId-0<br/>Timestamp: T+50ms
+
+    API-->>-User: 202 Accepted<br/>{ride_id, status: "requested"}<br/>Timestamp: T+60ms
+    Note left of User: Response time: 60ms<br/>User sees "Finding driver..."
+
+    %% Lambda processes event
+    Note over Kinesis,Lambda: Lambda polls every 1 second or on-demand (Enhanced Fan-Out)
+
+    Kinesis->>+Lambda: InvokeFunction<br/>Event: rides_requested<br/>Batch: [100 records]<br/>Timestamp: T+150ms
+    Note right of Lambda: Event Source Mapping<br/>Batch window: 10 seconds<br/>Parallelization: 10
+
+    Lambda->>Lambda: Process batch<br/>Parse JSON<br/>Validate schema<br/>Enrich with metadata<br/>Timestamp: T+200ms
+
+    Lambda->>+DynamoDB: PutItem(rides_state)<br/>ride_id: xxx<br/>status: "requested"<br/>timestamp: T+200ms<br/>Timestamp: T+250ms
+    Note right of DynamoDB: Table: rides_state<br/>Consistency: Eventually consistent<br/>Latency target: < 10ms
+
+    DynamoDB-->>Lambda: Success<br/>ConsumedCapacity: 1 WCU<br/>Timestamp: T+258ms
+
+    Lambda->>+S3: PutObject (async)<br/>Bucket: streaming-archive<br/>Path: year=2026/month=03/day=09/<br/>Format: Parquet<br/>Timestamp: T+300ms
+    Note right of S3: Batched writes<br/>Buffer: 5 min or 5 MB<br/>Compression: SNAPPY
+
+    S3-->>Lambda: ETag: "abc123"<br/>VersionId: null<br/>Timestamp: T+350ms
+
+    Lambda->>CloudWatch: PutMetricData<br/>Metric: RideRequestProcessed<br/>Dimensions: {status: success}<br/>Timestamp: T+360ms
+
+    Lambda-->>-Kinesis: Success<br/>Records processed: 100<br/>Failed: 0<br/>Timestamp: T+400ms
+
+    %% Analytics processes event
+    Note over Kinesis,Analytics: Continuous processing with Flink
+
+    Kinesis->>+Analytics: Stream event (Flink source)<br/>Event: ride_requested<br/>Window: 5 min tumbling<br/>Timestamp: T+100ms
+
+    Analytics->>Analytics: Aggregate by region<br/>COUNT(*) WHERE<br/>  event_time >= now() - 5min<br/>GROUP BY region<br/>Timestamp: T+5min
+    Note right of Analytics: Windowed aggregation<br/>State: Flink checkpoints<br/>Parallelism: 2
+
+    Analytics->>+DynamoDB: UpdateItem(aggregated_metrics)<br/>metric_name: rides_by_region<br/>timestamp: T+5min<br/>value: {north: 150, south: 200}<br/>Timestamp: T+5min+100ms
+
+    DynamoDB-->>-Analytics: Success<br/>Timestamp: T+5min+110ms
+
+    %% ========================================================================
+    %% SCENARIO 2: Location Update Flow (High Frequency)
+    %% ========================================================================
+
+    Note over User,SNS: SCENARIO 2: Driver Location Update (High Frequency)
+    Note over User,SNS: Expected Latency: < 500ms | Frequency: Every 5 seconds
+
+    Driver->>+API: PUT /location<br/>{driver_id, lat, lon, heading}<br/>Timestamp: T+0ms
+    Note right of Driver: GPS update every 5s<br/>Accuracy: ±10 meters<br/>5K active drivers = 1K events/sec
+
+    API->>API: Validate coordinates<br/>Geofence check<br/>Rate limit: 1/sec<br/>Timestamp: T+5ms
+
+    API->>+Kinesis: PutRecord(locations_stream)<br/>partition_key: driver_id<br/>data: location_update event<br/>Timestamp: T+15ms
+
+    Kinesis-->>-API: Success<br/>Timestamp: T+30ms
+
+    API-->>-Driver: 204 No Content<br/>Timestamp: T+35ms
+
+    Kinesis->>+Lambda: InvokeFunction<br/>Event: location_update<br/>Batch: 100 locations<br/>Timestamp: T+100ms
+
+    Lambda->>Lambda: Calculate geohash<br/>Precision: 7 (153m × 153m)<br/>Timestamp: T+120ms
+
+    Lambda->>+DynamoDB: UpdateItem(driver_availability)<br/>driver_id: xxx<br/>location: geohash<br/>last_update: T+120ms<br/>Timestamp: T+150ms
+    Note right of DynamoDB: GSI: location-index<br/>Query drivers by geohash<br/>Find nearby drivers
+
+    DynamoDB-->>-Lambda: Success<br/>Timestamp: T+158ms
+
+    Lambda->>CloudWatch: PutMetricData<br/>Metric: LocationUpdatesProcessed<br/>Value: 100<br/>Timestamp: T+165ms
+
+    Lambda-->>-Kinesis: Success<br/>Timestamp: T+200ms
+
+    %% Hot spots analytics
+    Kinesis->>+Analytics: Stream event<br/>Event: location_update<br/>Window: 10 min session<br/>Timestamp: T+100ms
+
+    Analytics->>Analytics: Cluster by geohash<br/>COUNT(*) GROUP BY geohash<br/>HAVING count > 50<br/>Timestamp: T+10min
+    Note right of Analytics: Detect hot spots<br/>Trigger surge pricing<br/>Notify nearby drivers
+
+    Analytics->>+S3: PutObject<br/>Path: hot-spots/2026-03-09-14.json<br/>Content: [{geohash, count}]<br/>Timestamp: T+10min+50ms
+
+    S3-->>-Analytics: Success<br/>Timestamp: T+10min+100ms
+
+    %% ========================================================================
+    %% SCENARIO 3: Payment Processing Flow (Critical Path)
+    %% ========================================================================
+
+    Note over User,SNS: SCENARIO 3: Payment Processing (Critical - ACID Required)
+    Note over User,SNS: Expected Latency: < 2 seconds | Consistency: Strong
+
+    User->>+API: POST /payments<br/>{ride_id, amount, method}<br/>Timestamp: T+0ms
+    Note right of User: Ride completed<br/>Charge passenger<br/>Pay driver
+
+    API->>API: Validate payment<br/>Check fraud rules<br/>Amount limits<br/>Timestamp: T+50ms
+
+    API->>+Kinesis: PutRecord(payments_stream)<br/>partition_key: payment_id<br/>data: payment_initiated event<br/>Timestamp: T+100ms
+
+    Kinesis-->>-API: Success<br/>Timestamp: T+125ms
+
+    API-->>User: 202 Accepted<br/>{payment_id, status: "processing"}<br/>Timestamp: T+135ms
+
+    Kinesis->>+Lambda: InvokeFunction<br/>Event: payment_initiated<br/>Batch: 50 payments<br/>Timestamp: T+200ms
+    Note right of Lambda: Smaller batch for payments<br/>Higher reliability needed<br/>Idempotency key required
+
+    Lambda->>Lambda: Process payment<br/>Call payment gateway<br/>Retry logic: 3 attempts<br/>Timestamp: T+250ms
+
+    alt Payment Success
+        Lambda->>+DynamoDB: TransactWriteItems<br/>Update ride: payment_status=paid<br/>Update driver: earnings +=<br/>Insert transaction record<br/>Timestamp: T+500ms
+        Note right of DynamoDB: ACID transaction<br/>All or nothing<br/>Strongly consistent
+
+        DynamoDB-->>Lambda: Success<br/>All items written<br/>Timestamp: T+510ms
+
+        Lambda->>S3: PutObject (immediate)<br/>Path: payments/2026-03-09/<br/>Encryption: SSE-KMS<br/>Timestamp: T+550ms
+        Note right of S3: Audit trail required<br/>Compliance: PCI-DSS<br/>Retention: 7 years
+
+        Lambda->>SNS: Publish<br/>Topic: payment-success<br/>Message: {ride_id, amount}<br/>Timestamp: T+600ms
+
+        Lambda->>CloudWatch: PutMetricData<br/>Metric: PaymentSuccess<br/>Value: 1<br/>Timestamp: T+610ms
+
+        Lambda-->>Kinesis: Success<br/>Timestamp: T+650ms
+
+        SNS->>User: Email/Push notification<br/>"Payment completed"<br/>Receipt attached<br/>Timestamp: T+1s
+
+        SNS->>Driver: Push notification<br/>"Earnings deposited"<br/>Amount: $X.XX<br/>Timestamp: T+1s
+
+    else Payment Failed
+        Lambda->>Lambda: Retry payment<br/>Attempt 2 of 3<br/>Exponential backoff<br/>Timestamp: T+1s
+
+        Lambda->>Lambda: Retry payment<br/>Attempt 3 of 3<br/>Exponential backoff<br/>Timestamp: T+2s
+
+        Lambda->>+DynamoDB: UpdateItem<br/>ride: payment_status=failed<br/>failure_reason: "card_declined"<br/>Timestamp: T+2.5s
+
+        DynamoDB-->>-Lambda: Success<br/>Timestamp: T+2.51s
+
+        Lambda->>SNS: Publish<br/>Topic: payment-failed<br/>Message: {ride_id, reason}<br/>Timestamp: T+2.55s
+
+        Lambda->>CloudWatch: PutMetricData<br/>Metric: PaymentFailed<br/>Value: 1<br/>Timestamp: T+2.56s
+
+        SNS->>User: Email/Push notification<br/>"Payment failed"<br/>Action required<br/>Timestamp: T+3s
+
+        SNS->>CloudWatch: Alarm check<br/>PaymentFailureRate > 5%?<br/>Timestamp: T+3.1s
+
+        alt Alarm Triggered
+            CloudWatch->>SNS: Publish alarm<br/>Topic: critical-alerts<br/>Timestamp: T+3.2s
+
+            SNS->>SNS: Email to ops team<br/>"High payment failure rate"<br/>Timestamp: T+3.5s
+        end
+    end
+
+    %% ========================================================================
+    %% SCENARIO 4: Rating Submission Flow (Non-Critical)
+    %% ========================================================================
+
+    Note over User,SNS: SCENARIO 4: Rating Submission (Non-Critical, Can Be Delayed)
+    Note over User,SNS: Expected Latency: < 5 seconds | Priority: Low
+
+    User->>+API: POST /ratings<br/>{ride_id, rating: 5, comment}<br/>Timestamp: T+0ms
+    Note right of User: Optional post-ride action<br/>1-5 stars + text<br/>Not time-sensitive
+
+    API->>+Kinesis: PutRecord(ratings_stream)<br/>partition_key: rating_id<br/>data: rating_submitted event<br/>Timestamp: T+50ms
+
+    Kinesis-->>-API: Success<br/>Timestamp: T+75ms
+
+    API-->>-User: 200 OK<br/>{message: "Thanks!"}<br/>Timestamp: T+85ms
+
+    Note over Kinesis,Lambda: Lower priority processing<br/>Larger batches, longer windows
+
+    Kinesis->>+Lambda: InvokeFunction<br/>Event: rating_submitted<br/>Batch: 200 ratings<br/>Window: 60 seconds<br/>Timestamp: T+60s
+
+    Lambda->>Lambda: Aggregate ratings<br/>Calculate avg per driver<br/>Detect outliers<br/>Timestamp: T+60s+100ms
+
+    Lambda->>+DynamoDB: UpdateItem(driver_availability)<br/>driver_id: xxx<br/>rating = (old*count + new)/(count+1)<br/>total_ratings += 1<br/>Timestamp: T+60s+200ms
+    Note right of DynamoDB: Atomic counter update<br/>Maintains rolling average<br/>Eventually consistent OK
+
+    DynamoDB-->>-Lambda: Success<br/>Timestamp: T+60s+208ms
+
+    alt Low Rating (< 3 stars)
+        Lambda->>SNS: Publish<br/>Topic: low-rating-alert<br/>Message: {driver_id, rating, comment}<br/>Timestamp: T+60s+250ms
+
+        SNS->>SNS: Email to support team<br/>"Driver received low rating"<br/>Action: Follow up<br/>Timestamp: T+60s+500ms
+    end
+
+    Lambda->>CloudWatch: PutMetricData<br/>Metric: RatingsProcessed<br/>Value: 200<br/>Timestamp: T+60s+300ms
+
+    Lambda-->>-Kinesis: Success<br/>Timestamp: T+60s+350ms
+
+    %% ========================================================================
+    %% SCENARIO 5: Dashboard Visualization Flow
+    %% ========================================================================
+
+    Note over User,SNS: SCENARIO 5: Dashboard Refresh (Aggregation Query)
+    Note over User,SNS: Expected Latency: < 5 seconds | Data: Real-time + Historical
+
+    QuickSight->>QuickSight: Auto-refresh triggered<br/>Schedule: Every 5 minutes<br/>Timestamp: T+0ms
+    Note right of QuickSight: Dashboard: Operations Center<br/>Widgets: 10<br/>Data sources: 2 (DynamoDB + Athena)
+
+    par Real-Time Data Query
+        QuickSight->>+DynamoDB: Query<br/>Table: aggregated_metrics<br/>KeyCondition: metric_name = "rides_last_hour"<br/>Timestamp: T+10ms
+
+        DynamoDB-->>-QuickSight: Items: [{timestamp, value}]<br/>Latency: 5ms<br/>Count: 12 records (5min windows)<br/>Timestamp: T+15ms
+    and Historical Data Query
+        QuickSight->>+S3: Query (via Athena)<br/>SELECT COUNT(*) as rides,<br/>  SUM(fare) as revenue<br/>FROM rides_archive<br/>WHERE date >= current_date - 30<br/>Timestamp: T+10ms
+
+        S3-->>-QuickSight: Result: {rides: 1.5M, revenue: $4.2M}<br/>Latency: 3 seconds<br/>Data scanned: 450 MB<br/>Timestamp: T+3.01s
+    end
+
+    QuickSight->>QuickSight: Merge datasets<br/>Real-time + Historical<br/>Deduplicate<br/>Timestamp: T+3.1s
+
+    QuickSight->>QuickSight: Load to SPICE<br/>In-memory engine<br/>Optimize for viz<br/>Timestamp: T+3.5s
+
+    QuickSight->>QuickSight: Render widgets<br/>Charts, tables, maps<br/>Apply filters<br/>Timestamp: T+4s
+
+    Note over QuickSight: Dashboard ready<br/>Total time: 4 seconds<br/>Next refresh: T+5min
+
+    %% ========================================================================
+    %% SCENARIO 6: Error Handling Flow
+    %% ========================================================================
+
+    Note over User,SNS: SCENARIO 6: Error Handling (Lambda Failure)
+    Note over User,SNS: Scenario: Processing error with retry and DLQ
+
+    Kinesis->>+Lambda: InvokeFunction<br/>Event: corrupted_event<br/>Invalid JSON<br/>Timestamp: T+0ms
+
+    Lambda->>Lambda: Try parsing JSON<br/>Exception: JSONDecodeError<br/>Timestamp: T+50ms
+
+    Lambda->>CloudWatch: Log error<br/>Level: ERROR<br/>Message: "Invalid JSON"<br/>Stack trace<br/>Timestamp: T+60ms
+
+    Lambda-->>Kinesis: Error response<br/>Timestamp: T+70ms
+
+    Note over Kinesis,Lambda: Automatic retry by Lambda<br/>Exponential backoff
+
+    Kinesis->>Lambda: Retry 1/2<br/>Same event<br/>Timestamp: T+200ms
+
+    Lambda->>Lambda: Still fails<br/>Same error<br/>Timestamp: T+250ms
+
+    Lambda-->>Kinesis: Error response<br/>Timestamp: T+260ms
+
+    Kinesis->>Lambda: Retry 2/2<br/>Same event<br/>Timestamp: T+1s
+
+    Lambda->>Lambda: Still fails<br/>Max retries exceeded<br/>Timestamp: T+1.05s
+
+    Lambda-->>Kinesis: Error response<br/>Timestamp: T+1.06s
+
+    Kinesis->>Kinesis: Send to DLQ<br/>OnFailure destination<br/>Timestamp: T+1.1s
+
+    Kinesis->>+CloudWatch: PutMetricData<br/>Metric: LambdaErrors<br/>Value: 1<br/>Timestamp: T+1.15s
+
+    CloudWatch->>CloudWatch: Check alarm<br/>ErrorRate > 5%?<br/>Threshold: 3 datapoints<br/>Timestamp: T+1.2s
+
+    alt Alarm Triggered
+        CloudWatch->>+SNS: Publish alarm<br/>Topic: critical-alerts<br/>State: ALARM<br/>Timestamp: T+1.3s
+
+        SNS->>SNS: Email to ops team<br/>Subject: "Lambda Error Rate High"<br/>Body: Dashboard link<br/>Timestamp: T+2s
+
+        SNS->>SNS: Slack webhook<br/>Channel: #ops-alerts<br/>Message: "@channel Lambda errors"<br/>Timestamp: T+2.1s
+
+        Note over SNS: Ops team notified<br/>Manual intervention needed<br/>Check DLQ for failed events
+    end
+
+    %% ========================================================================
+    %% Latency Summary
+    %% ========================================================================
+
+    Note over User,SNS: ⏱️ LATENCY SUMMARY
+    Note over User,SNS: • Ride Request: 60ms (API response) + 400ms (full processing)
+    Note over User,SNS: • Location Update: 35ms (API) + 200ms (processing)
+    Note over User,SNS: • Payment: 135ms (API) + 650ms (success) or 3s (failed)
+    Note over User,SNS: • Rating: 85ms (API) + 60s (batch processing)
+    Note over User,SNS: • Dashboard: 4s (query + render)
+    Note over User,SNS: • Error Handling: 1.3s (detect + alert)

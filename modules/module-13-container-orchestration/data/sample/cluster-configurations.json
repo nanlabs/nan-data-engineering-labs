@@ -1,0 +1,261 @@
+[
+  {
+    "cluster_name": "data-platform-prod",
+    "cluster_type": "ECS",
+    "region": "us-east-1",
+    "services": [
+      {
+        "service_name": "etl-processor",
+        "task_definition": "etl-processor:12",
+        "desired_count": 5,
+        "running_count": 5,
+        "pending_count": 0,
+        "launch_type": "FARGATE",
+        "platform_version": "1.4.0",
+        "cpu": "2048",
+        "memory": "4096",
+        "containers": [
+          {
+            "name": "etl-app",
+            "image": "123456789012.dkr.ecr.us-east-1.amazonaws.com/etl-processor:v1.2.3",
+            "cpu": 2048,
+            "memory": 4096,
+            "ports": [{"containerPort": 8080, "protocol": "tcp"}],
+            "environment": [
+              {"name": "ENV", "value": "production"},
+              {"name": "LOG_LEVEL", "value": "INFO"},
+              {"name": "DB_HOST", "value": "prod-db.cluster-abc123.us-east-1.rds.amazonaws.com"}
+            ],
+            "secrets": [
+              {"name": "DB_PASSWORD", "valueFrom": "arn:aws:secretsmanager:us-east-1:123456789012:secret:prod/db/password"}
+            ],
+            "healthCheck": {
+              "command": ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"],
+              "interval": 30,
+              "timeout": 5,
+              "retries": 3,
+              "startPeriod": 60
+            }
+          }
+        ],
+        "load_balancers": [
+          {
+            "target_group_arn": "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/etl-tg/abc123def456",
+            "container_name": "etl-app",
+            "container_port": 8080
+          }
+        ],
+        "network_configuration": {
+          "subnets": ["subnet-abc123", "subnet-def456", "subnet-ghi789"],
+          "security_groups": ["sg-abc123def456"],
+          "assign_public_ip": "DISABLED"
+        },
+        "deployment_configuration": {
+          "maximum_percent": 200,
+          "minimum_healthy_percent": 100,
+          "deployment_circuit_breaker": {
+            "enable": true,
+            "rollback": true
+          }
+        },
+        "autoscaling": {
+          "min_capacity": 2,
+          "max_capacity": 10,
+          "target_cpu_utilization": 70,
+          "target_memory_utilization": 80,
+          "scale_in_cooldown": 300,
+          "scale_out_cooldown": 60
+        }
+      },
+      {
+        "service_name": "data-api",
+        "task_definition": "data-api:8",
+        "desired_count": 3,
+        "running_count": 3,
+        "pending_count": 0,
+        "launch_type": "FARGATE",
+        "platform_version": "1.4.0",
+        "cpu": "1024",
+        "memory": "2048",
+        "containers": [
+          {
+            "name": "api-app",
+            "image": "123456789012.dkr.ecr.us-east-1.amazonaws.com/data-api:v2.1.0",
+            "cpu": 1024,
+            "memory": 2048,
+            "ports": [{"containerPort": 8000, "protocol": "tcp"}],
+            "environment": [
+              {"name": "ENV", "value": "production"},
+              {"name": "API_VERSION", "value": "v2.1"}
+            ]
+          }
+        ],
+        "autoscaling": {
+          "min_capacity": 2,
+          "max_capacity": 8,
+          "target_cpu_utilization": 75
+        }
+      }
+    ],
+    "scheduled_tasks": [
+      {
+        "name": "daily-etl-job",
+        "schedule_expression": "cron(0 2 * * ? *)",
+        "task_definition": "daily-etl:5",
+        "launch_type": "FARGATE",
+        "cpu": "4096",
+        "memory": "8192",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "cluster_name": "data-platform-prod-eks",
+    "cluster_type": "EKS",
+    "region": "us-east-1",
+    "version": "1.28",
+    "endpoint": "https://A1B2C3D4E5F6.gr7.us-east-1.eks.amazonaws.com",
+    "node_groups": [
+      {
+        "name": "general-purpose",
+        "instance_types": ["t3.large", "t3.xlarge"],
+        "desired_size": 3,
+        "min_size": 2,
+        "max_size": 10,
+        "disk_size": 100,
+        "labels": {
+          "workload-type": "general"
+        }
+      },
+      {
+        "name": "compute-optimized",
+        "instance_types": ["c5.2xlarge"],
+        "desired_size": 2,
+        "min_size": 1,
+        "max_size": 5,
+        "disk_size": 200,
+        "labels": {
+          "workload-type": "spark"
+        },
+        "taints": [
+          {
+            "key": "spark",
+            "value": "true",
+            "effect": "NoSchedule"
+          }
+        ]
+      }
+    ],
+    "namespaces": [
+      {
+        "name": "airflow",
+        "deployments": [
+          {
+            "name": "airflow-webserver",
+            "replicas": 2,
+            "image": "apache/airflow:2.7.3",
+            "resources": {
+              "requests": {"cpu": "500m", "memory": "1Gi"},
+              "limits": {"cpu": "2000m", "memory": "4Gi"}
+            }
+          },
+          {
+            "name": "airflow-scheduler",
+            "replicas": 1,
+            "image": "apache/airflow:2.7.3",
+            "resources": {
+              "requests": {"cpu": "1000m", "memory": "2Gi"},
+              "limits": {"cpu": "2000m", "memory": "4Gi"}
+            }
+          }
+        ],
+        "statefulsets": [
+          {
+            "name": "postgresql",
+            "replicas": 1,
+            "image": "postgres:15",
+            "resources": {
+              "requests": {"cpu": "500m", "memory": "2Gi"},
+              "limits": {"cpu": "2000m", "memory": "8Gi"}
+            },
+            "storage": {
+              "size": "20Gi",
+              "storage_class": "gp3"
+            }
+          }
+        ]
+      },
+      {
+        "name": "spark-jobs",
+        "spark_applications": [
+          {
+            "name": "sales-etl",
+            "type": "Python",
+            "spark_version": "3.4.1",
+            "driver": {
+              "cores": 1,
+              "memory": "2g"
+            },
+            "executor": {
+              "cores": 2,
+              "memory": "4g",
+              "instances": 3
+            },
+            "dynamic_allocation": {
+              "enabled": true,
+              "min_executors": 2,
+              "max_executors": 10,
+              "initial_executors": 3
+            }
+          }
+        ]
+      },
+      {
+        "name": "kafka",
+        "kafka_clusters": [
+          {
+            "name": "data-events",
+            "replicas": 3,
+            "version": "3.6.0",
+            "resources": {
+              "requests": {"cpu": "1000m", "memory": "4Gi"},
+              "limits": {"cpu": "2000m", "memory": "8Gi"}
+            },
+            "storage": {
+              "type": "persistent-claim",
+              "size": "100Gi",
+              "storage_class": "gp3"
+            },
+            "topics": [
+              {"name": "sales-events", "partitions": 12, "replication_factor": 3},
+              {"name": "customer-events", "partitions": 6, "replication_factor": 3},
+              {"name": "product-events", "partitions": 6, "replication_factor": 3}
+            ]
+          }
+        ]
+      }
+    ],
+    "addons": [
+      {
+        "name": "vpc-cni",
+        "version": "v1.15.0"
+      },
+      {
+        "name": "coredns",
+        "version": "v1.10.1"
+      },
+      {
+        "name": "kube-proxy",
+        "version": "v1.28.2"
+      },
+      {
+        "name": "aws-ebs-csi-driver",
+        "version": "v1.25.0"
+      },
+      {
+        "name": "aws-load-balancer-controller",
+        "version": "v2.6.2"
+      }
+    ]
+  }
+]

@@ -1,0 +1,135 @@
+graph TB
+    %% Real-Time Dashboard Pipeline - End-to-End Architecture
+
+    subgraph "Data Sources"
+        DS1[Web Applications<br/>User Events]:::source
+        DS2[Mobile Apps<br/>SDK Events]:::source
+        DS3[Backend APIs<br/>Transaction Logs]:::source
+        DS4[IoT Devices<br/>Sensor Data]:::source
+    end
+
+    subgraph "Ingestion Layer"
+        ING1[API Gateway<br/>REST/WebSocket]:::ingestion
+        ING2[Kinesis Data Streams<br/>events-stream<br/>10 shards]:::ingestion
+        ING3[Kinesis Firehose<br/>S3 Backup]:::ingestion
+    end
+
+    DS1 --> ING1
+    DS2 --> ING1
+    DS3 --> ING1
+    DS4 --> ING1
+
+    ING1 --> ING2
+    ING2 --> ING3
+
+    subgraph "Stream Processing"
+        SP1[Kinesis Data Analytics<br/>Flink Application]:::flink
+        SP2[Tumbling Windows<br/>1-minute intervals]:::flink
+        SP3[Aggregations<br/>COUNT, SUM, AVG]:::flink
+        SP4[Top-N Queries<br/>Trending products]:::flink
+    end
+
+    ING2 --> SP1
+    SP1 --> SP2
+    SP2 --> SP3
+    SP2 --> SP4
+
+    subgraph "Hot Path - Real-Time (<1s)"
+        HOT1[ElastiCache Redis<br/>In-Memory Store]:::hot
+        HOT2[DynamoDB<br/>Real-time Metrics]:::hot
+        HOT3[TTL: 1 hour<br/>Auto-expire old data]:::hot
+    end
+
+    SP3 --> HOT1
+    SP4 --> HOT2
+    HOT1 --> HOT3
+    HOT2 --> HOT3
+
+    subgraph "Cold Path - Historical (>1h)"
+        COLD1[S3 Data Lake<br/>Parquet Format]:::cold
+        COLD2[Redshift Spectrum<br/>Query S3]:::cold
+        COLD3[Glue ETL<br/>Daily Aggregations]:::cold
+    end
+
+    ING3 --> COLD1
+    COLD1 --> COLD2
+    COLD1 --> COLD3
+
+    subgraph "Caching Layer"
+        CACHE1[QuickSight SPICE<br/>In-Memory Cache]:::cache
+        CACHE2[Refresh: Every 10s<br/>Incremental Refresh]:::cache
+        CACHE3[Capacity: 10 GB<br/>Query: <100ms]:::cache
+    end
+
+    HOT3 --> CACHE1
+    COLD2 --> CACHE1
+    CACHE1 --> CACHE2
+    CACHE2 --> CACHE3
+
+    subgraph "Visualization Layer"
+        VIZ1[QuickSight Dashboard<br/>Executive View]:::viz
+        VIZ2[CloudWatch Dashboard<br/>Operational Metrics]:::viz
+        VIZ3[Grafana Panels<br/>Custom Metrics]:::viz
+        VIZ4[Mobile App<br/>Push Notifications]:::viz
+    end
+
+    CACHE3 --> VIZ1
+    HOT1 --> VIZ2
+    HOT2 --> VIZ3
+    SP4 --> VIZ4
+
+    subgraph "Dashboard Examples"
+        D1["Executive Dashboard:<br/>• Revenue: $1.2M (↑15%)<br/>• Orders: 12,450 (↑8%)<br/>• Active Users: 5,230<br/>• Top Product: PROD_123<br/>Refresh: 10 seconds"]:::dashboard
+
+        D2["Operational Dashboard:<br/>• API Latency: 45ms (p99)<br/>• Error Rate: 0.02%<br/>• Throughput: 10K RPS<br/>• Active Hosts: 250<br/>Refresh: 5 seconds"]:::dashboard
+
+        D3["Custom Dashboard:<br/>• Campaign Performance<br/>• Geographic Heatmap<br/>• User Funnel Conversion<br/>• A/B Test Results<br/>Refresh: 30 seconds"]:::dashboard
+    end
+
+    VIZ1 --> D1
+    VIZ2 --> D2
+    VIZ3 --> D3
+
+    subgraph "Alerting & Actions"
+        ALT1[CloudWatch Alarm<br/>Threshold Breaches]:::alert
+        ALT2[SNS Topic<br/>Email/SMS]:::alert
+        ALT3[Lambda Function<br/>Auto-remediation]:::alert
+        ALT4[PagerDuty<br/>On-call Escalation]:::alert
+    end
+
+    VIZ2 --> ALT1
+    ALT1 --> ALT2
+    ALT1 --> ALT3
+    ALT2 --> ALT4
+
+    %% Styling
+    classDef source fill:#4A90E2,stroke:#2E6FA8,stroke-width:3px,color:#fff
+    classDef ingestion fill:#FF9900,stroke:#CC7A00,stroke-width:3px,color:#fff
+    classDef flink fill:#E6526F,stroke:#C7455B,stroke-width:3px,color:#fff
+    classDef hot fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff
+    classDef cold fill:#3498DB,stroke:#2980B9,stroke-width:3px,color:#fff
+    classDef cache fill:#16A085,stroke:#138D75,stroke-width:3px,color:#fff
+    classDef viz fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+    classDef dashboard fill:#F39C12,stroke:#E67E22,stroke-width:2px,color:#fff,text-align:left
+    classDef alert fill:#E67E22,stroke:#CA6F1E,stroke-width:3px,color:#fff
+
+    %% Data Freshness
+    subgraph "Data Freshness SLA"
+        FRESH["Real-time metrics: <1 second<br/>• Current revenue, active users<br/>• Live order count<br/><br/>Near real-time: 1-60 seconds<br/>• Trending products<br/>• Geographic distribution<br/><br/>Historical: >1 hour<br/>• Daily reports<br/>• Month-over-month trends"]:::freshness
+    end
+
+    classDef freshness fill:#1ABC9C,stroke:#17A589,stroke-width:2px,color:#fff,text-align:left
+
+    %% Performance Metrics
+    subgraph "Performance & Cost"
+        PERF["Latency:<br/>• Ingestion → Redis: 0.8s<br/>• Redis → QuickSight: 0.2s<br/>• Total end-to-end: 1.0s<br/><br/>Cost (10K events/sec):<br/>• Kinesis: $150/month<br/>• Flink (4 KPUs): $500/month<br/>• Redis (5 GB): $80/month<br/>• QuickSight (10 users): $180/month<br/>• Redshift (dc2.large): $180/month<br/>**Total: $1,090/month**"]:::perf
+    end
+
+    classDef perf fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff,text-align:left
+
+    %% Real-World Examples
+    subgraph "Industry Examples"
+        EX["Amazon: Real-time sales dashboard<br/>• 1M orders/hour on Prime Day<br/>• <1s latency<br/>• 50+ metrics<br/><br/>Uber: Surge pricing dashboard<br/>• 10M trips/day<br/>• <500ms latency<br/>• Real-time heatmaps<br/><br/>Spotify: Listening analytics<br/>• 400M active users<br/>• <2s latency<br/>• Personalized dashboards"]:::example
+    end
+
+    classDef example fill:#7ED321,stroke:#5A9E18,stroke-width:2px,color:#fff,text-align:left

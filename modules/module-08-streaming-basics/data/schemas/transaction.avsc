@@ -1,0 +1,137 @@
+{
+  "type": "record",
+  "name": "Transaction",
+  "namespace": "com.training.streaming.finance",
+  "doc": "Financial transaction event",
+  "fields": [
+    {
+      "name": "transaction_id",
+      "type": "string",
+      "doc": "Unique transaction identifier"
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Transaction timestamp in milliseconds since epoch"
+    },
+    {
+      "name": "user_id",
+      "type": "string",
+      "doc": "User identifier"
+    },
+    {
+      "name": "account_id",
+      "type": "string",
+      "doc": "Account identifier"
+    },
+    {
+      "name": "transaction_type",
+      "type": {
+        "type": "enum",
+        "name": "TransactionType",
+        "symbols": [
+          "PURCHASE",
+          "REFUND",
+          "DEPOSIT",
+          "WITHDRAWAL",
+          "TRANSFER",
+          "PAYMENT"
+        ]
+      },
+      "doc": "Type of transaction"
+    },
+    {
+      "name": "amount",
+      "type": "double",
+      "doc": "Transaction amount"
+    },
+    {
+      "name": "currency",
+      "type": "string",
+      "default": "USD",
+      "doc": "Currency code (ISO 4217)"
+    },
+    {
+      "name": "merchant_id",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Merchant identifier (for purchases)"
+    },
+    {
+      "name": "merchant_name",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Merchant name"
+    },
+    {
+      "name": "merchant_category",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Merchant category code (MCC)"
+    },
+    {
+      "name": "card_last_four",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Last 4 digits of card number"
+    },
+    {
+      "name": "payment_method",
+      "type": {
+        "type": "enum",
+        "name": "PaymentMethod",
+        "symbols": ["CREDIT_CARD", "DEBIT_CARD", "BANK_TRANSFER", "CASH", "DIGITAL_WALLET", "OTHER"]
+      },
+      "default": "CREDIT_CARD",
+      "doc": "Payment method used"
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "TransactionStatus",
+        "symbols": ["PENDING", "COMPLETED", "FAILED", "DECLINED", "CANCELLED"]
+      },
+      "default": "PENDING",
+      "doc": "Transaction status"
+    },
+    {
+      "name": "location",
+      "type": ["null", {
+        "type": "record",
+        "name": "TransactionLocation",
+        "fields": [
+          {"name": "city", "type": ["null", "string"], "default": null},
+          {"name": "state", "type": ["null", "string"], "default": null},
+          {"name": "country", "type": "string"},
+          {"name": "postal_code", "type": ["null", "string"], "default": null},
+          {"name": "latitude", "type": ["null", "double"], "default": null},
+          {"name": "longitude", "type": ["null", "double"], "default": null}
+        ]
+      }],
+      "default": null,
+      "doc": "Transaction location"
+    },
+    {
+      "name": "is_international",
+      "type": "boolean",
+      "default": false,
+      "doc": "Whether transaction is international"
+    },
+    {
+      "name": "risk_score",
+      "type": ["null", "double"],
+      "default": null,
+      "doc": "Fraud risk score (0-100)"
+    },
+    {
+      "name": "flagged_for_review",
+      "type": "boolean",
+      "default": false,
+      "doc": "Whether transaction is flagged for manual review"
+    }
+  ]
+}

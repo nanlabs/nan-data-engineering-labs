@@ -1,0 +1,390 @@
+{
+  "Comment": "Weekly Reporting Workflow for RideShare Analytics Platform. This workflow runs weekly to generate comprehensive business intelligence reports by querying historical data from Athena, processing results, and distributing personalized reports to stakeholders.",
+  "StartAt": "CheckDataAvailability",
+  "TimeoutSeconds": 1800,
+  "States": {
+    "CheckDataAvailability": {
+      "Type": "Task",
+      "Comment": "Verify that data is available for the past 7 days before proceeding. This prevents incomplete reports from being generated.",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "rideshare-weekly-reporting-lambda",
+        "Payload": {
+          "action": "check_data_availability",
+          "days_back": 7,
+          "execution_id.$": "$$.Execution.Name"
+        }
+      },
+      "ResultPath": "$.data_check",
+      "ResultSelector": {
+        "available.$": "$.Payload.data_available",
+        "missing_days.$": "$.Payload.missing_days",
+        "date_range.$": "$.Payload.date_range"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error_info",
+          "Next": "NotifyDataCheckFailure"
+        }
+      ],
+      "Next": "EvaluateDataAvailability"
+    },
+    "EvaluateDataAvailability": {
+      "Type": "Choice",
+      "Comment": "Determine if sufficient data is available to proceed with report generation",
+      "Choices": [
+        {
+          "Variable": "$.data_check.available",
+          "BooleanEquals": true,
+          "Next": "FetchHistoricalData"
+        }
+      ],
+      "Default": "NotifyInsufficientData"
+    },
+    "FetchHistoricalData": {
+      "Type": "Task",
+      "Comment": "Start Athena query to fetch aggregated ride, payment, and rating data for the past 7 days. Query joins multiple tables for comprehensive analytics.",
+      "Resource": "arn:aws:states:::athena:startQueryExecution.sync",
+      "Parameters": {
+        "QueryString": "WITH weekly_rides AS (SELECT DATE_TRUNC('day', ride_timestamp) as date, city, COUNT(*) as total_rides, SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_rides, AVG(duration_minutes) as avg_duration, SUM(fare_amount + surge_amount) as revenue FROM rideshare_analytics.rides WHERE ride_timestamp >= CURRENT_DATE - INTERVAL '7' DAY GROUP BY 1, 2), weekly_payments AS (SELECT DATE_TRUNC('day', payment_timestamp) as date, payment_method, COUNT(*) as transaction_count, SUM(amount) as total_amount FROM rideshare_analytics.payments WHERE payment_timestamp >= CURRENT_DATE - INTERVAL '7' DAY GROUP BY 1, 2) SELECT r.date, r.city, r.total_rides, r.completed_rides, r.avg_duration, r.revenue, p.payment_method, p.transaction_count, p.total_amount FROM weekly_rides r LEFT JOIN weekly_payments p ON r.date = p.date ORDER BY r.date DESC, r.city",
+        "QueryExecutionContext": {
+          "Database": "rideshare_analytics"
+        },
+        "ResultConfiguration": {
+          "OutputLocation": "s3://rideshare-athena-results/weekly-reports/"
+        },
+        "WorkGroup": "rideshare-analytics-workgroup"
+      },
+      "ResultPath": "$.athena_query",
+      "ResultSelector": {
+        "query_execution_id.$": "$.QueryExecution.QueryExecutionId",
+        "output_location.$": "$.QueryExecution.ResultConfiguration.OutputLocation",
+        "state.$": "$.QueryExecution.Status.State"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Athena.InvalidRequestException"
+          ],
+          "IntervalSeconds": 5,
+          "MaxAttempts": 2,
+          "BackoffRate": 2.0
+        },
+        {
+          "ErrorEquals": [
+            "Athena.InternalServerException"
+          ],
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.5
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error_info",
+          "Next": "NotifyQueryFailure"
+        }
+      ],
+      "Next": "ProcessResults"
+    },
+    "ProcessResults": {
+      "Type": "Task",
+      "Comment": "Process Athena query results and calculate weekly KPIs including WoW growth, top cities, revenue trends, and customer insights.",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "rideshare-weekly-reporting-lambda",
+        "Payload": {
+          "action": "process_athena_results",
+          "query_execution_id.$": "$.athena_query.query_execution_id",
+          "output_location.$": "$.athena_query.output_location",
+          "date_range.$": "$.data_check.date_range"
+        }
+      },
+      "ResultPath": "$.processed_kpis",
+      "ResultSelector": {
+        "kpis.$": "$.Payload.kpis",
+        "weekly_summary.$": "$.Payload.weekly_summary",
+        "city_rankings.$": "$.Payload.city_rankings",
+        "growth_metrics.$": "$.Payload.growth_metrics"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException"
+          ],
+          "IntervalSeconds": 5,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error_info",
+          "Next": "NotifyProcessingFailure"
+        }
+      ],
+      "Next": "FanOutReports"
+    },
+    "FanOutReports": {
+      "Type": "Map",
+      "Comment": "Generate personalized reports for each stakeholder. The Map state iterates over the list of stakeholders and creates customized reports based on their role and interests.",
+      "ItemsPath": "$.stakeholders",
+      "MaxConcurrency": 5,
+      "Parameters": {
+        "stakeholder.$": "$$.Map.Item.Value",
+        "kpis.$": "$.processed_kpis.kpis",
+        "weekly_summary.$": "$.processed_kpis.weekly_summary",
+        "city_rankings.$": "$.processed_kpis.city_rankings",
+        "growth_metrics.$": "$.processed_kpis.growth_metrics",
+        "execution_id.$": "$$.Execution.Name"
+      },
+      "Iterator": {
+        "StartAt": "GeneratePersonalizedReport",
+        "States": {
+          "GeneratePersonalizedReport": {
+            "Type": "Task",
+            "Comment": "Generate a personalized report for the stakeholder. Report format and content vary by role (executive, operations, finance, etc.)",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Parameters": {
+              "FunctionName": "rideshare-weekly-reporting-lambda",
+              "Payload": {
+                "action": "generate_personalized_report",
+                "stakeholder.$": "$.stakeholder",
+                "kpis.$": "$.kpis",
+                "weekly_summary.$": "$.weekly_summary",
+                "city_rankings.$": "$.city_rankings",
+                "growth_metrics.$": "$.growth_metrics"
+              }
+            },
+            "ResultPath": "$.report",
+            "ResultSelector": {
+              "report_html.$": "$.Payload.report_html",
+              "report_pdf_url.$": "$.Payload.report_pdf_url",
+              "report_summary.$": "$.Payload.report_summary"
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException"
+                ],
+                "IntervalSeconds": 3,
+                "MaxAttempts": 2,
+                "BackoffRate": 2.0
+              }
+            ],
+            "Next": "SendEmail"
+          },
+          "SendEmail": {
+            "Type": "Task",
+            "Comment": "Send the personalized report to the stakeholder via email (SNS with email subscription)",
+            "Resource": "arn:aws:states:::sns:publish",
+            "Parameters": {
+              "TopicArn.$": "States.Format('arn:aws:sns:us-east-1:123456789012:rideshare-weekly-report-{}', $.stakeholder.email_topic)",
+              "Subject.$": "States.Format('Weekly RideShare Analytics Report - {}', $.stakeholder.name)",
+              "Message.$": "States.Format('Hello {},\n\nYour weekly RideShare analytics report is ready.\n\n{}\n\nView full report: {}\n\nBest regards,\nRideShare Analytics Team', $.stakeholder.name, $.report.report_summary, $.report.report_pdf_url)"
+            },
+            "ResultPath": "$.email_result",
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "SNS.ServiceException"
+                ],
+                "IntervalSeconds": 2,
+                "MaxAttempts": 3,
+                "BackoffRate": 2.0
+              }
+            ],
+            "End": true
+          }
+        }
+      },
+      "ResultPath": "$.report_distribution_results",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error_info",
+          "Next": "NotifyDistributionFailure"
+        }
+      ],
+      "Next": "UpdateDashboards"
+    },
+    "UpdateDashboards": {
+      "Type": "Task",
+      "Comment": "Refresh QuickSight datasets to ensure dashboards display the latest weekly data. This triggers SPICE dataset refresh.",
+      "Resource": "arn:aws:states:::aws-sdk:quicksight:createIngestion",
+      "Parameters": {
+        "AwsAccountId": "123456789012",
+        "DataSetId": "weekly-rideshare-analytics-dataset",
+        "IngestionId.$": "States.Format('weekly-refresh-{}', $$.Execution.Name)",
+        "IngestionType": "FULL_REFRESH"
+      },
+      "ResultPath": "$.dashboard_refresh",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "QuickSight.ResourceExistsException"
+          ],
+          "IntervalSeconds": 5,
+          "MaxAttempts": 1,
+          "BackoffRate": 1.0
+        },
+        {
+          "ErrorEquals": [
+            "QuickSight.ThrottlingException"
+          ],
+          "IntervalSeconds": 10,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error_info",
+          "Next": "NotifyDashboardRefreshFailure"
+        }
+      ],
+      "Next": "CompleteWorkflow"
+    },
+    "CompleteWorkflow": {
+      "Type": "Pass",
+      "Comment": "Workflow completed successfully. Prepare final summary.",
+      "Result": {
+        "status": "SUCCESS",
+        "message": "Weekly reporting workflow completed successfully. Reports distributed to all stakeholders and dashboards refreshed."
+      },
+      "ResultPath": "$.completion_status",
+      "Next": "SendSuccessNotification"
+    },
+    "SendSuccessNotification": {
+      "Type": "Task",
+      "Comment": "Send success notification to operations team",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:rideshare-weekly-reporting-success",
+        "Subject": "✅ Weekly Reporting Workflow Completed Successfully",
+        "Message.$": "States.Format('Weekly reporting workflow completed successfully.\n\nExecution ID: {}\nDate Range: {}\nTotal Rides (7 days): {}\nWeek-over-Week Growth: {}%\nReports Sent: {}\n\nDashboards have been refreshed with the latest data.', $$.Execution.Name, $.data_check.date_range, $.processed_kpis.kpis.total_rides, $.processed_kpis.growth_metrics.wow_growth_pct, States.ArrayLength($.report_distribution_results))"
+      },
+      "ResultPath": "$.notification_result",
+      "End": true
+    },
+    "NotifyInsufficientData": {
+      "Type": "Task",
+      "Comment": "Notify that insufficient data is available for complete weekly report",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:rideshare-weekly-reporting-failure",
+        "Subject": "⚠️ Weekly Reporting: Insufficient Data",
+        "Message.$": "States.Format('Weekly reporting workflow cannot proceed due to insufficient data.\n\nMissing data for days: {}\n\nPlease investigate data pipeline and retry when data is available.', $.data_check.missing_days)"
+      },
+      "Next": "FailInsufficientData"
+    },
+    "FailInsufficientData": {
+      "Type": "Fail",
+      "Error": "InsufficientData",
+      "Cause": "Not enough data available for the past 7 days to generate a complete weekly report"
+    },
+    "NotifyDataCheckFailure": {
+      "Type": "Task",
+      "Comment": "Notify that data availability check failed",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:rideshare-weekly-reporting-failure",
+        "Subject": "🚨 Weekly Reporting: Data Check Failed",
+        "Message.$": "States.Format('Data availability check failed.\n\nExecution ID: {}\nError: {}\n\nPlease investigate immediately.', $$.Execution.Name, $.error_info.Cause)"
+      },
+      "Next": "FailDataCheck"
+    },
+    "FailDataCheck": {
+      "Type": "Fail",
+      "Error": "DataCheckFailed",
+      "Cause": "Failed to check data availability for weekly report"
+    },
+    "NotifyQueryFailure": {
+      "Type": "Task",
+      "Comment": "Notify that Athena query execution failed",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:rideshare-weekly-reporting-failure",
+        "Subject": "🚨 Weekly Reporting: Athena Query Failed",
+        "Message.$": "States.Format('Athena query execution failed.\n\nExecution ID: {}\nError: {}\n\nPlease check Athena console for details.', $$.Execution.Name, $.error_info.Cause)"
+      },
+      "Next": "FailQuery"
+    },
+    "FailQuery": {
+      "Type": "Fail",
+      "Error": "AthenaQueryFailed",
+      "Cause": "Athena query execution failed during weekly report generation"
+    },
+    "NotifyProcessingFailure": {
+      "Type": "Task",
+      "Comment": "Notify that results processing failed",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:rideshare-weekly-reporting-failure",
+        "Subject": "🚨 Weekly Reporting: Processing Failed",
+        "Message.$": "States.Format('Query results processing failed.\n\nExecution ID: {}\nError: {}\n\nCheck Lambda logs for details.', $$.Execution.Name, $.error_info.Cause)"
+      },
+      "Next": "FailProcessing"
+    },
+    "FailProcessing": {
+      "Type": "Fail",
+      "Error": "ProcessingFailed",
+      "Cause": "Failed to process Athena query results"
+    },
+    "NotifyDistributionFailure": {
+      "Type": "Task",
+      "Comment": "Notify that report distribution failed",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:rideshare-weekly-reporting-failure",
+        "Subject": "🚨 Weekly Reporting: Distribution Failed",
+        "Message.$": "States.Format('Report distribution to stakeholders failed.\n\nExecution ID: {}\nError: {}\n\nSome reports may not have been delivered.', $$.Execution.Name, $.error_info.Cause)"
+      },
+      "Next": "FailDistribution"
+    },
+    "FailDistribution": {
+      "Type": "Fail",
+      "Error": "DistributionFailed",
+      "Cause": "Failed to distribute personalized reports to stakeholders"
+    },
+    "NotifyDashboardRefreshFailure": {
+      "Type": "Task",
+      "Comment": "Notify that dashboard refresh failed - workflow continues as this is not critical",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:rideshare-weekly-reporting-failure",
+        "Subject": "⚠️ Weekly Reporting: Dashboard Refresh Failed",
+        "Message.$": "States.Format('QuickSight dashboard refresh failed but reports were distributed successfully.\n\nExecution ID: {}\nError: {}\n\nDashboards may show stale data until next refresh.', $$.Execution.Name, $.error_info.Cause)"
+      },
+      "ResultPath": "$.warning_notification",
+      "Next": "CompleteWorkflow"
+    }
+  }
+}

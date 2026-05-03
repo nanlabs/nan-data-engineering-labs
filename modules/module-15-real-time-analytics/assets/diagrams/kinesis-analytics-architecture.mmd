@@ -1,0 +1,107 @@
+graph TB
+    %% Kinesis Data Analytics Architecture - Real-Time Analytics Pipeline
+
+    subgraph "Data Producers"
+        P1[Web Applications<br/>REST API]:::producer
+        P2[Mobile Apps<br/>SDK]:::producer
+        P3[IoT Devices<br/>MQTT]:::producer
+        P4[Database CDC<br/>DMS/Debezium]:::producer
+    end
+
+    subgraph "Ingestion Layer - Kinesis Data Streams"
+        KDS1[Kinesis Stream<br/>events-stream]:::kinesis
+        KDS2[10 Shards<br/>10 MB/s write]:::kinesis
+        KDS3[Partition Key<br/>user_id]:::kinesis
+        KDS4[Retention<br/>24 hours]:::kinesis
+    end
+
+    subgraph "Processing Layer - Kinesis Data Analytics"
+        KDA1[Flink Application<br/>Java 11 / Scala]:::flink
+        KDA2[Flink SQL<br/>Windowing Queries]:::flink
+        KDA3[Table API<br/>Complex Joins]:::flink
+        KDA4[CEP Library<br/>Pattern Detection]:::flink
+        KDA5[Parallelism: 4 KPUs<br/>16 GB memory]:::flink
+    end
+
+    subgraph "Feature Store - Optional"
+        FS1[SageMaker Feature Store<br/>Online/Offline]:::feature
+        FS2[Real-time Features<br/>DynamoDB]:::feature
+    end
+
+    subgraph "ML Scoring - Optional"
+        ML1[SageMaker Endpoint<br/>XGBoost Model]:::ml
+        ML2[Batch Transform<br/>Offline Scoring]:::ml
+    end
+
+    subgraph "Output Sinks"
+        S1[S3 Data Lake<br/>Parquet Format]:::sink
+        S2[DynamoDB<br/>Real-time Views]:::sink
+        S3[Redshift<br/>Analytics Warehouse]:::sink
+        S4[Elasticsearch<br/>Search Index]:::sink
+        S5[CloudWatch<br/>Metrics & Logs]:::sink
+    end
+
+    subgraph "Visualization & Monitoring"
+        V1[QuickSight<br/>Real-time Dashboard]:::viz
+        V2[Grafana<br/>Custom Metrics]:::viz
+        V3[CloudWatch Dashboard<br/>Operational Metrics]:::viz
+    end
+
+    %% Data Flow
+    P1 --> KDS1
+    P2 --> KDS1
+    P3 --> KDS1
+    P4 --> KDS1
+
+    KDS1 --> KDS2
+    KDS2 --> KDS3
+    KDS3 --> KDS4
+
+    KDS4 --> KDA1
+    KDA1 --> KDA2
+    KDA1 --> KDA3
+    KDA1 --> KDA4
+
+    %% Feature Engineering
+    KDA2 -.->|"Enrich events"| FS1
+    FS1 --> FS2
+
+    %% ML Integration
+    KDA3 -.->|"Invoke endpoint<br/><100ms"| ML1
+    KDA3 -.->|"Batch scoring"| ML2
+
+    %% Output Paths
+    KDA2 --> S1
+    KDA2 --> S2
+    KDA3 --> S3
+    KDA4 --> S4
+    KDA1 --> S5
+
+    %% Visualization
+    S2 --> V1
+    S3 --> V1
+    S4 --> V2
+    S5 --> V3
+
+    %% Styling
+    classDef producer fill:#4A90E2,stroke:#2E6FA8,stroke-width:3px,color:#fff
+    classDef kinesis fill:#FF9900,stroke:#CC7A00,stroke-width:3px,color:#fff
+    classDef flink fill:#E6526F,stroke:#C7455B,stroke-width:3px,color:#fff
+    classDef feature fill:#7ED321,stroke:#5A9E18,stroke-width:3px,color:#fff
+    classDef ml fill:#BD10E0,stroke:#8A0CA8,stroke-width:3px,color:#fff
+    classDef sink fill:#F5A623,stroke:#C17F1A,stroke-width:3px,color:#fff
+    classDef viz fill:#9013FE,stroke:#6A0FBC,stroke-width:3px,color:#fff
+
+    %% Key Metrics
+    subgraph "Performance Metrics"
+        M1[Throughput: 100K events/sec<br/>Latency: <1 second<br/>Cost: $800/month]:::metrics
+        M2[Parallelism: 4 KPUs<br/>Memory: 16 GB<br/>Auto-scaling: Yes]:::metrics
+    end
+
+    classDef metrics fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff
+
+    %% Checkpointing
+    KDA1 -.->|"Checkpoints every 1 min<br/>S3 backup"| S1
+
+    %% Error Handling
+    KDA1 -.->|"DLQ for failed records"| S1

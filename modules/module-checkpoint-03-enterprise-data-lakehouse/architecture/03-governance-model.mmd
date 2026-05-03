@@ -1,0 +1,857 @@
+```mermaid
+graph TB
+    %% Enterprise Data Lakehouse - Governance Model
+    %% Lake Formation governance with RBAC and security
+
+    subgraph "Data Catalog Structure"
+        subgraph "Catalog Hierarchy"
+            Catalog[AWS Glue Data Catalog
+            - Region: us-east-1
+            - Account: Production
+            - Version Control: Enabled
+            - Encryption: AES-256]
+
+            subgraph "Raw Database"
+                RawDB[Database: raw_zone
+                - Owner: DataPlatformTeam
+                - Location: s3://lakehouse-raw/
+                - Classification: Unprocessed
+                - Retention: 7-30 days]
+
+                RawTables[Tables Count: 50+
+                - raw_rds_customers
+                - raw_rds_orders
+                - raw_events_clickstream
+                - raw_events_iot
+                - raw_files_partners
+                - Metadata: Ingestion time
+                - Schema: Auto-discovered
+                - Partitions: By date]
+            end
+
+            subgraph "Bronze Database"
+                BronzeDB[Database: bronze_zone
+                - Owner: DataEngineeringTeam
+                - Location: s3://lakehouse-bronze/
+                - Classification: Validated
+                - Retention: 90 days]
+
+                BronzeTables[Tables Count: 45+
+                - bronze_customers
+                - bronze_orders
+                - bronze_products
+                - bronze_inventory
+                - bronze_web_events
+                - bronze_sensor_data
+                - Format: Parquet
+                - Schema: Enforced
+                - Partitions: Optimized]
+            end
+
+            subgraph "Silver Database"
+                SilverDB[Database: silver_zone
+                - Owner: DataGovernanceTeam
+                - Location: s3://lakehouse-silver/
+                - Classification: Curated
+                - Retention: 3 years]
+
+                SilverDimDB[Database: silver_dimensions
+                - Owner: DataGovernanceTeam
+                - Type: SCD Type 2
+                - Tables: 15 dimensions]
+
+                SilverFactDB[Database: silver_facts
+                - Owner: DataGovernanceTeam
+                - Type: Fact tables
+                - Tables: 20 facts]
+
+                SilverTables[Key Tables:
+                - dim_customer effective_from/to
+                - dim_product category hierarchy
+                - dim_date fiscal calendar
+                - dim_location geo hierarchy
+                - fact_sales grain: line item
+                - fact_inventory snapshots
+                - fact_web_sessions
+                - Format: Delta Lake
+                - ACID: Enabled
+                - Time Travel: 30 days]
+            end
+
+            subgraph "Gold Database"
+                GoldDB[Database: gold_zone
+                - Owner: BusinessIntelligence
+                - Location: s3://lakehouse-gold/
+                - Classification: Business Ready
+                - Retention: 7 years]
+
+                GoldTables[Tables Count: 30+
+                - gold_sales_analytics
+                - gold_customer_360
+                - gold_financial_metrics
+                - gold_marketing_performance
+                - gold_executive_kpi
+                - gold_operational_dashboard
+                - Format: Delta Lake
+                - Aggregation: Pre-computed
+                - Optimization: Query-tuned]
+            end
+
+            subgraph "Metadata Tables"
+                MetadataDB[Database: lakehouse_metadata
+                - Owner: DataGovernanceTeam
+                - Purpose: Governance tracking]
+
+                MetadataTables[Metadata Tables:
+                - data_lineage
+                - data_quality_metrics
+                - access_audit_log
+                - schema_change_history
+                - processing_job_log
+                - sla_tracking
+                - cost_attribution]
+            end
+        end
+
+        subgraph "Schema Management"
+            SchemaRegistry[Schema Registry:
+            - Version Control: Git-backed
+            - Schema Evolution: Backward compatible
+            - Validation: Pre-deployment
+            - Documentation: Required
+            - Owner: Assigned per schema
+            - Change Process: PR approval]
+
+            ColumnMetadata[Column-Level Metadata:
+            - Business Name: Friendly name
+            - Description: Detailed docs
+            - Data Type: Strong typing
+            - Format: Patterns/examples
+            - Source: Lineage tracking
+            - Classification: PII/PHI/Public
+            - Quality Rules: Validation
+            - Example Values: Sample data]
+
+            TableMetadata[Table-Level Metadata:
+            - Business Purpose: Description
+            - Owner: Team/Individual
+            - Steward: Data steward
+            - Update Frequency: Schedule
+            - SLA: Freshness targets
+            - Dependencies: Upstream/downstream
+            - Consumers: Teams/systems
+            - Criticality: Bronze/Silver/Gold
+            - Quality Score: 0-100
+            - Last Validated: Timestamp]
+        end
+    end
+
+    subgraph "Role-Based Access Control"
+        subgraph "Identity Management"
+            IAM[AWS IAM Identity Center
+            - SSO: Okta integration
+            - MFA: Required
+            - Session: 8 hours
+            - Password: Complex policy]
+
+            ADGroups[Active Directory Groups:
+            - DataPlatformAdmins
+            - DataEngineers
+            - DataAnalysts
+            - BusinessAnalysts
+            - DataScientists
+            - ExecutiveUsers
+            - AuditorsReadOnly
+            - ExternalPartners]
+        end
+
+        subgraph "Admin Role"
+            AdminRole[Role: LakehouseAdmin
+            - Group: DataPlatformAdmins
+            - Count: 5 users
+            - MFA: Required
+            - Session: 4 hours]
+
+            AdminPermissions[Permissions:
+
+            Raw Zone:
+            - SELECT: All tables
+            - INSERT: All tables
+            - DELETE: All tables
+            - ALTER: All tables
+            - DROP: All tables
+
+            Bronze Zone:
+            - SELECT: All tables
+            - INSERT: All tables
+            - DELETE: All tables
+            - ALTER: All tables
+            - DROP: All tables
+
+            Silver Zone:
+            - SELECT: All tables
+            - INSERT: All tables
+            - DELETE: All tables
+            - ALTER: All tables
+            - DROP: All tables
+
+            Gold Zone:
+            - SELECT: All tables
+            - INSERT: All tables
+            - DELETE: All tables
+            - ALTER: All tables
+            - DROP: All tables
+
+            Governance:
+            - Grant permissions
+            - Revoke permissions
+            - Create roles
+            - Modify catalog
+            - View audit logs]
+        end
+
+        subgraph "Data Engineer Role"
+            EngineerRole[Role: DataEngineer
+            - Group: DataEngineers
+            - Count: 15 users
+            - MFA: Required
+            - Session: 8 hours]
+
+            EngineerPermissions[Permissions:
+
+            Raw Zone:
+            - SELECT: All tables
+            - INSERT: All tables
+            - DELETE: Own jobs only
+            - ALTER: Schema additions
+            - DROP: Denied
+
+            Bronze Zone:
+            - SELECT: All tables
+            - INSERT: All tables
+            - DELETE: Own jobs only
+            - ALTER: Schema additions
+            - DROP: Denied
+
+            Silver Zone:
+            - SELECT: All tables
+            - INSERT: Via ETL jobs
+            - DELETE: Via ETL jobs
+            - ALTER: Request approval
+            - DROP: Denied
+
+            Gold Zone:
+            - SELECT: All tables
+            - INSERT: Via ETL jobs
+            - DELETE: Denied
+            - ALTER: Denied
+            - DROP: Denied
+
+            Additional:
+            - Run Glue jobs
+            - Run EMR clusters
+            - View CloudWatch logs
+            - S3 read/write via jobs]
+        end
+
+        subgraph "Data Analyst Role"
+            AnalystRole[Role: DataAnalyst
+            - Group: DataAnalysts
+            - Count: 40 users
+            - MFA: Required
+            - Session: 8 hours]
+
+            AnalystPermissions[Permissions:
+
+            Raw Zone:
+            - SELECT: Denied
+            - All other: Denied
+
+            Bronze Zone:
+            - SELECT: Denied
+            - All other: Denied
+
+            Silver Zone:
+            - SELECT: All tables
+            - INSERT: Denied
+            - DELETE: Denied
+            - ALTER: Denied
+            - DROP: Denied
+            - Row Filter: By department
+            - Column Mask: PII redacted
+
+            Gold Zone:
+            - SELECT: All tables
+            - INSERT: Denied
+            - DELETE: Denied
+            - ALTER: Denied
+            - DROP: Denied
+            - Row Filter: By department
+
+            Additional:
+            - Run Athena queries
+            - Create views temp
+            - QuickSight access
+            - Max query: 10 min timeout]
+        end
+
+        subgraph "Business User Role"
+            BusinessRole[Role: BusinessAnalyst
+            - Group: BusinessAnalysts
+            - Count: 100 users
+            - MFA: Not required
+            - Session: 8 hours]
+
+            BusinessPermissions[Permissions:
+
+            Raw Zone:
+            - SELECT: Denied
+            - All access: Denied
+
+            Bronze Zone:
+            - SELECT: Denied
+            - All access: Denied
+
+            Silver Zone:
+            - SELECT: Denied
+            - All access: Denied
+
+            Gold Zone:
+            - SELECT: Limited tables
+            - gold_sales_analytics
+            - gold_customer_360
+            - gold_marketing_performance
+            - INSERT: Denied
+            - DELETE: Denied
+            - ALTER: Denied
+            - DROP: Denied
+            - Row Filter: By region/dept
+            - Column Mask: All PII redacted
+
+            Additional:
+            - QuickSight dashboards only
+            - No direct query access
+            - Scheduled reports
+            - Embedded analytics]
+        end
+
+        subgraph "Read-Only Auditor Role"
+            AuditorRole[Role: Auditor
+            - Group: AuditorsReadOnly
+            - Count: 3 users
+            - MFA: Required
+            - Session: 4 hours]
+
+            AuditorPermissions[Permissions:
+
+            All Zones:
+            - SELECT: All metadata only
+            - Data Access: Limited samples
+            - PII: Fully masked
+
+            Audit Tables:
+            - SELECT: Full access
+            - access_audit_log
+            - schema_change_history
+            - data_quality_metrics
+            - sla_tracking
+
+            CloudTrail:
+            - View all logs
+            - Export capabilities
+
+            Lake Formation:
+            - View all permissions
+            - View all grants
+            - No modify rights]
+        end
+
+        subgraph "External Partner Role"
+            PartnerRole[Role: ExternalPartner
+            - Group: ExternalPartners
+            - Count: 10 users
+            - MFA: Required
+            - Session: 2 hours
+            - IP Whitelist: Required]
+
+            PartnerPermissions[Permissions:
+
+            Gold Zone:
+            - SELECT: Specific tables only
+            - gold_partner_data_product
+            - gold_shared_metrics
+            - Row Filter: partner_id = 'X'
+            - Column Mask: Sensitive fields
+            - Rate Limit: 100 queries/day
+
+            Access Method:
+            - API Gateway only
+            - No console access
+            - No direct query
+            - Predefined endpoints
+
+            Monitoring:
+            - All queries logged
+            - Usage tracked
+            - Cost allocated
+            - Anomaly alerts]
+        end
+    end
+
+    subgraph "Column-Level Security"
+        subgraph "PII Classification"
+            PIIDetection[PII Detection:
+            - AWS Macie: Automated scanning
+            - Glue Classifiers: Pattern matching
+            - Custom Rules: Business logic
+            - ML Models: Entity recognition]
+
+            PIITypes[PII Types Identified:
+
+            High Sensitivity:
+            - SSN: Social Security Number
+            - Credit Card: PAN data
+            - Bank Account: Account numbers
+            - Passport: Document numbers
+            - Biometric: Fingerprints etc
+
+            Medium Sensitivity:
+            - Email: Email addresses
+            - Phone: Phone numbers
+            - DOB: Date of birth
+            - Address: Home address
+            - IP Address: User IPs
+
+            Low Sensitivity:
+            - Name: Full name
+            - Gender: Gender identity
+            - Age: Age ranges
+            - Occupation: Job title
+            - Company: Employer name]
+        end
+
+        subgraph "Data Masking Policies"
+            MaskingStrategies[Masking Strategies:
+
+            Full Redaction:
+            - SSN: *** *** ****
+            - Credit Card: **** **** **** ****
+            - Passport: **********
+            - Applied to: BusinessAnalyst
+              ExternalPartner Auditor
+
+            Partial Masking:
+            - Email: j***@company.com
+            - Phone: *** *** 1234
+            - Address: City State only
+            - Applied to: DataAnalyst
+              some tables
+
+            Hashing:
+            - User ID: SHA-256 hash
+            - Device ID: Hashed
+            - Session ID: Hashed
+            - Applied to: Analytics
+              ML training
+
+            Tokenization:
+            - Customer ID: Reversible token
+            - Order ID: Reversible token
+            - Applied to: Cross-reference
+              Join operations
+
+            No Masking:
+            - DataEngineer: Full access
+            - LakehouseAdmin: Full access
+            - Audit: Required]
+
+            ColumnTags[Column-Level Tags:
+            - PII_HIGH: Full redaction
+            - PII_MEDIUM: Partial masking
+            - PII_LOW: Contextual masking
+            - CONFIDENTIAL: Role-based
+            - SENSITIVE: Department filter
+            - PUBLIC: No restriction
+            - ENCRYPTED: At rest
+            - PHI: HIPAA compliance]
+        end
+
+        subgraph "Masking Implementation"
+            LakeFormationMasking[Lake Formation Masking:
+
+            Table: silver.dim_customer
+            Column: ssn
+            - Tag: PII_HIGH
+            - Admin: No mask
+            - Engineer: Hash
+            - Analyst: *** *** ****
+            - Business: *** *** ****
+
+            Column: email
+            - Tag: PII_MEDIUM
+            - Admin: Full
+            - Engineer: Full
+            - Analyst: j***@company.com
+            - Business: Redacted
+
+            Column: phone
+            - Tag: PII_MEDIUM
+            - Admin: Full
+            - Engineer: Full
+            - Analyst: *** *** 1234
+            - Business: Redacted
+
+            Column: customer_name
+            - Tag: PII_LOW
+            - Admin: Full
+            - Engineer: Full
+            - Analyst: Full
+            - Business: First name only]
+        end
+    end
+
+    subgraph "Row-Level Security"
+        RowFilters[Row-Level Filters:
+
+        Geographic Filter:
+        - Table: gold_sales_analytics
+        - Column: region
+        - Filter: region IN user.regions
+        - Applied to: BusinessAnalyst
+        - Logic: User attribute mapping
+
+        Department Filter:
+        - Table: silver.fact_sales
+        - Column: department_id
+        - Filter: department_id = user.department
+        - Applied to: DataAnalyst
+        - Logic: IAM tag matching
+
+        Time-Based Filter:
+        - Table: gold_financial_metrics
+        - Column: fiscal_year
+        - Filter: fiscal_year >= YEAR(NOW()) - 2
+        - Applied to: All non-admin
+        - Logic: Rolling window
+
+        Customer Segment Filter:
+        - Table: gold_customer_360
+        - Column: customer_segment
+        - Filter: segment IN user.segments
+        - Applied to: Marketing team
+        - Logic: Role-based
+
+        Partner Filter:
+        - Table: gold_partner_data_product
+        - Column: partner_id
+        - Filter: partner_id = user.partner_id
+        - Applied to: ExternalPartner
+        - Logic: Strict isolation
+
+        Sensitivity Filter:
+        - Table: silver.fact_transactions
+        - Column: transaction_amount
+        - Filter: transaction_amount < 10000
+        OR user.role = 'FinanceManager'
+        - Applied to: General analysts
+        - Logic: Conditional access]
+    end
+
+    subgraph "Audit & Compliance"
+        subgraph "Access Logging"
+            CloudTrailLogs[CloudTrail Logging:
+            - All API calls: Logged
+            - Data Events: S3 object-level
+            - Management Events: All
+            - Retention: 7 years
+            - Encryption: KMS
+            - Analysis: Athena queries
+            - Alerts: Anomaly detection]
+
+            S3AccessLogs[S3 Access Logs:
+            - Bucket: lakehouse-*
+            - Requests: All GET/PUT/DELETE
+            - Requester: IAM principal
+            - Timestamp: Precise
+            - Result: Success/Failure
+            - Bytes: Transfer size
+            - Retention: 90 days
+            - Analysis: Daily reports]
+
+            LakeFormationAudit[Lake Formation Audit:
+            - Permission Changes: All logged
+            - Data Access: Query-level
+            - User: IAM identity
+            - Table/Column: Accessed
+            - Timestamp: Precise
+            - Duration: Query time
+            - Rows Scanned: Count
+            - Bytes: Transfer size
+            - Result: Success/Error
+            - Retention: 1 year]
+
+            ApplicationLogs[Application Logs:
+            - Glue Jobs: All executions
+            - EMR Clusters: All jobs
+            - Lambda Functions: Invocations
+            - Step Functions: Workflows
+            - CloudWatch Logs: Centralized
+            - Retention: 90 days
+            - Analysis: CloudWatch Insights]
+        end
+
+        subgraph "Compliance Monitoring"
+            ComplianceFrameworks[Compliance Frameworks:
+
+            GDPR:
+            - Right to access
+            - Right to erasure
+            - Consent tracking
+            - Data portability
+            - Breach notification
+
+            CCPA:
+            - Consumer rights
+            - Do not sell
+            - Access requests
+            - Deletion requests
+
+            SOC 2:
+            - Access controls
+            - Change management
+            - Data encryption
+            - Incident response
+            - Audit trails
+
+            HIPAA:
+            - PHI protection
+            - Access controls
+            - Encryption
+            - Audit logs
+            - Business associate agreements
+
+            PCI-DSS:
+            - Cardholder data protection
+            - Encryption in transit/rest
+            - Access restrictions
+            - Audit trails
+            - Quarterly scans]
+
+            ComplianceChecks[Automated Compliance Checks:
+
+            Daily Checks:
+            - Unauthorized access attempts
+            - Failed authentication
+            - Permission changes
+            - Schema modifications
+            - Data exfiltration patterns
+
+            Weekly Checks:
+            - User access review
+            - Unused accounts
+            - Excessive permissions
+            - PII access patterns
+            - Data quality scores
+
+            Monthly Checks:
+            - Role certification
+            - Permission audit
+            - Compliance reporting
+            - Data retention review
+            - Security assessment
+
+            Quarterly Checks:
+            - Full access review
+            - Compliance attestation
+            - Third-party audit
+            - Policy updates
+            - Training verification]
+        end
+
+        subgraph "Incident Response"
+            IncidentDetection[Incident Detection:
+            - Anomaly: ML-based detection
+            - Threshold: Volume/frequency
+            - Pattern: Known threats
+            - Behavioral: User deviation
+            - Real-time: CloudWatch Events]
+
+            AlertPriority[Alert Priority Levels:
+
+            P0 - Critical:
+            - Data breach detected
+            - Mass data exfiltration
+            - Unauthorized admin access
+            - Response: Immediate
+            - Escalation: CISO + CEO
+            - Action: Auto-lockdown
+
+            P1 - High:
+            - Suspicious access pattern
+            - Failed admin login attempts
+            - Unusual query volume
+            - Response: 15 minutes
+            - Escalation: Security team
+            - Action: Investigation
+
+            P2 - Medium:
+            - Permission change
+            - Schema modification
+            - Large query result
+            - Response: 1 hour
+            - Escalation: Data owner
+            - Action: Review
+
+            P3 - Low:
+            - Access audit flag
+            - Quality score drop
+            - SLA miss
+            - Response: 4 hours
+            - Escalation: Team lead
+            - Action: Monitor]
+
+            ResponsePlaybook[Incident Response Playbook:
+
+            Step 1 - Detect:
+            - Automated alerts triggered
+            - Security team notified
+            - Incident ticket created
+
+            Step 2 - Assess:
+            - Determine severity
+            - Identify affected data
+            - Check compliance impact
+
+            Step 3 - Contain:
+            - Revoke compromised access
+            - Isolate affected systems
+            - Enable enhanced logging
+
+            Step 4 - Investigate:
+            - Review audit logs
+            - Interview involved users
+            - Trace data access
+
+            Step 5 - Remediate:
+            - Fix security gaps
+            - Update permissions
+            - Patch vulnerabilities
+
+            Step 6 - Report:
+            - Document incident
+            - Notify stakeholders
+            - Regulatory reporting if needed
+
+            Step 7 - Review:
+            - Post-mortem analysis
+            - Update procedures
+            - Training updates]
+        end
+    end
+
+    subgraph "Data Quality Governance"
+        DQFramework[Data Quality Framework:
+
+        Dimensions:
+        - Completeness: 99%+ target
+        - Accuracy: Validation rules
+        - Consistency: Cross-table
+        - Timeliness: SLA adherence
+        - Validity: Format/range
+        - Uniqueness: Duplicate detection
+
+        Measurement:
+        - Automated: Glue DQ rules
+        - Manual: Spot checks
+        - Continuous: Real-time monitoring
+        - Scoring: 0-100 scale
+        - Trending: Historical tracking
+        - Alerting: Threshold-based]
+
+        DQOwnership[Data Quality Ownership:
+
+        Bronze Zone:
+        - Owner: Data Engineering
+        - Responsibility: Technical quality
+        - Focus: Schema, format, completeness
+        - SLA: 95% quality score
+
+        Silver Zone:
+        - Owner: Data Governance Team
+        - Responsibility: Business quality
+        - Focus: Accuracy, validity
+        - SLA: 98% quality score
+
+        Gold Zone:
+        - Owner: Business Intelligence
+        - Responsibility: Business metrics
+        - Focus: Accuracy, timeliness
+        - SLA: 99.5% quality score]
+    end
+
+    %% Connections
+    Catalog --> RawDB
+    Catalog --> BronzeDB
+    Catalog --> SilverDB
+    Catalog --> GoldDB
+    Catalog --> MetadataDB
+
+    SilverDB --> SilverDimDB
+    SilverDB --> SilverFactDB
+
+    IAM --> AdminRole
+    IAM --> EngineerRole
+    IAM --> AnalystRole
+    IAM --> BusinessRole
+    IAM --> AuditorRole
+    IAM --> PartnerRole
+
+    ADGroups --> IAM
+
+    AdminRole --> AdminPermissions
+    EngineerRole --> EngineerPermissions
+    AnalystRole --> AnalystPermissions
+    BusinessRole --> BusinessPermissions
+    AuditorRole --> AuditorPermissions
+    PartnerRole --> PartnerPermissions
+
+    PIIDetection --> PIITypes
+    PIITypes --> ColumnTags
+    ColumnTags --> MaskingStrategies
+    MaskingStrategies --> LakeFormationMasking
+
+    LakeFormationMasking -.->|Apply| SilverTables
+    LakeFormationMasking -.->|Apply| GoldTables
+
+    RowFilters -.->|Apply| SilverTables
+    RowFilters -.->|Apply| GoldTables
+
+    AdminPermissions -.->|Access| SilverTables
+    EngineerPermissions -.->|Access| SilverTables
+    AnalystPermissions -.->|Access| SilverTables
+    BusinessPermissions -.->|Access| GoldTables
+
+    CloudTrailLogs --> ComplianceChecks
+    S3AccessLogs --> ComplianceChecks
+    LakeFormationAudit --> ComplianceChecks
+    ApplicationLogs --> ComplianceChecks
+
+    ComplianceChecks --> IncidentDetection
+    IncidentDetection --> AlertPriority
+    AlertPriority --> ResponsePlaybook
+
+    %% Styling
+    classDef catalogStyle fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+    classDef roleStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef permStyle fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef securityStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef auditStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef qualityStyle fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+
+    class Catalog,RawDB,BronzeDB,SilverDB,SilverDimDB,SilverFactDB,GoldDB,MetadataDB,SchemaRegistry,ColumnMetadata,TableMetadata,RawTables,BronzeTables,SilverTables,GoldTables,MetadataTables catalogStyle
+    class IAM,ADGroups,AdminRole,EngineerRole,AnalystRole,BusinessRole,AuditorRole,PartnerRole roleStyle
+    class AdminPermissions,EngineerPermissions,AnalystPermissions,BusinessPermissions,AuditorPermissions,PartnerPermissions permStyle
+    class PIIDetection,PIITypes,ColumnTags,MaskingStrategies,LakeFormationMasking,RowFilters securityStyle
+    class CloudTrailLogs,S3AccessLogs,LakeFormationAudit,ApplicationLogs,ComplianceFrameworks,ComplianceChecks,IncidentDetection,AlertPriority,ResponsePlaybook auditStyle
+    class DQFramework,DQOwnership qualityStyle
+```

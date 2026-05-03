@@ -1,0 +1,183 @@
+# Module 15: Real-Time Analytics - .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+*.coverage.*
+
+# LocalStack data
+infrastructure/localstack-data/
+infrastructure/flink-jobs/**/*.jar
+infrastructure/flink-jobs/**/*.class
+
+# Docker volumes
+docker-volumes/
+
+# Logs
+logs/
+*.log
+
+# Output data
+data/output/
+data/temp/
+
+# Flink checkpoints and savepoints (local)
+flink-checkpoints/
+flink-savepoints/
+
+# Validation reports
+validation-report.txt
+validation-report.html
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Secrets and credentials
+.env
+.env.local
+secrets/
+credentials/
+*.pem
+*.key
+
+# AWS credentials (should never be committed)
+.aws/
+aws-credentials.json
+
+# Grafana data
+infrastructure/grafana/data/
+
+# Test artifacts
+test-results/
+test-output/
+
+# Application-specific
+*.pid
+*.sock
+
+# Compiled Flink applications
+target/
+.flink/
+
+# Maven/Gradle (if using Java Flink apps)
+.mvn/
+.gradle/
+
+# IntelliJ IDEA
+*.iml
+.idea/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows
+desktop.ini
+$RECYCLE.BIN/
+
+# Large data files (use Git LFS if needed)
+*.parquet
+*.avro
+*.orc
+data/raw/*.json
+!data/sample/*.json
+
+# Model files
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.pt
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+
+# CloudFormation
+*.template.yml
+!infrastructure/**/*.yml
+
+# Ansible
+*.retry
+
+# Documentation builds
+docs/_build/
+site/
+
+# Coverage reports
+coverage.xml
+*.cover
+
+# Translation
+*.mo
+*.pot
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Redis dump
+dump.rdb
+
+# Elasticsearch
+elasticsearch-data/

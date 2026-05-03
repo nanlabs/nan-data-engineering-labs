@@ -1,0 +1,428 @@
+graph TB
+    subgraph "Cost Visibility Foundation"
+        A1[Cost Allocation Tags]
+        A2["Required Tags:
+        - CostCenter: data-engineering
+        - Project: customer-360
+        - Environment: prod/dev/test
+        - Owner: team-email
+        - Application: etl-pipeline"]
+
+        A3[AWS Organizations]
+        A4["Structure:
+        - Root Account
+        - Production OU
+        - Development OU
+        - Sandbox OU"]
+
+        A1 --> A2
+        A3 --> A4
+    end
+
+    subgraph "AWS Budgets Configuration"
+        B1[Budget Types]
+        B2["Cost Budget
+        Track actual spend
+        Alert at 80%, 100%, 120%"]
+
+        B3["Usage Budget
+        Track specific services
+        Example: 1000 Lambda GB-seconds"]
+
+        B4["Reservation Budget
+        Track RI/SP utilization
+        Alert if <90% utilization"]
+
+        B5["Savings Plans Budget
+        Track SP coverage
+        Alert if coverage <80%"]
+
+        B1 --> B2
+        B1 --> B3
+        B1 --> B4
+        B1 --> B5
+    end
+
+    A2 --> B1
+
+    subgraph "Budget Example: Monthly Cost"
+        C1["Monthly Budget: $50,000
+        Period: Calendar month
+        Scope: All services
+        Filters: Environment=prod"]
+
+        C2["Alert Thresholds:
+        - 80% ($40,000) → Warning (email team)
+        - 100% ($50,000) → Critical (email + PagerDuty)
+        - 120% ($60,000) → Emergency (exec escalation)"]
+
+        C3["Budget Actions:
+        - 100% → Stop dev/test instances (Lambda)
+        - 120% → Restrict IAM permissions (SCP)"]
+
+        C1 --> C2 --> C3
+    end
+
+    B2 --> C1
+
+    subgraph "Cost Anomaly Detection"
+        D1[AWS Cost Anomaly Detection]
+        D2["ML-Based Detection:
+        - Service-level anomalies
+        - Linked account anomalies
+        - Cost category anomalies
+        - Monitors 24/7"]
+
+        D3["Sensitivity Levels:
+        - High: Alert on small changes (>5%)
+        - Medium: Moderate changes (>15%)
+        - Low: Large changes only (>25%)"]
+
+        D4["Example Anomalies:
+        - EC2 spend increased 40% ($5K → $7K)
+        - Unexpected S3 data transfer: $2,500
+        - RDS instance left running in dev: $800
+        - Lambda timeout causing high duration costs"]
+
+        D1 --> D2 --> D3 --> D4
+    end
+
+    subgraph "Anomaly Root Cause Analysis"
+        E1[Anomaly Detected]
+        E2["Drill-Down Analysis:
+        - Service: Which AWS service?
+        - Account: Which linked account?
+        - Region: Geographic location
+        - Usage type: Specific resource
+        - Time: When did it start?"]
+
+        E3["Example: S3 Data Transfer Spike
+        Service: S3
+        Account: Production
+        Region: us-east-1
+        Usage type: Data Transfer Out
+        Time: Started Dec 15, 10am
+
+        Root Cause: Public bucket misconfigured
+        Resolution: Restrict bucket policy, enable VPC endpoint"]
+
+        E1 --> E2 --> E3
+    end
+
+    D4 --> E1
+
+    subgraph "Automated Tagging"
+        F1[AWS Config Rules]
+        F2["Required Tags Rule:
+        Check: CostCenter, Project, Environment
+        Frequency: Configuration change
+        Remediation: Tag with default or alert"]
+
+        F3[Lambda Auto-Tagger]
+        F4["Trigger: CloudWatch Events
+        On: EC2 RunInstances, RDS CreateDBInstance
+        Action: Apply tags from creator IAM role
+
+        Example:
+        Creator: john.doe@company.com
+        Auto-tag: Owner=john.doe, CostCenter=engineering"]
+
+        F1 --> F2
+        F3 --> F4
+    end
+
+    A2 --> F1
+    A2 --> F3
+
+    subgraph "Idle Resource Detection"
+        G1[CloudWatch Metrics Analysis]
+        G2["Idle EC2 Instances:
+        CPU <5% for 7 days
+        NetworkIn/Out <1MB/hour
+        Action: SNS alert → Manual review"]
+
+        G3["Unattached EBS Volumes:
+        State: Available (not in-use)
+        Age: >7 days
+        Action: Snapshot → Delete → Save 100%"]
+
+        G4["Old Snapshots:
+        Age: >90 days
+        Not tagged 'retain'
+        Action: Delete → Save storage cost"]
+
+        G5["Idle Load Balancers:
+        Active connections: 0 for 7 days
+        Action: Alert → Delete → Save $18/month each"]
+
+        G6["Unused Elastic IPs:
+        State: Not associated
+        Action: Release → Save $3.60/month each"]
+
+        G1 --> G2
+        G1 --> G3
+        G1 --> G4
+        G1 --> G5
+        G1 --> G6
+    end
+
+    subgraph "Automated Cleanup Lambda"
+        H1["Lambda Function: cost-optimizer
+        Schedule: Daily at 2am UTC
+        Timeout: 15 minutes
+        Memory: 512MB"]
+
+        H2["Cleanup Actions:
+        1. Identify idle resources (>7 days)
+        2. Check tag 'DoNotDelete'
+        3. Snapshot EBS volumes
+        4. Delete unattached EBS
+        5. Delete old snapshots (>90d)
+        6. Stop idle EC2 (dev/test only)
+        7. Send summary report"]
+
+        H3["Safety Mechanisms:
+        - Dry-run mode (default)
+        - Whitelist by tag
+        - Production exclusion
+        - Rollback capability (snapshots)"]
+
+        H4["Cost Impact Example:
+        Resources cleaned per month:
+        - 50 EBS volumes: 50 × 100GB × $0.10 = $500
+        - 20 snapshots: 20 × 50GB × $0.05 = $50
+        - 10 idle EC2 (t3.medium): 10 × $30 = $300
+        Monthly savings: $850
+        Lambda cost: $2
+        ROI: 42,400%"]
+
+        H1 --> H2 --> H3 --> H4
+    end
+
+    G2 --> H1
+    G3 --> H1
+    G4 --> H1
+
+    subgraph "FinOps Dashboard"
+        I1[QuickSight Dashboard]
+        I2["Executive View:
+        - Total monthly spend: $125,430
+        - Trend: +5% vs last month
+        - Budget utilization: 83%
+        - Top 5 services: Redshift, EC2, S3, RDS, Lambda"]
+
+        I3["Team Chargeback:
+        - Data Engineering: $45,000 (36%)
+        - Analytics: $32,000 (26%)
+        - ML Platform: $28,000 (22%)
+        - Untagged: $20,430 (16%)"]
+
+        I4["Cost Optimization Opportunities:
+        - Idle resources: $12,500/month potential savings
+        - RI/SP recommendations: $18,000/month
+        - Right-sizing: $8,500/month
+        - S3 lifecycle: $5,000/month
+        Total potential: $44,000/month (35%)"]
+
+        I1 --> I2
+        I1 --> I3
+        I1 --> I4
+    end
+
+    subgraph "Alert Routing"
+        J1[EventBridge Rules]
+        J2["Rule 1: Budget Alert
+        Event: AWS Budgets notification
+        Target: SNS Topic 'budget-alerts'
+        Subscribers: finops@company.com"]
+
+        J3["Rule 2: Anomaly Detection
+        Event: Cost anomaly detected
+        Severity: High (>$1,000)
+        Target: Lambda → PagerDuty → Slack"]
+
+        J4["Rule 3: Tag Compliance
+        Event: Config rule non-compliant
+        Target: Lambda auto-tagger → SNS"]
+
+        J5["Rule 4: Idle Resource
+        Event: CloudWatch alarm (low utilization)
+        Target: SNS → JIRA ticket → Owner email"]
+
+        J1 --> J2
+        J1 --> J3
+        J1 --> J4
+        J1 --> J5
+    end
+
+    C2 --> J1
+    D4 --> J1
+    F2 --> J1
+    G2 --> J1
+
+    subgraph "Governance Policies"
+        K1["Service Control Policies (SCPs):
+        - Deny expensive regions (except approved)
+        - Deny large instance types in dev/test
+        - Require encryption for S3/EBS/RDS"]
+
+        K2["IAM Policies:
+        - Developers: Launch up to m5.xlarge
+        - Data Engineers: Launch up to m5.4xlarge
+        - Admins: No restrictions"]
+
+        K3["Resource Quotas:
+        - Dev account: Max 20 EC2 instances
+        - Test account: Max 50 GB EBS per volume
+        - Sandbox: Auto-termination after 7 days"]
+
+        K4["Cost Allocation Tag Policy:
+        - Enforce tags: CostCenter, Project
+        - Automatically tag with creator
+        - Monthly compliance report"]
+    end
+
+    A3 --> K1
+    K1 --> K2
+    K2 --> K3
+    K3 --> K4
+
+    subgraph "Automated Remediation Workflows"
+        L1["Workflow 1: Budget Exceeded
+        Trigger: 120% budget threshold
+        Actions:
+        1. Stop all dev/test EC2 instances
+        2. Scale down non-prod RDS to smaller instances
+        3. Send executive alert
+        4. Create JIRA ticket for cost review"]
+
+        L2["Workflow 2: Untagged Resources
+        Trigger: Resource created without tags
+        Actions:
+        1. Auto-tag with creator info
+        2. If auto-tag fails, send alert to owner
+        3. After 7 days, restrict access
+        4. After 30 days, terminate (dev/test only)"]
+
+        L3["Workflow 3: Idle Resource Detected
+        Trigger: <5% CPU for 7 days
+        Actions:
+        1. Snapshot instance (backup)
+        2. Send warning email (3-day grace)
+        3. Stop instance if no response
+        4. After 14 days stopped, create AMI and terminate"]
+
+        L4["Workflow 4: Cost Anomaly
+        Trigger: Spend spike >25%
+        Actions:
+        1. Identify root cause (service, account, region)
+        2. Send detailed report to owner
+        3. If >$5K anomaly, page on-call engineer
+        4. Create incident in PagerDuty
+        5. Post to #ops-alerts Slack channel"]
+    end
+
+    J2 --> L1
+    J4 --> L2
+    J5 --> L3
+    J3 --> L4
+
+    subgraph "Real-World Examples"
+        M1["Capital One
+        Challenge: 30% untagged resources, no accountability
+        Solution: Auto-tagging + Config rules + chargeback
+        Result: 100% tag compliance, $30M savings (40%)"]
+
+        M2["Netflix
+        Challenge: Thousands of idle resources
+        Solution: Automated cleanup Lambda, weekly scans
+        Result: $10M annual savings, 15% cost reduction"]
+
+        M3["Airbnb
+        Challenge: Budget overruns, no early warning
+        Solution: AWS Budgets + anomaly detection + Slack alerts
+        Result: 90% reduction in cost surprises"]
+    end
+
+    subgraph "Cost Governance KPIs"
+        N1["Tag Compliance Rate
+        Target: >95% of resources tagged
+        Current: 88% (need improvement)"]
+
+        N2["Budget Accuracy
+        Target: Within ±5% of actual spend
+        Current: ±8% (forecasting improvement needed)"]
+
+        N3["Idle Resource Percentage
+        Target: <5% of total resources
+        Current: 12% ($15K/month waste)"]
+
+        N4["Time to Remediate Anomaly
+        Target: <2 hours from detection
+        Current: 4.5 hours (need faster alerts)"]
+
+        N5["Cost Optimization Savings
+        Target: 20-30% of total spend
+        Current: 18% ($22K/month saved)"]
+    end
+
+    subgraph "Implementation Roadmap"
+        O1["Phase 1: Visibility (Week 1-2)
+        - Enable Cost Explorer
+        - Set up CUR + Athena
+        - Create tagging strategy
+        - Build initial dashboard"]
+
+        O2["Phase 2: Monitoring (Week 3-4)
+        - Create AWS Budgets (3-5 budgets)
+        - Enable Cost Anomaly Detection
+        - Set up SNS/Slack alerts
+        - Tag compliance rules"]
+
+        O3["Phase 3: Automation (Week 5-8)
+        - Deploy auto-tagging Lambda
+        - Implement idle resource detection
+        - Build cleanup automation
+        - Test in non-prod"]
+
+        O4["Phase 4: Governance (Week 9-12)
+        - SCPs for cost controls
+        - FinOps dashboard
+        - Team chargeback reports
+        - Monthly optimization reviews"]
+
+        O1 --> O2 --> O3 --> O4
+    end
+
+    subgraph "Cost Governance Best Practices"
+        P1["✅ Tag everything
+        100% compliance from day one"]
+
+        P2["✅ Budget per team/project
+        Accountability and transparency"]
+
+        P3["✅ Automate cleanup
+        Weekly idle resource scans"]
+
+        P4["✅ Real-time alerts
+        Catch cost spikes immediately"]
+
+        P5["✅ Monthly reviews
+        Continuous improvement culture"]
+
+        P6["✅ Showback vs Chargeback
+        Showback: Inform teams
+        Chargeback: Invoice teams (mature orgs)"]
+    end
+
+    style A1 fill:#4a90e2,color:#fff
+    style B1 fill:#7ed321,color:#fff
+    style D1 fill:#ff6b6b,color:#fff
+    style H4 fill:#7ed321,color:#fff
+    style I4 fill:#ffd93d,color:#000
+    style L1 fill:#ff6b6b,color:#fff
+    style L4 fill:#ff6b6b,color:#fff
+    style M1 fill:#bd10e0,color:#fff
+    style M2 fill:#bd10e0,color:#fff
+    style M3 fill:#bd10e0,color:#fff
+    style O4 fill:#50e3c2,color:#000

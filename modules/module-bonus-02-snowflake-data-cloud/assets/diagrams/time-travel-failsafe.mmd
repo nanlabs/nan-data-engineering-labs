@@ -1,0 +1,305 @@
+graph TB
+    %% ============================================================================
+    %% TIME TRAVEL AND FAIL-SAFE MECHANISMS
+    %% ============================================================================
+    %% This diagram illustrates Snowflake's data recovery features:
+    %% - Time Travel: Query and restore historical data (user-accessible)
+    %% - Fail-Safe: Disaster recovery backup (Snowflake-only)
+    %%
+    %% Key Concepts:
+    %% - Standard Edition: 1-day Time Travel
+    %% - Enterprise Edition: Up to 90-day Time Travel
+    %% - Fail-Safe: Additional 7-day disaster recovery (all editions)
+    %% - Storage costs apply to all historical data
+    %% ============================================================================
+
+    %% Starting Point
+    Start([Table Created or Data Modified])
+
+    %% ============================================================================
+    %% TIMELINE VISUALIZATION
+    %% ============================================================================
+    subgraph Timeline["⏰ TIME TRAVEL & FAIL-SAFE TIMELINE"]
+        style Timeline fill:#4A90E2,stroke:#333,stroke-width:3px
+
+        %% Day 0 - Present
+        Day0["DAY 0 (NOW)<br/>━━━━━━━━━━━━━━━<br/>✅ Current data active<br/>✅ All operations available<br/>📊 SELECT, INSERT, UPDATE, DELETE<br/>🔍 Normal query performance"]
+
+        %% Time Travel Period - Standard Edition
+        subgraph TTStandard["Time Travel - Standard Edition (0-1 Day)"]
+            style TTStandard fill:#7ED321,stroke:#333,stroke-width:2px
+
+            Day1["DAY 1<br/>━━━━━━━━━━━━━━━<br/>✅ Time Travel available<br/>✅ Query historical data<br/>✅ UNDROP table<br/>✅ Clone from history<br/>⚠️ Standard Edition limit"]
+        end
+
+        %% Time Travel Period - Enterprise Edition
+        subgraph TTEnterprise["Time Travel - Enterprise Edition (1-90 Days)"]
+            style TTEnterprise fill:#F5A623,stroke:#333,stroke-width:2px
+
+            Day7["DAY 7<br/>━━━━━━━━━━━━━━━<br/>✅ Extended Time Travel<br/>✅ SELECT AT(TIMESTAMP)<br/>✅ Regulatory compliance<br/>📊 Audit trails"]
+
+            Day30["DAY 30<br/>━━━━━━━━━━━━━━━<br/>✅ Long-term history<br/>✅ Monthly reconciliation<br/>✅ Financial closes<br/>📊 Historical analysis"]
+
+            Day60["DAY 60<br/>━━━━━━━━━━━━━━━<br/>✅ Quarterly reviews<br/>✅ Trend analysis<br/>✅ Year-over-year comps<br/>📊 Data lineage"]
+
+            Day90["DAY 90<br/>━━━━━━━━━━━━━━━<br/>⚠️ Enterprise max period<br/>✅ Last accessible day<br/>✅ Final UNDROP window<br/>📊 90-day compliance"]
+        end
+
+        %% Fail-Safe Period
+        subgraph FailSafe["Fail-Safe Period (90-97 Days) - Disaster Recovery Only"]
+            style FailSafe fill:#E74C3C,stroke:#333,stroke-width:2px
+
+            Day91["DAY 91<br/>━━━━━━━━━━━━━━━<br/>❌ Time Travel expired<br/>❌ No user access<br/>🆘 Fail-Safe begins<br/>📞 Contact Snowflake Support"]
+
+            Day95["DAY 95<br/>━━━━━━━━━━━━━━━<br/>🆘 Fail-Safe active<br/>❌ Cannot query<br/>❌ Cannot restore yourself<br/>📞 Support ticket required"]
+
+            Day97["DAY 97<br/>━━━━━━━━━━━━━━━<br/>⚠️ Last day of Fail-Safe<br/>🆘 Final recovery window<br/>❌ After: Data permanently deleted<br/>📞 Emergency escalation"]
+        end
+
+        %% Permanent Deletion
+        Day98["DAY 98+<br/>━━━━━━━━━━━━━━━<br/>❌ Data permanently deleted<br/>❌ No recovery possible<br/>❌ Fail-Safe expired<br/>🗑️ Storage reclaimed"]
+
+        %% Timeline Flow
+        Day0 --> Day1
+        Day1 --> Day7
+        Day7 --> Day30
+        Day30 --> Day60
+        Day60 --> Day90
+        Day90 --> Day91
+        Day91 --> Day95
+        Day95 --> Day97
+        Day97 --> Day98
+    end
+
+    Start --> Day0
+
+    %% ============================================================================
+    %% TIME TRAVEL OPERATIONS
+    %% ============================================================================
+    subgraph TTOperations["🔍 TIME TRAVEL OPERATIONS"]
+        style TTOperations fill:#E8F4F8,stroke:#3498DB,stroke-width:3px
+
+        %% Query Historical Data
+        subgraph QueryOps["Query Historical Data"]
+            QueryTS["SELECT AT(TIMESTAMP)<br/>━━━━━━━━━━━━━━━━━━━━━<br/>SELECT *<br/>FROM orders<br/>AT(TIMESTAMP => '2026-03-01 10:00:00'::TIMESTAMP);<br/><br/>Use Case: View data as it existed at specific time<br/>Performance: Same as normal query"]
+
+            QueryOffset["SELECT AT(OFFSET)<br/>━━━━━━━━━━━━━━━━━━━━━<br/>SELECT *<br/>FROM orders<br/>AT(OFFSET => -3600);  -- 1 hour ago<br/><br/>Use Case: Quick lookback (seconds)<br/>Example: -86400 = 24 hours ago"]
+
+            QueryBefore["SELECT BEFORE(STATEMENT)<br/>━━━━━━━━━━━━━━━━━━━━━<br/>SELECT *<br/>FROM orders<br/>BEFORE(STATEMENT => 'query_id_abc123');<br/><br/>Use Case: View data before specific query<br/>Example: Before accidental DELETE"]
+        end
+
+        %% Restore Operations
+        subgraph RestoreOps["Restore & Recovery"]
+            UndropTable["UNDROP TABLE<br/>━━━━━━━━━━━━━━━━━━━━━<br/>-- Accidentally dropped table<br/>DROP TABLE orders;<br/><br/>-- Oops! Restore it<br/>UNDROP TABLE orders;<br/><br/>Result: Table back instantly<br/>Limitation: Within Time Travel period only"]
+
+            CloneHistorical["CLONE FROM HISTORY<br/>━━━━━━━━━━━━━━━━━━━━━<br/>CREATE TABLE orders_backup<br/>CLONE orders<br/>AT(TIMESTAMP => '2026-03-08 00:00:00'::TIMESTAMP);<br/><br/>Use Case: Point-in-time recovery<br/>Benefit: Original table untouched"]
+
+            ReplaceTable["REPLACE TABLE<br/>━━━━━━━━━━━━━━━━━━━━━<br/>-- Restore to yesterday's state<br/>CREATE OR REPLACE TABLE orders<br/>CLONE orders<br/>AT(OFFSET => -86400);<br/><br/>Use Case: Rollback bad data load<br/>Warning: Current data lost (unless cloned first)"]
+        end
+
+        %% Comparison Queries
+        subgraph CompareOps["Comparison & Audit"]
+            CompareVersions["COMPARE VERSIONS<br/>━━━━━━━━━━━━━━━━━━━━━<br/>SELECT<br/>    current.order_id,<br/>    current.amount AS now_amount,<br/>    historical.amount AS was_amount<br/>FROM orders AS current<br/>JOIN orders AT(OFFSET => -86400) AS historical<br/>    ON current.order_id = historical.order_id<br/>WHERE current.amount != historical.amount;<br/><br/>Use Case: Detect data changes<br/>Example: Find modified records"]
+
+            AuditTrail["AUDIT TRAIL<br/>━━━━━━━━━━━━━━━━━━━━━<br/>SELECT DISTINCT<br/>    start_time,<br/>    user_name,<br/>    query_text<br/>FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY<br/>WHERE query_text ILIKE '%orders%'<br/>  AND start_time > DATEADD(day, -7, CURRENT_TIMESTAMP())<br/>  AND execution_status = 'SUCCESS';<br/><br/>Use Case: Who changed what and when<br/>Compliance: SOX, GDPR audits"]
+        end
+    end
+
+    Day7 -.-> QueryTS
+    Day30 -.-> CloneHistorical
+    Day60 -.-> CompareVersions
+
+    %% ============================================================================
+    %% FAIL-SAFE OPERATIONS
+    %% ============================================================================
+    subgraph FSOperations["🆘 FAIL-SAFE OPERATIONS"]
+        style FSOperations fill:#FFE5E5,stroke:#E74C3C,stroke-width:3px
+
+        FSDesc["Fail-Safe Characteristics<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>❌ NOT user-accessible<br/>❌ NOT queryable<br/>❌ NOT restorable by users<br/>✅ Snowflake Support only<br/>✅ Disaster recovery (data center failure)<br/>✅ 7-day retention (fixed)<br/>💰 Storage costs apply"]
+
+        FSProcess["Recovery Process<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>1. Open Snowflake Support ticket<br/>2. Provide table/database name<br/>3. Specify recovery timestamp<br/>4. Wait for approval (business justification)<br/>5. Support restores data (12-48 hours)<br/>6. Restored to new table/schema<br/><br/>⚠️ Not instant - plan accordingly!"]
+
+        FSUseCases["When to Use Fail-Safe<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>✅ Catastrophic data loss event<br/>✅ Time Travel period passed<br/>✅ Human error (DROP DATABASE)<br/>✅ Malicious deletion<br/>✅ Ransomware recovery<br/>❌ NOT for routine recovery<br/>❌ NOT for testing (use Time Travel)<br/>❌ NOT guaranteed to be fast"]
+    end
+
+    Day91 -.-> FSDesc
+    Day95 -.-> FSProcess
+    Day97 -.-> FSUseCases
+
+    %% ============================================================================
+    %% CONFIGURATION
+    %% ============================================================================
+    subgraph Configuration["⚙️ CONFIGURATION & SETTINGS"]
+        style Configuration fill:#FFF9E6,stroke:#F39C12,stroke-width:3px
+
+        %% Account Level
+        AccountLevel["Account Level (Default)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Standard Edition: 1 day Time Travel<br/>Enterprise Edition: 1 day default (can extend)<br/>Fail-Safe: 7 days (always, cannot change)<br/><br/>Check edition:<br/>SELECT CURRENT_ACCOUNT() AS account,<br/>       CURRENT_EDITION() AS edition;"]
+
+        %% Table Level
+        TableLevel["Table Level (Override)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>-- Set retention to 30 days<br/>CREATE TABLE orders (<br/>    order_id INT,<br/>    amount DECIMAL(10,2)<br/>)<br/>DATA_RETENTION_TIME_IN_DAYS = 30;<br/><br/>-- Modify existing table<br/>ALTER TABLE orders<br/>SET DATA_RETENTION_TIME_IN_DAYS = 90;<br/><br/>Range: 0-90 days (Enterprise only)<br/>0 = Disables Time Travel (saves storage cost)"]
+
+        %% Schema/Database Level
+        SchemaLevel["Schema/Database Level<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>-- Schema default<br/>CREATE SCHEMA bronze<br/>DATA_RETENTION_TIME_IN_DAYS = 7;<br/><br/>-- Database default<br/>CREATE DATABASE sales_db<br/>DATA_RETENTION_TIME_IN_DAYS = 30;<br/><br/>Inheritance: Table > Schema > Database > Account<br/>Tables inherit unless explicitly set"]
+
+        %% Check Settings
+        CheckSettings["Check Current Settings<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>-- Per table<br/>SHOW PARAMETERS LIKE 'DATA_RETENTION_TIME_IN_DAYS'<br/>    IN TABLE orders;<br/><br/>-- All tables in schema<br/>SELECT<br/>    table_name,<br/>    retention_time<br/>FROM INFORMATION_SCHEMA.TABLES<br/>WHERE table_schema = 'BRONZE'<br/>ORDER BY retention_time DESC;"]
+    end
+
+    %% ============================================================================
+    %% STORAGE COSTS
+    %% ============================================================================
+    subgraph StorageCosts["💰 STORAGE COSTS"]
+        style StorageCosts fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+
+        CostBreakdown["Cost Breakdown (per TB per month)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>📊 Active Data: $23-40 (depends on region/cloud)<br/>⏰ Time Travel: $23-40 (same as active)<br/>🆘 Fail-Safe: $23-40 (same as active)<br/><br/>Example: 1 TB table, 90-day retention<br/>- Active: $30/month<br/>- Time Travel (90 days): ~$30/month<br/>- Fail-Safe (7 days): ~$3/month<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Total: ~$63/month for 1 TB"]
+
+        CostOptimization["Cost Optimization Strategies<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>1. Set retention to minimum needed<br/>   - Dev/Test: 0-1 day<br/>   - Production OLTP: 7 days<br/>   - Analytics: 30 days<br/>   - Compliance: 90 days<br/><br/>2. Use cloning instead of keeping old versions<br/>   - Clone at migration points<br/>   - Drop after validation<br/><br/>3. Monitor storage with queries:<br/>   SELECT * FROM TABLE_STORAGE_METRICS;<br/><br/>4. Drop unused tables (including Time Travel)<br/>   DROP TABLE IF EXISTS temp_table;<br/>   -- Purge Time Travel immediately:<br/>   DROP TABLE temp_table PURGE;"]
+
+        CostMonitoring["Storage Monitoring Query<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>SELECT<br/>    table_name,<br/>    active_bytes / POW(1024, 3) AS active_gb,<br/>    time_travel_bytes / POW(1024, 3) AS tt_gb,<br/>    failsafe_bytes / POW(1024, 3) AS fs_gb,<br/>    (active_bytes + time_travel_bytes + failsafe_bytes)<br/>        / POW(1024, 4) AS total_tb,<br/>    retention_time AS days_retained<br/>FROM SNOWFLAKE.ACCOUNT_USAGE.TABLE_STORAGE_METRICS<br/>WHERE active_bytes > 0<br/>ORDER BY total_tb DESC<br/>LIMIT 20;"]
+    end
+
+    %% ============================================================================
+    %% USE CASES
+    %% ============================================================================
+    subgraph UseCases["🎯 REAL-WORLD USE CASES"]
+        style UseCases fill:#F3E5F5,stroke:#8E24AA,stroke-width:3px
+
+        UC1["Use Case 1: Accidental DELETE<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: DELETE FROM orders WHERE 1=1; (oops!)<br/><br/>Solution:<br/>-- Check row count before delete<br/>SELECT COUNT(*) FROM orders; -- 1M rows<br/><br/>-- Accidental delete<br/>DELETE FROM orders WHERE 1=1;<br/>-- 0 rows now!<br/><br/>-- Restore from 5 minutes ago<br/>CREATE OR REPLACE TABLE orders<br/>CLONE orders AT(OFFSET => -300);<br/><br/>-- Verify restore<br/>SELECT COUNT(*) FROM orders; -- 1M rows back!<br/><br/>Recovery Time: < 5 seconds"]
+
+        UC2["Use Case 2: Bad ETL Load<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: ETL loads incorrect data at 3 AM<br/><br/>Problem discovered at 9 AM (6 hours later)<br/><br/>Solution:<br/>-- Identify last good state<br/>SELECT MAX(load_timestamp)<br/>FROM orders<br/>AT(TIMESTAMP => '2026-03-09 02:59:00'::TIMESTAMP);<br/><br/>-- Clone to backup<br/>CREATE TABLE orders_bad_load CLONE orders;<br/><br/>-- Restore to pre-load state<br/>CREATE OR REPLACE TABLE orders<br/>CLONE orders AT(TIMESTAMP => '2026-03-09 02:59:00');<br/><br/>-- Re-run corrected ETL<br/>COPY INTO orders FROM @stage/corrected_data;<br/><br/>Recovery Time: ~10 minutes"]
+
+        UC3["Use Case 3: Compliance Audit<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Auditor requests data from 60 days ago<br/><br/>Requirement: Show customer balance on Jan 1, 2026<br/><br/>Solution:<br/>SELECT<br/>    customer_id,<br/>    customer_name,<br/>    balance,<br/>    account_status<br/>FROM customer_accounts<br/>AT(TIMESTAMP => '2026-01-01 23:59:59'::TIMESTAMP)<br/>WHERE region = 'US'<br/>ORDER BY balance DESC;<br/><br/>-- Export for auditor<br/>COPY INTO @audit_stage/balances_2026_01_01.csv<br/>FROM (<br/>    SELECT * FROM customer_accounts<br/>    AT(TIMESTAMP => '2026-01-01 23:59:59'::TIMESTAMP)<br/>)<br/>FILE_FORMAT = (TYPE = 'CSV' HEADER = TRUE);<br/><br/>Audit Time: ~5 minutes"]
+
+        UC4["Use Case 4: A/B Testing Analysis<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Compare pricing before/after change<br/><br/>Change deployed on Mar 5, 2026<br/><br/>Solution:<br/>-- Week before pricing change<br/>WITH before_pricing AS (<br/>    SELECT AVG(order_amount) AS avg_before<br/>    FROM orders<br/>    AT(TIMESTAMP => '2026-03-04 23:59:59'::TIMESTAMP)<br/>    WHERE order_date BETWEEN '2026-02-26' AND '2026-03-04'<br/>),<br/>-- Week after pricing change<br/>after_pricing AS (<br/>    SELECT AVG(order_amount) AS avg_after<br/>    FROM orders  -- current data<br/>    WHERE order_date BETWEEN '2026-03-05' AND '2026-03-09'<br/>)<br/>SELECT<br/>    avg_before,<br/>    avg_after,<br/>    (avg_after - avg_before) / avg_before * 100 AS pct_change<br/>FROM before_pricing, after_pricing;<br/><br/>Analysis Time: Real-time"]
+
+        UC5["Use Case 5: Disaster Recovery Drill<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Test recovery procedures quarterly<br/><br/>Drill Plan:<br/>-- 1. Document current state<br/>SELECT table_name, row_count, bytes<br/>FROM INFORMATION_SCHEMA.TABLES;<br/><br/>-- 2. Simulate disaster (DROP DATABASE)<br/>DROP DATABASE sales_db;<br/><br/>-- 3. Verify Time Travel window<br/>SHOW DATABASES HISTORY;<br/><br/>-- 4. Restore database<br/>UNDROP DATABASE sales_db;<br/><br/>-- 5. Verify all tables restored<br/>SELECT table_name, row_count<br/>FROM INFORMATION_SCHEMA.TABLES;<br/><br/>-- 6. Document RTO (Recovery Time Objective)<br/>-- Typical: < 1 minute for UNDROP<br/><br/>Drill Result: Validates DR runbook"]
+    end
+
+    %% ============================================================================
+    %% BEST PRACTICES
+    %% ============================================================================
+    subgraph BestPractices["✅ BEST PRACTICES"]
+        style BestPractices fill:#E8F4F8,stroke:#3498DB,stroke-width:2px
+
+        BP1["1️⃣ Set retention based on business needs
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        - Transient tables: 0-1 day (saves cost)
+        - OLTP tables: 7 days (human error recovery)
+        - Analytical tables: 30 days (month-end close)
+        - Compliance tables: 90 days (regulatory)"]
+
+        BP2["2️⃣ Use transient tables for temp/staging
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        CREATE TRANSIENT TABLE staging_orders (...);
+        - No Fail-Safe (saves 7 days storage)
+        - Max 1-day Time Travel
+        - Use for: ETL staging, temp calculations"]
+
+        BP3["3️⃣ Test Time Travel queries regularly
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        - Run monthly drills (SELECT AT, UNDROP)
+        - Document recovery procedures
+        - Train team on query syntax
+        - Monitor query performance"]
+
+        BP4["4️⃣ Clone before risky operations
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        CREATE TABLE orders_backup CLONE orders;
+        -- Perform migration/update --
+        -- If success: DROP TABLE orders_backup;
+        -- If fail: DROP TABLE orders; RENAME orders_backup TO orders;"]
+
+        BP5["5️⃣ Monitor storage costs weekly
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        - Check TABLE_STORAGE_METRICS
+        - Identify tables with high time_travel_bytes
+        - Consider reducing retention if not needed
+        - Use PURGE for immediate deletion"]
+
+        BP6["6️⃣ Document retention policies
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        - Create policy matrix (table → retention days)
+        - Get legal/compliance approval
+        - Automate with Terraform/scripts
+        - Audit annually"]
+
+        BP7["7️⃣ Understand Fail-Safe limitations
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        - NOT instant recovery
+        - Requires Support ticket
+        - 12-48 hour SLA
+        - Use Time Travel as primary recovery method"]
+    end
+
+    %% ============================================================================
+    %% COMPARISON TABLE
+    %% ============================================================================
+    subgraph Comparison["📊 TIME TRAVEL vs FAIL-SAFE COMPARISON"]
+        style Comparison fill:#FFE5E5,stroke:#E74C3C,stroke-width:2px
+
+        CompTable["
+        ┌────────────────────────┬─────────────────────┬──────────────────────┐
+        │ Feature                │ Time Travel         │ Fail-Safe            │
+        ├────────────────────────┼─────────────────────┼──────────────────────┤
+        │ Purpose                │ User recovery       │ Disaster recovery    │
+        │ Accessibility          │ ✅ User-accessible  │ ❌ Snowflake Support │
+        │ Duration (Standard)    │ 0-1 day             │ 7 days (fixed)       │
+        │ Duration (Enterprise)  │ 0-90 days           │ 7 days (fixed)       │
+        │ Queryable              │ ✅ Yes (SELECT AT)  │ ❌ No                │
+        │ UNDROP support         │ ✅ Yes              │ ❌ No                │
+        │ Cloning support        │ ✅ Yes              │ ❌ No                │
+        │ Recovery speed         │ ⚡ Instant          │ 🐌 12-48 hours       │
+        │ Configuration          │ ✅ Per table        │ ❌ Fixed 7 days      │
+        │ Storage cost           │ 💰 Yes (per day)    │ 💰 Yes (7 days)      │
+        │ Use case               │ Human error         │ System failure       │
+        │ Availability           │ All editions        │ All editions         │
+        └────────────────────────┴─────────────────────┴──────────────────────┘
+
+        🔑 Key Insight: Time Travel is for YOU. Fail-Safe is for DISASTERS.
+        Use Time Travel for day-to-day recovery. Fail-Safe is last resort.
+        "]
+    end
+
+    %% ============================================================================
+    %% NOTES
+    %% ============================================================================
+    %%
+    %% IMPORTANT CONCEPTS:
+    %%
+    %% 1. Time Travel is NOT a backup:
+    %%    - It's a recovery window, not a long-term backup
+    %%    - Data still in Snowflake (subject to account deletion)
+    %%    - For true backups, export data externally (S3/Azure/GCS)
+    %%
+    %% 2. Storage costs are SIGNIFICANT:
+    %%    - 90-day retention = 3x storage cost (active + TT + FS)
+    %%    - Example: 100 TB table = $3,000/month active + $3,000 TT + $300 FS = $6,300/month
+    %%    - Balance compliance needs vs. cost
+    %%
+    %% 3. Time Travel queries have same performance as normal queries:
+    %%    - Snowflake manages micro-partition versions transparently
+    %%    - AT(TIMESTAMP) queries are NOT slower
+    %%    - Can use all SQL features (joins, aggregations, etc.)
+    %%
+    %% 4. Fail-Safe vs. Backups:
+    %%    - Fail-Safe: Snowflake's safety net (7 days, auto, disaster recovery)
+    %%    - Backups: Your responsibility (exports, cross-region replication)
+    %%    - Best practice: External backups for critical data
+    %%
+    %% 5. Transient vs. Permanent tables:
+    %%    - Transient: No Fail-Safe, max 1-day Time Travel, lower cost
+    %%    - Permanent: Full Time Travel + Fail-Safe, higher cost
+    %%    - Use transient for staging/temp data
+    %%
+    %% RECOVERY TIME OBJECTIVES (RTO):
+    %% - UNDROP TABLE: < 1 second
+    %% - CLONE AT(TIMESTAMP): 1-10 seconds (instant metadata)
+    %% - CREATE TABLE AS SELECT AT(): Minutes to hours (data copy)
+    %% - Fail-Safe recovery: 12-48 hours (Support ticket)
+    %%
+    %% RECOVERY POINT OBJECTIVES (RPO):
+    %% - Time Travel: Granularity down to the second
+    %% - Fail-Safe: Determined by when data entered Fail-Safe
+    %% - Transaction consistency: Always maintained
+    %%
+    %% ============================================================================

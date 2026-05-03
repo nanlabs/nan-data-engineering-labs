@@ -1,0 +1,187 @@
+graph TB
+    %% ========================================================================
+    %% LAMBDA ARCHITECTURE PATTERN IMPLEMENTATION
+    %% ========================================================================
+    %% Shows the three layers of Lambda Architecture:
+    %% 1. Batch Layer (accuracy, high latency)
+    %% 2. Speed Layer (low latency, approximation)
+    %% 3. Serving Layer (unified queries)
+    %% ========================================================================
+
+    %% Data Sources
+    subgraph DataSources["📊 Data Sources"]
+        direction TB
+        RawEvents["Raw Events<br/>- Ride requests<br/>- Location updates<br/>- Payment transactions<br/>- User ratings<br/>Volume: 50K events/sec"]
+    end
+
+    %% Batch Layer (Accuracy, High Latency)
+    subgraph BatchLayer["📦 Batch Layer - Historical Processing"]
+        direction TB
+
+        subgraph ImmutableStorage["Immutable Master Dataset"]
+            S3RawData["S3: Raw Data Lake<br/>Path: s3://data-lake/raw/<br/>Format: Parquet<br/>Compression: SNAPPY<br/>Partitioning: year/month/day/hour<br/>Retention: Infinite (append-only)"]
+            DataCharacteristics["Characteristics:<br/>✓ Immutable (append-only)<br/>✓ Complete history<br/>✓ Recomputable<br/>✓ Fault-tolerant<br/>✓ Human-readable (Parquet)"]
+        end
+
+        subgraph BatchCompute["Batch Computation"]
+            GlueETL["AWS Glue ETL Jobs<br/>Language: PySpark<br/>Workers: 10 DPU<br/>Schedule: Hourly<br/>Processing: Full recomputation"]
+
+            EMRCluster["EMR Cluster (Optional)<br/>Nodes: 3-20 (auto-scaling)<br/>Applications: Spark, Hive<br/>Processing: Complex transformations<br/>Use case: Ad-hoc analysis"]
+
+            AthenaQueries["Amazon Athena<br/>Engine: Presto/Trino<br/>Query: SQL on Parquet<br/>Cost: $5/TB scanned<br/>Use: Exploratory analysis"]
+        end
+
+        subgraph BatchViews["Batch Views (Pre-computed)"]
+            RideAggregates["Ride Aggregates<br/>Dimensions:<br/>- Total rides by hour/day/week<br/>- Average trip duration<br/>- Revenue by region<br/>- Driver performance metrics<br/>Update: Hourly"]
+
+            DriverStatsViews["Driver Statistics<br/>Dimensions:<br/>- Lifetime earnings<br/>- Acceptance rate<br/>- Cancellation rate<br/>- Average rating history<br/>Update: Daily"]
+
+            RevenueAnalytics["Revenue Analytics<br/>Dimensions:<br/>- Gross revenue by region<br/>- Net revenue (after fees)<br/>- Payment method breakdown<br/>- Refund analysis<br/>Update: Daily"]
+        end
+
+        subgraph BatchCharacteristics["Batch Layer Characteristics"]
+            direction LR
+            BatchPros["✅ Benefits:<br/>• 100% accurate<br/>• Handles any query<br/>• Fault tolerant<br/>• Recomputable<br/>• Simplified logic"]
+            BatchCons["⚠️ Trade-offs:<br/>• High latency (hours)<br/>• Resource intensive<br/>• Not real-time<br/>• Expensive compute<br/>• Scheduled updates"]
+        end
+    end
+
+    %% Speed Layer (Low Latency, Approximation)
+    subgraph SpeedLayer["⚡ Speed Layer - Real-Time Processing"]
+        direction TB
+
+        subgraph StreamIngestion["Stream Ingestion"]
+            KinesisStreams["Kinesis Data Streams<br/>Streams: 4 (rides, locations, payments, ratings)<br/>Shards: 6 total<br/>Retention: 24 hours<br/>Throughput: 6 MB/s write"]
+
+            StreamCharacteristics["Characteristics:<br/>✓ Low latency (< 1 sec)<br/>✓ Incremental processing<br/>✓ Recent data only<br/>✓ Eventually consistent<br/>✓ Complex state management"]
+        end
+
+        subgraph StreamCompute["Stream Computation"]
+            LambdaProcessors["Lambda Functions<br/>Functions: 4 processors<br/>Memory: 512 MB each<br/>Concurrency: 100<br/>Processing: Event-driven<br/>Latency: < 500ms"]
+
+            KinesisAnalytics["Kinesis Data Analytics<br/>Applications: 3 (Flink)<br/>KPU: 3 total<br/>Processing: SQL transformations<br/>Windows: Tumbling, Sliding, Session<br/>Latency: 5-60 seconds"]
+
+            StateManagement["State Management<br/>DynamoDB Tables: 3<br/>Read/Write: On-demand<br/>Consistency: Eventually consistent<br/>Purpose: Incremental aggregates"]
+        end
+
+        subgraph RealtimeViews["Real-Time Views (Incremental)"]
+            CurrentRides["Current Active Rides<br/>Metrics:<br/>- Rides in progress<br/>- Available drivers<br/>- Current wait times<br/>- Active users<br/>Update: Real-time (< 1 sec)"]
+
+            SurgePricing["Surge Pricing Multipliers<br/>Metrics:<br/>- Demand by region (5 min window)<br/>- Supply availability<br/>- Dynamic multiplier (1.0x - 5.0x)<br/>- Price predictions<br/>Update: Real-time (< 5 sec)"]
+
+            LiveMetrics["Live Business Metrics<br/>Metrics:<br/>- Revenue last hour (sliding window)<br/>- Rides completed today<br/>- Average rating (last 1000 rides)<br/>- Top performing drivers<br/>Update: Real-time (< 10 sec)"]
+        end
+
+        subgraph SpeedCharacteristics["Speed Layer Characteristics"]
+            direction LR
+            SpeedPros["✅ Benefits:<br/>• Low latency (< 1s)<br/>• Real-time insights<br/>• Incremental updates<br/>• Recent data focus<br/>• Responsive UX"]
+            SpeedCons["⚠️ Trade-offs:<br/>• Approximate results<br/>• Complex logic<br/>• State management<br/>• Not all queries<br/>• Higher error rate"]
+        end
+    end
+
+    %% Serving Layer (Unified Queries)
+    subgraph ServingLayer["🎯 Serving Layer - Unified Query Interface"]
+        direction TB
+
+        subgraph QueryMerging["Query Merging Logic"]
+            MergeLogic["Merge Strategy:<br/>1. Query speed layer (real-time)<br/>2. Query batch layer (historical)<br/>3. Merge results (union/append)<br/>4. Deduplicate (if needed)<br/>5. Return to client"]
+
+            QueryRouter["Query Router:<br/>IF time_range includes last 24h:<br/>  query_speed_layer() + query_batch_layer()<br/>ELSE:<br/>  query_batch_layer() only<br/><br/>Optimization: Cache common queries"]
+        end
+
+        subgraph ServingDatabase["Serving Databases"]
+            DynamoDBServing["DynamoDB<br/>Tables: Real-time views<br/>Latency: < 10ms<br/>Queries: Simple (GetItem, Query)<br/>Data: Last 7 days"]
+
+            AthenaServing["Athena<br/>Tables: Historical views<br/>Latency: 1-5 seconds<br/>Queries: Complex (SQL)<br/>Data: All history"]
+
+            QuickSightCache["QuickSight SPICE<br/>Cache: In-memory<br/>Refresh: Every 5 minutes<br/>Queries: BI dashboards<br/>Performance: Sub-second"]
+        end
+
+        subgraph APILayer["API Layer"]
+            RESTAPIs["REST APIs<br/>Endpoints:<br/>- GET /rides/current<br/>- GET /rides/history<br/>- GET /metrics/realtime<br/>- GET /metrics/historical<br/>Authentication: API Gateway + Cognito"]
+
+            GraphQLAPI["GraphQL API<br/>Schema: Unified data model<br/>Resolvers: Lambda functions<br/>Caching: AppSync cache<br/>Real-time: Subscriptions via WebSocket"]
+        end
+
+        subgraph Visualization["Visualization Layer"]
+            QuickSightDashboards["QuickSight Dashboards<br/>Dashboards:<br/>- Executive Summary (batch + speed)<br/>- Real-Time Operations (speed)<br/>- Historical Analysis (batch)<br/>- Driver Performance (batch + speed)"]
+
+            CustomApps["Custom Applications<br/>Mobile App: Driver earnings (real-time)<br/>Web App: Admin console (both)<br/>BI Tools: Tableau, Power BI (Athena)<br/>Notebooks: Jupyter (batch exploration)"]
+        end
+
+        subgraph ServingCharacteristics["Serving Layer Characteristics"]
+            direction LR
+            ServingPros["✅ Benefits:<br/>• Unified interface<br/>• Best of both worlds<br/>• Flexible querying<br/>• Optimized per use case<br/>• Transparent to users"]
+            ServingCons["⚠️ Trade-offs:<br/>• Complex merging<br/>• Deduplication logic<br/>• Multiple systems<br/>• Ops overhead<br/>• Data consistency"]
+        end
+    end
+
+    %% Data Flows
+    RawEvents -->|"Stream ingestion<br/>Real-time"| KinesisStreams
+    RawEvents -->|"Batch ingestion<br/>Buffered (1 min)"| S3RawData
+
+    %% Batch Layer Flow
+    S3RawData -->|"Scheduled ETL<br/>Hourly/Daily"| GlueETL
+    S3RawData -->|"On-demand<br/>Ad-hoc queries"| EMRCluster
+    S3RawData -->|"SQL queries<br/>Interactive"| AthenaQueries
+
+    GlueETL -->|"Write pre-computed<br/>Overwrite partitions"| RideAggregates
+    GlueETL -->|"Write pre-computed<br/>Overwrite partitions"| DriverStatsViews
+    GlueETL -->|"Write pre-computed<br/>Overwrite partitions"| RevenueAnalytics
+
+    EMRCluster -->|"Complex transformations<br/>Backfill"| RideAggregates
+
+    %% Speed Layer Flow
+    KinesisStreams -->|"Event source mapping<br/>Batch: 100"| LambdaProcessors
+    KinesisStreams -->|"Flink source<br/>Continuous"| KinesisAnalytics
+
+    LambdaProcessors -->|"Update state<br/>PutItem"| StateManagement
+    KinesisAnalytics -->|"Write aggregates<br/>Windowed"| StateManagement
+
+    StateManagement -->|"Materialize views<br/>Incremental"| CurrentRides
+    StateManagement -->|"Materialize views<br/>Incremental"| SurgePricing
+    StateManagement -->|"Materialize views<br/>Incremental"| LiveMetrics
+
+    %% Serving Layer Flow - Batch Views to Serving
+    RideAggregates -->|"Query historical<br/>Athena SQL"| AthenaServing
+    DriverStatsViews -->|"Query historical<br/>Athena SQL"| AthenaServing
+    RevenueAnalytics -->|"Query historical<br/>Athena SQL"| AthenaServing
+
+    %% Serving Layer Flow - Speed Views to Serving
+    CurrentRides -->|"Query real-time<br/>GetItem/Query"| DynamoDBServing
+    SurgePricing -->|"Query real-time<br/>GetItem/Query"| DynamoDBServing
+    LiveMetrics -->|"Query real-time<br/>GetItem/Query"| DynamoDBServing
+
+    %% Serving Layer Flow - Merge to API
+    DynamoDBServing -->|"Recent data<br/>< 10ms"| MergeLogic
+    AthenaServing -->|"Historical data<br/>1-5 seconds"| MergeLogic
+
+    MergeLogic -->|"Route query<br/>REST/GraphQL"| RESTAPIs
+    MergeLogic -->|"Route query<br/>GraphQL"| GraphQLAPI
+
+    %% Serving Layer Flow - API to Visualization
+    RESTAPIs -->|"Fetch unified data<br/>JSON"| QuickSightDashboards
+    GraphQLAPI -->|"Fetch unified data<br/>GraphQL"| QuickSightDashboards
+
+    RESTAPIs -->|"API calls<br/>Mobile/Web"| CustomApps
+    GraphQLAPI -->|"GraphQL queries<br/>Subscriptions"| CustomApps
+
+    DynamoDBServing -->|"Direct query<br/>Low latency"| QuickSightCache
+    AthenaServing -->|"Scheduled refresh<br/>Incremental"| QuickSightCache
+
+    QuickSightCache -->|"Render dashboards<br/>Interactive"| QuickSightDashboards
+
+    %% Styling
+    classDef source fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef batch fill:#4caf50,stroke:#1b5e20,stroke-width:3px
+    classDef speed fill:#ff6f00,stroke:#e65100,stroke-width:3px
+    classDef serving fill:#2196f3,stroke:#0d47a1,stroke-width:3px
+    classDef pros fill:#c8e6c9,stroke:#388e3c,stroke-width:1px
+    classDef cons fill:#ffccbc,stroke:#e64a19,stroke-width:1px
+
+    class RawEvents source
+    class S3RawData,GlueETL,EMRCluster,RideAggregates,DriverStatsViews,RevenueAnalytics batch
+    class KinesisStreams,LambdaProcessors,KinesisAnalytics,CurrentRides,SurgePricing,LiveMetrics speed
+    class MergeLogic,DynamoDBServing,AthenaServing,RESTAPIs,GraphQLAPI,QuickSightDashboards serving
+    class BatchPros,SpeedPros,ServingPros pros
+    class BatchCons,SpeedCons,ServingCons cons

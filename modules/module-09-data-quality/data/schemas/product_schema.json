@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Product Schema",
+  "description": "Schema for product data with data quality rules",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "integer",
+      "description": "Unique product identifier",
+      "minimum": 1
+    },
+    "product_name": {
+      "type": "string",
+      "description": "Product name",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "category": {
+      "type": "string",
+      "description": "Product category",
+      "enum": ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys"]
+    },
+    "price": {
+      "type": "number",
+      "description": "Selling price",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "cost": {
+      "type": "number",
+      "description": "Cost price",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "stock_quantity": {
+      "type": "integer",
+      "description": "Current stock quantity",
+      "minimum": 0
+    },
+    "weight_kg": {
+      "type": "number",
+      "description": "Product weight in kilograms",
+      "minimum": 0.01,
+      "maximum": 1000
+    },
+    "supplier_id": {
+      "type": "integer",
+      "description": "Supplier ID (foreign key)",
+      "minimum": 1
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "Whether product is active"
+    }
+  },
+  "required": [
+    "product_id",
+    "product_name",
+    "category",
+    "price",
+    "is_active"
+  ],
+  "additionalProperties": false,
+
+  "qualityRules": {
+    "completeness": {
+      "critical_columns": ["product_id", "product_name", "price", "category"],
+      "threshold": 0.95
+    },
+    "uniqueness": {
+      "unique_columns": ["product_id"]
+    },
+    "validity": {
+      "price_range": [0, 100000],
+      "cost_range": [0, 100000],
+      "stock_minimum": 0,
+      "weight_range": [0.01, 1000],
+      "allowed_categories": ["Electronics", "Clothing", "Home & Garden", "Sports", "Books", "Toys"]
+    },
+    "consistency": {
+      "cost_less_than_price": true,
+      "inactive_products_zero_stock": false
+    },
+    "accuracy": {
+      "margin_percentage_range": [5, 80]
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "type": "record",
+  "name": "OrderEvent",
+  "namespace": "com.training.clouddata.module18",
+  "doc": "Schema for order events in Event Sourcing system",
+  "fields": [
+    {
+      "name": "event_id",
+      "type": "string",
+      "doc": "Unique event identifier"
+    },
+    {
+      "name": "aggregate_id",
+      "type": "string",
+      "doc": "Order ID (aggregate root)"
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "OrderEventType",
+        "symbols": [
+          "OrderPlaced",
+          "PaymentProcessed",
+          "OrderShipped",
+          "OrderDelivered",
+          "OrderCancelled"
+        ]
+      },
+      "doc": "Type of event"
+    },
+    {
+      "name": "timestamp",
+      "type": "long",
+      "logicalType": "timestamp-millis",
+      "doc": "Event timestamp in milliseconds since epoch"
+    },
+    {
+      "name": "version",
+      "type": "int",
+      "doc": "Aggregate version number (for optimistic locking)"
+    },
+    {
+      "name": "data",
+      "type": {
+        "type": "map",
+        "values": [
+          "null",
+          "string",
+          "int",
+          "long",
+          "double",
+          "boolean"
+        ]
+      },
+      "doc": "Event data (flexible schema)"
+    },
+    {
+      "name": "metadata",
+      "type": [
+        "null",
+        {
+          "type": "record",
+          "name": "EventMetadata",
+          "fields": [
+            {
+              "name": "user_id",
+              "type": ["null", "string"],
+              "doc": "User who triggered the event"
+            },
+            {
+              "name": "correlation_id",
+              "type": ["null", "string"],
+              "doc": "Correlation ID for tracing"
+            },
+            {
+              "name": "causation_id",
+              "type": ["null", "string"],
+              "doc": "ID of event that caused this event"
+            },
+            {
+              "name": "ip_address",
+              "type": ["null", "string"],
+              "doc": "Client IP address"
+            }
+          ]
+        }
+      ],
+      "default": null,
+      "doc": "Event metadata"
+    }
+  ]
+}

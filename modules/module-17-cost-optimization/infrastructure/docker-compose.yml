@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  # LocalStack for AWS service emulation
+  localstack:
+    image: localstack/localstack:latest
+    container_name: cost-optimization-localstack
+    ports:
+      - "4566:4566"  # LocalStack edge port
+      - "4571:4571"  # LocalStack legacy services
+    environment:
+      - SERVICES=s3,dynamodb,lambda,sqs,sns,ec2,cloudwatch,sts,iam
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - LAMBDA_EXECUTOR=docker
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+    volumes:
+      - "${PWD}/data/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - cost-optimization
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL for storing cost history
+  postgres:
+    image: postgres:15-alpine
+    container_name: cost-optimization-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=cost_optimizer
+      - POSTGRES_PASSWORD=cost_optimizer
+      - POSTGRES_DB=cost_optimization
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - cost-optimization
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cost_optimizer"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Jupyter for interactive cost analysis
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: cost-optimization-jupyter
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - GRANT_SUDO=yes
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - ${PWD}/exercises:/home/jovyan/exercises
+      - ${PWD}/data:/home/jovyan/data
+      - ${PWD}/scripts:/home/jovyan/scripts
+    command: start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
+    networks:
+      - cost-optimization
+    depends_on:
+      - postgres
+      - localstack
+
+  # Grafana for cost dashboards (optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: cost-optimization-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./infrastructure/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - cost-optimization
+    depends_on:
+      - postgres
+    profiles:
+      - dashboard  # Only start with: docker-compose --profile dashboard up
+
+networks:
+  cost-optimization:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  grafana_data:
+    driver: local

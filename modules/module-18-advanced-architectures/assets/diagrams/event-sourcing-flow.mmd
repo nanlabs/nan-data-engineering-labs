@@ -1,0 +1,109 @@
+graph TB
+    %% Event Sourcing Flow - Event Log with Snapshots
+
+    subgraph "Commands"
+        CMD1[PlaceOrder<br/>Command]:::command
+        CMD2[ProcessPayment<br/>Command]:::command
+        CMD3[ShipOrder<br/>Command]:::command
+    end
+
+    subgraph "Command Handler"
+        CH1[Load Current State<br/>from Event Log]:::handler
+        CH2[Validate Business Rules<br/>Check Invariants]:::handler
+        CH3[Generate Event<br/>Immutable Fact]:::handler
+        CH4[Append to Log<br/>Atomic Write]:::handler
+    end
+
+    subgraph "Event Log - DynamoDB"
+        EL1["Event 1: OrderPlaced<br/>{ order_id: 123, amount: 150 }<br/>v1 @ 2024-01-15T10:00Z"]:::event
+        EL2["Event 2: PaymentProcessed<br/>{ payment_id: 456 }<br/>v2 @ 2024-01-15T10:01Z"]:::event
+        EL3["Event 3: OrderShipped<br/>{ tracking: TRACK789 }<br/>v3 @ 2024-01-15T10:30Z"]:::event
+        EL4["Snapshot @ v3<br/>{ status: 'shipped', amount: 150 }<br/>@ 2024-01-15T10:30Z"]:::snapshot
+    end
+
+    subgraph "State Reconstruction"
+        SR1[Replay Events<br/>from offset 0]:::replay
+        SR2[Apply Event 1<br/>Empty → Placed]:::replay
+        SR3[Apply Event 2<br/>Placed → Paid]:::replay
+        SR4[Apply Event 3<br/>Paid → Shipped]:::replay
+        SR5[Current State<br/>Order 123: Shipped]:::replay
+    end
+
+    subgraph "Snapshot Optimization"
+        SS1[Check Last Snapshot<br/>v3 @ 10:30]:::snapshot
+        SS2[Load Snapshot State<br/>Skip 1000 events]:::snapshot
+        SS3[Replay Recent Events<br/>v4-v10 only]:::snapshot
+        SS4[Fast State Rebuild<br/>5ms vs 500ms]:::snapshot
+    end
+
+    subgraph "Temporal Queries"
+        TQ1[What was state at 10:15?<br/>Replay until timestamp]:::temporal
+        TQ2[Audit Trail<br/>Who changed what when]:::temporal
+        TQ3[Time Travel Debugging<br/>Reproduce bug state]:::temporal
+    end
+
+    %% Command Flow
+    CMD1 --> CH1
+    CMD2 --> CH1
+    CMD3 --> CH1
+
+    CH1 --> CH2
+    CH2 --> CH3
+    CH3 --> CH4
+
+    %% Event Log Append
+    CH4 --> EL1
+    CH4 --> EL2
+    CH4 --> EL3
+
+    %% Snapshot Creation
+    EL3 -.->|"Every 100 events<br/>create snapshot"| EL4
+
+    %% State Reconstruction Flow
+    EL1 --> SR1
+    SR1 --> SR2
+    SR2 --> SR3
+    SR3 --> SR4
+    SR4 --> SR5
+
+    %% Snapshot Optimization Flow
+    EL4 --> SS1
+    SS1 --> SS2
+    SS2 --> SS3
+    SS3 --> SS4
+
+    %% Temporal Query Flow
+    EL1 --> TQ1
+    EL2 --> TQ2
+    EL3 --> TQ3
+
+    %% Styling
+    classDef command fill:#3498DB,stroke:#2980B9,stroke-width:3px,color:#fff
+    classDef handler fill:#2ECC71,stroke:#27AE60,stroke-width:3px,color:#fff
+    classDef event fill:#9B59B6,stroke:#8E44AD,stroke-width:2px,color:#fff
+    classDef snapshot fill:#F39C12,stroke:#E67E22,stroke-width:3px,color:#fff
+    classDef replay fill:#1ABC9C,stroke:#16A085,stroke-width:2px,color:#fff
+    classDef temporal fill:#E74C3C,stroke:#C0392B,stroke-width:2px,color:#fff
+
+    %% Key Concepts
+    subgraph "Event Sourcing Principles"
+        P1[💾 Events are immutable<br/>append-only log]:::principle
+        P2[🔄 State is derived<br/>replay events]:::principle
+        P3[📸 Snapshots for performance<br/>skip old events]:::principle
+        P4[⏰ Temporal queries<br/>state at any time]:::principle
+    end
+
+    classDef principle fill:#ECF0F1,stroke:#95A5A6,stroke-width:2px,color:#333
+
+    %% Example Timeline
+    subgraph "Event Timeline"
+        T1[t0: Empty]:::time
+        T2[t1: OrderPlaced]:::time
+        T3[t2: PaymentProcessed]:::time
+        T4[t3: OrderShipped]:::time
+        T5[t4: OrderDelivered]:::time
+    end
+
+    classDef time fill:#34495E,stroke:#2C3E50,stroke-width:1px,color:#fff
+
+    T1 --> T2 --> T3 --> T4 --> T5

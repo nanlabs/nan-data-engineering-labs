@@ -1,0 +1,304 @@
+# Module 17: Cloud Cost Optimization - .gitignore
+
+# ============================================================================
+# Cost Reports and Data
+# ============================================================================
+*.csv
+*.xlsx
+*.xls
+data/cur/
+data/downloads/
+reports/
+!data/sample/*.csv
+!data/sample/*.json
+validation-report.*
+cost-analysis-*.json
+cost-dashboard-*.html
+
+# ============================================================================
+# AWS Credentials and Configuration
+# ============================================================================
+.aws/credentials
+.aws/config
+*credentials*.json
+*aws-access*.txt
+.boto
+aws-config.yaml
+
+# ============================================================================
+# Python
+# ============================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# ============================================================================
+# Jupyter Notebook
+# ============================================================================
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+*.ipynb
+!notebooks/*.ipynb
+!notebooks/**/*.ipynb
+.jupyter/
+
+# ============================================================================
+# Docker
+# ============================================================================
+docker-compose.override.yml
+.docker/
+volumes/
+*.log
+localstack-data/
+postgres-data/
+grafana-data/
+
+# ============================================================================
+# IDEs and Editors
+# ============================================================================
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm / IntelliJ
+.idea/
+*.iml
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Eclipse
+.project
+.pydevproject
+.settings/
+
+# NetBeans
+nbproject/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Rope (Python refactoring)
+.ropeproject
+
+# ============================================================================
+# OS Files
+# ============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================================
+# Archives and Backups
+# ============================================================================
+archives/*.tar.gz
+archives/*/
+*.zip
+*.bak
+*.old
+*.orig
+
+# Keep archives directory structure
+!archives/.gitkeep
+
+# ============================================================================
+# Temporary Files
+# ============================================================================
+tmp/
+temp/
+*.tmp
+cleanup-log.json
+.cache/
+*.local
+
+# ============================================================================
+# Environment Variables
+# ============================================================================
+.env
+.env.local
+.env.*.local
+.envrc
+
+# ============================================================================
+# Database
+# ============================================================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================================================
+# Logs
+# ============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ============================================================================
+# Terraform (if used for infrastructure)
+# ============================================================================
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# ============================================================================
+# CloudFormation
+# ============================================================================
+packaged-template.yaml
+.cfn-lint-ignore.yaml
+
+# ============================================================================
+# Secrets and Keys
+# ============================================================================
+*.pem
+*.key
+*.crt
+*.asc
+secret.*
+secrets.*
+
+# ============================================================================
+# Cost Optimization Specific
+# ============================================================================
+# Generated dashboards
+dashboard-output/
+
+# Downloaded CUR files
+cur-downloads/
+
+# Cost Explorer query results
+ce-results/
+
+# Optimization action logs
+optimization-actions.log
+
+# Budget alert history
+budget-alerts/
+
+# Anomaly detection logs
+anomaly-logs/
+
+# ============================================================================
+# Keep Directory Structure (empty directories)
+# ============================================================================
+!reports/.gitkeep
+!data/cur/.gitkeep
+!archives/.gitkeep
+!notebooks/.gitkeep

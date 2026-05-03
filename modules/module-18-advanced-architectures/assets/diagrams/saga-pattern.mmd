@@ -1,0 +1,107 @@
+sequenceDiagram
+    %% Saga Pattern - Choreography-based Distributed Transaction
+
+    participant Client
+    participant OrderService
+    participant PaymentService
+    participant InventoryService
+    participant ShipmentService
+    participant EventBus as EventBridge
+
+    %% Happy Path - Success
+    Note over Client,EventBus: Happy Path: Successful Order
+
+    Client->>OrderService: POST /orders<br/>{product_id, quantity, amount}
+    activate OrderService
+    OrderService->>OrderService: Validate Order
+    OrderService->>OrderService: Create Order (PENDING)
+    OrderService->>EventBus: Publish: OrderPlaced
+    OrderService-->>Client: 201 Created<br/>{order_id: 123, status: PENDING}
+    deactivate OrderService
+
+    EventBus->>PaymentService: OrderPlaced Event
+    activate PaymentService
+    PaymentService->>PaymentService: Process Payment
+    PaymentService->>PaymentService: Charge Credit Card
+    PaymentService->>EventBus: Publish: PaymentProcessed
+    deactivate PaymentService
+
+    EventBus->>InventoryService: PaymentProcessed Event
+    activate InventoryService
+    InventoryService->>InventoryService: Reserve Stock
+    InventoryService->>InventoryService: Update Inventory
+    InventoryService->>EventBus: Publish: InventoryReserved
+    deactivate InventoryService
+
+    EventBus->>ShipmentService: InventoryReserved Event
+    activate ShipmentService
+    ShipmentService->>ShipmentService: Create Shipment
+    ShipmentService->>ShipmentService: Assign Carrier
+    ShipmentService->>EventBus: Publish: OrderShipped
+    deactivate ShipmentService
+
+    EventBus->>OrderService: OrderShipped Event
+    activate OrderService
+    OrderService->>OrderService: Update Order Status (SHIPPED)
+    deactivate OrderService
+
+    %% Failure Path - Compensation
+    Note over Client,EventBus: Failure Path: Payment Failed
+
+    Client->>OrderService: POST /orders<br/>{product_id, quantity: 100}
+    activate OrderService
+    OrderService->>OrderService: Create Order (PENDING)
+    OrderService->>EventBus: Publish: OrderPlaced
+    OrderService-->>Client: 201 Created
+    deactivate OrderService
+
+    EventBus->>PaymentService: OrderPlaced Event
+    activate PaymentService
+    PaymentService->>PaymentService: Process Payment
+    PaymentService->>PaymentService: ❌ Insufficient Funds
+    PaymentService->>EventBus: Publish: PaymentFailed
+    deactivate PaymentService
+
+    EventBus->>OrderService: PaymentFailed Event (Compensating)
+    activate OrderService
+    OrderService->>OrderService: Cancel Order
+    OrderService->>OrderService: Update Status (CANCELLED)
+    OrderService->>EventBus: Publish: OrderCancelled
+    deactivate OrderService
+
+    EventBus->>Client: Notification: Order Cancelled
+
+    %% Failure with Partial Success
+    Note over Client,EventBus: Failure Path: Out of Stock (after payment)
+
+    Client->>OrderService: POST /orders
+    activate OrderService
+    OrderService->>EventBus: Publish: OrderPlaced
+    deactivate OrderService
+
+    EventBus->>PaymentService: OrderPlaced Event
+    activate PaymentService
+    PaymentService->>EventBus: Publish: PaymentProcessed
+    deactivate PaymentService
+
+    EventBus->>InventoryService: PaymentProcessed Event
+    activate InventoryService
+    InventoryService->>InventoryService: Check Stock
+    InventoryService->>InventoryService: ❌ Out of Stock
+    InventoryService->>EventBus: Publish: InventoryInsufficient
+    deactivate InventoryService
+
+    EventBus->>PaymentService: InventoryInsufficient (Compensating)
+    activate PaymentService
+    PaymentService->>PaymentService: Refund Payment
+    PaymentService->>EventBus: Publish: PaymentRefunded
+    deactivate PaymentService
+
+    EventBus->>OrderService: PaymentRefunded (Compensating)
+    activate OrderService
+    OrderService->>OrderService: Cancel Order
+    OrderService->>EventBus: Publish: OrderCancelled
+    deactivate OrderService
+
+    %% Timeline Summary
+    Note over Client,EventBus: Each service listens for events<br/>and triggers compensating actions on failure

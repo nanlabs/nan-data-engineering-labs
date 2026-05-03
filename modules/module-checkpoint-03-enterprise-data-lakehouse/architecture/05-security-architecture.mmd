@@ -1,0 +1,923 @@
+```mermaid
+graph TB
+    %% Enterprise Data Lakehouse - Security Architecture
+    %% Comprehensive security layers and controls
+
+    subgraph "Network Security Layer"
+        subgraph "VPC Architecture"
+            VPC[Amazon VPC
+            - CIDR: 10.0.0.0/16
+            - Region: us-east-1
+            - Tenancy: Default
+            - DNS: Enabled
+            - Flow Logs: Enabled]
+
+            subgraph "Public Subnets"
+                PublicSubnet1[Public Subnet 1
+                - CIDR: 10.0.1.0/24
+                - AZ: us-east-1a
+                - NAT Gateway
+                - Internet Gateway attached]
+
+                PublicSubnet2[Public Subnet 2
+                - CIDR: 10.0.2.0/24
+                - AZ: us-east-1b
+                - NAT Gateway
+                - Internet Gateway attached]
+            end
+
+            subgraph "Private Subnets - Application"
+                PrivateApp1[Private App Subnet 1
+                - CIDR: 10.0.10.0/24
+                - AZ: us-east-1a
+                - Route: Via NAT Gateway
+                - Lambda functions
+                - Glue connections]
+
+                PrivateApp2[Private App Subnet 2
+                - CIDR: 10.0.11.0/24
+                - AZ: us-east-1b
+                - Route: Via NAT Gateway
+                - Lambda functions
+                - Glue connections]
+            end
+
+            subgraph "Private Subnets - Data"
+                PrivateData1[Private Data Subnet 1
+                - CIDR: 10.0.20.0/24
+                - AZ: us-east-1a
+                - Route: Via NAT Gateway
+                - No Internet access
+                - EMR master nodes
+                - RDS instances]
+
+                PrivateData2[Private Data Subnet 2
+                - CIDR: 10.0.21.0/24
+                - AZ: us-east-1b
+                - Route: Via NAT Gateway
+                - No Internet access
+                - EMR core nodes
+                - RDS read replicas]
+            end
+
+            subgraph "Private Subnets - Isolated"
+                IsolatedSubnet1[Isolated Subnet 1
+                - CIDR: 10.0.30.0/24
+                - AZ: us-east-1a
+                - Route: None
+                - Completely isolated
+                - Sensitive compute
+                - Key management]
+
+                IsolatedSubnet2[Isolated Subnet 2
+                - CIDR: 10.0.31.0/24
+                - AZ: us-east-1b
+                - Route: None
+                - Completely isolated
+                - DR resources
+                - Backup storage]
+            end
+        end
+
+        subgraph "Security Groups"
+            SGLambda[Lambda Security Group
+            - Name: lakehouse-lambda-sg
+            - Inbound: None
+            - Outbound: HTTPS 443
+              to S3/Glue endpoints
+            - Outbound: PostgreSQL 5432
+              to RDS security group
+            - Stateful: Yes]
+
+            SGGlue[Glue Security Group
+            - Name: lakehouse-glue-sg
+            - Inbound: Self-referential
+              all traffic
+            - Outbound: HTTPS 443
+              to S3/Glue services
+            - Outbound: JDBC ports
+              to databases
+            - Stateful: Yes]
+
+            SGEMR[EMR Security Groups
+
+            Master:
+            - Inbound: SSH 22 from bastion
+            - Inbound: 8443 from private
+            - Outbound: All to core/task
+
+            Core:
+            - Inbound: All from master
+            - Inbound: All from self
+            - Outbound: HTTPS to S3
+
+            Task:
+            - Inbound: All from master
+            - Outbound: HTTPS to S3]
+
+            SGRDS[RDS Security Group
+            - Name: lakehouse-rds-sg
+            - Inbound: PostgreSQL 5432
+              from Lambda SG
+            - Inbound: PostgreSQL 5432
+              from Glue SG
+            - Inbound: PostgreSQL 5432
+              from EMR master SG
+            - Outbound: None
+            - Stateful: Yes]
+        end
+
+        subgraph "Network Access Control"
+            NACL[Network ACLs
+
+            Public Subnet NACL:
+            - Inbound: HTTP/HTTPS from 0.0.0.0/0
+            - Inbound: Ephemeral from 0.0.0.0/0
+            - Outbound: HTTP/HTTPS to 0.0.0.0/0
+            - Outbound: Ephemeral to 0.0.0.0/0
+            - Stateless rules
+
+            Private Subnet NACL:
+            - Inbound: All from 10.0.0.0/16
+            - Inbound: Deny from blacklist IPs
+            - Outbound: All to 10.0.0.0/16
+            - Outbound: HTTPS to 0.0.0.0/0
+            - Deny all other
+
+            Isolated Subnet NACL:
+            - Inbound: Only from VPC CIDR
+            - Outbound: Only to VPC CIDR
+            - Deny all external traffic]
+
+            VPCFlowLogs[VPC Flow Logs
+            - Capture: All traffic
+            - Destination: CloudWatch Logs
+            - Format: Custom format
+            - Retention: 90 days
+            - Analysis: Athena queries
+            - Alerts: Anomaly detection
+            - Metrics: Traffic patterns
+            - Export: S3 for long-term]
+        end
+
+        subgraph "VPC Endpoints - Gateway"
+            GatewayEndpoints[Gateway Endpoints
+
+            S3 Endpoint:
+            - Type: Gateway
+            - Service: com.amazonaws.us-east-1.s3
+            - Policy: Allow lakehouse buckets
+            - Route Tables: All private subnets
+            - Cost: Free
+
+            DynamoDB Endpoint:
+            - Type: Gateway
+            - Service: com.amazonaws.us-east-1.dynamodb
+            - Policy: Allow metadata tables
+            - Route Tables: All private subnets
+            - Cost: Free]
+        end
+
+        subgraph "VPC Endpoints - Interface"
+            InterfaceEndpoints[Interface Endpoints PrivateLink
+
+            Glue Endpoint:
+            - Type: Interface
+            - Service: com.amazonaws.us-east-1.glue
+            - Subnets: Private app subnets
+            - Security Group: Allow 443
+            - Private DNS: Enabled
+            - Cost: $0.01/hour + data
+
+            Athena Endpoint:
+            - Type: Interface
+            - Service: com.amazonaws.us-east-1.athena
+            - Subnets: Private app subnets
+            - Private DNS: Enabled
+
+            STS Endpoint:
+            - Type: Interface
+            - Service: com.amazonaws.us-east-1.sts
+            - Subnets: All private subnets
+            - Private DNS: Enabled
+
+            KMS Endpoint:
+            - Type: Interface
+            - Service: com.amazonaws.us-east-1.kms
+            - Subnets: All subnets
+            - Private DNS: Enabled
+            - High availability
+
+            Secrets Manager Endpoint:
+            - Type: Interface
+            - Service: secretsmanager
+            - Subnets: Private app subnets
+            - Private DNS: Enabled]
+        end
+
+        subgraph "Network Protection"
+            WAF[AWS WAF
+            - Protect: API Gateway
+            - Rules: Rate limiting
+            - Rules: IP reputation
+            - Rules: SQL injection
+            - Rules: XSS protection
+            - Rules: Geographic blocking
+            - Logging: Kinesis Firehose
+            - Analysis: Daily review]
+
+            Shield[AWS Shield
+            - Type: Standard on all resources
+            - DDoS: Layer 3/4 protection
+            - Always-on detection
+            - Automatic mitigation
+
+            Shield Advanced consideration:
+            - 24/7 DDoS response team
+            - Cost protection
+            - Advanced metrics]
+
+            DirectConnect[AWS Direct Connect optional
+            - Bandwidth: 10 Gbps
+            - Location: Data center
+            - Use case: On-prem integration
+            - Encryption: MACsec
+            - Backup: VPN connection
+            - Cost: Monthly + data transfer]
+        end
+    end
+
+    subgraph "Encryption Layer"
+        subgraph "Encryption at Rest"
+            S3Encryption[S3 Encryption
+
+            Raw Zone Bucket:
+            - Method: SSE-KMS
+            - Key: aws/kms/raw-zone-key
+            - Algorithm: AES-256
+            - Bucket policy: Require encryption
+            - Versioning: Enabled
+            - Object Lock: Compliance mode
+
+            Bronze Zone Bucket:
+            - Method: SSE-KMS
+            - Key: aws/kms/bronze-zone-key
+            - Algorithm: AES-256
+            - Key Rotation: Annual
+
+            Silver Zone Bucket:
+            - Method: SSE-KMS with DSSE
+            - Key: aws/kms/silver-zone-key
+            - Algorithm: AES-256
+            - Double encryption
+            - Key Rotation: Annual
+
+            Gold Zone Bucket:
+            - Method: SSE-KMS
+            - Key: aws/kms/gold-zone-key
+            - Algorithm: AES-256
+            - Key Rotation: Annual
+
+            All buckets:
+            - Bucket keys: Enabled
+            - Default encryption: Enforced
+            - Deny unencrypted uploads]
+
+            RDSEncryption[RDS Encryption
+            - Storage: Encrypted at rest
+            - KMS Key: aws/rds key
+            - Algorithm: AES-256
+            - Snapshots: Encrypted
+            - Read Replicas: Encrypted
+            - Backups: Encrypted
+            - Performance: No impact]
+
+            DynamoDBEncryption[DynamoDB Encryption
+            - At rest: KMS encryption
+            - Key: AWS owned key
+            - Algorithm: AES-256
+            - Switchable: AWS managed/Customer
+            - Backups: Encrypted
+            - Streams: Encrypted]
+
+            EBSEncryption[EBS Encryption
+            - EMR volumes: Encrypted
+            - KMS Key: Custom key
+            - Boot volumes: Encrypted
+            - Data volumes: Encrypted
+            - Snapshots: Encrypted
+            - Default: Account-level enabled]
+
+            RedshiftEncryption[Redshift Encryption
+            - Cluster: Encrypted
+            - KMS Key: Custom key
+            - Algorithm: AES-256
+            - Snapshots: Encrypted
+            - Unload to S3: Encrypted
+            - Hardware acceleration]
+        end
+
+        subgraph "Encryption in Transit"
+            TLSEncryption[TLS/SSL Encryption
+
+            API Endpoints:
+            - Protocol: TLS 1.2 minimum
+            - TLS 1.3 preferred
+            - Cipher suites: Strong only
+            - Certificate: ACM managed
+            - HSTS: Enabled
+            - No HTTP allowed
+
+            Database Connections:
+            - RDS: SSL/TLS required
+            - DynamoDB: HTTPS only
+            - Redshift: SSL required
+            - Force SSL: Parameter group
+
+            Service Communication:
+            - S3: HTTPS enforced
+            - Glue: HTTPS only
+            - Athena: HTTPS only
+            - EMR: Encryption in-transit
+            - Inter-node: TLS]
+
+            VPNEncryption[VPN Encryption optional
+            - Protocol: IPsec
+            - IKE: Version 2
+            - Encryption: AES-256
+            - DH Group: 14+
+            - Perfect Forward Secrecy: Yes
+            - Dead Peer Detection: Enabled]
+        end
+
+        subgraph "Key Management"
+            KMSKeys[AWS KMS Keys
+
+            Master Keys CMK:
+            - lakehouse-raw-zone-key
+            - lakehouse-bronze-zone-key
+            - lakehouse-silver-zone-key
+            - lakehouse-gold-zone-key
+            - lakehouse-glue-key
+            - lakehouse-emr-key
+            - lakehouse-rds-key
+            - lakehouse-backup-key
+
+            Key Configuration:
+            - Type: Symmetric
+            - Origin: AWS KMS
+            - Rotation: Automatic annual
+            - Multi-region: No
+            - Deletion: 30-day window
+
+            Key Policies:
+            - Admin: Full key management
+            - DataEngineer: Encrypt/Decrypt
+            - Services: Grant permissions
+            - Audit: Describe only]
+
+            KeyRotation[Key Rotation Policy
+
+            Automatic Rotation:
+            - Frequency: Annual
+            - Method: AWS managed
+            - Old versions: Retained
+            - Decryption: All versions
+            - No re-encryption needed
+
+            Manual Rotation:
+            - Frequency: On demand
+            - Process: Create new key
+            - Alias update: Point to new
+            - Re-encrypt: Required
+            - Schedule: Maintenance window
+
+            Rotation Tracking:
+            - CloudWatch Events
+            - SNS notifications
+            - Audit trail in CloudTrail]
+
+            KeyUsageMonitoring[Key Usage Monitoring
+            - CloudWatch Metrics:
+              - Encrypt operations
+              - Decrypt operations
+              - GenerateDataKey calls
+              - Failed requests
+            - Alarms:
+              - Unusual volume
+              - Failed decryptions
+              - Unauthorized attempts
+            - Cost tracking:
+              - API calls billed
+              - Monthly estimation]
+        end
+    end
+
+    subgraph "Identity & Access Management"
+        subgraph "IAM Architecture"
+            IAMRoles[IAM Roles
+
+            Service Roles:
+            - LambdaExecutionRole
+            - GlueServiceRole
+            - EMRDefaultRole
+            - StepFunctionsRole
+            - AthenaExecutionRole
+
+            User Roles:
+            - LakehouseAdminRole
+            - DataEngineerRole
+            - DataAnalystRole
+            - BusinessUserRole
+
+            Cross-Account Roles:
+            - DR-Account-Access
+            - Audit-Account-Access
+            - Dev-Account-Access]
+
+            IAMPolicies[IAM Policies
+
+            Managed Policies:
+            - LakehouseAdminPolicy
+            - DataEngineerPolicy
+            - DataAnalystPolicy
+            - ReadOnlyPolicy
+
+            Inline Policies:
+            - Per-role specific permissions
+            - Deny policies for restrictions
+
+            Policy Structure:
+            - Least privilege principle
+            - Explicit denies
+            - Condition keys
+            - Resource-level permissions
+            - Tag-based access control]
+
+            IAMPermissionBoundaries[Permission Boundaries
+            - Max permissions: Set ceiling
+            - Applied to: DataEngineer roles
+            - Prevents: Privilege escalation
+            - Allows: Self-service within bounds
+            - Example: Cannot access Raw zone
+            - Example: Cannot modify IAM
+            - Example: Limited S3 buckets]
+
+            ServiceControlPolicies[Service Control Policies
+            - Organization: AWS Organizations
+            - OU: DataPlatform OU
+            - Deny: Leaving regions
+            - Deny: Disabling encryption
+            - Deny: Deleting logs
+            - Deny: Modifying security groups
+            - Require: MFA for sensitive ops
+            - Require: Tags on resources]
+        end
+
+        subgraph "Lake Formation Permissions"
+            LFPermissions[Lake Formation Permissions
+
+            Database Permissions:
+            - CREATE_DATABASE: Admin only
+            - ALTER_DATABASE: Admin/Engineer
+            - DROP_DATABASE: Admin only
+            - DESCRIBE: All roles
+
+            Table Permissions:
+            - CREATE_TABLE: Admin/Engineer
+            - ALTER_TABLE: Admin/Engineer
+            - DROP_TABLE: Admin only
+            - SELECT: Role-based
+            - INSERT: Engineer only
+            - DELETE: Admin only
+
+            Column Permissions:
+            - SELECT: Column-level filtering
+            - Filter expressions
+            - Data masking
+            - Cell-level security]
+
+            LFDataFilters[LF Data Filters
+
+            Row Filters:
+            - Name: regional_analyst_filter
+            - Table: silver.fact_sales
+            - Expression: region =
+              USER_ATTRIBUTE region
+            - Assignees: DataAnalystRole
+
+            Column Filters:
+            - Name: pii_redaction_filter
+            - Table: silver.dim_customer
+            - Include columns: All except
+              ssn email phone
+            - Exclude columns: PII fields
+            - Assignees: BusinessUserRole
+
+            Combined Filters:
+            - Row + Column filtering
+            - Inheritance: Catalog level
+            - Priority: Most restrictive]
+
+            LFTagBasedAccess[LF-Tags TBAC
+
+            Tag Definitions:
+            - data_classification:
+              [public, confidential, restricted]
+            - pii_level:
+              [none, low, medium, high]
+            - department:
+              [sales, marketing, finance]
+            - environment:
+              [dev, test, prod]
+
+            Tag-Based Policies:
+            - Grant SELECT on:
+              data_classification=public
+            - Grant SELECT on:
+              department=USER_DEPARTMENT
+            - Deny on:
+              pii_level=high
+              unless role=Admin
+
+            Benefits:
+            - Scalable governance
+            - Automatic propagation
+            - Centralized management
+            - Attribute-based control]
+        end
+
+        subgraph "Authentication & Federation"
+            SSOIntegration[SSO Integration
+            - Provider: Okta
+            - Protocol: SAML 2.0
+            - MFA: Required
+            - Session duration: 8 hours
+            - Re-auth: Sensitive operations
+            - Just-in-time provisioning
+            - Group mapping: AD groups
+            - Audit: All logins logged]
+
+            MFARequirements[MFA Requirements
+            - Enforcement: All human users
+            - Methods:
+              - TOTP: Authenticator app
+              - U2F: Hardware keys
+              - SMS: Backup only
+            - Admin operations: Re-verify
+            - API access: Not required
+            - Service accounts: Rotate keys
+            - Compliance: SOC 2 requirement]
+
+            ServiceAccounts[Service Accounts
+            - Type: IAM roles preferred
+            - Alternative: IAM users
+            - Access keys: Rotated 90 days
+            - Secrets: Secrets Manager
+            - Principle: One per service
+            - Naming: svc-lakehouse-*
+            - No console access
+            - Audit: Key usage tracked]
+        end
+    end
+
+    subgraph "PII Detection & Protection"
+        subgraph "Automated PII Detection"
+            MacieScanning[Amazon Macie
+            - Scans: S3 buckets
+            - Frequency: Weekly
+            - Scope: All lakehouse buckets
+            - Detection: ML-based
+            - Types: 50+ PII identifiers
+            - Custom: Business patterns
+            - Results: Security Hub
+            - Alerts: High sensitivity findings]
+
+            MaciePIITypes[Macie PII Types
+
+            Financial:
+            - Credit card numbers
+            - Bank account numbers
+            - Tax ID numbers
+            - Financial transactions
+
+            Personal:
+            - Social Security Numbers
+            - Driver's license numbers
+            - Passport numbers
+            - National IDs
+
+            Contact:
+            - Email addresses
+            - Phone numbers
+            - Physical addresses
+            - IP addresses
+
+            Health:
+            - Medical record numbers
+            - Health insurance IDs
+            - Prescriptions
+            - Diagnoses
+
+            Custom Patterns:
+            - Employee IDs
+            - Customer IDs
+            - Internal codes]
+
+            GlueDQPII[Glue Data Quality PII
+            - Rules: Custom PII detection
+            - Pattern matching: Regex
+            - Column profiling: Automatic
+            - Detection: During ETL
+            - Action: Tag columns
+            - Action: Mask data
+            - Action: Alert security team
+            - Metrics: PII coverage]
+        end
+
+        subgraph "PII Protection Measures"
+            PIITokenization[Tokenization
+            - Method: Format-preserving
+            - Provider: AWS Payment Crypto
+            - Reversible: Admin only
+            - Process: During Bronze ETL
+            - Storage: Token vault
+            - Detokenization: On demand
+            - Audit: All operations logged
+            - Use case: Analytics on PII]
+
+            PIIHashing[Hashing
+            - Algorithm: SHA-256
+            - Salt: Per-record unique
+            - Irreversible: Yes
+            - Use case: User IDs
+            - Use case: Session IDs
+            - Consistency: Same input = same hash
+            - Rainbow table: Protected by salt]
+
+            PIIRedaction[Redaction
+            - Full: *** *** ****
+            - Partial: john***@example.com
+            - Dynamic: Based on role
+            - Implementation: Lake Formation
+            - Views: Create redacted views
+            - Performance: Minimal impact
+            - Audit: Access logged]
+
+            PIIEncryption[Field-Level Encryption
+            - Method: Client-side encryption
+            - Key: Unique per field
+            - Algorithm: AES-256-GCM
+            - Key storage: KMS
+            - Decryption: Application-level
+            - Performance: CPU intensive
+            - Use case: Highly sensitive PII]
+        end
+
+        subgraph "PII Access Controls"
+            PIIAccessPolicies[PII Access Policies
+
+            High Sensitivity:
+            - Access: Admin only
+            - Approval: Required
+            - Duration: Time-limited
+            - Justification: Required
+            - Audit: Detailed logging
+            - Examples: SSN, Credit cards
+
+            Medium Sensitivity:
+            - Access: Data engineers
+            - Masked: For analysts
+            - Purpose: Approved uses
+            - Audit: Standard logging
+            - Examples: Email, Phone
+
+            Low Sensitivity:
+            - Access: Broader
+            - Masked: Business users
+            - Purpose: General analytics
+            - Audit: Standard logging
+            - Examples: Names, Age]
+
+            PIIDataMinimization[Data Minimization
+            - Principle: Collect minimum needed
+            - Retention: Delete when not needed
+            - Purpose: Specific use cases
+            - Consent: Track consent status
+            - Right to erasure: GDPR compliance
+            - Process: Automated cleanup
+            - Schedule: 90-day review]
+        end
+    end
+
+    subgraph "Audit & Logging"
+        subgraph "Audit Trail"
+            CloudTrailAudit[CloudTrail Audit
+            - Trail: Organization trail
+            - Events: All API calls
+            - S3 data events: Enabled
+            - Management events: All
+            - Insights: Enabled
+            - Validation: File integrity
+            - Encryption: KMS
+            - Retention: 7 years in S3
+            - Analysis: Athena queries
+            - Alerts: Anomalous activity]
+
+            S3AccessLogging[S3 Access Logs
+            - Enabled: All lakehouse buckets
+            - Target: Central logging bucket
+            - Format: Standard
+            - Fields: Requester, operation,
+              object, timestamp, IP, status
+            - Retention: 90 days hot
+            - Archive: S3 Glacier
+            - Analysis: Daily reports
+            - Use case: Data access audit]
+
+            LakeFormationLogs[Lake Formation Logs
+            - Audit: All permission changes
+            - Data access: Query-level
+            - CloudWatch Logs: Destination
+            - Fields: User, table, columns,
+              rows scanned, duration
+            - Retention: 1 year
+            - Export: S3 for analysis
+            - Compliance: Access reports]
+
+            ApplicationLogs[Application Logs
+            - Lambda: CloudWatch Logs
+            - Glue: Job logs + CloudWatch
+            - EMR: S3 + CloudWatch
+            - Step Functions: Execution history
+            - Athena: Query history
+            - Centralized: Log aggregation
+            - Structured: JSON format
+            - Searchable: CloudWatch Insights]
+        end
+
+        subgraph "Security Monitoring"
+            SecurityHub[AWS Security Hub
+            - Standards: CIS AWS Foundations
+            - Standards: PCI-DSS
+            - Findings: Aggregated
+            - Sources: GuardDuty, Macie,
+              Config, IAM Access Analyzer
+            - Severity: Critical to Low
+            - Auto-remediation: Lambda
+            - Dashboard: Security posture
+            - Reporting: Weekly CISO report]
+
+            GuardDuty[Amazon GuardDuty
+            - Threat detection: ML-based
+            - Sources: VPC Flow Logs,
+              CloudTrail, DNS logs
+            - Findings: Real-time
+            - Types: Reconnaissance,
+              Instance compromise,
+              Account compromise,
+              Bucket compromise
+            - Severity: High/Medium/Low
+            - Alerts: SNS to SOC
+            - Response: Automated playbooks]
+
+            ConfigRules[AWS Config Rules
+            - s3-bucket-public-read-prohibited
+            - s3-bucket-ssl-requests-only
+            - encrypted-volumes
+            - rds-encryption-enabled
+            - iam-password-policy
+            - mfa-enabled-for-iam-users
+            - root-account-mfa-enabled
+            - cloudtrail-enabled
+            - Compliance: Continuous check
+            - Remediation: Auto-remediate
+            - Dashboard: Compliance status]
+
+            AccessAnalyzer[IAM Access Analyzer
+            - Analysis: External access
+            - Policies: All IAM policies
+            - Resources: S3, KMS, IAM
+            - Findings: Unintended access
+            - Validation: Policy validation
+            - Unused access: 90-day check
+            - Reports: Access patterns
+            - Action: Revoke unnecessary]
+        end
+
+        subgraph "Incident Response"
+            SIEM[SIEM Integration
+            - Platform: Splunk/Sumo Logic
+            - Data sources: All logs
+            - Correlation: Cross-service
+            - Detection: Custom rules
+            - Playbooks: Automated response
+            - Alerts: SOC dashboard
+            - Retention: 13 months
+            - Compliance: SOC 2 audit trail]
+
+            AutomatedResponse[Automated Response
+            - Lambda: Response functions
+            - Trigger: Security Hub findings
+            - Actions:
+              - Isolate compromised instance
+              - Revoke IAM credentials
+              - Block malicious IP
+              - Snapshot for forensics
+              - Notify security team
+            - Testing: Monthly drills
+            - Documentation: Runbooks]
+        end
+    end
+
+    subgraph "Compliance & Governance"
+        ComplianceFrameworks[Compliance Frameworks
+        - SOC 2 Type II: Annual audit
+        - ISO 27001: Certified
+        - GDPR: EU data protection
+        - CCPA: California privacy
+        - HIPAA: If PHI present
+        - PCI-DSS: If card data
+        - FedRAMP: If government
+
+        Evidence:
+        - Policies: Document library
+        - Procedures: Runbooks
+        - Audit trails: CloudTrail
+        - Access reviews: Quarterly
+        - Risk assessments: Annual
+        - Penetration tests: Annual
+        - Employee training: Annual]
+
+        SecurityPolicies[Security Policies
+        - Data classification policy
+        - Access control policy
+        - Encryption policy
+        - Incident response policy
+        - Change management policy
+        - Acceptable use policy
+        - Third-party risk policy
+        - Data retention policy
+
+        Review: Annual
+        Approval: CISO + Legal
+        Distribution: All employees
+        Training: Required annual]
+    end
+
+    %% Connections between layers
+    VPC --> PublicSubnet1
+    VPC --> PublicSubnet2
+    VPC --> PrivateApp1
+    VPC --> PrivateApp2
+    VPC --> PrivateData1
+    VPC --> PrivateData2
+    VPC --> IsolatedSubnet1
+    VPC --> IsolatedSubnet2
+
+    PrivateApp1 --> SGLambda
+    PrivateApp1 --> SGGlue
+    PrivateData1 --> SGEMR
+    PrivateData1 --> SGRDS
+
+    VPC --> GatewayEndpoints
+    VPC --> InterfaceEndpoints
+    VPC --> VPCFlowLogs
+
+    KMSKeys --> S3Encryption
+    KMSKeys --> RDSEncryption
+    KMSKeys --> DynamoDBEncryption
+    KMSKeys --> EBSEncryption
+
+    IAMRoles --> LFPermissions
+    IAMPolicies --> IAMRoles
+    SSOIntegration --> IAMRoles
+
+    MacieScanning --> PIITokenization
+    MacieScanning --> PIIRedaction
+    GlueDQPII --> PIIAccessPolicies
+
+    CloudTrailAudit --> SecurityHub
+    GuardDuty --> SecurityHub
+    MacieScanning --> SecurityHub
+    ConfigRules --> SecurityHub
+    AccessAnalyzer --> SecurityHub
+
+    SecurityHub --> AutomatedResponse
+    SecurityHub --> SIEM
+
+    %% Styling
+    classDef networkStyle fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+    classDef encryptionStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef iamStyle fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef piiStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef auditStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef complianceStyle fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+
+    class VPC,PublicSubnet1,PublicSubnet2,PrivateApp1,PrivateApp2,PrivateData1,PrivateData2,IsolatedSubnet1,IsolatedSubnet2,SGLambda,SGGlue,SGEMR,SGRDS,NACL,VPCFlowLogs,GatewayEndpoints,InterfaceEndpoints,WAF,Shield,DirectConnect networkStyle
+    class S3Encryption,RDSEncryption,DynamoDBEncryption,EBSEncryption,RedshiftEncryption,TLSEncryption,VPNEncryption,KMSKeys,KeyRotation,KeyUsageMonitoring encryptionStyle
+    class IAMRoles,IAMPolicies,IAMPermissionBoundaries,ServiceControlPolicies,LFPermissions,LFDataFilters,LFTagBasedAccess,SSOIntegration,MFARequirements,ServiceAccounts iamStyle
+    class MacieScanning,MaciePIITypes,GlueDQPII,PIITokenization,PIIHashing,PIIRedaction,PIIEncryption,PIIAccessPolicies,PIIDataMinimization piiStyle
+    class CloudTrailAudit,S3AccessLogging,LakeFormationLogs,ApplicationLogs,SecurityHub,GuardDuty,ConfigRules,AccessAnalyzer,SIEM,AutomatedResponse auditStyle
+    class ComplianceFrameworks,SecurityPolicies complianceStyle
+```

@@ -1,0 +1,557 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/kubernetes-manifest.schema.json",
+  "title": "Kubernetes Manifest Schema",
+  "description": "Schema for validating Kubernetes resource manifests",
+  "type": "object",
+  "required": ["apiVersion", "kind", "metadata"],
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "description": "API version of the Kubernetes resource",
+      "examples": ["v1", "apps/v1", "batch/v1", "networking.k8s.io/v1"]
+    },
+    "kind": {
+      "type": "string",
+      "description": "Type of Kubernetes resource",
+      "enum": [
+        "Pod", "Deployment", "StatefulSet", "DaemonSet", "Job", "CronJob",
+        "Service", "Ingress", "ConfigMap", "Secret", "PersistentVolumeClaim",
+        "PersistentVolume", "StorageClass", "HorizontalPodAutoscaler",
+        "Namespace", "ServiceAccount", "Role", "RoleBinding"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+          "maxLength": 253,
+          "description": "Resource name (DNS-1123 compatible)"
+        },
+        "namespace": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+          "description": "Namespace for the resource"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Key-value pairs for organizing resources"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Non-identifying metadata"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "description": "Specification of the resource (varies by kind)"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {"const": "Deployment"}
+        }
+      },
+      "then": {
+        "properties": {
+          "apiVersion": {"const": "apps/v1"},
+          "spec": {
+            "type": "object",
+            "required": ["selector", "template"],
+            "properties": {
+              "replicas": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 1
+              },
+              "selector": {
+                "type": "object",
+                "required": ["matchLabels"],
+                "properties": {
+                  "matchLabels": {
+                    "type": "object",
+                    "additionalProperties": {"type": "string"}
+                  }
+                }
+              },
+              "template": {
+                "$ref": "#/definitions/PodTemplateSpec"
+              },
+              "strategy": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["RollingUpdate", "Recreate"],
+                    "default": "RollingUpdate"
+                  },
+                  "rollingUpdate": {
+                    "type": "object",
+                    "properties": {
+                      "maxSurge": {
+                        "oneOf": [
+                          {"type": "integer", "minimum": 0},
+                          {"type": "string", "pattern": "^[0-9]+%$"}
+                        ],
+                        "default": "25%"
+                      },
+                      "maxUnavailable": {
+                        "oneOf": [
+                          {"type": "integer", "minimum": 0},
+                          {"type": "string", "pattern": "^[0-9]+%$"}
+                        ],
+                        "default": "25%"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {"const": "Service"}
+        }
+      },
+      "then": {
+        "properties": {
+          "apiVersion": {"const": "v1"},
+          "spec": {
+            "type": "object",
+            "required": ["selector"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"],
+                "default": "ClusterIP"
+              },
+              "selector": {
+                "type": "object",
+                "additionalProperties": {"type": "string"}
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["port"],
+                  "properties": {
+                    "name": {"type": "string"},
+                    "protocol": {
+                      "type": "string",
+                      "enum": ["TCP", "UDP", "SCTP"],
+                      "default": "TCP"
+                    },
+                    "port": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 65535
+                    },
+                    "targetPort": {
+                      "oneOf": [
+                        {"type": "integer", "minimum": 1, "maximum": 65535},
+                        {"type": "string"}
+                      ]
+                    },
+                    "nodePort": {
+                      "type": "integer",
+                      "minimum": 30000,
+                      "maximum": 32767
+                    }
+                  }
+                }
+              },
+              "clusterIP": {
+                "type": "string",
+                "oneOf": [
+                  {"pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}$"},
+                  {"const": "None"}
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {"const": "StatefulSet"}
+        }
+      },
+      "then": {
+        "properties": {
+          "apiVersion": {"const": "apps/v1"},
+          "spec": {
+            "type": "object",
+            "required": ["selector", "serviceName", "template"],
+            "properties": {
+              "replicas": {"type": "integer", "minimum": 0},
+              "serviceName": {
+                "type": "string",
+                "description": "Name of the headless service"
+              },
+              "podManagementPolicy": {
+                "type": "string",
+                "enum": ["OrderedReady", "Parallel"],
+                "default": "OrderedReady"
+              },
+              "volumeClaimTemplates": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PersistentVolumeClaim"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {"const": "CronJob"}
+        }
+      },
+      "then": {
+        "properties": {
+          "apiVersion": {"const": "batch/v1"},
+          "spec": {
+            "type": "object",
+            "required": ["schedule", "jobTemplate"],
+            "properties": {
+              "schedule": {
+                "type": "string",
+                "description": "Cron schedule expression",
+                "examples": ["0 2 * * *", "*/15 * * * *"]
+              },
+              "concurrencyPolicy": {
+                "type": "string",
+                "enum": ["Allow", "Forbid", "Replace"],
+                "default": "Allow"
+              },
+              "successfulJobsHistoryLimit": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 3
+              },
+              "failedJobsHistoryLimit": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "PodTemplateSpec": {
+      "type": "object",
+      "required": ["metadata", "spec"],
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "labels": {
+              "type": "object",
+              "additionalProperties": {"type": "string"}
+            }
+          }
+        },
+        "spec": {
+          "$ref": "#/definitions/PodSpec"
+        }
+      }
+    },
+    "PodSpec": {
+      "type": "object",
+      "required": ["containers"],
+      "properties": {
+        "containers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/Container"
+          }
+        },
+        "initContainers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Container"
+          }
+        },
+        "restartPolicy": {
+          "type": "string",
+          "enum": ["Always", "OnFailure", "Never"],
+          "default": "Always"
+        },
+        "serviceAccountName": {"type": "string"},
+        "volumes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Volume"
+          }
+        },
+        "nodeSelector": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        },
+        "affinity": {"type": "object"},
+        "tolerations": {"type": "array"}
+      }
+    },
+    "Container": {
+      "type": "object",
+      "required": ["name", "image"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+        },
+        "image": {
+          "type": "string",
+          "description": "Container image name",
+          "examples": ["nginx:1.21", "123456789012.dkr.ecr.us-east-1.amazonaws.com/app:v1.0"]
+        },
+        "imagePullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"],
+          "default": "IfNotPresent"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["containerPort"],
+            "properties": {
+              "name": {"type": "string"},
+              "containerPort": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "protocol": {
+                "type": "string",
+                "enum": ["TCP", "UDP", "SCTP"],
+                "default": "TCP"
+              }
+            }
+          }
+        },
+        "env": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string"},
+              "value": {"type": "string"},
+              "valueFrom": {"type": "object"}
+            }
+          }
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "object",
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "pattern": "^[0-9]+(\\.[0-9]+)?(m|)$",
+                  "examples": ["100m", "1", "2.5"]
+                },
+                "memory": {
+                  "type": "string",
+                  "pattern": "^[0-9]+(\\.[0-9]+)?(Ki|Mi|Gi|Ti|Pi|Ei|m|k|M|G|T|P|E)?$",
+                  "examples": ["128Mi", "1Gi", "500M"]
+                }
+              }
+            },
+            "limits": {
+              "type": "object",
+              "properties": {
+                "cpu": {"type": "string"},
+                "memory": {"type": "string"}
+              }
+            }
+          }
+        },
+        "livenessProbe": {"$ref": "#/definitions/Probe"},
+        "readinessProbe": {"$ref": "#/definitions/Probe"},
+        "volumeMounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "mountPath"],
+            "properties": {
+              "name": {"type": "string"},
+              "mountPath": {"type": "string"},
+              "readOnly": {"type": "boolean", "default": false}
+            }
+          }
+        }
+      }
+    },
+    "Probe": {
+      "type": "object",
+      "properties": {
+        "httpGet": {
+          "type": "object",
+          "required": ["port"],
+          "properties": {
+            "path": {"type": "string", "default": "/"},
+            "port": {
+              "oneOf": [
+                {"type": "integer"},
+                {"type": "string"}
+              ]
+            },
+            "scheme": {
+              "type": "string",
+              "enum": ["HTTP", "HTTPS"],
+              "default": "HTTP"
+            }
+          }
+        },
+        "exec": {
+          "type": "object",
+          "required": ["command"],
+          "properties": {
+            "command": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "tcpSocket": {
+          "type": "object",
+          "required": ["port"],
+          "properties": {
+            "port": {
+              "oneOf": [
+                {"type": "integer"},
+                {"type": "string"}
+              ]
+            }
+          }
+        },
+        "initialDelaySeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "periodSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 10
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "successThreshold": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "failureThreshold": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 3
+        }
+      }
+    },
+    "Volume": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {"type": "string"},
+        "emptyDir": {"type": "object"},
+        "configMap": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": {"type": "string"}
+          }
+        },
+        "secret": {
+          "type": "object",
+          "required": ["secretName"],
+          "properties": {
+            "secretName": {"type": "string"}
+          }
+        },
+        "persistentVolumeClaim": {
+          "type": "object",
+          "required": ["claimName"],
+          "properties": {
+            "claimName": {"type": "string"}
+          }
+        }
+      }
+    },
+    "PersistentVolumeClaim": {
+      "type": "object",
+      "required": ["metadata", "spec"],
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": {"type": "string"}
+          }
+        },
+        "spec": {
+          "type": "object",
+          "required": ["accessModes", "resources"],
+          "properties": {
+            "accessModes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany"]
+              }
+            },
+            "resources": {
+              "type": "object",
+              "required": ["requests"],
+              "properties": {
+                "requests": {
+                  "type": "object",
+                  "required": ["storage"],
+                  "properties": {
+                    "storage": {
+                      "type": "string",
+                      "pattern": "^[0-9]+(\\.[0-9]+)?(Ki|Mi|Gi|Ti)?$",
+                      "examples": ["1Gi", "100Gi"]
+                    }
+                  }
+                }
+              }
+            },
+            "storageClassName": {"type": "string"}
+          }
+        }
+      }
+    }
+  }
+}

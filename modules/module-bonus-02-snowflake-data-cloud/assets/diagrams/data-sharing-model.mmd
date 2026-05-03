@@ -1,0 +1,268 @@
+graph TB
+    %% ============================================================================
+    %% SNOWFLAKE DATA SHARING MODEL
+    %% ============================================================================
+    %% This diagram illustrates Snowflake's secure data sharing architecture
+    %% that enables sharing live data without copying or moving data.
+    %%
+    %% Key Concepts:
+    %% - Zero-copy data sharing (metadata-only)
+    %% - Provider-consumer model
+    %% - Real-time access to shared data
+    %% - Provider pays storage, consumer pays compute (fair cost split)
+    %% - Secure views for row/column-level security
+    %% ============================================================================
+
+    %% ============================================================================
+    %% PROVIDER ACCOUNT
+    %% ============================================================================
+    subgraph ProviderAccount["🏢 PROVIDER ACCOUNT (Data Owner)"]
+        style ProviderAccount fill:#4A90E2,stroke:#333,stroke-width:3px
+
+        %% Provider Database
+        subgraph ProviderDB["📊 Provider Database: SALES_DB"]
+            ProviderTable1[("Table: CUSTOMERS<br/>━━━━━━━━━━━━━━━<br/>customer_id<br/>name<br/>email<br/>region<br/>revenue<br/>created_at<br/><br/>Rows: 1M<br/>Size: 50 GB")]
+
+            ProviderTable2[("Table: ORDERS<br/>━━━━━━━━━━━━━━━<br/>order_id<br/>customer_id<br/>amount<br/>order_date<br/>status<br/><br/>Rows: 10M<br/>Size: 200 GB")]
+
+            ProviderTable3[("Table: PRODUCTS<br/>━━━━━━━━━━━━━━━<br/>product_id<br/>name<br/>category<br/>price<br/>cost (sensitive)<br/><br/>Rows: 50K<br/>Size: 5 GB")]
+        end
+
+        %% Secure Views with Row-Level Security
+        subgraph SecureViews["🔒 SECURE VIEWS (Row/Column Filtering)"]
+            SecureView1["Secure View: CUSTOMERS_SHARED<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE SECURE VIEW customers_shared AS<br/>SELECT<br/>    customer_id,<br/>    name,<br/>    -- Email masking<br/>    CASE<br/>        WHEN CURRENT_ROLE() = 'ADMIN'<br/>        THEN email<br/>        ELSE CONCAT(LEFT(email, 3), '***@***.com')<br/>    END AS email,<br/>    region,<br/>    revenue<br/>FROM customers<br/>WHERE region IN ('US', 'EU')  -- Row filter<br/>  AND revenue > 10000;  -- High-value only"]
+
+            SecureView2["Secure View: ORDERS_SHARED<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE SECURE VIEW orders_shared AS<br/>SELECT<br/>    order_id,<br/>    customer_id,<br/>    amount,<br/>    order_date,<br/>    status<br/>FROM orders<br/>WHERE order_date >= DATEADD(day, -90, CURRENT_DATE())<br/>  AND status != 'CANCELLED';  -- Exclude cancelled"]
+
+            SecureView3["Secure View: PRODUCTS_SHARED<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE SECURE VIEW products_shared AS<br/>SELECT<br/>    product_id,<br/>    name,<br/>    category,<br/>    price<br/>    -- cost column EXCLUDED (sensitive)<br/>FROM products<br/>WHERE category != 'INTERNAL';  -- No internal products"]
+        end
+
+        ProviderTable1 --> SecureView1
+        ProviderTable2 --> SecureView2
+        ProviderTable3 --> SecureView3
+
+        %% Share Object
+        subgraph ShareObject["📦 SHARE OBJECT"]
+            ShareDef["CREATE SHARE customer_data_share<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>COMMENT = 'Customer and order data for partners';<br/><br/>-- Grant database access<br/>GRANT USAGE ON DATABASE sales_db<br/>    TO SHARE customer_data_share;<br/><br/>-- Grant schema access<br/>GRANT USAGE ON SCHEMA sales_db.public<br/>    TO SHARE customer_data_share;<br/><br/>-- Grant view access (tables NOT directly shared)<br/>GRANT SELECT ON VIEW customers_shared<br/>    TO SHARE customer_data_share;<br/>GRANT SELECT ON VIEW orders_shared<br/>    TO SHARE customer_data_share;<br/>GRANT SELECT ON VIEW products_shared<br/>    TO SHARE customer_data_share;"]
+
+            ShareMeta["Share Metadata<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>- Share Name: customer_data_share<br/>- Objects: 3 secure views<br/>- Data Size: 0 bytes (metadata only!)<br/>- Consumers: 2 accounts<br/>- Created: 2026-03-09<br/>- Live Data: Yes (always current)"]
+        end
+
+        SecureView1 -.->|"Included in share"| ShareDef
+        SecureView2 -.->|"Included in share"| ShareDef
+        SecureView3 -.->|"Included in share"| ShareDef
+
+        ShareDef --> ShareMeta
+
+        %% Add Consumers
+        AddConsumer["Add Consumers to Share<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>-- Add consumer account 1<br/>ALTER SHARE customer_data_share<br/>ADD ACCOUNTS = ABC12345;<br/><br/>-- Add consumer account 2<br/>ALTER SHARE customer_data_share<br/>ADD ACCOUNTS = XYZ67890;<br/><br/>-- View share consumers<br/>SHOW GRANTS TO SHARE customer_data_share;"]
+
+        ShareMeta --> AddConsumer
+    end
+
+    %% ============================================================================
+    %% CONSUMER ACCOUNT 1
+    %% ============================================================================
+    subgraph ConsumerAccount1["🏢 CONSUMER ACCOUNT 1 (Partner A - ABC12345)"]
+        style ConsumerAccount1 fill:#7ED321,stroke:#333,stroke-width:3px
+
+        %% Create database from share
+        ConsumerDB1["CREATE DATABASE FROM SHARE<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE DATABASE partner_data<br/>FROM SHARE provider_account.customer_data_share;<br/><br/>Result: Database created instantly (no data copy!)<br/>Access: Read-only<br/>Cost: $0 storage (provider pays)<br/>Freshness: Live (real-time updates)"]
+
+        %% Consumer views the data
+        ConsumerQuery1["Query Shared Data<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>USE DATABASE partner_data;<br/><br/>-- Queries look normal!<br/>SELECT * FROM customers_shared;<br/>SELECT * FROM orders_shared;<br/>SELECT * FROM products_shared;<br/><br/>-- Join across shared tables<br/>SELECT<br/>    c.name,<br/>    COUNT(o.order_id) AS order_count,<br/>    SUM(o.amount) AS total_spent<br/>FROM customers_shared c<br/>JOIN orders_shared o<br/>    ON c.customer_id = o.customer_id<br/>GROUP BY c.name<br/>ORDER BY total_spent DESC;"]
+
+        %% Consumer warehouse (pays compute)
+        ConsumerWH1["Consumer Warehouse: PARTNER_A_WH<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Size: Medium (4 credits/hour)<br/>Usage: 2 hours/day<br/>Monthly Cost: 4 × 2 × 30 = 240 credits = ~$720<br/><br/>✅ Consumer pays for COMPUTE only<br/>❌ Consumer does NOT pay for storage"]
+
+        ConsumerDB1 --> ConsumerQuery1
+        ConsumerQuery1 -.->|"Uses compute"| ConsumerWH1
+    end
+
+    AddConsumer -.->|"Account granted access"| ConsumerDB1
+
+    %% ============================================================================
+    %% CONSUMER ACCOUNT 2
+    %% ============================================================================
+    subgraph ConsumerAccount2["🏢 CONSUMER ACCOUNT 2 (Partner B - XYZ67890)"]
+        style ConsumerAccount2 fill:#F5A623,stroke:#333,stroke-width:3px
+
+        %% Create database from share
+        ConsumerDB2["CREATE DATABASE FROM SHARE<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE DATABASE vendor_data<br/>FROM SHARE provider_account.customer_data_share;<br/><br/>Note: Same share, different database name<br/>IsolationEach consumer has independent access<br/>No visibility into other consumers' queries"]
+
+        %% Consumer views the data
+        ConsumerQuery2["Query Shared Data<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>USE DATABASE vendor_data;<br/><br/>-- Use shared data in BI tool<br/>-- Tableau, Power BI, Looker, etc.<br/><br/>SELECT<br/>    DATE_TRUNC('month', order_date) AS month,<br/>    SUM(amount) AS monthly_revenue<br/>FROM orders_shared<br/>GROUP BY month<br/>ORDER BY month;"]
+
+        %% Consumer warehouse (pays compute)
+        ConsumerWH2["Consumer Warehouse: PARTNER_B_WH<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Size: Small (2 credits/hour)<br/>Usage: 1 hour/day<br/>Monthly Cost: 2 × 1 × 30 = 60 credits = ~$180<br/><br/>✅ Independent compute (no interference)<br/>❌ Consumer does NOT pay for storage"]
+
+        ConsumerDB2 --> ConsumerQuery2
+        ConsumerQuery2 -.->|"Uses compute"| ConsumerWH2
+    end
+
+    AddConsumer -.->|"Account granted access"| ConsumerDB2
+
+    %% ============================================================================
+    %% DATA MARKETPLACE
+    %% ============================================================================
+    subgraph Marketplace["🌐 SNOWFLAKE DATA MARKETPLACE"]
+        style Marketplace fill:#BD10E0,stroke:#333,stroke-width:3px
+
+        MarketplaceDesc["Data Marketplace Overview<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Public data exchange built into Snowflake<br/>Discover, access, and monetize datasets<br/><br/>Categories:<br/>- Business & Finance (stock data, economic indicators)<br/>- Weather & Environment (forecasts, climate data)<br/>- Demographics (population, census)<br/>- Healthcare (clinical trials, drug data)<br/>- Technology (usage metrics, benchmarks)"]
+
+        PublishToMarketplace["Publish to Marketplace<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>ALTER SHARE customer_data_share<br/>SET<br/>    LISTING_STATUS = 'PUBLISHED',<br/>    LISTING_NAME = 'Customer Analytics Dataset',<br/>    DESCRIPTION = 'Real-time customer and order data',<br/>    PRICING_MODEL = 'FREE' -- or PAID<br/>;<br/><br/>Public vs. Private:<br/>- Public: Anyone can discover and request access<br/>- Private: Invitation-only (current model)"]
+
+        DiscoverData["Discover & Access Data<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>-- In Snowflake Web UI:<br/>1. Navigate to Data Marketplace<br/>2. Search for datasets (e.g., 'weather')<br/>3. Preview data samples<br/>4. Request access (instant for free listings)<br/>5. Query immediately<br/><br/>Example: Weather data provider<br/>- Provider: Weather.com<br/>- Dataset: Global historical weather<br/>- Cost: Free or pay-per-query"]
+
+        Monetization["Data Monetization<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Pricing Models:<br/>1. Free (marketing, lead gen)<br/>2. Free trial + Paid (30-day trial)<br/>3. Subscription ($X/month flat fee)<br/>4. Pay-per-use (query-based billing)<br/><br/>Example Revenue:<br/>- $0.01 per query × 1M queries/month = $10K/month<br/>- Or $500/month flat subscription × 100 customers = $50K/month"]
+
+        MarketplaceDesc --> PublishToMarketplace
+        PublishToMarketplace --> DiscoverData
+        DiscoverData --> Monetization
+    end
+
+    ShareMeta -.->|"Can publish"| MarketplaceDesc
+
+    %% ============================================================================
+    %% COST MODEL
+    %% ============================================================================
+    subgraph CostModel["💰 COST MODEL & BILLING"]
+        style CostModel fill:#FFE5E5,stroke:#E74C3C,stroke-width:2px
+
+        ProviderCost["Provider Costs<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Storage (only):<br/>- Base tables: 255 GB × $30/TB = $7.65/month<br/>- Time Travel (30 days): ~$3/month<br/>- Fail-Safe (7 days): ~$0.50/month<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Total Provider Cost: ~$11/month<br/><br/>✅ Provider pays storage (tables stored once)<br/>✅ No additional cost per consumer<br/>✅ No compute cost for queries run by consumers<br/>❌ Provider does NOT pay for consumer queries"]
+
+        ConsumerCost["Consumer Costs<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Compute (only):<br/><br/>Consumer 1 (Partner A):<br/>- Medium warehouse: 4 credits/hour<br/>- Usage: 2 hours/day × 30 days = 60 hours<br/>- Cost: 240 credits × $3 = $720/month<br/><br/>Consumer 2 (Partner B):<br/>- Small warehouse: 2 credits/hour<br/>- Usage: 1 hour/day × 30 days = 30 hours<br/>- Cost: 60 credits × $3 = $180/month<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>✅ Consumers pay compute (their warehouses)<br/>❌ Consumers do NOT pay for storage<br/>❌ Consumers do NOT pay for data transfer"]
+
+        CostBenefits["Cost Benefits vs. Alternatives<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Traditional Data Sharing (S3/FTP):<br/>❌ Provider exports: 255 GB → S3 ($6/month storage)<br/>❌ Consumer downloads: 255 GB egress = $23<br/>❌ Consumer stores: 255 GB → S3 = $6/month<br/>❌ Total first month: $35 recurring<br/>❌ Stale data (hourly/daily exports)<br/>❌ Manual sync processes<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Snowflake Data Sharing:<br/>✅ Provider: $11/month storage<br/>✅ Consumer: $0 storage (queries only)<br/>✅ Total: $11 (68% savings)<br/>✅ Live data (always current)<br/>✅ No manual processes"]
+    end
+
+    %% ============================================================================
+    %% USE CASES
+    %% ============================================================================
+    subgraph UseCases["🎯 REAL-WORLD USE CASES"]
+        style UseCases fill:#E8F4F8,stroke:#3498DB,stroke-width:3px
+
+        UC1["Use Case 1: Multi-Tenant SaaS<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: SaaS provider with 100 customers<br/><br/>Architecture:<br/>- Central database: All customer data (partitioned)<br/>- One share per customer:<br/>  CREATE SHARE customer_A_share;<br/>  GRANT SELECT ON SECURE VIEW customer_A_data...<br/><br/>Security:<br/>CREATE SECURE VIEW customer_A_data AS<br/>  SELECT * FROM all_data<br/>  WHERE tenant_id = 'customer_A';<br/><br/>Benefits:<br/>- Customers query their own data (isolated)<br/>- Provider maintains single source of truth<br/>- Real-time dashboards for customers<br/>- Cost: Provider pays 1x storage, customers pay compute"]
+
+        UC2["Use Case 2: B2B Data Exchange<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Retailer shares sales data with suppliers<br/><br/>Flow:<br/>1. Retailer (Provider):<br/>   - Table: product_sales (10M rows/day)<br/>   - Share with 50 suppliers<br/>2. Supplier (Consumer):<br/>   - Query: Products they supply only<br/>   - Analytics: Sales trends, inventory needs<br/><br/>Security: Row-level filter by supplier_id<br/><br/>Value:<br/>- Supplier optimizes inventory (reduce stockouts 30%)<br/>- Retailer strengthens partnerships<br/>- No manual reports (save 100 hours/month)"]
+
+        UC3["Use Case 3: Data Monetization<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Weather data provider sells forecasts<br/><br/>Model:<br/>- Free tier: 7-day historical data<br/>- Paid tier: 30-day historical + forecasts<br/>- Premium: Real-time + APIs<br/><br/>Pricing:<br/>- $0.001 per query (pay-per-use)<br/>- Or $500/month (unlimited queries)<br/><br/>Revenue (example):<br/>- 500 customers × $500/month = $250K/month<br/>- 70% margin (low COGS, shared storage)<br/><br/>Snowflake Marketplace: Built-in discovery & billing"]
+
+        UC4["Use Case 4: Internal Data Sharing<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Large enterprise with multiple Snowflake accounts<br/><br/>Structure:<br/>- Account 1 (Data Engineering): Master data<br/>- Account 2 (Marketing): Consumer<br/>- Account 3 (Finance): Consumer<br/>- Account 4 (Sales): Consumer<br/><br/>Benefits:<br/>- Centralized governance (one source)<br/>- Department isolation (no cross-account queries)<br/>- Cost transparency (each dept pays compute)<br/>- Audit trail (query history per account)"]
+
+        UC5["Use Case 5: Partner Ecosystem<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Logistics company shares tracking data<br/><br/>Partners:<br/>- Warehouse partner: Inventory levels<br/>- Shipping partner: Delivery status<br/>- Customer: Order tracking<br/><br/>Approach: Bi-directional sharing<br/>- Logistics → Partners: Shipment data<br/>- Partners → Logistics: Status updates<br/><br/>Result: Real-time supply chain visibility"]
+    end
+
+    %% ============================================================================
+    %% ADVANCED FEATURES
+    %% ============================================================================
+    subgraph AdvancedFeatures["🚀 ADVANCED FEATURES"]
+        style AdvancedFeatures fill:#FFF9E6,stroke:#F39C12,stroke-width:2px
+
+        Feature1["Reader Accounts<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>For consumers WITHOUT Snowflake accounts<br/><br/>CREATE MANAGED ACCOUNT reader_account_1<br/>  ADMIN_NAME = 'admin'<br/>  ADMIN_PASSWORD = 'SecurePassword123'<br/>  TYPE = READER;<br/><br/>Use Case: Share with non-Snowflake customers<br/>Cost: Provider pays compute + storage<br/>Limit: Read-only, no data import"]
+
+        Feature2["Secure Views with Context Functions<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE SECURE VIEW dynamic_data AS<br/>SELECT *<br/>FROM sensitive_table<br/>WHERE region = CURRENT_ACCOUNT()  -- Dynamic!<br/>  OR user_role = CURRENT_ROLE();<br/><br/>Benefit: One view, per-consumer filtering<br/>Example: Show US data to US accounts only"]
+
+        Feature3["Share with Non-Snowflake Systems<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Snowflake shares → External access via:<br/>1. Snowflake Connectors (Spark, Python, JDBC)<br/>2. Snowflake Data Marketplace API<br/>3. Partner Connect (Tableau, Power BI, etc.)<br/><br/>Limitation: External systems need credentials<br/>Best Practice: Use service accounts with least privilege"]
+
+        Feature4["Cross-Region/Cross-Cloud Sharing<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Provider: AWS US-EAST-1<br/>Consumer: Azure West Europe<br/><br/>Method: Replication + Sharing<br/>1. Replicate data to target region/cloud<br/>2. Create share in target region<br/>3. Consumer accesses local copy<br/><br/>Cost: Replication ($0.002/GB) + storage in both regions"]
+
+        Feature5["Share Analytics & Monitoring<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>-- Monitor share usage<br/>SELECT<br/>    share_name,<br/>    consumer_account,<br/>    query_count,<br/>    bytes_scanned / POW(1024, 3) AS gb_scanned<br/>FROM ACCOUNT_USAGE.DATA_TRANSFER_HISTORY<br/>WHERE share_name = 'customer_data_share'<br/>ORDER BY query_count DESC;<br/><br/>Metrics: Queries, bytes scanned, popular tables"]
+    end
+
+    %% ============================================================================
+    %% BEST PRACTICES
+    %% ============================================================================
+    subgraph BestPractices["✅ BEST PRACTICES"]
+        style BestPractices fill:#D5F4E6,stroke:#27AE60,stroke-width:3px
+
+        BP1["1️⃣ Always use SECURE VIEWS (never share tables directly)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>❌ GRANT SELECT ON TABLE customers TO SHARE...<br/>✅ CREATE SECURE VIEW → GRANT SELECT ON VIEW...<br/><br/>Reason: Secure views hide implementation, enable row/column filtering"]
+
+        BP2["2️⃣ Implement row-level security<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE SECURE VIEW filtered_data AS<br/>SELECT * FROM raw_data<br/>WHERE consumer_id = CURRENT_ACCOUNT()  -- Per-consumer filter<br/><br/>Benefit: One view serves multiple consumers securely"]
+
+        BP3["3️⃣ Mask sensitive columns<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CASE<br/>    WHEN CURRENT_ROLE() IN ('ADMIN', 'FINANCE')<br/>    THEN email<br/>    ELSE CONCAT(LEFT(email, 3), '***@***.com')<br/>END AS email<br/><br/>Alternative: Dynamic Data Masking policies"]
+
+        BP4["4️⃣ Document shares with COMMENTs<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>COMMENT ON SHARE customer_data_share IS<br/>  'Customer and order data. Updated hourly. Contact: data-team@company.com';<br/><br/>COMMENT ON VIEW customers_shared IS<br/>  'Filtered to US/EU regions, revenue > 10K. Excludes PII.';"]
+
+        BP5["5️⃣ Monitor share usage and costs<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>-- Provider: Track data volume accessed<br/>SELECT * FROM ACCOUNT_USAGE.DATA_TRANSFER_HISTORY;<br/><br/>-- Consumer: Track compute costs<br/>SELECT * FROM WAREHOUSE_METERING_HISTORY;<br/><br/>Alert: If unexpected high usage"]
+
+        BP6["6️⃣ Version shared views (SLAs)<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>CREATE SECURE VIEW customers_v1 AS SELECT ...;<br/>CREATE SECURE VIEW customers_v2 AS SELECT ...; -- New schema<br/><br/>Share both versions during transition<br/>Deprecation notice: 90 days before v1 removal"]
+
+        BP7["7️⃣ Test shares with secondary consumer account<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━<br/>Before production:<br/>1. Create test consumer account<br/>2. Add to share<br/>3. Verify data visibility<br/>4. Test row-level security<br/>5. Validate performance<br/><br/>Prevent: Sharing wrong data to customers"]
+    end
+
+    %% ============================================================================
+    %% COMPARISON
+    %% ============================================================================
+    subgraph Comparison["📊 DATA SHARING COMPARISON"]
+        style Comparison fill:#F3E5F5,stroke:#8E24AA,stroke-width:2px
+
+        CompTable["
+        ┌──────────────────────────┬────────────────────┬───────────────────┬─────────────────┐
+        │ Method                   │ Snowflake Sharing  │ Database Link     │ File Export     │
+        ├──────────────────────────┼────────────────────┼───────────────────┼─────────────────┤
+        │ Data Movement            │ ❌ None (metadata) │ ⚠️ Query-time     │ ❌ Full copy     │
+        │ Freshness                │ ✅ Real-time       │ ✅ Real-time      │ ❌ Batch (hours) │
+        │ Setup Complexity         │ ✅ Easy (1 SQL)    │ ⚠️ Moderate (VPN) │ ⚠️ Complex (ETL) │
+        │ Storage Cost             │ ✅ 1x (provider)   │ ✅ 1x (provider)  │ ❌ 2x (both)     │
+        │ Network Cost             │ ✅ $0              │ ⚠️ Egress fees    │ ❌ High egress   │
+        │ Consumer Compute Cost    │ ✅ Pay per query   │ ⚠️ Always-on DB   │ ✅ Consumer side │
+        │ Security                 │ ✅ Fine-grained    │ ⚠️ Schema-level   │ ⚠️ File-level    │
+        │ Schema Changes           │ ✅ Instant         │ ⚠️ Coordination   │ ❌ Re-export     │
+        │ Cross-Cloud Support      │ ✅ Yes (repl)      │ ❌ No             │ ✅ Yes (S3/Blob) │
+        └──────────────────────────┴────────────────────┴───────────────────┴─────────────────┘
+
+        🔑 Key Insight: Snowflake Data Sharing eliminates ETL, reduces costs 60-80%,
+        and provides real-time access with zero data movement.
+        "]
+    end
+
+    %% ============================================================================
+    %% NOTES
+    %% ============================================================================
+    %%
+    %% TECHNICAL DETAILS:
+    %%
+    %% 1. How sharing works under the hood:
+    %%    - Provider and consumer share same underlying storage (S3/Azure/GCS)
+    %%    - Share object contains metadata pointers to micro-partitions
+    %%    - Consumer queries read directly from provider's storage
+    %%    - No data duplication (zero-copy architecture)
+    %%
+    %% 2. Security model:
+    %%    - Consumer CANNOT see provider's data outside the share
+    %%    - Consumer CANNOT modify shared data (read-only)
+    %%    - Provider controls exact objects shared (tables/views)
+    %%    - Secure views enforce row/column-level security
+    %%
+    %% 3. Performance:
+    %%    - Shared data queries same speed as local tables
+    %%    - Consumer's warehouse performs all compute
+    %%    - Partition pruning works transparently
+    %%    - Result cache per consumer (isolated)
+    %%
+    %% 4. Limitations:
+    %%    - Provider and consumer must be on same cloud provider (or use replication)
+    %%    - Consumer can only SELECT (no INSERT/UPDATE/DELETE)
+    %%    - Consumer cannot create views on shared data (immutable)
+    %%    - Time Travel on shared data uses provider's retention settings
+    %%
+    %% 5. Cross-region/cross-cloud:
+    %%    - Direct sharing: Same cloud provider, any region (some caveats)
+    %%    - With replication: Any cloud provider, any region
+    %%    - Replication cost: $0.002/GB + storage in target region
+    %%
+    %% COST EXAMPLES:
+    %%
+    %% Example 1: Small dataset (10 GB), 1 consumer, low usage
+    %% - Provider storage: 10 GB × $30/TB = $0.30/month
+    %% - Consumer compute: 1 hour/month × 2 credits = $6/month
+    %% - Total: $6.30/month
+    %%
+    %% Example 2: Large dataset (1 TB), 10 consumers, heavy usage
+    %% - Provider storage: 1 TB × $30 = $30/month (paid once, not per consumer!)
+    %% - Consumer compute (avg per consumer): 20 hours/month × 4 credits = 80 credits = $240/month
+    %% - Total: $30 (provider) + $2,400 (all consumers) = $2,430/month
+    %% - vs. copying data: 10 TB total storage = $300/month + compute = much more expensive
+    %%
+    %% ============================================================================

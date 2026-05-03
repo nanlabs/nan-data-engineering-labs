@@ -1,0 +1,129 @@
+graph TB
+    %% Real-Time ML Scoring - SageMaker Integration with Flink
+
+    subgraph "Event Stream"
+        KS[Kinesis Data Stream<br/>credit-card-transactions]:::kinesis
+        KS1[Event:<br/>transaction_id, amount, merchant,<br/>location, time, card_number]:::kinesis
+    end
+
+    KS --> KS1
+
+    subgraph "Flink Processing - Feature Engineering"
+        FE1[Raw Event Enrichment<br/>Lookup DynamoDB]:::flink
+        FE2[Feature Extraction<br/>Aggregate Features]:::flink
+        FE3[Feature Set<br/>30 features]:::flink
+    end
+
+    KS1 --> FE1
+    FE1 --> FE2
+    FE2 --> FE3
+
+    subgraph "Feature Types"
+        F1["Transaction Features:<br/>• amount<br/>• merchant_category<br/>• distance_from_home<br/>• hour_of_day"]:::features
+
+        F2["Historical Features:<br/>• avg_transaction_7d<br/>• transaction_count_24h<br/>• max_amount_30d<br/>• merchant_frequency"]:::features
+
+        F3["Velocity Features:<br/>• transactions_last_1h<br/>• unique_merchants_24h<br/>• locations_last_6h<br/>• declining_trend"]:::features
+    end
+
+    FE3 --> F1
+    FE3 --> F2
+    FE3 --> F3
+
+    subgraph "Feature Store - Optional"
+        FS1[SageMaker Feature Store<br/>Online Store]:::featurestore
+        FS2[DynamoDB<br/>Low-latency Features]:::featurestore
+        FS3[ElastiCache<br/>Cache Hot Features]:::featurestore
+    end
+
+    F2 -.->|"Historical lookup"| FS1
+    F2 -.->|"Fast retrieval <10ms"| FS2
+    F2 -.->|"Cache hit ratio 90%"| FS3
+
+    subgraph "ML Model Serving"
+        SM1[SageMaker Endpoint<br/>XGBoost Fraud Model]:::sagemaker
+        SM2[Model Version: v2.1<br/>Trained: 2024-03-01]:::sagemaker
+        SM3[Endpoint Config<br/>1x ml.c5.xlarge<br/>Auto-scaling: 1-10]:::sagemaker
+        SM4[Latency Target: <100ms<br/>P99: 85ms]:::sagemaker
+    end
+
+    F1 --> SM1
+    F2 --> SM1
+    F3 --> SM1
+
+    SM1 --> SM2
+    SM2 --> SM3
+    SM3 --> SM4
+
+    subgraph "Prediction Results"
+        PR1[Fraud Score: 0.92<br/>High Risk ⚠️]:::prediction
+        PR2[Fraud Score: 0.15<br/>Low Risk ✅]:::prediction
+        PR3[Fraud Score: 0.55<br/>Medium Risk ⚠️]:::prediction
+    end
+
+    SM4 --> PR1
+    SM4 --> PR2
+    SM4 --> PR3
+
+    subgraph "Action Rules"
+        AR1["If score > 0.8:<br/>  → Block transaction<br/>  → Send SMS alert<br/>  → Update DynamoDB"]:::action
+
+        AR2["If score 0.5-0.8:<br/>  → Require 2FA<br/>  → Manual review queue<br/>  → Log to S3"]:::action
+
+        AR3["If score < 0.5:<br/>  → Approve transaction<br/>  → Log to CloudWatch<br/>  → Update metrics"]:::action
+    end
+
+    PR1 --> AR1
+    PR3 --> AR2
+    PR2 --> AR3
+
+    subgraph "Output Sinks"
+        OUT1[DynamoDB<br/>Transaction Status]:::output
+        OUT2[SNS Topic<br/>Fraud Alerts]:::output
+        OUT3[S3 Data Lake<br/>Audit Log]:::output
+        OUT4[CloudWatch<br/>Metrics Dashboard]:::output
+    end
+
+    AR1 --> OUT1
+    AR1 --> OUT2
+    AR2 --> OUT3
+    AR3 --> OUT4
+
+    %% Model Training Pipeline (Batch)
+    subgraph "Model Training - Offline"
+        MT1[Historical Transactions<br/>S3 Training Data]:::training
+        MT2[SageMaker Training Job<br/>XGBoost Algorithm]:::training
+        MT3[Model Artifacts<br/>S3 model.tar.gz]:::training
+        MT4[Deploy to Endpoint<br/>Blue/Green Deployment]:::training
+    end
+
+    OUT3 -.->|"Daily batch"| MT1
+    MT1 --> MT2
+    MT2 --> MT3
+    MT3 --> MT4
+    MT4 -.->|"Update endpoint"| SM1
+
+    %% Styling
+    classDef kinesis fill:#FF9900,stroke:#CC7A00,stroke-width:3px,color:#fff
+    classDef flink fill:#E6526F,stroke:#C7455B,stroke-width:3px,color:#fff
+    classDef features fill:#7ED321,stroke:#5A9E18,stroke-width:2px,color:#fff,text-align:left
+    classDef featurestore fill:#4A90E2,stroke:#2E6FA8,stroke-width:2px,color:#fff
+    classDef sagemaker fill:#16A085,stroke:#138D75,stroke-width:3px,color:#fff
+    classDef prediction fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff
+    classDef action fill:#F39C12,stroke:#E67E22,stroke-width:2px,color:#fff,text-align:left
+    classDef output fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+    classDef training fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff
+
+    %% Performance Metrics
+    subgraph "Performance & Cost"
+        PERF["Latency Breakdown:<br/>• Feature engineering: 20ms<br/>• Feature Store lookup: 10ms<br/>• SageMaker inference: 50ms<br/>• Action processing: 20ms<br/>**Total P99: 100ms**<br/><br/>Cost (10K TPS):<br/>• Flink: $500/month<br/>• SageMaker endpoint: $200/month<br/>• Feature Store: $100/month<br/>**Total: $800/month**"]:::perf
+    end
+
+    classDef perf fill:#1ABC9C,stroke:#17A589,stroke-width:2px,color:#fff,text-align:left
+
+    %% Real-World Examples
+    subgraph "Industry Examples"
+        EX["Mastercard: Fraud scoring<br/>• 165M transactions/day<br/>• <50ms latency<br/>• 50% fraud reduction<br/><br/>Amazon: Product recommendations<br/>• 1M predictions/sec<br/>• <100ms latency<br/>• 29% revenue increase"]:::example
+    end
+
+    classDef example fill:#F39C12,stroke:#E67E22,stroke-width:2px,color:#fff,text-align:left

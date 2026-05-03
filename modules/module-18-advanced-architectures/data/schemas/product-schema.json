@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://training.clouddata.com/schemas/product.json",
+  "title": "Product",
+  "description": "Product catalog schema for Data Mesh Product Domain",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "description": "Unique product identifier",
+      "type": "string",
+      "pattern": "^PROD_[0-9]{6}$"
+    },
+    "name": {
+      "description": "Product name",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "category": {
+      "description": "Product category",
+      "type": "string",
+      "enum": [
+        "Electronics",
+        "Clothing",
+        "Home & Garden",
+        "Books",
+        "Sports",
+        "Toys",
+        "Food",
+        "Beauty",
+        "Automotive"
+      ]
+    },
+    "price": {
+      "description": "Product price in USD",
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMinimum": true
+    },
+    "stock": {
+      "description": "Available stock quantity",
+      "type": "integer",
+      "minimum": 0
+    },
+    "supplier_id": {
+      "description": "Supplier identifier",
+      "type": "string",
+      "pattern": "^SUP_[0-9]{4}$"
+    },
+    "rating": {
+      "description": "Average customer rating",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "reviews_count": {
+      "description": "Number of customer reviews",
+      "type": "integer",
+      "minimum": 0
+    },
+    "attributes": {
+      "description": "Product-specific attributes",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "description": "Product creation timestamp",
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "description": "Last update timestamp",
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "product_id",
+    "name",
+    "category",
+    "price",
+    "stock"
+  ],
+  "additionalProperties": false
+}

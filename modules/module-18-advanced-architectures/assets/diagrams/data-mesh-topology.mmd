@@ -1,0 +1,110 @@
+graph TB
+    %% Data Mesh - Domain-oriented decentralized data architecture
+
+    subgraph "Federated Governance"
+        FG1[Schema Registry<br/>Glue/Confluent]:::governance
+        FG2[Data Catalog<br/>DataHub/Atlan]:::governance
+        FG3[Policy Engine<br/>Access Control]:::governance
+        FG4[Quality Metrics<br/>SLO Dashboard]:::governance
+    end
+
+    subgraph "Product Domain - Catalog Team"
+        PD1[Product API<br/>GraphQL]:::product
+        PD2[Product Events<br/>Kafka Topic]:::product
+        PD3[Product Analytics<br/>Redshift Views]:::product
+        PD4[MongoDB<br/>Catalog DB]:::product
+    end
+
+    subgraph "Sales Domain - Revenue Team"
+        SD1[Sales API<br/>REST]:::sales
+        SD2[Sales Events<br/>Kinesis Stream]:::sales
+        SD3[Sales Insights<br/>QuickSight]:::sales
+        SD4[DynamoDB<br/>Orders DB]:::sales
+    end
+
+    subgraph "Customer Domain - CRM Team"
+        CD1[Customer API<br/>gRPC]:::customer
+        CD2[Customer Events<br/>EventBridge]:::customer
+        CD3[Customer 360<br/>Tableau]:::customer
+        CD4[PostgreSQL<br/>Customer DB]:::customer
+    end
+
+    subgraph "Self-serve Platform"
+        SP1[Data Pipeline Templates<br/>Airflow/Prefect]:::platform
+        SP2[Infrastructure as Code<br/>Terraform Modules]:::platform
+        SP3[Observability Stack<br/>Prometheus/Grafana]:::platform
+        SP4[CI/CD Pipelines<br/>GitHub Actions]:::platform
+    end
+
+    subgraph "Consumers"
+        C1[Data Scientists<br/>ML Models]:::consumer
+        C2[Business Analysts<br/>Reports]:::consumer
+        C3[Other Domains<br/>Cross-domain queries]:::consumer
+    end
+
+    %% Domain Outputs
+    PD1 --> PD2
+    PD4 --> PD1
+    PD2 --> PD3
+
+    SD1 --> SD2
+    SD4 --> SD1
+    SD2 --> SD3
+
+    CD1 --> CD2
+    CD4 --> CD1
+    CD2 --> CD3
+
+    %% Federated Governance
+    PD1 --> FG1
+    SD1 --> FG1
+    CD1 --> FG1
+
+    PD3 --> FG2
+    SD3 --> FG2
+    CD3 --> FG2
+
+    FG3 --> PD1
+    FG3 --> SD1
+    FG3 --> CD1
+
+    %% Platform Support
+    SP1 --> PD2
+    SP1 --> SD2
+    SP1 --> CD2
+
+    SP2 --> PD4
+    SP2 --> SD4
+    SP2 --> CD4
+
+    SP3 --> PD1
+    SP3 --> SD1
+    SP3 --> CD1
+
+    %% Domain Consumers
+    PD3 --> C1
+    SD3 --> C2
+    CD3 --> C3
+
+    %% Cross-domain Data Product Consumption
+    PD2 -.->|"Product<br/>enrichment"| SD1
+    CD2 -.->|"Customer<br/>segmentation"| SD1
+    SD2 -.->|"Purchase<br/>history"| CD1
+
+    %% Styling
+    classDef governance fill:#9013FE,stroke:#6A0FBC,stroke-width:3px,color:#fff
+    classDef product fill:#4A90E2,stroke:#2E6FA8,stroke-width:3px,color:#fff
+    classDef sales fill:#7ED321,stroke:#5A9E18,stroke-width:3px,color:#fff
+    classDef customer fill:#F5A623,stroke:#C17F1A,stroke-width:3px,color:#fff
+    classDef platform fill:#50E3C2,stroke:#3AAEA0,stroke-width:3px,color:#333
+    classDef consumer fill:#BD10E0,stroke:#8A0CA8,stroke-width:3px,color:#fff
+
+    %% Principles
+    subgraph "Data Mesh Principles"
+        P1[Domain Ownership<br/>Teams own their data]:::principle
+        P2[Data as a Product<br/>Treat like APIs]:::principle
+        P3[Self-serve Platform<br/>Enable autonomy]:::principle
+        P4[Federated Governance<br/>Global standards]:::principle
+    end
+
+    classDef principle fill:#F8E71C,stroke:#D4C017,stroke-width:2px,color:#333

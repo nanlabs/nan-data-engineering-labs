@@ -1,0 +1,402 @@
+```mermaid
+flowchart TB
+    %% ============================================================================
+    %% DATA CATALOG: CloudMart Serverless Data Lake
+    %% ============================================================================
+    %% This diagram shows the Glue Data Catalog structure, crawler configuration,
+    %% schema management, partition handling, and Athena integration.
+    %% ============================================================================
+
+    %% Define Styles
+    classDef catalogStyle fill:#FFF9C4,stroke:#FDD835,stroke-width:3px,color:#F57F17
+    classDef databaseStyle fill:#E1F5FE,stroke:#039BE5,stroke-width:2px,color:#01579B
+    classDef tableStyle fill:#F3E5F5,stroke:#AB47BC,stroke-width:2px,color:#4A148C
+    classDef crawlerStyle fill:#E8F5E9,stroke:#66BB6A,stroke-width:2px,color:#2E7D32
+    classDef schemaStyle fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#E65100
+    classDef partitionStyle fill:#E0F2F1,stroke:#26A69A,stroke-width:2px,color:#004D40
+    classDef athenaStyle fill:#FCE4EC,stroke:#EC407A,stroke-width:2px,color:#880E4F
+
+    %% ============================================================================
+    %% GLUE DATA CATALOG (ROOT)
+    %% ============================================================================
+
+    GlueCatalog["📚 AWS GLUE DATA CATALOG<br/>════════════════════════════<br/>Catalog ID: {AWS-Account-ID}<br/>Region: us-east-1<br/>Service: AWS Glue<br/><br/>Purpose: Centralized metadata repository<br/>Compatible With:<br/>├─ AWS Glue (ETL)<br/>├─ Amazon Athena (SQL)<br/>├─ Amazon EMR (Spark, Hive)<br/>├─ Amazon Redshift Spectrum<br/>└─ Third-party tools (via Hive Metastore)<br/><br/>Metadata Stored:<br/>├─ Database definitions<br/>├─ Table schemas<br/>├─ Partition information<br/>├─ Column statistics<br/>├─ Table properties<br/>└─ Data location (S3 paths)"]
+
+    %% ============================================================================
+    %% DATABASES
+    %% ============================================================================
+
+    subgraph Databases["🗄️ DATABASES"]
+        direction TB
+
+        BronzeDB["📂 Database: bronze_db<br/>════════════════════════════<br/>Description: Raw data as ingested<br/>Location: s3://cloudmart-bronze/<br/>Created: 2026-03-01<br/>Tables: 4<br/><br/>Properties:<br/>├─ classification = raw<br/>├─ retention_days = 30<br/>├─ environment = production<br/>└─ data_lake_zone = bronze<br/><br/>Access Control:<br/>├─ Read: Lambda, Glue ETL<br/>└─ Write: Lambda ingestion"]
+
+        SilverDB["📂 Database: silver_db<br/>════════════════════════════<br/>Description: Cleaned & validated data<br/>Location: s3://cloudmart-silver/<br/>Created: 2026-03-01<br/>Tables: 4<br/><br/>Properties:<br/>├─ classification = processed<br/>├─ retention_days = 60<br/>├─ environment = production<br/>└─ data_lake_zone = silver<br/><br/>Access Control:<br/>├─ Read: Glue ETL, Athena, Data Scientists<br/>└─ Write: Glue ETL"]
+
+        GoldDB["📂 Database: gold_db<br/>════════════════════════════<br/>Description: Business-ready curated data<br/>Location: s3://cloudmart-gold/<br/>Created: 2026-03-01<br/>Tables: 8 (4 facts + 4 dims)<br/><br/>Properties:<br/>├─ classification = curated<br/>├─ retention_days = permanent<br/>├─ environment = production<br/>└─ data_lake_zone = gold<br/><br/>Access Control:<br/>├─ Read: All users, BI tools, APIs<br/>└─ Write: Glue ETL only"]
+    end
+
+    %% ============================================================================
+    %% BRONZE TABLES
+    %% ============================================================================
+
+    subgraph BronzeTables["🥉 BRONZE TABLES"]
+        direction TB
+
+        BronzeTxn["📊 Table: raw_transactions<br/>═══════════════════════════════<br/>Database: bronze_db<br/>Location: s3://bronze/transactions/<br/>Format: Parquet<br/>Compression: Snappy<br/><br/>Schema (11 columns):<br/>├─ transaction_id (string)<br/>├─ customer_id (string)<br/>├─ product_id (string)<br/>├─ quantity (int)<br/>├─ price (decimal(10,2))<br/>├─ transaction_date (string)<br/>├─ ingestion_timestamp (timestamp)<br/>├─ source_system (string)<br/>├─ file_name (string)<br/>├─ processing_id (string)<br/>└─ record_count (bigint)<br/><br/>Partitions: year, month, day<br/>Partition Count: ~90 (rolling 3 months)<br/>Avg Rows/Partition: ~1,700<br/>Total Rows: ~150,000<br/>Table Size: ~3 GB"]
+
+        BronzeCust["👥 Table: raw_customers<br/>═══════════════════════════════<br/>Database: bronze_db<br/>Location: s3://bronze/customers/<br/>Format: Parquet<br/>Compression: Snappy<br/><br/>Schema (11 columns):<br/>├─ customer_id (string)<br/>├─ first_name (string)<br/>├─ last_name (string)<br/>├─ email (string)<br/>├─ phone (string)<br/>├─ address (string)<br/>├─ city (string)<br/>├─ country (string)<br/>├─ created_date (string)<br/>├─ ingestion_timestamp (timestamp)<br/>└─ source_system (string)<br/><br/>Partitions: year, month, day<br/>Partition Count: ~90<br/>Avg Rows/Partition: ~70<br/>Total Rows: ~6,000<br/>Table Size: ~300 MB"]
+
+        BronzeProd["📦 Table: raw_products<br/>═══════════════════════════════<br/>Database: bronze_db<br/>Location: s3://bronze/products/<br/>Format: Parquet<br/>Compression: Snappy<br/><br/>Schema (10 columns):<br/>├─ product_id (string)<br/>├─ product_name (string)<br/>├─ category (string)<br/>├─ subcategory (string)<br/>├─ brand (string)<br/>├─ price (decimal(10,2))<br/>├─ cost (decimal(10,2))<br/>├─ stock_quantity (int)<br/>├─ ingestion_timestamp (timestamp)<br/>└─ source_system (string)<br/><br/>Partitions: year, month, day<br/>Partition Count: ~90<br/>Avg Rows/Partition: ~20<br/>Total Rows: ~1,800<br/>Table Size: ~100 MB"]
+
+        BronzeWeb["🌐 Table: raw_web_events<br/>═══════════════════════════════<br/>Database: bronze_db<br/>Location: s3://bronze/web-events/<br/>Format: Parquet<br/>Compression: Snappy<br/><br/>Schema (11 columns):<br/>├─ event_id (string)<br/>├─ session_id (string)<br/>├─ user_id (string)<br/>├─ event_type (string)<br/>├─ page_url (string)<br/>├─ referrer (string)<br/>├─ timestamp (string)<br/>├─ device_type (string)<br/>├─ browser (string)<br/>├─ ip_address (string)<br/>└─ ingestion_timestamp (timestamp)<br/><br/>Partitions: year, month, day<br/>Partition Count: ~90<br/>Avg Rows/Partition: ~6,700<br/>Total Rows: ~600,000<br/>Table Size: ~12 GB"]
+    end
+
+    %% ============================================================================
+    %% SILVER TABLES
+    %% ============================================================================
+
+    subgraph SilverTables["🥈 SILVER TABLES"]
+        direction TB
+
+        SilverTxn["📊 Table: clean_transactions<br/>═══════════════════════════════<br/>Database: silver_db<br/>Location: s3://silver/transactions/<br/>Format: Parquet + Snappy<br/><br/>Schema (15 columns):<br/>├─ transaction_id (string) PK<br/>├─ customer_id (string) FK<br/>├─ product_id (string) FK<br/>├─ quantity (int)<br/>├─ unit_price (decimal(10,2))<br/>├─ total_amount (decimal(10,2)) COMPUTED<br/>├─ transaction_date (date)<br/>├─ year (int) PARTITION<br/>├─ month (int) PARTITION<br/>├─ day (int) PARTITION<br/>├─ quarter (int)<br/>├─ day_of_week (string)<br/>├─ is_weekend (boolean)<br/>├─ processing_timestamp (timestamp)<br/>└─ data_quality_score (int)<br/><br/>Partitions: year, month, day<br/>Quality: ~98% pass rate<br/>Total Rows: ~147,000 (3K filtered)<br/>Table Size: ~2.5 GB (compressed)"]
+
+        SilverCust["👥 Table: clean_customers<br/>═══════════════════════════════<br/>Database: silver_db<br/>Location: s3://silver/customers/<br/>Format: Parquet + Snappy<br/>SCD Type: Type 2 (history preserved)<br/><br/>Schema (16 columns):<br/>├─ customer_id (string) NK<br/>├─ customer_key (bigint) SK<br/>├─ first_name (string)<br/>├─ last_name (string)<br/>├─ full_name (string) COMPUTED<br/>├─ email (string)<br/>├─ phone (string)<br/>├─ address (string)<br/>├─ city (string)<br/>├─ country (string)<br/>├─ customer_segment (string)<br/>├─ effective_date (date)<br/>├─ end_date (date)<br/>├─ is_current (boolean)<br/>├─ processing_timestamp (timestamp)<br/>└─ version (int)<br/><br/>Partition: None (small table)<br/>Quality: ~99% pass rate<br/>Total Rows: ~5,800<br/>Table Size: ~280 MB"]
+
+        SilverProd["📦 Table: clean_products<br/>═══════════════════════════════<br/>Database: silver_db<br/>Location: s3://silver/products/<br/>Format: Parquet + Snappy<br/>SCD Type: Type 2 (history preserved)<br/><br/>Schema (15 columns):<br/>├─ product_id (string) NK<br/>├─ product_key (bigint) SK<br/>├─ product_name (string)<br/>├─ category (string)<br/>├─ subcategory (string)<br/>├─ brand (string)<br/>├─ unit_price (decimal(10,2))<br/>├─ unit_cost (decimal(10,2))<br/>├─ margin_percent (decimal(5,2)) COMPUTED<br/>├─ price_tier (string)<br/>├─ effective_date (date)<br/>├─ end_date (date)<br/>├─ is_current (boolean)<br/>├─ processing_timestamp (timestamp)<br/>└─ version (int)<br/><br/>Partition: None (small table)<br/>Quality: ~99% pass rate<br/>Total Rows: ~1,750<br/>Table Size: ~95 MB"]
+
+        SilverWeb["🌐 Table: clean_web_events<br/>═══════════════════════════════<br/>Database: silver_db<br/>Location: s3://silver/web-events/<br/>Format: Parquet + Snappy<br/><br/>Schema (17 columns):<br/>├─ event_id (string) PK<br/>├─ session_id (string)<br/>├─ user_id (string)<br/>├─ event_type (string)<br/>├─ event_category (string)<br/>├─ page_url (string)<br/>├─ page_path (string)<br/>├─ page_category (string)<br/>├─ referrer_source (string)<br/>├─ timestamp (timestamp)<br/>├─ device_category (string)<br/>├─ browser (string)<br/>├─ os (string)<br/>├─ is_bot (boolean)<br/>├─ year (int) PARTITION<br/>├─ month (int) PARTITION<br/>└─ day (int) PARTITION<br/><br/>Partitions: year, month, day<br/>Quality: ~95% (bot removal = 30%)<br/>Total Rows: ~420,000 (180K bots filtered)<br/>Table Size: ~8 GB"]
+    end
+
+    %% ============================================================================
+    %% GOLD TABLES
+    %% ============================================================================
+
+    subgraph GoldTables["🥇 GOLD TABLES"]
+        direction TB
+
+        %% Fact Tables
+        subgraph FactTables["📊 FACT TABLES"]
+            direction TB
+
+            FactSales["Fact: fact_sales<br/>═══════════════════════════════<br/>Database: gold_db<br/>Location: s3://gold/fact_sales/<br/>Grain: One row per transaction<br/>Format: Parquet + Snappy<br/><br/>Schema (20 columns):<br/><br/>Surrogate Keys (FKs):<br/>├─ sales_key (bigint) SK<br/>├─ date_key (int) FK → dim_date<br/>├─ customer_key (bigint) FK → dim_customers<br/>└─ product_key (bigint) FK → dim_products<br/><br/>Degenerate Dimensions:<br/>├─ transaction_id (string)<br/>├─ order_number (string)<br/>└─ invoice_number (string)<br/><br/>Measures:<br/>├─ quantity (int)<br/>├─ unit_price (decimal(10,2))<br/>├─ unit_cost (decimal(10,2))<br/>├─ revenue (decimal(10,2))<br/>├─ cost (decimal(10,2))<br/>├─ profit (decimal(10,2))<br/>├─ margin (decimal(5,2))<br/>├─ discount_amount (decimal(10,2))<br/>├─ tax_amount (decimal(10,2))<br/>└─ net_revenue (decimal(10,2))<br/><br/>Metadata:<br/>├─ transaction_timestamp (timestamp)<br/>└─ processing_timestamp (timestamp)<br/><br/>Partitions: year, month<br/>Total Rows: ~147,000<br/>Table Size: ~1.8 GB (highly compressed)"]
+        end
+
+        %% Dimension Tables
+        subgraph DimTables["📐 DIMENSION TABLES"]
+            direction TB
+
+            DimCustomers["Dimension: dim_customers<br/>═══════════════════════════════<br/>Database: gold_db<br/>Location: s3://gold/dim_customers/<br/>SCD Type: Type 2 (slowly changing)<br/><br/>Schema (18 columns):<br/><br/>Keys:<br/>├─ customer_key (bigint) SK, PK<br/>└─ customer_id (string) NK, Business Key<br/><br/>Attributes:<br/>├─ first_name (string)<br/>├─ last_name (string)<br/>├─ full_name (string)<br/>├─ email (string)<br/>├─ phone (string)<br/>├─ address (string)<br/>├─ city (string)<br/>├─ state (string)<br/>├─ postal_code (string)<br/>├─ country (string)<br/>├─ timezone (string)<br/>└─ customer_segment (string)<br/><br/>SCD Metadata:<br/>├─ effective_date (date)<br/>├─ end_date (date)<br/>├─ is_current (boolean)<br/>├─ version (int)<br/>└─ last_updated (timestamp)<br/><br/>Partition: None (dimension table)<br/>Total Rows: ~6,500 (with history)<br/>Current Rows: ~5,800<br/>Table Size: ~320 MB"]
+
+            DimProducts["Dimension: dim_products<br/>═══════════════════════════════<br/>Database: gold_db<br/>Location: s3://gold/dim_products/<br/>SCD Type: Type 2 (slowly changing)<br/><br/>Schema (17 columns):<br/><br/>Keys:<br/>├─ product_key (bigint) SK, PK<br/>└─ product_id (string) NK, Business Key<br/><br/>Attributes:<br/>├─ product_name (string)<br/>├─ product_description (string)<br/>├─ category (string)<br/>├─ subcategory (string)<br/>├─ brand (string)<br/>├─ unit_price (decimal(10,2))<br/>├─ unit_cost (decimal(10,2))<br/>├─ margin_percent (decimal(5,2))<br/>├─ price_tier (string)<br/>└─ inventory_status (string)<br/><br/>SCD Metadata:<br/>├─ effective_date (date)<br/>├─ end_date (date)<br/>├─ is_current (boolean)<br/>├─ version (int)<br/>└─ last_updated (timestamp)<br/><br/>Partition: None<br/>Total Rows: ~2,100 (with history)<br/>Current Rows: ~1,750<br/>Table Size: ~110 MB"]
+
+            DimDate["Dimension: dim_date<br/>═══════════════════════════════<br/>Database: gold_db<br/>Location: s3://gold/dim_date/<br/>SCD Type: Type 0 (static)<br/><br/>Schema (20 columns):<br/><br/>Keys:<br/>├─ date_key (int) PK (YYYYMMDD)<br/>└─ date (date) Alternate Key<br/><br/>Date Components:<br/>├─ year (int)<br/>├─ quarter (int)<br/>├─ month (int)<br/>├─ month_name (string)<br/>├─ week (int)<br/>├─ day (int)<br/>├─ day_of_week (int)<br/>├─ day_name (string)<br/>└─ day_of_year (int)<br/><br/>Flags:<br/>├─ is_weekend (boolean)<br/>├─ is_holiday (boolean)<br/>├─ is_business_day (boolean)<br/>└─ is_month_end (boolean)<br/><br/>Fiscal Calendar:<br/>├─ fiscal_year (int)<br/>├─ fiscal_quarter (int)<br/>├─ fiscal_month (int)<br/>└─ fiscal_week (int)<br/><br/>Date Range: 2020-01-01 to 2030-12-31<br/>Total Rows: 4,018 (11 years)<br/>Table Size: ~500 KB"]
+        end
+
+        %% Aggregation Tables
+        subgraph AggTables["📈 AGGREGATION TABLES"]
+            direction TB
+
+            AggDailySales["Aggregate: agg_daily_sales<br/>═══════════════════════════════<br/>Database: gold_db<br/>Location: s3://gold/agg_daily_sales/<br/>Grain: Product + Customer Segment + Day<br/><br/>Schema (12 columns):<br/><br/>Dimensions:<br/>├─ date (date)<br/>├─ product_id (string)<br/>├─ product_name (string)<br/>├─ customer_segment (string)<br/>└─ year_month (string) PARTITION<br/><br/>Measures:<br/>├─ total_revenue (decimal(12,2))<br/>├─ total_cost (decimal(12,2))<br/>├─ total_profit (decimal(12,2))<br/>├─ margin_percent (decimal(5,2))<br/>├─ total_quantity (bigint)<br/>├─ order_count (bigint)<br/>├─ unique_customers (bigint)<br/>└─ avg_order_value (decimal(10,2))<br/><br/>Partitions: year_month (YYYY-MM)<br/>Update Frequency: Daily<br/>Total Rows: ~15,000<br/>Table Size: ~800 MB"]
+
+            AggCustomerMetrics["Aggregate: agg_customer_metrics<br/>═══════════════════════════════<br/>Database: gold_db<br/>Location: s3://gold/agg_customer_metrics/<br/>Grain: Customer + Month<br/><br/>Schema (15 columns):<br/><br/>Dimensions:<br/>├─ customer_id (string)<br/>├─ customer_name (string)<br/>├─ month_start_date (date)<br/>└─ year_month (string) PARTITION<br/><br/>Transactional Measures:<br/>├─ total_spend (decimal(12,2))<br/>├─ order_count (bigint)<br/>├─ avg_order_value (decimal(10,2))<br/>├─ total_quantity (bigint)<br/>└─ unique_products (bigint)<br/><br/>RFM Analysis:<br/>├─ recency_days (int)<br/>├─ frequency_score (int)<br/>├─ monetary_score (int)<br/>└─ rfm_score (int)<br/><br/>Lifetime Metrics:<br/>├─ first_purchase_date (date)<br/>├─ last_purchase_date (date)<br/>├─ customer_lifetime_value (decimal(12,2))<br/>└─ customer_lifetime_months (int)<br/><br/>Partitions: year_month<br/>Update Frequency: Daily<br/>Total Rows: ~12,000<br/>Table Size: ~650 MB"]
+
+            AggProductPerf["Aggregate: agg_product_performance<br/>═══════════════════════════════<br/>Database: gold_db<br/>Location: s3://gold/agg_product_performance/<br/>Grain: Product + Month<br/><br/>Schema (14 columns):<br/><br/>Dimensions:<br/>├─ product_id (string)<br/>├─ product_name (string)<br/>├─ category (string)<br/>├─ month_start_date (date)<br/>└─ year_month (string) PARTITION<br/><br/>Sales Measures:<br/>├─ units_sold (bigint)<br/>├─ revenue (decimal(12,2))<br/>├─ cost (decimal(12,2))<br/>├─ profit (decimal(12,2))<br/>└─ margin_percent (decimal(5,2))<br/><br/>Inventory Measures:<br/>├─ avg_stock_quantity (decimal(10,2))<br/>├─ inventory_turns (decimal(5,2))<br/>├─ days_of_supply (int)<br/>└─ stockout_days (int)<br/><br/>Customer Measures:<br/>├─ unique_customers (bigint)<br/>├─ repeat_purchase_rate (decimal(5,2))<br/>└─ return_rate (decimal(5,2))<br/><br/>Partitions: year_month<br/>Update Frequency: Daily<br/>Total Rows: ~3,500<br/>Table Size: ~400 MB"]
+        end
+    end
+
+    %% ============================================================================
+    %% CRAWLERS
+    %% ============================================================================
+
+    subgraph Crawlers["🕷️ GLUE CRAWLERS"]
+        direction TB
+
+        BronzeCrawler["Crawler: bronze_crawler<br/>═══════════════════════════════<br/>Target Database: bronze_db<br/>S3 Path: s3://cloudmart-bronze/<br/>IAM Role: GlueCrawlerRole<br/><br/>Configuration:<br/>├─ Schedule: Event-driven (S3 trigger)<br/>├─ Run On-Demand: Yes<br/>├─ Recrawl behavior: Crawl new subfolders only<br/>├─ Schema change: Update in catalog<br/>├─ Table level: Partition level<br/>└─ Grouping behavior: Create single schema<br/><br/>Classifiers:<br/>├─ Parquet (built-in)<br/>├─ JSON (built-in)<br/>└─ CSV (custom with headers)<br/><br/>Partitioning:<br/>├─ Partition keys: year, month, day<br/>├─ Auto-discover: Enabled<br/>├─ Projection: Disabled (static partitions)<br/>└─ MSCK REPAIR: Auto after crawl<br/><br/>Performance:<br/>├─ DPU: 2<br/>├─ Duration: ~5 minutes<br/>└─ Cost: ~$0.44/run<br/><br/>Tables Managed:<br/>├─ raw_transactions<br/>├─ raw_customers<br/>├─ raw_products<br/>└─ raw_web_events"]
+
+        SilverCrawler["Crawler: silver_crawler<br/>═══════════════════════════════<br/>Target Database: silver_db<br/>S3 Path: s3://cloudmart-silver/<br/>IAM Role: GlueCrawlerRole<br/><br/>Configuration:<br/>├─ Schedule: Post-ETL (Glue workflow)<br/>├─ Run On-Demand: Yes<br/>├─ Recrawl behavior: Crawl all subfolders<br/>├─ Schema change: Update + version<br/>├─ Table level: Table level<br/>└─ Grouping behavior: Create single schema<br/><br/>Classifiers:<br/>└─ Parquet (built-in)<br/><br/>Partitioning:<br/>├─ Partition keys: year, month, day<br/>├─ Auto-discover: Enabled<br/>├─ Projection: Disabled<br/>└─ MSCK REPAIR: Auto<br/><br/>Performance:<br/>├─ DPU: 2<br/>├─ Duration: ~4 minutes<br/>└─ Cost: ~$0.35/run<br/><br/>Tables Managed:<br/>├─ clean_transactions<br/>├─ clean_customers (no partitions)<br/>├─ clean_products (no partitions)<br/>└─ clean_web_events"]
+
+        GoldCrawler["Crawler: gold_crawler<br/>═══════════════════════════════<br/>Target Database: gold_db<br/>S3 Path: s3://cloudmart-gold/<br/>IAM Role: GlueCrawlerRole<br/><br/>Configuration:<br/>├─ Schedule: Post-ETL (Glue workflow)<br/>├─ Run On-Demand: Yes<br/>├─ Recrawl behavior: Crawl all subfolders<br/>├─ Schema change: Update + version<br/>├─ Table level: Table level<br/>└─ Grouping behavior: Separate schemas by table type<br/><br/>Classifiers:<br/>└─ Parquet (built-in)<br/><br/>Partitioning:<br/>├─ fact_sales: year, month<br/>├─ agg_*: year_month<br/>└─ dim_*: None (dimensions)<br/><br/>Column Statistics:<br/>├─ Enable: Yes<br/>├─ Columns: All numeric, date<br/>└─ Use for query optimization<br/><br/>Performance:<br/>├─ DPU: 2<br/>├─ Duration: ~6 minutes<br/>└─ Cost: ~$0.52/run<br/><br/>Tables Managed:<br/>├─ fact_sales<br/>├─ dim_customers<br/>├─ dim_products<br/>├─ dim_date<br/>├─ agg_daily_sales<br/>├─ agg_customer_metrics<br/>└─ agg_product_performance"]
+    end
+
+    %% ============================================================================
+    %% SCHEMA MANAGEMENT
+    %% ============================================================================
+
+    subgraph SchemaManagement["📋 SCHEMA MANAGEMENT"]
+        direction TB
+
+        SchemaEvolution["Schema Evolution Strategy<br/>══════════════════════════════<br/>Version Control:<br/>├─ Catalog versions tracked automatically<br/>├─ Schema changes logged<br/>└─ Rollback support via versions<br/><br/>Compatible Changes (Auto-allow):<br/>├─ Add new column (nullable)<br/>├─ Change column comment<br/>├─ Add table property<br/>└─ Add partition<br/><br/>Breaking Changes (Manual review):<br/>├─ Remove column<br/>├─ Change data type<br/>├─ Rename column<br/>├─ Change partition keys<br/>└─ Require ETL adjustment<br/><br/>Best Practices:<br/>├─ Avoid breaking changes<br/>├─ Use schema-on-read tolerance<br/>├─ Version data files when schema changes<br/>└─ Test in dev/staging first"]
+
+        ColumnStats["Column Statistics<br/>════════════════════<br/>Enabled For: Gold zone only<br/><br/>Statistics Collected:<br/>├─ Row count<br/>├─ Distinct count<br/>├─ Null count<br/>├─ Min/Max (numeric, date)<br/>├─ Avg length (string)<br/>└─ Data skew detection<br/><br/>Update Frequency:<br/>├─ Post-crawler (automatic)<br/>├─ Manual via ANALYZE TABLE<br/>└─ Schedule: Weekly for large tables<br/><br/>Benefits:<br/>├─ Better query plans in Athena<br/>├─ Partition pruning<br/>├─ Join optimization<br/>└─ Cost reduction"]
+
+        DataTypes["Data Type Mapping<br/>═══════════════════════<br/>Parquet → Glue Catalog:<br/>├─ INT32 → int<br/>├─ INT64 → bigint<br/>├─ FLOAT → float<br/>├─ DOUBLE → double<br/>├─ BYTE_ARRAY → string<br/>├─ BOOLEAN → boolean<br/>├─ INT96 (deprecated) → timestamp<br/>├─ DECIMAL → decimal(p,s)<br/>└─ DATE → date<br/><br/>Catalog → Athena:<br/>├─ Direct mapping (same types)<br/>├─ Presto/Trino engine<br/>└─ ANSI SQL standard"]
+    end
+
+    %% ============================================================================
+    %% PARTITION MANAGEMENT
+    %% ============================================================================
+
+    subgraph PartitionManagement["📂 PARTITION MANAGEMENT"]
+        direction TB
+
+        PartitionStrategy["Partition Strategy<br/>══════════════════════<br/>Bronze/Silver:<br/>├─ Partition by: year, month, day<br/>├─ Path: .../year=YYYY/month=MM/day=DD/<br/>├─ Granularity: Daily<br/>└─ Typical queries: Last 7/30/90 days<br/><br/>Gold Facts:<br/>├─ Partition by: year, month<br/>├─ Path: .../year=YYYY/month=MM/<br/>├─ Granularity: Monthly<br/>└─ Typical queries: Last 6/12 months<br/><br/>Gold Dimensions:<br/>├─ No partitions (small tables < 100 MB)<br/>└─ Full table scan acceptable<br/><br/>Gold Aggregations:<br/>├─ Partition by: year_month<br/>├─ Path: .../year_month=YYYY-MM/<br/>├─ Granularity: Monthly<br/>└─ Matches query patterns"]
+
+        PartitionDiscovery["Partition Discovery<br/>═══════════════════════<br/>Methods:<br/><br/>1️⃣ Crawler-based (Recommended)<br/>  • Auto-discover new partitions<br/>  • Run after ETL completes<br/>  • Updates catalog automatically<br/>  • ~5 min runtime<br/><br/>2️⃣ MSCK REPAIR TABLE (Manual)<br/>  ```sql<br/>  MSCK REPAIR TABLE bronze_db.raw_transactions;<br/>  ```<br/>  • Discovers all partitions at once<br/>  • Useful for bulk loads<br/>  • Can be slow for many partitions<br/><br/>3️⃣ ALTER TABLE ADD PARTITION (Manual)<br/>  ```sql<br/>  ALTER TABLE bronze_db.raw_transactions<br/>  ADD PARTITION (year=2026,month=03,day=09)<br/>  LOCATION 's3://bronze/txn/year=2026/month=03/day=09/';<br/>  ```<br/>  • Precise control<br/>  • Immediate availability<br/>  • Best for critical updates"]
+
+        PartitionPruning["Partition Pruning<br/>═════════════════════<br/>Query Optimization:<br/><br/>✅ Good (partition pruning):<br/>```sql<br/>SELECT * FROM raw_transactions<br/>WHERE year=2026 AND month=3 AND day=9;<br/>```<br/>Scans: 1 partition (~1,700 rows)<br/><br/>❌ Bad (full table scan):<br/>```sql<br/>SELECT * FROM raw_transactions<br/>WHERE transaction_date = '2026-03-09';<br/>```<br/>Scans: All 90 partitions (~150K rows)<br/><br/>Benefits:<br/>├─ Reduces data scanned (lower cost)<br/>├─ Faster query execution<br/>├─ Better resource utilization<br/>└─ Cost savings: 99% in example above"]
+
+        PartitionProjection["Partition Projection (Future)<br/>══════════════════════════════<br/>For high query concurrency:<br/><br/>Table Property:<br/>```<br/>projection.enabled = true<br/>projection.year.type = integer<br/>projection.year.range = 2020,2030<br/>projection.month.type = integer<br/>projection.month.range = 1,12<br/>projection.day.type = integer<br/>projection.day.range = 1,31<br/>storage.location.template =<br/>  s3://bronze/txn/year=${year}/month=${month}/day=${day}<br/>```<br/><br/>Benefits:<br/>├─ No MSCK REPAIR needed<br/>├─ No crawler for partitions<br/>├─ Instant query-time projection<br/>└─ Reduces metadata overhead"]
+    end
+
+    %% ============================================================================
+    %% ATHENA INTEGRATION
+    %% ============================================================================
+
+    subgraph AthenaIntegration["🔍 ATHENA INTEGRATION"]
+        direction TB
+
+        AthenaWorkgroup["Athena Workgroup: cloudmart-wg<br/>═══════════════════════════════════<br/>Configuration:<br/>├─ Engine: Athena engine version 3<br/>├─ Query syntax: ANSI SQL<br/>├─ Max concurrent queries: 20<br/>├─ Query timeout: 30 minutes<br/>└─ Results location: s3://athena-results/<br/><br/>Data Catalog:<br/>├─ Default catalog: AwsDataCatalog<br/>├─ Connected databases: bronze_db, silver_db, gold_db<br/>└─ Cross-database queries: Enabled<br/><br/>Performance:<br/>├─ Result reuse: 24 hours<br/>├─ Partition projection: Enabled<br/>├─ Query result caching: Enabled<br/>└─ Stats-based optimization: Enabled<br/><br/>Cost Controls:<br/>├─ Data scanned per query limit: 100 GB<br/>├─ Cost per query alert: $5<br/>└─ Monthly budget: $500"]
+
+        QueryPatterns["Common Query Patterns<br/>═══════════════════════════<br/>Ad-hoc Analysis (Silver zone):<br/>```sql<br/>SELECT customer_id, COUNT(*) as orders<br/>FROM silver_db.clean_transactions<br/>WHERE year=2026 AND month=3<br/>GROUP BY customer_id<br/>ORDER BY orders DESC<br/>LIMIT 10;<br/>```<br/><br/>Business Reports (Gold zone):<br/>```sql<br/>SELECT<br/>  d.date,<br/>  SUM(f.revenue) as daily_revenue<br/>FROM gold_db.fact_sales f<br/>JOIN gold_db.dim_date d<br/>  ON f.date_key = d.date_key<br/>WHERE d.year = 2026<br/>GROUP BY d.date<br/>ORDER BY d.date;<br/>```<br/><br/>Pre-aggregated Dashboards:<br/>```sql<br/>SELECT * FROM gold_db.agg_daily_sales<br/>WHERE year_month = '2026-03'<br/>ORDER BY total_revenue DESC;<br/>```"]
+
+        QueryOptimization["Query Optimization Tips<br/>═══════════════════════════<br/>1️⃣ Use partitions in WHERE clause<br/>2️⃣ Select only needed columns<br/>3️⃣ Use aggregation tables when available<br/>4️⃣ Leverage result caching<br/>5️⃣ Use EXPLAIN to analyze query plan<br/>6️⃣ Filter before JOIN<br/>7️⃣ Use CTAS for repeated queries<br/>8️⃣ Avoid SELECT * in production<br/>9️⃣ Use approximate functions (approx_distinct)<br/>🔟 Compress and use columnar formats"]
+    end
+
+    %% ============================================================================
+    %% FLOW CONNECTIONS
+    %% ============================================================================
+
+    %% Catalog to Databases
+    GlueCatalog --> BronzeDB & SilverDB & GoldDB
+
+    %% Databases to Tables
+    BronzeDB --> BronzeTxn & BronzeCust & BronzeProd & BronzeWeb
+    SilverDB --> SilverTxn & SilverCust & SilverProd & SilverWeb
+    GoldDB --> FactSales & DimCustomers & DimProducts & DimDate & AggDailySales & AggCustomerMetrics & AggProductPerf
+
+    %% Crawlers to Databases/Tables
+    BronzeCrawler -->|"Discover Schema"| BronzeTxn & BronzeCust & BronzeProd & BronzeWeb
+    SilverCrawler -->|"Discover Schema"| SilverTxn & SilverCust & SilverProd & SilverWeb
+    GoldCrawler -->|"Discover Schema"| FactSales & DimCustomers & DimProducts & DimDate & AggDailySales & AggCustomerMetrics & AggProductPerf
+
+    %% Schema Management
+    BronzeTxn & BronzeCust & BronzeProd & BronzeWeb & SilverTxn & SilverCust & SilverProd & SilverWeb --> SchemaEvolution
+    FactSales & DimCustomers & DimProducts & DimDate & AggDailySales --> ColumnStats
+    SchemaEvolution & ColumnStats --> DataTypes
+
+    %% Partition Management
+    BronzeTxn & SilverTxn & FactSales & AggDailySales --> PartitionStrategy
+    PartitionStrategy --> PartitionDiscovery
+    PartitionDiscovery --> PartitionPruning
+    PartitionPruning -.->|"Future"| PartitionProjection
+
+    %% Athena Integration
+    GlueCatalog -->|"Metadata"| AthenaWorkgroup
+    BronzeDB & SilverDB & GoldDB -->|"Query"| AthenaWorkgroup
+    AthenaWorkgroup --> QueryPatterns
+    QueryPatterns --> QueryOptimization
+    PartitionPruning -.->|"Optimize"| QueryOptimization
+    ColumnStats -.->|"Optimize"| QueryOptimization
+
+    %% ============================================================================
+    %% STYLING
+    %% ============================================================================
+
+    class GlueCatalog catalogStyle
+    class BronzeDB,SilverDB,GoldDB databaseStyle
+    class BronzeTxn,BronzeCust,BronzeProd,BronzeWeb,SilverTxn,SilverCust,SilverProd,SilverWeb,FactSales,DimCustomers,DimProducts,DimDate,AggDailySales,AggCustomerMetrics,AggProductPerf tableStyle
+    class BronzeCrawler,SilverCrawler,GoldCrawler crawlerStyle
+    class SchemaEvolution,ColumnStats,DataTypes schemaStyle
+    class PartitionStrategy,PartitionDiscovery,PartitionPruning,PartitionProjection partitionStyle
+    class AthenaWorkgroup,QueryPatterns,QueryOptimization athenaStyle
+
+```
+
+---
+
+## Data Catalog Summary
+
+### Catalog Hierarchy
+
+```
+AWS Glue Data Catalog (Account-level)
+│
+├── bronze_db (Database)
+│   ├── raw_transactions (Table) [Partitioned: year/month/day]
+│   ├── raw_customers (Table) [Partitioned: year/month/day]
+│   ├── raw_products (Table) [Partitioned: year/month/day]
+│   └── raw_web_events (Table) [Partitioned: year/month/day]
+│
+├── silver_db (Database)
+│   ├── clean_transactions (Table) [Partitioned: year/month/day]
+│   ├── clean_customers (Table) [No partitions - SCD Type 2]
+│   ├── clean_products (Table) [No partitions - SCD Type 2]
+│   └── clean_web_events (Table) [Partitioned: year/month/day]
+│
+└── gold_db (Database)
+    ├── fact_sales (Table) [Partitioned: year/month]
+    ├── dim_customers (Table) [No partitions]
+    ├── dim_products (Table) [No partitions]
+    ├── dim_date (Table) [No partitions]
+    ├── agg_daily_sales (Table) [Partitioned: year_month]
+    ├── agg_customer_metrics (Table) [Partitioned: year_month]
+    └── agg_product_performance (Table) [Partitioned: year_month]
+```
+
+### Table Statistics
+
+| Zone | Database | Tables | Total Rows | Total Size | Partitions |
+|------|----------|--------|------------|------------|------------|
+| Bronze | bronze_db | 4 | ~757K | ~15 GB | 360 total |
+| Silver | silver_db | 4 | ~575K | ~11 GB | 270 total |
+| Gold | gold_db | 8 | ~178K | ~4 GB | 75 total |
+| **Total** | **3** | **16** | **~1.51M** | **~30 GB** | **705** |
+
+### Crawler Configuration Summary
+
+| Crawler | Target DB | Schedule | DPU | Duration | Cost/Run | Tables |
+|---------|-----------|----------|-----|----------|----------|--------|
+| bronze_crawler | bronze_db | Event-driven | 2 | ~5 min | $0.44 | 4 |
+| silver_crawler | silver_db | Post-ETL | 2 | ~4 min | $0.35 | 4 |
+| gold_crawler | gold_db | Post-ETL | 2 | ~6 min | $0.52 | 8 |
+
+**Total Monthly Cost (Daily runs):** ~$39/month
+
+### Partition Strategy by Zone
+
+**Bronze Zone (Raw Data):**
+- **Partition Keys:** year, month, day
+- **Granularity:** Daily
+- **Retention:** 90 days (rolling)
+- **Rationale:** Matches ingestion pattern, enables efficient date-range queries
+- **Example Path:** `s3://bronze/transactions/year=2026/month=03/day=09/`
+
+**Silver Zone (Processed Data):**
+- **Transactions/Events:** year, month, day (daily partitions)
+- **Dimensions:** No partitions (small, fully loaded tables)
+- **Retention:** 180 days
+- **Rationale:** Supports analytical queries, dimensions scanned fully
+
+**Gold Zone (Curated Data):**
+- **Facts:** year, month (monthly partitions)
+- **Dimensions:** No partitions
+- **Aggregations:** year_month (e.g., "2026-03")
+- **Retention:** Permanent
+- **Rationale:** Business reports typically monthly/quarterly, pre-aggregated for speed
+
+### Schema Management Best Practices
+
+**1. Version Control:**
+- All schema changes tracked in Glue Catalog versions
+- Previous versions accessible for rollback
+- Change log maintained automatically
+
+**2. Compatible Changes (Safe):**
+- ✅ Add nullable columns to end of schema
+- ✅ Add table/column comments
+- ✅ Add new partitions
+- ✅ Modify table properties
+
+**3. Breaking Changes (Avoid):**
+- ❌ Remove columns
+- ❌ Change data types (especially narrowing)
+- ❌ Rename columns
+- ❌ Modify partition keys
+- **If necessary:** Create new table version, migrate data, update ETL
+
+**4. Schema-on-Read Tolerance:**
+- Parquet files store schema internally
+- Glue/Athena tolerates missing columns (returns NULL)
+- Extra columns in files ignored if not in catalog
+- Flexible for evolving data sources
+
+### Athena Query Performance Tips
+
+**1. Partition Pruning (Critical):**
+```sql
+-- ✅ GOOD: Partition pruning enabled
+SELECT * FROM clean_transactions
+WHERE year=2026 AND month=3;  -- Scans only 31 partitions
+
+-- ❌ BAD: Full table scan
+SELECT * FROM clean_transactions
+WHERE transaction_date = '2026-03-09';  -- Scans all 270 partitions
+```
+
+**2. Column Projection:**
+```sql
+-- ✅ GOOD: Select only needed columns
+SELECT customer_id, total_amount FROM fact_sales;
+
+-- ❌ BAD: Select all columns
+SELECT * FROM fact_sales;
+```
+
+**3. Use Aggregation Tables:**
+```sql
+-- ✅ GOOD: Pre-aggregated data
+SELECT * FROM agg_daily_sales WHERE year_month='2026-03';
+
+-- ❌ BAD: Aggregate raw facts
+SELECT date, SUM(revenue) FROM fact_sales GROUP BY date;
+```
+
+**4. Leverage Query Result Caching:**
+- Enable 24-hour result reuse
+- Identical queries return cached results (free)
+- Especially useful for dashboards
+
+**5. Approximate Functions:**
+```sql
+-- Faster, less accurate (acceptable for large datasets)
+SELECT approx_distinct(customer_id) FROM fact_sales;
+
+-- vs slower, exact
+SELECT COUNT(DISTINCT customer_id) FROM fact_sales;
+```
+
+### Cost Optimization
+
+**Crawler Costs:**
+- $0.44 per DPU-hour
+- 2 DPUs × 5 min = 0.167 hours
+- Per run: ~$0.15
+- Daily runs: ~$4.50/month per crawler
+- **Optimization:** Run crawlers only when schema changes
+
+**Storage Costs:**
+- Glue Catalog: Free for first 1M objects
+- Catalog storage: $1 per 100K objects above 1M
+- Our 16 tables + 705 partitions = 721 objects
+- **Cost:** $0/month (under 1M)
+
+**Query Costs (Athena):**
+- $5 per TB scanned
+- Parquet + partitioning reduces scan by ~95%
+- Typical query: 10 GB scanned = $0.05
+- **Optimization:** Use aggregation tables, partition pruning
+
+### Maintenance Tasks
+
+**Daily:**
+- Run crawlers after ETL completion (automated)
+- Monitor partition count growth
+- Check query performance metrics
+
+**Weekly:**
+- Review catalog table sizes
+- Update column statistics for large tables
+- Clean up old query results in S3
+
+**Monthly:**
+- Audit partition retention
+- Archive/delete old Bronze partitions (>90 days)
+- Review Athena query costs and optimize
+- Check for schema drift
+
+**Quarterly:**
+- Review catalog organization
+- Optimize partition strategy based on usage
+- Evaluate partition projection adoption
+- Consider table compaction if many small files

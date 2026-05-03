@@ -1,0 +1,1234 @@
+{
+  "TemplateId": "realtime-operational-dashboard-v1",
+  "Name": "Real-Time Ride Operations Dashboard",
+  "Description": "Operational dashboard for monitoring real-time ride metrics, financial performance, and customer experience",
+  "Version": {
+    "Status": "CREATION_SUCCESSFUL",
+    "VersionNumber": 1,
+    "CreatedTime": "2026-03-09T00:00:00Z"
+  },
+  "AwsAccountId": "${AWS_ACCOUNT_ID}",
+  "DataSetReferences": [
+    {
+      "DataSetPlaceholder": "RidesStateDataSet",
+      "DataSetArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:dataset/rides-state-realtime",
+      "DataSource": {
+        "Type": "DYNAMODB",
+        "Arn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:datasource/rides-state-dynamodb",
+        "ConnectionProperties": {
+          "TableName": "rides_state",
+          "Region": "${AWS_REGION}"
+        }
+      },
+      "ImportMode": "SPICE",
+      "RefreshSchedule": {
+        "ScheduleId": "rides-state-refresh",
+        "ScheduleFrequency": {
+          "Interval": "MINUTE",
+          "TimeOfTheDay": "00:00",
+          "RefreshType": "INCREMENTAL_REFRESH",
+          "RefreshInterval": 5
+        },
+        "ScheduleArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:dataset/rides-state-realtime/refresh-schedule/rides-state-refresh",
+        "StartAfterDateTime": "2026-03-09T00:00:00Z"
+      },
+      "Columns": [
+        {
+          "Name": "ride_id",
+          "Type": "STRING"
+        },
+        {
+          "Name": "timestamp",
+          "Type": "DATETIME"
+        },
+        {
+          "Name": "status",
+          "Type": "STRING"
+        },
+        {
+          "Name": "driver_id",
+          "Type": "STRING"
+        },
+        {
+          "Name": "passenger_id",
+          "Type": "STRING"
+        },
+        {
+          "Name": "city",
+          "Type": "STRING"
+        },
+        {
+          "Name": "fare",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "distance",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "duration",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "rating",
+          "Type": "DECIMAL"
+        }
+      ]
+    },
+    {
+      "DataSetPlaceholder": "AggregatedMetricsDataSet",
+      "DataSetArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:dataset/aggregated-metrics-realtime",
+      "DataSource": {
+        "Type": "DYNAMODB",
+        "Arn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:datasource/aggregated-metrics-dynamodb",
+        "ConnectionProperties": {
+          "TableName": "aggregated_metrics",
+          "Region": "${AWS_REGION}"
+        }
+      },
+      "ImportMode": "SPICE",
+      "RefreshSchedule": {
+        "ScheduleId": "aggregated-metrics-refresh",
+        "ScheduleFrequency": {
+          "Interval": "MINUTE",
+          "TimeOfTheDay": "00:00",
+          "RefreshType": "FULL_REFRESH",
+          "RefreshInterval": 5
+        },
+        "ScheduleArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:dataset/aggregated-metrics-realtime/refresh-schedule/aggregated-metrics-refresh",
+        "StartAfterDateTime": "2026-03-09T00:00:00Z"
+      },
+      "Columns": [
+        {
+          "Name": "metric_id",
+          "Type": "STRING"
+        },
+        {
+          "Name": "timestamp",
+          "Type": "DATETIME"
+        },
+        {
+          "Name": "metric_type",
+          "Type": "STRING"
+        },
+        {
+          "Name": "city",
+          "Type": "STRING"
+        },
+        {
+          "Name": "total_rides",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "active_rides",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "completed_rides",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "cancelled_rides",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "total_revenue",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "avg_fare",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "avg_rating",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "avg_wait_time",
+          "Type": "INTEGER"
+        }
+      ]
+    },
+    {
+      "DataSetPlaceholder": "SalesAnalyticsDataSet",
+      "DataSetArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:dataset/sales-analytics-athena",
+      "DataSource": {
+        "Type": "ATHENA",
+        "Arn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:datasource/sales-analytics-athena",
+        "ConnectionProperties": {
+          "Database": "ride_analytics",
+          "Catalog": "AwsDataCatalog",
+          "WorkGroup": "primary"
+        }
+      },
+      "ImportMode": "SPICE",
+      "RefreshSchedule": {
+        "ScheduleId": "sales-analytics-refresh",
+        "ScheduleFrequency": {
+          "Interval": "HOURLY",
+          "TimeOfTheDay": "00:00",
+          "RefreshType": "FULL_REFRESH"
+        },
+        "ScheduleArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:dataset/sales-analytics-athena/refresh-schedule/sales-analytics-refresh",
+        "StartAfterDateTime": "2026-03-09T00:00:00Z"
+      },
+      "CustomSql": {
+        "DataSourceArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:datasource/sales-analytics-athena",
+        "Name": "SalesAnalyticsQuery",
+        "SqlQuery": "SELECT date_trunc('hour', timestamp) as hour, city, status, COUNT(*) as ride_count, SUM(fare) as revenue, AVG(fare) as avg_fare, AVG(rating) as avg_rating, AVG(duration) as avg_duration FROM rides WHERE timestamp >= date_add('day', -30, current_timestamp) GROUP BY date_trunc('hour', timestamp), city, status ORDER BY hour DESC"
+      },
+      "Columns": [
+        {
+          "Name": "hour",
+          "Type": "DATETIME"
+        },
+        {
+          "Name": "city",
+          "Type": "STRING"
+        },
+        {
+          "Name": "status",
+          "Type": "STRING"
+        },
+        {
+          "Name": "ride_count",
+          "Type": "INTEGER"
+        },
+        {
+          "Name": "revenue",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "avg_fare",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "avg_rating",
+          "Type": "DECIMAL"
+        },
+        {
+          "Name": "avg_duration",
+          "Type": "DECIMAL"
+        }
+      ]
+    }
+  ],
+  "Sheets": [
+    {
+      "SheetId": "realtime-overview-sheet",
+      "Name": "Real-Time Overview",
+      "Visuals": [
+        {
+          "VisualId": "active-rides-kpi",
+          "Type": "KPI",
+          "Title": "Active Rides",
+          "Subtitle": "Currently in progress",
+          "DataSetIdentifier": "AggregatedMetricsDataSet",
+          "FieldWells": {
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "active_rides",
+                  "Column": {
+                    "DataSetIdentifier": "AggregatedMetricsDataSet",
+                    "ColumnName": "active_rides"
+                  },
+                  "AggregationFunction": {
+                    "SumAggregation": {}
+                  }
+                }
+              }
+            ],
+            "TargetValues": [],
+            "TrendGroups": [
+              {
+                "DateDimension": {
+                  "FieldId": "timestamp",
+                  "Column": {
+                    "DataSetIdentifier": "AggregatedMetricsDataSet",
+                    "ColumnName": "timestamp"
+                  },
+                  "DateGranularity": "MINUTE"
+                }
+              }
+            ]
+          },
+          "ConditionalFormatting": {
+            "ConditionalFormattingOptions": [
+              {
+                "PrimaryValue": {
+                  "TextColor": {
+                    "Solid": {
+                      "Expression": "IF({active_rides} > 100, '#00A355', IF({active_rides} > 50, '#FFB81C', '#D32F2F'))"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "Layout": {
+            "LayoutId": "layout-1",
+            "Position": {
+              "X": 0,
+              "Y": 0,
+              "Width": 6,
+              "Height": 4
+            }
+          }
+        },
+        {
+          "VisualId": "total-revenue-kpi",
+          "Type": "KPI",
+          "Title": "Total Revenue",
+          "Subtitle": "Last 24 hours",
+          "DataSetIdentifier": "AggregatedMetricsDataSet",
+          "FieldWells": {
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "total_revenue",
+                  "Column": {
+                    "DataSetIdentifier": "AggregatedMetricsDataSet",
+                    "ColumnName": "total_revenue"
+                  },
+                  "AggregationFunction": {
+                    "SumAggregation": {}
+                  },
+                  "FormatConfiguration": {
+                    "NumberFormatConfiguration": {
+                      "FormatString": "$#,##0.00"
+                    }
+                  }
+                }
+              }
+            ],
+            "TargetValues": [
+              {
+                "ConstantValue": 50000
+              }
+            ],
+            "TrendGroups": [
+              {
+                "DateDimension": {
+                  "FieldId": "timestamp",
+                  "Column": {
+                    "DataSetIdentifier": "AggregatedMetricsDataSet",
+                    "ColumnName": "timestamp"
+                  },
+                  "DateGranularity": "HOUR"
+                }
+              }
+            ]
+          },
+          "Layout": {
+            "LayoutId": "layout-2",
+            "Position": {
+              "X": 6,
+              "Y": 0,
+              "Width": 6,
+              "Height": 4
+            }
+          }
+        },
+        {
+          "VisualId": "avg-rating-kpi",
+          "Type": "KPI",
+          "Title": "Average Rating",
+          "Subtitle": "Customer satisfaction",
+          "DataSetIdentifier": "AggregatedMetricsDataSet",
+          "FieldWells": {
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "avg_rating",
+                  "Column": {
+                    "DataSetIdentifier": "AggregatedMetricsDataSet",
+                    "ColumnName": "avg_rating"
+                  },
+                  "AggregationFunction": {
+                    "AverageAggregation": {}
+                  },
+                  "FormatConfiguration": {
+                    "NumberFormatConfiguration": {
+                      "FormatString": "0.00"
+                    }
+                  }
+                }
+              }
+            ],
+            "TargetValues": [
+              {
+                "ConstantValue": 4.5
+              }
+            ]
+          },
+          "Layout": {
+            "LayoutId": "layout-3",
+            "Position": {
+              "X": 12,
+              "Y": 0,
+              "Width": 6,
+              "Height": 4
+            }
+          }
+        },
+        {
+          "VisualId": "completed-rides-kpi",
+          "Type": "KPI",
+          "Title": "Completed Rides",
+          "Subtitle": "Last 24 hours",
+          "DataSetIdentifier": "AggregatedMetricsDataSet",
+          "FieldWells": {
+            "Values": [
+              {
+                "NumericalMeasureField": {
+                  "FieldId": "completed_rides",
+                  "Column": {
+                    "DataSetIdentifier": "AggregatedMetricsDataSet",
+                    "ColumnName": "completed_rides"
+                  },
+                  "AggregationFunction": {
+                    "SumAggregation": {}
+                  }
+                }
+              }
+            ]
+          },
+          "Layout": {
+            "LayoutId": "layout-4",
+            "Position": {
+              "X": 18,
+              "Y": 0,
+              "Width": 6,
+              "Height": 4
+            }
+          }
+        },
+        {
+          "VisualId": "rides-timeline-chart",
+          "Type": "LineChart",
+          "Title": "Rides Timeline",
+          "Subtitle": "Active vs Completed rides over time",
+          "DataSetIdentifier": "AggregatedMetricsDataSet",
+          "FieldWells": {
+            "LineChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "DateDimension": {
+                    "FieldId": "timestamp",
+                    "Column": {
+                      "DataSetIdentifier": "AggregatedMetricsDataSet",
+                      "ColumnName": "timestamp"
+                    },
+                    "DateGranularity": "MINUTE"
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "active_rides_trend",
+                    "Column": {
+                      "DataSetIdentifier": "AggregatedMetricsDataSet",
+                      "ColumnName": "active_rides"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                },
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "completed_rides_trend",
+                    "Column": {
+                      "DataSetIdentifier": "AggregatedMetricsDataSet",
+                      "ColumnName": "completed_rides"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "ChartConfiguration": {
+            "LineChartConfiguration": {
+              "Legend": {
+                "Visibility": "VISIBLE",
+                "Position": "RIGHT"
+              },
+              "DataLabels": {
+                "Visibility": "HIDDEN"
+              },
+              "Type": "LINE",
+              "SmallMultiplesOptions": {},
+              "XAxisDisplayOptions": {
+                "AxisLineVisibility": "VISIBLE"
+              },
+              "XAxisLabelOptions": {
+                "Visibility": "VISIBLE"
+              },
+              "PrimaryYAxisDisplayOptions": {
+                "AxisLineVisibility": "VISIBLE"
+              }
+            }
+          },
+          "Layout": {
+            "LayoutId": "layout-5",
+            "Position": {
+              "X": 0,
+              "Y": 4,
+              "Width": 12,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "city-distribution-pie",
+          "Type": "PieChart",
+          "Title": "Rides by City",
+          "Subtitle": "Distribution across cities",
+          "DataSetIdentifier": "AggregatedMetricsDataSet",
+          "FieldWells": {
+            "PieChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_dimension",
+                    "Column": {
+                      "DataSetIdentifier": "AggregatedMetricsDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "total_rides_measure",
+                    "Column": {
+                      "DataSetIdentifier": "AggregatedMetricsDataSet",
+                      "ColumnName": "total_rides"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "ChartConfiguration": {
+            "PieChartConfiguration": {
+              "Legend": {
+                "Visibility": "VISIBLE",
+                "Position": "RIGHT"
+              },
+              "DataLabels": {
+                "Visibility": "VISIBLE",
+                "Overlap": "DISABLE_OVERLAP"
+              },
+              "DonutOptions": {
+                "ArcOptions": {
+                  "ArcThickness": "MEDIUM"
+                }
+              }
+            }
+          },
+          "Layout": {
+            "LayoutId": "layout-6",
+            "Position": {
+              "X": 12,
+              "Y": 4,
+              "Width": 12,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "status-breakdown-bar",
+          "Type": "BarChart",
+          "Title": "Ride Status Breakdown",
+          "Subtitle": "Current status distribution",
+          "DataSetIdentifier": "RidesStateDataSet",
+          "FieldWells": {
+            "BarChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "status_dimension",
+                    "Column": {
+                      "DataSetIdentifier": "RidesStateDataSet",
+                      "ColumnName": "status"
+                    }
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "ride_count",
+                    "Column": {
+                      "DataSetIdentifier": "RidesStateDataSet",
+                      "ColumnName": "ride_id"
+                    },
+                    "AggregationFunction": {
+                      "CountAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "ChartConfiguration": {
+            "BarChartConfiguration": {
+              "Orientation": "HORIZONTAL",
+              "Legend": {
+                "Visibility": "HIDDEN"
+              },
+              "DataLabels": {
+                "Visibility": "VISIBLE"
+              }
+            }
+          },
+          "Layout": {
+            "LayoutId": "layout-7",
+            "Position": {
+              "X": 0,
+              "Y": 12,
+              "Width": 12,
+              "Height": 6
+            }
+          }
+        },
+        {
+          "VisualId": "revenue-heatmap",
+          "Type": "HeatMap",
+          "Title": "Revenue Heatmap",
+          "Subtitle": "Hourly revenue by city",
+          "DataSetIdentifier": "SalesAnalyticsDataSet",
+          "FieldWells": {
+            "HeatMapAggregatedFieldWells": {
+              "Rows": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_row",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ],
+              "Columns": [
+                {
+                  "DateDimension": {
+                    "FieldId": "hour_column",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "hour"
+                    },
+                    "DateGranularity": "HOUR"
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "revenue_value",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "revenue"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "Layout": {
+            "LayoutId": "layout-8",
+            "Position": {
+              "X": 12,
+              "Y": 12,
+              "Width": 12,
+              "Height": 6
+            }
+          }
+        }
+      ],
+      "Layouts": [
+        {
+          "LayoutId": "main-layout",
+          "LayoutName": "Real-Time Overview Layout",
+          "Configuration": {
+            "GridLayout": {
+              "CanvasSizeOptions": {
+                "ScreenCanvasSizeOptions": {
+                  "ResizeOption": "RESPONSIVE"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "SheetId": "financial-analysis-sheet",
+      "Name": "Financial Analysis",
+      "Visuals": [
+        {
+          "VisualId": "revenue-trend-line",
+          "Type": "LineChart",
+          "Title": "Revenue Trend",
+          "Subtitle": "Daily revenue over last 30 days",
+          "DataSetIdentifier": "SalesAnalyticsDataSet",
+          "FieldWells": {
+            "LineChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "DateDimension": {
+                    "FieldId": "date_category",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "hour"
+                    },
+                    "DateGranularity": "DAY"
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "revenue_measure",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "revenue"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    },
+                    "FormatConfiguration": {
+                      "NumberFormatConfiguration": {
+                        "FormatString": "$#,##0"
+                      }
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "Layout": {
+            "LayoutId": "financial-layout-1",
+            "Position": {
+              "X": 0,
+              "Y": 0,
+              "Width": 16,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "avg-fare-by-city-bar",
+          "Type": "BarChart",
+          "Title": "Average Fare by City",
+          "Subtitle": "Comparison across cities",
+          "DataSetIdentifier": "SalesAnalyticsDataSet",
+          "FieldWells": {
+            "BarChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_cat",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "avg_fare_val",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "avg_fare"
+                    },
+                    "AggregationFunction": {
+                      "AverageAggregation": {}
+                    },
+                    "FormatConfiguration": {
+                      "NumberFormatConfiguration": {
+                        "FormatString": "$#,##0.00"
+                      }
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "Layout": {
+            "LayoutId": "financial-layout-2",
+            "Position": {
+              "X": 16,
+              "Y": 0,
+              "Width": 8,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "revenue-by-status",
+          "Type": "ComboChart",
+          "Title": "Revenue Analysis by Status",
+          "Subtitle": "Completed vs Cancelled impact",
+          "DataSetIdentifier": "SalesAnalyticsDataSet",
+          "FieldWells": {
+            "ComboChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "status_cat",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "status"
+                    }
+                  }
+                }
+              ],
+              "BarValues": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "revenue_bar",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "revenue"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "LineValues": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "ride_count_line",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "ride_count"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "Layout": {
+            "LayoutId": "financial-layout-3",
+            "Position": {
+              "X": 0,
+              "Y": 8,
+              "Width": 12,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "fare-distribution-histogram",
+          "Type": "Histogram",
+          "Title": "Fare Distribution",
+          "Subtitle": "Frequency of fare ranges",
+          "DataSetIdentifier": "RidesStateDataSet",
+          "FieldWells": {
+            "HistogramAggregatedFieldWells": {
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "fare_histogram",
+                    "Column": {
+                      "DataSetIdentifier": "RidesStateDataSet",
+                      "ColumnName": "fare"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "ChartConfiguration": {
+            "HistogramConfiguration": {
+              "BinOptions": {
+                "BinCount": {
+                  "Value": 20
+                }
+              }
+            }
+          },
+          "Layout": {
+            "LayoutId": "financial-layout-4",
+            "Position": {
+              "X": 12,
+              "Y": 8,
+              "Width": 12,
+              "Height": 8
+            }
+          }
+        }
+      ]
+    },
+    {
+      "SheetId": "experience-analysis-sheet",
+      "Name": "Customer Experience",
+      "Visuals": [
+        {
+          "VisualId": "rating-trend",
+          "Type": "LineChart",
+          "Title": "Rating Trend",
+          "Subtitle": "Average customer rating over time",
+          "DataSetIdentifier": "SalesAnalyticsDataSet",
+          "FieldWells": {
+            "LineChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "DateDimension": {
+                    "FieldId": "rating_date",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "hour"
+                    },
+                    "DateGranularity": "DAY"
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "avg_rating_trend",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "avg_rating"
+                    },
+                    "AggregationFunction": {
+                      "AverageAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "Layout": {
+            "LayoutId": "experience-layout-1",
+            "Position": {
+              "X": 0,
+              "Y": 0,
+              "Width": 12,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "rating-by-city",
+          "Type": "BarChart",
+          "Title": "Rating by City",
+          "Subtitle": "Customer satisfaction across cities",
+          "DataSetIdentifier": "SalesAnalyticsDataSet",
+          "FieldWells": {
+            "BarChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_rating",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "city_avg_rating",
+                    "Column": {
+                      "DataSetIdentifier": "SalesAnalyticsDataSet",
+                      "ColumnName": "avg_rating"
+                    },
+                    "AggregationFunction": {
+                      "AverageAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "Layout": {
+            "LayoutId": "experience-layout-2",
+            "Position": {
+              "X": 12,
+              "Y": 0,
+              "Width": 12,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "wait-time-analysis",
+          "Type": "ComboChart",
+          "Title": "Wait Time Analysis",
+          "Subtitle": "Average wait time and ride count correlation",
+          "DataSetIdentifier": "AggregatedMetricsDataSet",
+          "FieldWells": {
+            "ComboChartAggregatedFieldWells": {
+              "Category": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_wait",
+                    "Column": {
+                      "DataSetIdentifier": "AggregatedMetricsDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ],
+              "BarValues": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "wait_time_bar",
+                    "Column": {
+                      "DataSetIdentifier": "AggregatedMetricsDataSet",
+                      "ColumnName": "avg_wait_time"
+                    },
+                    "AggregationFunction": {
+                      "AverageAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "LineValues": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "rides_line",
+                    "Column": {
+                      "DataSetIdentifier": "AggregatedMetricsDataSet",
+                      "ColumnName": "total_rides"
+                    },
+                    "AggregationFunction": {
+                      "SumAggregation": {}
+                    }
+                  }
+                }
+              ],
+              "Colors": []
+            }
+          },
+          "Layout": {
+            "LayoutId": "experience-layout-3",
+            "Position": {
+              "X": 0,
+              "Y": 8,
+              "Width": 12,
+              "Height": 8
+            }
+          }
+        },
+        {
+          "VisualId": "duration-analysis",
+          "Type": "BoxPlot",
+          "Title": "Ride Duration Distribution",
+          "Subtitle": "Duration patterns by city",
+          "DataSetIdentifier": "RidesStateDataSet",
+          "FieldWells": {
+            "BoxPlotAggregatedFieldWells": {
+              "GroupBy": [
+                {
+                  "CategoricalDimension": {
+                    "FieldId": "city_duration",
+                    "Column": {
+                      "DataSetIdentifier": "RidesStateDataSet",
+                      "ColumnName": "city"
+                    }
+                  }
+                }
+              ],
+              "Values": [
+                {
+                  "NumericalMeasureField": {
+                    "FieldId": "duration_box",
+                    "Column": {
+                      "DataSetIdentifier": "RidesStateDataSet",
+                      "ColumnName": "duration"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "Layout": {
+            "LayoutId": "experience-layout-4",
+            "Position": {
+              "X": 12,
+              "Y": 8,
+              "Width": 12,
+              "Height": 8
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "FilterGroups": [
+    {
+      "FilterGroupId": "date-filter-group",
+      "Filters": [
+        {
+          "FilterId": "date-range-filter",
+          "FilterName": "Date Range",
+          "FilterType": "TIME_RANGE_FILTER",
+          "Column": {
+            "DataSetIdentifier": "AggregatedMetricsDataSet",
+            "ColumnName": "timestamp"
+          },
+          "TimeRangeFilter": {
+            "FilterId": "date-range-filter",
+            "Column": {
+              "DataSetIdentifier": "AggregatedMetricsDataSet",
+              "ColumnName": "timestamp"
+            },
+            "IncludeMinimum": true,
+            "IncludeMaximum": true,
+            "RangeMinimumValue": {
+              "RollingDate": {
+                "DataSetIdentifier": "AggregatedMetricsDataSet",
+                "Expression": "CURRENT_TIMESTAMP - INTERVAL '24' HOUR"
+              }
+            },
+            "RangeMaximumValue": {
+              "RollingDate": {
+                "DataSetIdentifier": "AggregatedMetricsDataSet",
+                "Expression": "CURRENT_TIMESTAMP"
+              }
+            },
+            "NullOption": "NON_NULLS_ONLY"
+          }
+        }
+      ],
+      "ScopeConfiguration": {
+        "AllSheets": {}
+      }
+    },
+    {
+      "FilterGroupId": "city-filter-group",
+      "Filters": [
+        {
+          "FilterId": "city-filter",
+          "FilterName": "City",
+          "FilterType": "CATEGORY_FILTER",
+          "Column": {
+            "DataSetIdentifier": "AggregatedMetricsDataSet",
+            "ColumnName": "city"
+          },
+          "CategoryFilter": {
+            "FilterId": "city-filter",
+            "Column": {
+              "DataSetIdentifier": "AggregatedMetricsDataSet",
+              "ColumnName": "city"
+            },
+            "Configuration": {
+              "FilterListConfiguration": {
+                "MatchOperator": "CONTAINS",
+                "CategoryValues": [],
+                "SelectAllOptions": "FILTER_ALL_VALUES"
+              }
+            }
+          }
+        }
+      ],
+      "ScopeConfiguration": {
+        "AllSheets": {}
+      }
+    },
+    {
+      "FilterGroupId": "status-filter-group",
+      "Filters": [
+        {
+          "FilterId": "status-filter",
+          "FilterName": "Ride Status",
+          "FilterType": "CATEGORY_FILTER",
+          "Column": {
+            "DataSetIdentifier": "RidesStateDataSet",
+            "ColumnName": "status"
+          },
+          "CategoryFilter": {
+            "FilterId": "status-filter",
+            "Column": {
+              "DataSetIdentifier": "RidesStateDataSet",
+              "ColumnName": "status"
+            },
+            "Configuration": {
+              "FilterListConfiguration": {
+                "MatchOperator": "CONTAINS",
+                "CategoryValues": [],
+                "SelectAllOptions": "FILTER_ALL_VALUES"
+              }
+            }
+          }
+        }
+      ],
+      "ScopeConfiguration": {
+        "AllSheets": {}
+      }
+    }
+  ],
+  "Parameters": [
+    {
+      "Name": "RefreshInterval",
+      "ValueType": "INTEGER",
+      "DefaultValues": {
+        "IntegerStaticValues": [5]
+      }
+    },
+    {
+      "Name": "TargetRevenue",
+      "ValueType": "DECIMAL",
+      "DefaultValues": {
+        "DecimalStaticValues": [50000.0]
+      }
+    },
+    {
+      "Name": "MinRatingThreshold",
+      "ValueType": "DECIMAL",
+      "DefaultValues": {
+        "DecimalStaticValues": [4.5]
+      }
+    }
+  ],
+  "ThemeArn": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:theme/MIDNIGHT",
+  "Permissions": [
+    {
+      "Principal": "arn:aws:quicksight:${AWS_REGION}:${AWS_ACCOUNT_ID}:user/default/${USER_NAME}",
+      "Actions": [
+        "quicksight:DescribeDashboard",
+        "quicksight:ListDashboardVersions",
+        "quicksight:UpdateDashboardPermissions",
+        "quicksight:QueryDashboard",
+        "quicksight:UpdateDashboard",
+        "quicksight:DeleteDashboard",
+        "quicksight:DescribeDashboardPermissions",
+        "quicksight:UpdateDashboardPublishedVersion"
+      ]
+    }
+  ]
+}

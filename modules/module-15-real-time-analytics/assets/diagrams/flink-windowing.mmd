@@ -1,0 +1,93 @@
+graph TB
+    %% Flink Windowing Strategies - Time-based Aggregations
+
+    subgraph "Event Stream"
+        ES["Stream of Events<br/>user_id, event_type, timestamp, value"]:::stream
+    end
+
+    subgraph "1. Tumbling Windows - Non-overlapping"
+        TW1[Window 1<br/>00:00-00:05<br/>Count: 1000]:::tumbling
+        TW2[Window 2<br/>00:05-00:10<br/>Count: 1200]:::tumbling
+        TW3[Window 3<br/>00:10-00:15<br/>Count: 950]:::tumbling
+        TW4["Fixed 5-minute intervals<br/>No overlap"]:::note
+    end
+
+    subgraph "2. Sliding Windows - Overlapping"
+        SW1[Window 1<br/>00:00-00:10<br/>Count: 2000]:::sliding
+        SW2[Window 2<br/>00:05-00:15<br/>Count: 2100]:::sliding
+        SW3[Window 3<br/>00:10-00:20<br/>Count: 1980]:::sliding
+        SW4["10-minute window<br/>5-minute slide<br/>(50% overlap)"]:::note
+    end
+
+    subgraph "3. Session Windows - Inactivity Gap"
+        SESS1[Session 1<br/>00:00-00:08<br/>Gap: 30 min<br/>Events: 50]:::session
+        SESS2[Session 2<br/>00:45-01:10<br/>Gap: 30 min<br/>Events: 120]:::session
+        SESS3[Session 3<br/>02:00-02:05<br/>Gap: 30 min<br/>Events: 15]:::session
+        SESS4["Dynamic windows<br/>Close after 30 min inactivity"]:::note
+    end
+
+    %% Data Flow - Tumbling
+    ES --> TW1
+    ES --> TW2
+    ES --> TW3
+    TW1 --> TW4
+    TW2 --> TW4
+    TW3 --> TW4
+
+    %% Data Flow - Sliding
+    ES --> SW1
+    ES --> SW2
+    ES --> SW3
+    SW1 --> SW4
+    SW2 --> SW4
+    SW3 --> SW4
+
+    %% Data Flow - Session
+    ES --> SESS1
+    ES --> SESS2
+    ES --> SESS3
+    SESS1 --> SESS4
+    SESS2 --> SESS4
+    SESS3 --> SESS4
+
+    %% Use Cases
+    subgraph "Use Cases & Examples"
+        UC1["Tumbling: Page views per 5 min<br/>SELECT COUNT(*) FROM events<br/>GROUP BY TUMBLE(ts, INTERVAL '5' MINUTE)"]:::usecase
+
+        UC2["Sliding: Moving average response time<br/>SELECT AVG(response_ms) FROM metrics<br/>GROUP BY HOP(ts, INTERVAL '5' MINUTE, INTERVAL '10' MINUTE)"]:::usecase
+
+        UC3["Session: User activity sessions<br/>SELECT user_id, COUNT(*) FROM clicks<br/>GROUP BY user_id, SESSION(ts, INTERVAL '30' MINUTE)"]:::usecase
+    end
+
+    TW4 --> UC1
+    SW4 --> UC2
+    SESS4 --> UC3
+
+    %% Flink SQL Examples
+    subgraph "Flink SQL Syntax"
+        SQL1["-- Tumbling Window (5 minutes)<br/>SELECT<br/>  TUMBLE_START(event_time, INTERVAL '5' MINUTE) as window_start,<br/>  COUNT(*) as event_count,<br/>  SUM(amount) as total_revenue<br/>FROM transactions<br/>GROUP BY TUMBLE(event_time, INTERVAL '5' MINUTE)"]:::sql
+
+        SQL2["-- Sliding Window (10-min window, 5-min slide)<br/>SELECT<br/>  HOP_START(event_time, INTERVAL '5' MINUTE, INTERVAL '10' MINUTE) as window_start,<br/>  product_id,<br/>  AVG(price) as avg_price<br/>FROM purchases<br/>GROUP BY product_id, HOP(event_time, INTERVAL '5' MINUTE, INTERVAL '10' MINUTE)"]:::sql
+
+        SQL3["-- Session Window (30-min gap)<br/>SELECT<br/>  user_id,<br/>  SESSION_START(event_time, INTERVAL '30' MINUTE) as session_start,<br/>  SESSION_END(event_time, INTERVAL '30' MINUTE) as session_end,<br/>  COUNT(*) as actions<br/>FROM user_events<br/>GROUP BY user_id, SESSION(event_time, INTERVAL '30' MINUTE)"]:::sql
+    end
+
+    UC1 --> SQL1
+    UC2 --> SQL2
+    UC3 --> SQL3
+
+    %% Styling
+    classDef stream fill:#4A90E2,stroke:#2E6FA8,stroke-width:3px,color:#fff
+    classDef tumbling fill:#7ED321,stroke:#5A9E18,stroke-width:3px,color:#fff
+    classDef sliding fill:#F5A623,stroke:#C17F1A,stroke-width:3px,color:#fff
+    classDef session fill:#BD10E0,stroke:#8A0CA8,stroke-width:3px,color:#fff
+    classDef note fill:#ECF0F1,stroke:#95A5A6,stroke-width:2px,color:#333
+    classDef usecase fill:#1ABC9C,stroke:#16A085,stroke-width:2px,color:#fff
+    classDef sql fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff,text-align:left
+
+    %% Performance Comparison
+    subgraph "Performance & Cost"
+        PERF["Tumbling: Low overhead ✅<br/>Sliding: Medium overhead (overlaps)<br/>Session: High overhead (state management)<br/><br/>Choose tumbling for high throughput<br/>Choose sliding for smoothing metrics<br/>Choose session for user behavior"]:::perf
+    end
+
+    classDef perf fill:#E74C3C,stroke:#C0392B,stroke-width:2px,color:#fff

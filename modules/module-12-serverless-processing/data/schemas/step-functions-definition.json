@@ -1,0 +1,332 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/step-functions-state-machine.schema.json",
+  "title": "Step Functions State Machine Schema",
+  "description": "Schema for validating AWS Step Functions state machine definitions (Amazon States Language)",
+  "type": "object",
+  "properties": {
+    "Comment": {
+      "type": "string",
+      "description": "Human-readable description of the state machine"
+    },
+    "StartAt": {
+      "type": "string",
+      "description": "Name of the first state to execute"
+    },
+    "States": {
+      "type": "object",
+      "description": "Map of state names to state definitions",
+      "additionalProperties": {
+        "oneOf": [
+          {"$ref": "#/definitions/TaskState"},
+          {"$ref": "#/definitions/ParallelState"},
+          {"$ref": "#/definitions/MapState"},
+          {"$ref": "#/definitions/PassState"},
+          {"$ref": "#/definitions/WaitState"},
+          {"$ref": "#/definitions/ChoiceState"},
+          {"$ref": "#/definitions/SucceedState"},
+          {"$ref": "#/definitions/FailState"}
+        ]
+      }
+    },
+    "TimeoutSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 31536000,
+      "description": "Maximum execution time in seconds (max 1 year)"
+    },
+    "Version": {
+      "type": "string",
+      "const": "1.0"
+    }
+  },
+  "required": ["StartAt", "States"],
+  "definitions": {
+    "TaskState": {
+      "type": "object",
+      "properties": {
+        "Type": {"const": "Task"},
+        "Resource": {
+          "type": "string",
+          "description": "ARN of the resource to invoke (Lambda, ECS, etc.)",
+          "pattern": "^arn:aws:[a-z-]+:[a-z0-9-]*:[0-9]{12}:.+$"
+        },
+        "Parameters": {
+          "type": "object",
+          "description": "Input parameters for the task"
+        },
+        "ResultPath": {
+          "type": ["string", "null"],
+          "description": "JSONPath to store the result"
+        },
+        "Next": {
+          "type": "string",
+          "description": "Name of the next state"
+        },
+        "End": {
+          "type": "boolean",
+          "description": "Whether this is a terminal state"
+        },
+        "Retry": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ErrorEquals": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "IntervalSeconds": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 1
+              },
+              "MaxAttempts": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99,
+                "default": 3
+              },
+              "BackoffRate": {
+                "type": "number",
+                "minimum": 1.0,
+                "default": 2.0
+              }
+            },
+            "required": ["ErrorEquals"]
+          }
+        },
+        "Catch": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ErrorEquals": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "Next": {"type": "string"},
+              "ResultPath": {"type": ["string", "null"]}
+            },
+            "required": ["ErrorEquals", "Next"]
+          }
+        },
+        "TimeoutSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "HeartbeatSeconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": ["Type", "Resource"],
+      "oneOf": [
+        {"required": ["Next"]},
+        {"required": ["End"]}
+      ]
+    },
+    "ParallelState": {
+      "type": "object",
+      "properties": {
+        "Type": {"const": "Parallel"},
+        "Branches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "StartAt": {"type": "string"},
+              "States": {"type": "object"}
+            },
+            "required": ["StartAt", "States"]
+          },
+          "minItems": 1
+        },
+        "Next": {"type": "string"},
+        "End": {"type": "boolean"},
+        "ResultPath": {"type": ["string", "null"]},
+        "Retry": {"type": "array"},
+        "Catch": {"type": "array"}
+      },
+      "required": ["Type", "Branches"],
+      "oneOf": [
+        {"required": ["Next"]},
+        {"required": ["End"]}
+      ]
+    },
+    "MapState": {
+      "type": "object",
+      "properties": {
+        "Type": {"const": "Map"},
+        "ItemsPath": {
+          "type": "string",
+          "description": "JSONPath to the array to iterate over",
+          "default": "$"
+        },
+        "Iterator": {
+          "type": "object",
+          "properties": {
+            "StartAt": {"type": "string"},
+            "States": {"type": "object"}
+          },
+          "required": ["StartAt", "States"]
+        },
+        "MaxConcurrency": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum concurrent iterations (0 = unlimited)",
+          "default": 0
+        },
+        "Next": {"type": "string"},
+        "End": {"type": "boolean"},
+        "ResultPath": {"type": ["string", "null"]},
+        "Retry": {"type": "array"},
+        "Catch": {"type": "array"}
+      },
+      "required": ["Type", "Iterator"],
+      "oneOf": [
+        {"required": ["Next"]},
+        {"required": ["End"]}
+      ]
+    },
+    "PassState": {
+      "type": "object",
+      "properties": {
+        "Type": {"const": "Pass"},
+        "Result": {
+          "description": "Static result to pass to the next state"
+        },
+        "ResultPath": {"type": ["string", "null"]},
+        "Parameters": {"type": "object"},
+        "Next": {"type": "string"},
+        "End": {"type": "boolean"}
+      },
+      "required": ["Type"],
+      "oneOf": [
+        {"required": ["Next"]},
+        {"required": ["End"]}
+      ]
+    },
+    "WaitState": {
+      "type": "object",
+      "properties": {
+        "Type": {"const": "Wait"},
+        "Seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Wait for fixed number of seconds"
+        },
+        "Timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Wait until specific timestamp"
+        },
+        "SecondsPath": {
+          "type": "string",
+          "description": "JSONPath to get wait duration from input"
+        },
+        "TimestampPath": {
+          "type": "string",
+          "description": "JSONPath to get timestamp from input"
+        },
+        "Next": {"type": "string"},
+        "End": {"type": "boolean"}
+      },
+      "required": ["Type"],
+      "oneOf": [
+        {"required": ["Seconds"]},
+        {"required": ["Timestamp"]},
+        {"required": ["SecondsPath"]},
+        {"required": ["TimestampPath"]}
+      ]
+    },
+    "ChoiceState": {
+      "type": "object",
+      "properties": {
+        "Type": {"const": "Choice"},
+        "Choices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Variable": {"type": "string"},
+              "StringEquals": {"type": "string"},
+              "StringLessThan": {"type": "string"},
+              "StringGreaterThan": {"type": "string"},
+              "NumericEquals": {"type": "number"},
+              "NumericLessThan": {"type": "number"},
+              "NumericGreaterThan": {"type": "number"},
+              "BooleanEquals": {"type": "boolean"},
+              "IsPresent": {"type": "boolean"},
+              "IsNull": {"type": "boolean"},
+              "And": {"type": "array"},
+              "Or": {"type": "array"},
+              "Not": {"type": "object"},
+              "Next": {"type": "string"}
+            },
+            "required": ["Next"]
+          },
+          "minItems": 1
+        },
+        "Default": {
+          "type": "string",
+          "description": "Default state if no choice matches"
+        }
+      },
+      "required": ["Type", "Choices"]
+    },
+    "SucceedState": {
+      "type": "object",
+      "properties": {
+        "Type": {"const": "Succeed"}
+      },
+      "required": ["Type"]
+    },
+    "FailState": {
+      "type": "object",
+      "properties": {
+        "Type": {"const": "Fail"},
+        "Error": {
+          "type": "string",
+          "description": "Error name"
+        },
+        "Cause": {
+          "type": "string",
+          "description": "Human-readable error message"
+        }
+      },
+      "required": ["Type"]
+    }
+  },
+  "examples": [
+    {
+      "Comment": "Simple ETL pipeline",
+      "StartAt": "ExtractData",
+      "States": {
+        "ExtractData": {
+          "Type": "Task",
+          "Resource": "arn:aws:lambda:us-east-1:123456789012:function:extract",
+          "Next": "TransformData",
+          "Retry": [
+            {
+              "ErrorEquals": ["States.TaskFailed"],
+              "IntervalSeconds": 2,
+              "MaxAttempts": 3,
+              "BackoffRate": 2.0
+            }
+          ]
+        },
+        "TransformData": {
+          "Type": "Task",
+          "Resource": "arn:aws:lambda:us-east-1:123456789012:function:transform",
+          "Next": "LoadData"
+        },
+        "LoadData": {
+          "Type": "Task",
+          "Resource": "arn:aws:lambda:us-east-1:123456789012:function:load",
+          "End": true
+        }
+      }
+    }
+  ]
+}

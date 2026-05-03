@@ -1,0 +1,28 @@
+# ============================================================================
+# Checkpoint 03: Enterprise Data Lakehouse - Pipeline Requirements
+# ============================================================================
+
+# AWS SDK
+boto3==1.34.10
+botocore==1.34.10
+
+# PySpark (compatible with EMR 6.x / Glue 4.0)
+pyspark==3.4.0
+
+# Delta Lake
+delta-spark==2.4.0
+
+# Data Generation
+faker==22.0.0
+numpy==1.24.3
+pandas==2.0.3
+
+# Date/Time
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Logging
+structlog==23.3.0
+
+# Utilities
+click==8.1.7

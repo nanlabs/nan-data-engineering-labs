@@ -1,0 +1,123 @@
+```mermaid
+graph TB
+    subgraph "Control Plane (Databricks Managed)"
+        UI[Web UI / Workspace]
+        API[REST API]
+        Notebook[Notebook Server]
+        ClusterMgr[Cluster Manager]
+        JobScheduler[Job Scheduler]
+        MLflow[MLflow Tracking Server]
+        Catalog[Unity Catalog Metastore]
+
+        UI --> API
+        API --> Notebook
+        API --> ClusterMgr
+        API --> JobScheduler
+        API --> MLflow
+        API --> Catalog
+    end
+
+    subgraph "Data Plane (Customer Cloud Account)"
+        subgraph "Compute"
+            Driver[Driver Node]
+            Worker1[Worker Node 1]
+            Worker2[Worker Node 2]
+            WorkerN[Worker Node N]
+
+            Driver --> Worker1
+            Driver --> Worker2
+            Driver --> WorkerN
+        end
+
+        subgraph "Storage"
+            S3[Object Storage<br/>S3 / ADLS / GCS]
+            DeltaLog[Delta Transaction Logs]
+            DataFiles[Parquet Data Files]
+            Checkpoints[Checkpoints]
+
+            S3 --> DeltaLog
+            S3 --> DataFiles
+            S3 --> Checkpoints
+        end
+    end
+
+    subgraph "Security Layer"
+        IAM[Cloud IAM<br/>AWS: IAM Roles<br/>Azure: Service Principal<br/>GCP: Service Account]
+        VPC[Virtual Network<br/>Private Subnet]
+        Encryption[Encryption<br/>At Rest + In Transit]
+    end
+
+    %% Control to Data Plane
+    ClusterMgr -.->|Launch & Monitor| Driver
+    JobScheduler -.->|Execute Jobs| Driver
+    Notebook -.->|Execute Code| Driver
+
+    %% Compute to Storage
+    Driver <--> S3
+    Worker1 <--> S3
+    Worker2 <--> S3
+    WorkerN <--> S3
+
+    %% Security Integration
+    Driver --> IAM
+    Worker1 --> IAM
+    Driver --> VPC
+    Worker1 --> VPC
+    S3 --> Encryption
+
+    %% Metadata
+    Catalog <-.->|Table Metadata| S3
+
+    %% User Access
+    User([Data Engineer<br/>Data Scientist<br/>Analyst]) --> UI
+    User --> API
+
+    style UI fill:#e1f5ff
+    style API fill:#e1f5ff
+    style Notebook fill:#e1f5ff
+    style ClusterMgr fill:#e1f5ff
+    style JobScheduler fill:#e1f5ff
+    style MLflow fill:#e1f5ff
+    style Catalog fill:#e1f5ff
+
+    style Driver fill:#fff4e6
+    style Worker1 fill:#fff4e6
+    style Worker2 fill:#fff4e6
+    style WorkerN fill:#fff4e6
+
+    style S3 fill:#e8f5e9
+    style DeltaLog fill:#e8f5e9
+    style DataFiles fill:#e8f5e9
+    style Checkpoints fill:#e8f5e9
+
+    style IAM fill:#fce4ec
+    style VPC fill:#fce4ec
+    style Encryption fill:#fce4ec
+```
+
+**Key Components:**
+
+## Control Plane (Databricks-Managed)
+- **Web UI**: Interactive workspace for notebooks, SQL, ML
+- **REST API**: Programmatic access to all features
+- **Cluster Manager**: Provisions and monitors Spark clusters
+- **Job Scheduler**: Orchestrates Databricks Workflows
+- **MLflow Server**: Centralized experiment tracking
+- **Unity Catalog**: Centralized data governance
+
+## Data Plane (Customer Cloud)
+- **Driver Node**: Coordinates Spark job execution
+- **Worker Nodes**: Execute distributed computations
+- **Object Storage**: Cloud-native storage (S3/ADLS/GCS)
+- **Delta Lake**: ACID transaction layer on object storage
+
+## Security
+- **Cloud IAM**: Identity and access management
+- **Virtual Network**: Network isolation (VPC/VNet)
+- **Encryption**: At-rest (AES-256) + In-transit (TLS)
+
+## Benefits
+1. **Separation of Concerns**: Control plane managed by Databricks, data stays in your cloud
+2. **Security**: Data never leaves your cloud account
+3. **Scalability**: Auto-scaling compute, unlimited storage
+4. **Cost Efficiency**: Pay only for compute used, cheap object storage

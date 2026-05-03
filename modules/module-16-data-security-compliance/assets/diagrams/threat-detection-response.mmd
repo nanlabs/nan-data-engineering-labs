@@ -1,0 +1,132 @@
+graph TB
+    %% Threat Detection & Incident Response
+
+    subgraph "Threat Detection Services"
+        GD[Amazon GuardDuty<br/>ML-based Threat Detection]:::guardduty
+        SH[AWS Security Hub<br/>Centralized Findings]:::sechub
+        IAA[IAM Access Analyzer<br/>Unintended Access]:::analyzer
+        MAC[Amazon Macie<br/>Sensitive Data Discovery]:::macie
+    end
+
+    subgraph "GuardDuty Findings"
+        GD1["Threats Detected:<br/>• Compromised EC2 instance<br/>• Bitcoin mining (CryptoCurrency:EC2)<br/>• Unusual API calls<br/>• Port scanning<br/>• SSH brute force"]:::threat
+
+        GD2["Data Exfiltration:<br/>• Large S3 downloads<br/>• Unusual network traffic<br/>• Cross-region replication<br/>• Public S3 bucket exposure"]:::threat
+
+        GD3["Credential Compromise:<br/>• Impossible travel<br/>• Anonymous proxy access<br/>• Tor network usage<br/>• Leaked IAM credentials"]:::threat
+    end
+
+    GD --> GD1
+    GD --> GD2
+    GD --> GD3
+
+    subgraph "Security Hub Integrations"
+        SH1[GuardDuty Findings]:::integration
+        SH2[AWS Config Rules]:::integration
+        SH3[Macie Alerts]:::integration
+        SH4[Inspector Vulnerabilities]:::integration
+        SH5[Firewall Manager]:::integration
+    end
+
+    GD --> SH1
+    SH --> SH1
+    SH --> SH2
+    MAC --> SH3
+    SH --> SH4
+    SH --> SH5
+
+    subgraph "Severity Classification"
+        SEV["High (8.0-10.0):<br/>• Active data exfiltration<br/>• Root account compromise<br/>• Public S3 bucket with PII<br/><br/>Medium (4.0-7.9):<br/>• Unusual API calls<br/>• Unencrypted backups<br/>• Open security groups<br/><br/>Low (0.1-3.9):<br/>• Informational findings<br/>• Best practice violations"]:::severity
+    end
+
+    SH1 --> SEV
+
+    subgraph "Automated Response - EventBridge"
+        EB1[EventBridge Rule<br/>GuardDuty Finding]:::eventbridge
+        EB2[Filter: Severity = HIGH<br/>FindingType = Exfiltration]:::eventbridge
+    end
+
+    GD2 --> EB1
+    EB1 --> EB2
+
+    subgraph "Incident Response Playbook"
+        IR1[Lambda: Isolate Instance<br/>Revoke security groups]:::ir
+        IR2[Lambda: Disable IAM User<br/>Revoke access keys]:::ir
+        IR3[Lambda: Block IP Address<br/>Update NACL/WAF]:::ir
+        IR4[Lambda: Snapshot Volumes<br/>Forensic analysis]:::ir
+    end
+
+    EB2 --> IR1
+    EB2 --> IR2
+    EB2 --> IR3
+    EB2 --> IR4
+
+    subgraph "Notification & Alerting"
+        NOT1[SNS Topic<br/>security-alerts]:::notification
+        NOT2[Email: security-team@company.com]:::notification
+        NOT3[PagerDuty: On-call Engineer]:::notification
+        NOT4[Slack: #security-incidents]:::notification
+        NOT5[Jira: Create Incident Ticket]:::notification
+    end
+
+    IR4 --> NOT1
+    NOT1 --> NOT2
+    NOT1 --> NOT3
+    NOT1 --> NOT4
+    NOT1 --> NOT5
+
+    subgraph "SIEM Integration"
+        SIEM1[CloudWatch Logs<br/>Centralized Logging]:::siem
+        SIEM2[Elasticsearch<br/>Log Analysis]:::siem
+        SIEM3[Kibana Dashboard<br/>Security Visualization]:::siem
+        SIEM4[Anomaly Detection<br/>ML-based Alerts]:::siem
+    end
+
+    GD --> SIEM1
+    SH --> SIEM1
+    SIEM1 --> SIEM2
+    SIEM2 --> SIEM3
+    SIEM2 --> SIEM4
+
+    %% Styling
+    classDef guardduty fill:#E74C3C,stroke:#C0392B,stroke-width:3px,color:#fff
+    classDef sechub fill:#FF9900,stroke:#CC7A00,stroke-width:3px,color:#fff
+    classDef analyzer fill:#3498DB,stroke:#2980B9,stroke-width:3px,color:#fff
+    classDef macie fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+    classDef threat fill:#E67E22,stroke:#CA6F1E,stroke-width:2px,color:#fff,text-align:left
+    classDef integration fill:#16A085,stroke:#138D75,stroke-width:3px,color:#fff
+    classDef severity fill:#F39C12,stroke:#D68910,stroke-width:2px,color:#fff,text-align:left
+    classDef eventbridge fill:#1ABC9C,stroke:#17A589,stroke-width:3px,color:#fff
+    classDef ir fill:#27AE60,stroke:#229954,stroke-width:3px,color:#fff
+    classDef notification fill:#7ED321,stroke:#5A9E18,stroke-width:3px,color:#fff
+    classDef siem fill:#34495E,stroke:#2C3E50,stroke-width:3px,color:#fff
+
+    %% Common Attack Scenarios
+    subgraph "Common Attack Scenarios"
+        ATK["Scenario 1: Credential Compromise<br/>1. GuardDuty detects impossible travel<br/>2. Lambda disables IAM user<br/>3. Rotate credentials<br/>4. Investigate access logs<br/><br/>Scenario 2: Data Exfiltration<br/>1. GuardDuty detects large S3 downloads<br/>2. Lambda blocks IP in NACL<br/>3. Snapshot instance for forensics<br/>4. Notify security team<br/><br/>Scenario 3: Crypto Mining<br/>1. GuardDuty detects Bitcoin traffic<br/>2. Lambda terminates instance<br/>3. Check for backdoors<br/>4. Re-deploy from golden AMI"]:::attack
+    end
+
+    classDef attack fill:#C0392B,stroke:#A93226,stroke-width:2px,color:#fff,text-align:left
+
+    IR3 --> ATK
+
+    %% Metrics & Cost
+    subgraph "Cost & Effectiveness"
+        COST["GuardDuty Cost:<br/>• CloudTrail analysis: $4.66/million events<br/>• VPC Flow Logs: $1.13/GB<br/>• DNS Logs: $0.40/million queries<br/>• S3 event monitoring: $0.80/million events<br/><br/>Security Hub: $0.0010/finding<br/><br/>Typical Cost (large org):<br/>• GuardDuty: $500/month<br/>• Security Hub: $100/month<br/>• Lambda responses: $50/month<br/>**Total: $650/month**<br/><br/>Effectiveness:<br/>• Mean Time to Detect (MTTD): <15 minutes<br/>• Mean Time to Respond (MTTR): <1 hour<br/>• False positive rate: <5%"]:::cost
+    end
+
+    classDef cost fill:#2C3E50,stroke:#1C2833,stroke-width:2px,color:#fff,text-align:left
+
+    %% Response Metrics
+    subgraph "Incident Response KPIs"
+        KPI["Detection Rate: 98% of known threats<br/>Time to Alert: <5 minutes<br/>Time to Isolate: <15 minutes<br/>Time to Remediate: <4 hours<br/>False Positive Rate: 3%<br/>Incidents Prevented: 50+/month"]:::kpi
+    end
+
+    classDef kpi fill:#16A085,stroke:#138D75,stroke-width:2px,color:#fff,text-align:left
+
+    %% Real-World Examples
+    subgraph "Industry Examples"
+        EX["Capital One Breach (2019):<br/>• Misconfigured WAF<br/>• GuardDuty would have detected SSRF<br/>• Cost: $80M fine<br/><br/>Netflix:<br/>• Uses GuardDuty + custom ML<br/>• 100% automated response<br/>• 0 security incidents in 3 years<br/><br/>Airbnb:<br/>• GuardDuty + Security Hub<br/>• Automated playbooks<br/>• MTTR reduced from 4h to 30min"]:::example
+    end
+
+    classDef example fill:#7ED321,stroke:#5A9E18,stroke-width:2px,color:#fff,text-align:left

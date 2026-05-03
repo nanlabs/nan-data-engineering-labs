@@ -1,0 +1,392 @@
+graph TB
+    %% ============================================================================
+    %% VIRTUAL WAREHOUSE SCALING STRATEGIES
+    %% ============================================================================
+    %% This diagram shows the decision tree for scaling Snowflake warehouses
+    %% and the differences between scaling UP vs. scaling OUT.
+    %%
+    %% Key Concepts:
+    %% - Scale UP: Increase warehouse size (more RAM, CPU per cluster)
+    %% - Scale OUT: Add more clusters (multi-cluster warehouses)
+    %% - Auto-scaling modes: Economy, Standard, Maximized
+    %% ============================================================================
+
+    %% Problem Identification
+    Start([👤 User Reports Performance Issue])
+
+    %% Decision Tree
+    Start --> Diagnose{What's the<br/>problem?}
+
+    %% Branch 1: Query Performance (Scale UP)
+    Diagnose -->|"🐌 Individual queries slow<br/>(ETL, complex analytics)"| CheckComplexity{Query<br/>Complexity?}
+
+    CheckComplexity -->|Simple query<br/>but slow| OptimizeQuery["🔍 OPTIMIZE FIRST<br/>- Add clustering keys<br/>- Partition pruning<br/>- Materialized views<br/>- Check query plan"]
+
+    CheckComplexity -->|"Complex:<br/>Joins, aggregations,<br/>window functions"| ScaleUp["⬆️ SCALE UP<br/>Increase warehouse SIZE"]
+
+    %% Branch 2: Concurrency (Scale OUT)
+    Diagnose -->|"⏳ Queries queued/waiting<br/>(Many concurrent users)"| CheckConcurrency{Concurrency<br/>Level?}
+
+    CheckConcurrency -->|"Low:<br/>< 8 concurrent"| IncreaseTimeout["⏰ INCREASE TIMEOUT<br/>Set statement_timeout_in_seconds<br/>or optimize queries"]
+
+    CheckConcurrency -->|"High:<br/>10+ concurrent users"| ScaleOut["⬅️➡️ SCALE OUT<br/>Add more CLUSTERS<br/>(Multi-cluster warehouse)"]
+
+    %% ============================================================================
+    %% SCALE UP PATH (Vertical Scaling)
+    %% ============================================================================
+    subgraph ScaleUpPath["⬆️ SCALE UP: Vertical Scaling (Bigger Warehouse)"]
+        style ScaleUpPath fill:#F5A623,stroke:#333,stroke-width:3px
+
+        %% Warehouse Sizes with Specifications
+        WH_XS["X-Small<br/>━━━━━━━━━━<br/>💰 1 credit/hour<br/>💻 16 GB RAM<br/>⚙️ 1 server<br/>👥 1-2 users<br/>📊 Small queries<br/>⏱️ Dataset: <100GB"]
+
+        WH_S["Small<br/>━━━━━━━━━━<br/>💰 2 credits/hour<br/>💻 32 GB RAM<br/>⚙️ 2 servers<br/>👥 2-4 users<br/>📊 Dev/test<br/>⏱️ Dataset: <500GB"]
+
+        WH_M["Medium<br/>━━━━━━━━━━<br/>💰 4 credits/hour<br/>💻 64 GB RAM<br/>⚙️ 4 servers<br/>👥 4-8 users<br/>📊 BI dashboards<br/>⏱️ Dataset: 1TB"]
+
+        WH_L["Large<br/>━━━━━━━━━━<br/>💰 8 credits/hour<br/>💻 128 GB RAM<br/>⚙️ 8 servers<br/>👥 8-16 users<br/>📊 ETL jobs<br/>⏱️ Dataset: 5TB"]
+
+        WH_XL["X-Large<br/>━━━━━━━━━━<br/>💰 16 credits/hour<br/>💻 256 GB RAM<br/>⚙️ 16 servers<br/>👥 Complex queries<br/>📊 Heavy transforms<br/>⏱️ Dataset: 10TB"]
+
+        WH_2XL["2X-Large<br/>━━━━━━━━━━<br/>💰 32 credits/hour<br/>💻 512 GB RAM<br/>⚙️ 32 servers<br/>👥 Data science<br/>📊 ML workloads<br/>⏱️ Dataset: 50TB"]
+
+        WH_3XL["3X-Large<br/>━━━━━━━━━━<br/>💰 64 credits/hour<br/>💻 1024 GB RAM<br/>⚙️ 64 servers<br/>👥 Massive transforms<br/>📊 Full table scans<br/>⏱️ Dataset: 100TB+"]
+
+        WH_4XL["4X-Large+<br/>━━━━━━━━━━<br/>💰 128+ credits/hour<br/>💻 2048+ GB RAM<br/>⚙️ 128+ servers<br/>👥 Extreme workloads<br/>📊 Petabyte-scale<br/>⏱️ Dataset: 500TB+"]
+
+        %% Scale Up Path
+        WH_XS -->|"Query still slow"| WH_S
+        WH_S -->|"Not enough power"| WH_M
+        WH_M -->|"Need more RAM/CPU"| WH_L
+        WH_L -->|"Complex analytics"| WH_XL
+        WH_XL -->|"ML/Data Science"| WH_2XL
+        WH_2XL -->|"Massive datasets"| WH_3XL
+        WH_3XL -->|"Petabyte queries"| WH_4XL
+
+        %% SQL Command
+        ScaleUpSQL["SQL Command:<br/>ALTER WAREHOUSE my_wh<br/>SET WAREHOUSE_SIZE = 'LARGE';"]
+
+        WH_L -.->|Execute| ScaleUpSQL
+    end
+
+    ScaleUp --> WH_XS
+
+    %% ============================================================================
+    %% SCALE OUT PATH (Horizontal Scaling)
+    %% ============================================================================
+    subgraph ScaleOutPath["⬅️➡️ SCALE OUT: Horizontal Scaling (More Clusters)"]
+        style ScaleOutPath fill:#4A90E2,stroke:#333,stroke-width:3px
+
+        %% Single Cluster
+        SingleCluster["Single Cluster<br/>━━━━━━━━━━━━━<br/>🔧 1 X-Small cluster<br/>💰 1 credit/hour<br/>👥 Max: ~8 concurrent<br/>⏳ Queue forms if busy"]
+
+        %% Multi-Cluster with 2
+        MultiCluster2["Multi-Cluster (2)<br/>━━━━━━━━━━━━━<br/>🔧 2 X-Small clusters<br/>💰 2 credits/hour<br/>👥 Max: ~16 concurrent<br/>⚖️ Load balanced"]
+
+        %% Multi-Cluster with 3
+        MultiCluster3["Multi-Cluster (3)<br/>━━━━━━━━━━━━━<br/>🔧 3 X-Small clusters<br/>💰 3 credits/hour<br/>👥 Max: ~24 concurrent<br/>⚖️ Load balanced"]
+
+        %% Multi-Cluster with N
+        MultiClusterN["Multi-Cluster (Max 10)<br/>━━━━━━━━━━━━━<br/>🔧 Up to 10 clusters<br/>💰 N × base credits<br/>👥 Max: ~80 concurrent<br/>⚖️ Load balanced"]
+
+        %% Scale Out Path
+        SingleCluster -->|"Queue detected"| MultiCluster2
+        MultiCluster2 -->|"Still queuing"| MultiCluster3
+        MultiCluster3 -->|"Peak demand"| MultiClusterN
+
+        %% SQL Command
+        ScaleOutSQL["SQL Command:<br/>ALTER WAREHOUSE my_wh<br/>SET MIN_CLUSTER_COUNT = 1<br/>    MAX_CLUSTER_COUNT = 5<br/>    SCALING_POLICY = 'ECONOMY';"]
+
+        MultiCluster3 -.->|Execute| ScaleOutSQL
+    end
+
+    ScaleOut --> SingleCluster
+
+    %% ============================================================================
+    %% AUTO-SCALING MODES
+    %% ============================================================================
+    subgraph AutoScalingModes["⚙️ AUTO-SCALING MODES"]
+        style AutoScalingModes fill:#7ED321,stroke:#333,stroke-width:3px
+
+        %% Economy Mode
+        subgraph EconomyMode["💰 ECONOMY MODE (Recommended for most workloads)"]
+            EconDesc["Behavior:<br/>- Adds clusters conservatively<br/>- Waits 6 minutes before scaling<br/>- Prefers queuing over cost<br/>- Best for: Cost-sensitive workloads"]
+
+            EconExample["Example:<br/>Min: 1, Max: 3<br/>━━━━━━━━━━━━━<br/>8 queries → 1 cluster running<br/>20 queries → Still 1 cluster (queuing 5 min)<br/>35 queries (sustained) → 2 clusters start<br/>50 queries (sustained) → 3 clusters start<br/>Load drops → Scale down after 2-3 min"]
+
+            EconCost["Cost Profile:<br/>⭐⭐⭐⭐⭐ Most efficient<br/>Cluster-hours: ~40% less than Standard"]
+        end
+
+        %% Standard Mode
+        subgraph StandardMode["⚖️ STANDARD MODE (Balanced)"]
+            StdDesc["Behavior:<br/>- Adds clusters moderately<br/>- Waits 2 minutes before scaling<br/>- Balanced cost vs. performance<br/>- Best for: Production workloads"]
+
+            StdExample["Example:<br/>Min: 1, Max: 3<br/>━━━━━━━━━━━━━<br/>8 queries → 1 cluster running<br/>20 queries → 2 clusters after 2 min<br/>35 queries → 3 clusters after 2 min<br/>Load drops → Scale down after 1 min"]
+
+            StdCost["Cost Profile:<br/>⭐⭐⭐⭐ Moderate<br/>Cluster-hours: Baseline"]
+        end
+
+        %% Maximized Mode
+        subgraph MaximizedMode["🚀 MAXIMIZED MODE (Always-On)"]
+            MaxDesc["Behavior:<br/>- Runs ALL clusters immediately<br/>- No waiting, no auto-scaling<br/>- Max clusters always active<br/>- Best for: Predictable peak loads"]
+
+            MaxExample["Example:<br/>Min: 3, Max: 3<br/>━━━━━━━━━━━━━<br/>0 queries → 3 clusters running<br/>10 queries → 3 clusters running<br/>50 queries → 3 clusters running<br/>Load drops → Still 3 clusters"]
+
+            MaxCost["Cost Profile:<br/>⭐⭐ Most expensive<br/>Cluster-hours: 2-3x Standard<br/>Use only for critical, high-concurrency"]
+        end
+    end
+
+    %% ============================================================================
+    %% COST COMPARISON TABLE
+    %% ============================================================================
+    subgraph CostComparison["💰 CREDIT COST COMPARISON (per hour)"]
+        style CostComparison fill:#FFE5E5,stroke:#E74C3C,stroke-width:2px
+
+        CostTable["
+        ┌─────────────┬────────────────────────────────────────┐
+        │ Size        │ Single Cluster │ Multi (2) │ Multi (5) │
+        ├─────────────┼────────────────┼───────────┼───────────┤
+        │ X-Small     │   1 credit/hr  │  2 cr/hr  │  5 cr/hr  │
+        │ Small       │   2 credits/hr │  4 cr/hr  │ 10 cr/hr  │
+        │ Medium      │   4 credits/hr │  8 cr/hr  │ 20 cr/hr  │
+        │ Large       │   8 credits/hr │ 16 cr/hr  │ 40 cr/hr  │
+        │ X-Large     │  16 credits/hr │ 32 cr/hr  │ 80 cr/hr  │
+        │ 2X-Large    │  32 credits/hr │ 64 cr/hr  │ 160 cr/hr │
+        │ 3X-Large    │  64 credits/hr │ 128 cr/hr │ 320 cr/hr │
+        │ 4X-Large    │ 128 credits/hr │ 256 cr/hr │ 640 cr/hr │
+        └─────────────┴────────────────┴───────────┴───────────┘
+
+        💡 Pro Tip: Economy mode can reduce costs by 40% vs. Standard!
+        💡 Auto-suspend (5 min idle) saves 90%+ on intermittent workloads
+        "]
+    end
+
+    %% ============================================================================
+    %% DECISION MATRIX
+    %% ============================================================================
+    subgraph DecisionMatrix["🎯 SCALING DECISION MATRIX"]
+        style DecisionMatrix fill:#E8F4F8,stroke:#3498DB,stroke-width:2px
+
+        Matrix["
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        SYMPTOM                  │ ACTION          │ REASONING
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        Individual query slow    │ Scale UP        │ Need more RAM/CPU
+        (10+ minutes runtime)    │ (Bigger WH)     │ per query
+        ─────────────────────────┼─────────────────┼──────────────────
+        Many queries queued      │ Scale OUT       │ Need parallel
+        (5+ min wait time)       │ (More clusters) │ processing
+        ─────────────────────────┼─────────────────┼──────────────────
+        Spiky load patterns      │ Auto-scale      │ Elastic capacity
+        (morning rush, EOD)      │ Economy mode    │ Cost-optimized
+        ─────────────────────────┼─────────────────┼──────────────────
+        Constant high load       │ Maximized mode  │ Predictable perf
+        (24/7 dashboards)        │ Min = Max       │ No startup delay
+        ─────────────────────────┼─────────────────┼──────────────────
+        Dev/Test workload        │ X-Small + Auto  │ Minimize cost
+        (sporadic usage)         │ Suspend 5 min   │ Pay only when used
+        ─────────────────────────┼─────────────────┼──────────────────
+        ETL batch jobs           │ Large + Manual  │ Run, then suspend
+        (nightly 2 hours)        │ Suspend after   │ No idle cost
+        ─────────────────────────┼─────────────────┼──────────────────
+        BI dashboards            │ Medium + Result │ Leverage cache
+        (repetitive queries)     │ Cache           │ Free repeated hits
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        🔑 Key Insight: Scale UP for speed, Scale OUT for concurrency
+        "]
+    end
+
+    %% ============================================================================
+    %% MONITORING QUERIES
+    %% ============================================================================
+    subgraph MonitoringQueries["📊 MONITORING QUERIES"]
+        style MonitoringQueries fill:#FFF9E6,stroke:#F39C12,stroke-width:2px
+
+        Query1["-- Check warehouse load and queueing
+        SELECT
+            WAREHOUSE_NAME,
+            AVG(QUEUED_OVERLOAD_TIME) AS avg_queue_sec,
+            AVG(EXECUTION_TIME) AS avg_exec_sec,
+            COUNT(*) AS query_count
+        FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+        WHERE START_TIME >= DATEADD(hour, -1, CURRENT_TIMESTAMP())
+        GROUP BY WAREHOUSE_NAME
+        ORDER BY avg_queue_sec DESC;
+        "]
+
+        Query2["-- Identify slow queries
+        SELECT
+            QUERY_ID,
+            QUERY_TEXT,
+            WAREHOUSE_SIZE,
+            EXECUTION_TIME / 1000 AS exec_seconds,
+            BYTES_SCANNED / POW(1024, 3) AS gb_scanned
+        FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+        WHERE EXECUTION_TIME > 60000  -- 1 minute
+        ORDER BY EXECUTION_TIME DESC
+        LIMIT 10;
+        "]
+
+        Query3["-- Monitor warehouse credit usage
+        SELECT
+            WAREHOUSE_NAME,
+            SUM(CREDITS_USED) AS total_credits,
+            SUM(CREDITS_USED) * 3 AS estimated_usd  -- $3/credit avg
+        FROM SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_METERING_HISTORY
+        WHERE START_TIME >= DATEADD(day, -7, CURRENT_TIMESTAMP())
+        GROUP BY WAREHOUSE_NAME
+        ORDER BY total_credits DESC;
+        "]
+
+        Query4["-- Check multi-cluster efficiency
+        SELECT
+            WAREHOUSE_NAME,
+            AVG(AVG_RUNNING) AS avg_clusters_running,
+            MAX(AVG_RUNNING) AS peak_clusters,
+            SUM(CREDITS_USED_COMPUTE) AS compute_credits
+        FROM SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_LOAD_HISTORY
+        WHERE START_TIME >= DATEADD(hour, -24, CURRENT_TIMESTAMP())
+        GROUP BY WAREHOUSE_NAME;
+        "]
+    end
+
+    %% ============================================================================
+    %% BEST PRACTICES
+    %% ============================================================================
+    subgraph BestPractices["✅ BEST PRACTICES"]
+        style BestPractices fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+
+        BP1["1️⃣ START SMALL, SCALE UP AS NEEDED
+        - Begin with X-Small for new workloads
+        - Monitor query performance for 1 week
+        - Scale up if 80%+ of queries exceed SLAs
+        - Avoid over-provisioning upfront"]
+
+        BP2["2️⃣ USE AUTO-SUSPEND AGGRESSIVELY
+        - Set to 5-10 minutes for interactive workloads
+        - Set to 60 seconds for infrequent batch jobs
+        - Never use 'Never suspend' unless 24/7 load
+        - Cold start is only 5-10 seconds"]
+
+        BP3["3️⃣ SEPARATE WAREHOUSES BY WORKLOAD
+        - ETL_WH: Large, manual suspend
+        - BI_WH: Medium, auto-scaled, Economy
+        - DEV_WH: X-Small, auto-suspend 5 min
+        - Prevents resource contention"]
+
+        BP4["4️⃣ LEVERAGE RESULT CACHE
+        - Identical queries return instantly (free)
+        - Persists for 24 hours
+        - Invalidated on data changes
+        - No warehouse needed"]
+
+        BP5["5️⃣ MONITOR AND ADJUST
+        - Review QUERY_HISTORY weekly
+        - Check WAREHOUSE_METERING_HISTORY for costs
+        - Look for queuing patterns
+        - Adjust scaling policies based on data"]
+
+        BP6["6️⃣ USE RESOURCE MONITORS
+        - Set credit quotas per warehouse
+        - Alerts at 75%, 90%, 100%
+        - Auto-suspend at limit
+        - Prevents runaway costs"]
+
+        BP7["7️⃣ OPTIMIZE BEFORE SCALING
+        - Add clustering keys to large tables
+        - Use materialized views for repeated aggregations
+        - Partition pruning with WHERE filters
+        - Scaling is NOT a substitute for optimization"]
+    end
+
+    %% ============================================================================
+    %% REAL-WORLD EXAMPLES
+    %% ============================================================================
+    subgraph RealWorld["🌍 REAL-WORLD EXAMPLES"]
+        style RealWorld fill:#F3E5F5,stroke:#8E24AA,stroke-width:2px
+
+        Example1["Scenario 1: E-commerce Dashboard
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        Problem: 50 users, morning slowness
+        Solution: Medium warehouse + Multi-cluster (1-3)
+        Mode: Economy (cost-sensitive)
+        Result: Queue eliminated, cost +$200/mo
+        Metrics: 99.5% queries < 3 sec"]
+
+        Example2["Scenario 2: Nightly ETL Pipeline
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        Problem: 8-hour ETL was missing SLA (6 hr)
+        Solution: Scaled from Medium → X-Large
+        Mode: Manual start/stop (no auto-scale)
+        Result: ETL down to 4 hours, cost +$50/day
+        Metrics: Processing 5TB/night"]
+
+        Example3["Scenario 3: Data Science Workload
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        Problem: ML model training taking 10+ hours
+        Solution: Dedicated 2X-Large warehouse
+        Mode: Manual (runs only during training)
+        Result: Training time → 2 hours, run 2x/week
+        Metrics: $64 per training run"]
+
+        Example4["Scenario 4: Multi-Tenant SaaS
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        Problem: 200 customers, unpredictable load
+        Solution: Small warehouse + Multi (1-10)
+        Mode: Standard (balanced response)
+        Result: Auto-scales to demand, avg 3 clusters
+        Metrics: 95th percentile < 5 sec response"]
+    end
+
+    %% ============================================================================
+    %% NOTES
+    %% ============================================================================
+    %%
+    %% KEY DECISION FACTORS:
+    %%
+    %% 1. SCALE UP when:
+    %%    - Individual queries are slow despite optimizations
+    %%    - You need more RAM for large joins or aggregations
+    %%    - Complex queries timeout or run out of memory
+    %%    - You're processing very large datasets (>1TB per query)
+    %%
+    %% 2. SCALE OUT when:
+    %%    - Many users are experiencing wait times
+    %%    - Query queue length is consistently > 5
+    %%    - You need to maintain SLAs during peak hours
+    %%    - Concurrent user count > 10-15
+    %%
+    %% 3. ECONOMY MODE when:
+    %%    - Cost is primary concern
+    %%    - Some queuing is acceptable (5-10 min)
+    %%    - Load is variable but not time-critical
+    %%    - Development or non-production environments
+    %%
+    %% 4. STANDARD MODE when:
+    %%    - Balanced cost and performance
+    %%    - Production BI dashboards
+    %%    - Moderate SLAs (sub-minute response)
+    %%    - Unpredictable but important workloads
+    %%
+    %% 5. MAXIMIZED MODE when:
+    %%    - Zero queuing tolerance
+    %%    - Mission-critical real-time dashboards
+    %%    - Predictable, constant high load
+    %%    - Budget is secondary to performance
+    %%
+    %% COST CALCULATION EXAMPLE:
+    %%
+    %% Scenario: Medium warehouse, multi-cluster (1-5), Economy mode
+    %% Workload: 8 hours/day active, average 2 clusters running
+    %% Credits: 4 credits/hour × 2 clusters × 8 hours × 30 days = 1,920 credits/month
+    %% Cost: 1,920 credits × $3/credit = $5,760/month
+    %%
+    %% vs. Standard mode (avg 3 clusters): $8,640/month (50% more expensive)
+    %%
+    %% AUTO-SUSPEND SAVINGS:
+    %% Without: 4 credits/hour × 24 hours × 30 days = 2,880 credits = $8,640/month
+    %% With (8h/day): 4 credits/hour × 8 hours × 30 days = 960 credits = $2,880/month
+    %% Savings: $5,760/month (67% cost reduction!)
+    %%
+    %% ============================================================================

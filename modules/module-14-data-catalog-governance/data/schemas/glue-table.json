@@ -1,0 +1,348 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AWS Glue Table Definition",
+  "description": "JSON schema for defining AWS Glue Data Catalog table structures",
+  "type": "object",
+  "required": ["DatabaseName", "TableInput"],
+  "properties": {
+    "DatabaseName": {
+      "type": "string",
+      "description": "Name of the database where the table will be created",
+      "pattern": "^[a-z0-9_]+$",
+      "minLength": 1,
+      "maxLength": 255,
+      "examples": ["dev_sales_bronze_db", "prod_analytics_silver_db"]
+    },
+    "TableInput": {
+      "type": "object",
+      "description": "Table definition object",
+      "required": ["Name", "StorageDescriptor"],
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "Table name (lowercase, underscores allowed)",
+          "pattern": "^[a-z0-9_]+$",
+          "minLength": 1,
+          "maxLength": 255,
+          "examples": ["sales_transactions", "customer_dim_v2"]
+        },
+        "Description": {
+          "type": "string",
+          "description": "Human-readable table description",
+          "maxLength": 2048,
+          "examples": ["Raw sales transaction data from POS systems"]
+        },
+        "Owner": {
+          "type": "string",
+          "description": "Table owner email or team name",
+          "examples": ["data-engineering@company.com", "sales-team"]
+        },
+        "TableType": {
+          "type": "string",
+          "description": "Type of table",
+          "enum": ["EXTERNAL_TABLE", "MANAGED_TABLE", "VIRTUAL_VIEW"],
+          "default": "EXTERNAL_TABLE"
+        },
+        "Parameters": {
+          "type": "object",
+          "description": "Key-value pairs for table metadata",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "examples": [
+            {
+              "classification": "parquet",
+              "compressionType": "snappy",
+              "data_owner": "engineering@company.com",
+              "update_frequency": "daily",
+              "contains_pii": "true"
+            }
+          ]
+        },
+        "PartitionKeys": {
+          "type": "array",
+          "description": "Columns used for partitioning",
+          "items": {
+            "type": "object",
+            "required": ["Name", "Type"],
+            "properties": {
+              "Name": {
+                "type": "string",
+                "description": "Partition column name",
+                "pattern": "^[a-z0-9_]+$",
+                "examples": ["year", "month", "day", "region"]
+              },
+              "Type": {
+                "type": "string",
+                "description": "Partition column data type",
+                "enum": ["string", "int", "bigint", "date"],
+                "examples": ["string"]
+              },
+              "Comment": {
+                "type": "string",
+                "description": "Partition column description",
+                "maxLength": 255,
+                "examples": ["Year partition from transaction_date"]
+              }
+            }
+          },
+          "maxItems": 100
+        },
+        "StorageDescriptor": {
+          "type": "object",
+          "description": "Physical storage information",
+          "required": ["Columns", "Location", "InputFormat", "OutputFormat", "SerdeInfo"],
+          "properties": {
+            "Columns": {
+              "type": "array",
+              "description": "Table columns (non-partition)",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["Name", "Type"],
+                "properties": {
+                  "Name": {
+                    "type": "string",
+                    "description": "Column name",
+                    "pattern": "^[a-z0-9_]+$",
+                    "examples": ["transaction_id", "customer_email", "total_amount"]
+                  },
+                  "Type": {
+                    "type": "string",
+                    "description": "Column data type",
+                    "enum": [
+                      "string", "char", "varchar",
+                      "tinyint", "smallint", "int", "bigint",
+                      "float", "double", "decimal",
+                      "date", "timestamp",
+                      "boolean",
+                      "binary",
+                      "array<string>", "array<int>", "array<double>",
+                      "map<string,string>", "map<string,int>",
+                      "struct<field1:string,field2:int>"
+                    ],
+                    "examples": ["string", "decimal(10,2)", "timestamp", "array<string>"]
+                  },
+                  "Comment": {
+                    "type": "string",
+                    "description": "Column description",
+                    "maxLength": 255,
+                    "examples": ["Customer email address (PII)", "Total transaction amount in USD"]
+                  },
+                  "Parameters": {
+                    "type": "object",
+                    "description": "Column-level metadata",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "examples": [
+                      {
+                        "classification": "PII",
+                        "sensitivity": "high",
+                        "masking_rule": "email_hash"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "Location": {
+              "type": "string",
+              "description": "S3 path to table data",
+              "pattern": "^s3://[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]/.*",
+              "examples": [
+                "s3://my-data-lake/bronze/sales/transactions/",
+                "s3://analytics-bucket/silver/customers/"
+              ]
+            },
+            "InputFormat": {
+              "type": "string",
+              "description": "Input format class for reading data",
+              "enum": [
+                "org.apache.hadoop.mapred.TextInputFormat",
+                "org.apache.hadoop.mapred.SequenceFileInputFormat",
+                "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
+                "org.apache.hadoop.hive.ql.io.orc.OrcInputFormat",
+                "org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat"
+              ],
+              "examples": ["org.apache.hadoop.mapred.SequenceFileInputFormat"]
+            },
+            "OutputFormat": {
+              "type": "string",
+              "description": "Output format class for writing data",
+              "enum": [
+                "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                "org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat",
+                "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
+                "org.apache.hadoop.hive.ql.io.orc.OrcOutputFormat",
+                "org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat"
+              ],
+              "examples": ["org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat"]
+            },
+            "Compressed": {
+              "type": "boolean",
+              "description": "Whether data is compressed",
+              "default": false
+            },
+            "NumberOfBuckets": {
+              "type": "integer",
+              "description": "Number of buckets for bucketed tables",
+              "minimum": 0,
+              "default": 0
+            },
+            "SerdeInfo": {
+              "type": "object",
+              "description": "Serialization/deserialization configuration",
+              "required": ["SerializationLibrary"],
+              "properties": {
+                "Name": {
+                  "type": "string",
+                  "description": "SerDe name",
+                  "examples": ["ParquetSerDe", "CSVSerDe"]
+                },
+                "SerializationLibrary": {
+                  "type": "string",
+                  "description": "SerDe class name",
+                  "enum": [
+                    "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+                    "org.apache.hadoop.hive.serde2.OpenCSVSerde",
+                    "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe",
+                    "org.apache.hadoop.hive.ql.io.orc.OrcSerde",
+                    "org.apache.hadoop.hive.serde2.avro.AvroSerDe",
+                    "org.openx.data.jsonserde.JsonSerDe"
+                  ],
+                  "examples": ["org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"]
+                },
+                "Parameters": {
+                  "type": "object",
+                  "description": "SerDe-specific parameters",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "examples": [
+                    {
+                      "field.delim": ",",
+                      "skip.header.line.count": "1",
+                      "serialization.format": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            "BucketColumns": {
+              "type": "array",
+              "description": "Columns used for bucketing",
+              "items": {
+                "type": "string"
+              },
+              "examples": [["customer_id"]]
+            },
+            "SortColumns": {
+              "type": "array",
+              "description": "Sort order for bucketed tables",
+              "items": {
+                "type": "object",
+                "required": ["Column", "SortOrder"],
+                "properties": {
+                  "Column": {
+                    "type": "string"
+                  },
+                  "SortOrder": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "0 = ASC, 1 = DESC"
+                  }
+                }
+              }
+            },
+            "StoredAsSubDirectories": {
+              "type": "boolean",
+              "description": "Whether data is stored in subdirectories",
+              "default": false
+            }
+          }
+        },
+        "Retention": {
+          "type": "integer",
+          "description": "Data retention in days",
+          "minimum": 0,
+          "examples": [365, 2555]
+        },
+        "ViewOriginalText": {
+          "type": "string",
+          "description": "Original SQL for views",
+          "maxLength": 409600
+        },
+        "ViewExpandedText": {
+          "type": "string",
+          "description": "Expanded SQL for views",
+          "maxLength": 409600
+        },
+        "TargetTable": {
+          "type": "object",
+          "description": "For resource link tables (cross-account sharing)",
+          "properties": {
+            "CatalogId": {
+              "type": "string",
+              "pattern": "^\\d{12}$",
+              "description": "AWS account ID of source catalog"
+            },
+            "DatabaseName": {
+              "type": "string",
+              "description": "Source database name"
+            },
+            "Name": {
+              "type": "string",
+              "description": "Source table name"
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "DatabaseName": "dev_sales_bronze_db",
+      "TableInput": {
+        "Name": "sales_transactions",
+        "Description": "Raw sales transaction data from point-of-sale systems",
+        "Owner": "data-engineering@company.com",
+        "TableType": "EXTERNAL_TABLE",
+        "Parameters": {
+          "classification": "csv",
+          "compressionType": "none",
+          "data_owner": "sales-team@company.com",
+          "update_frequency": "daily",
+          "contains_pii": "true"
+        },
+        "PartitionKeys": [
+          {"Name": "year", "Type": "string", "Comment": "Year partition"},
+          {"Name": "month", "Type": "string", "Comment": "Month partition"},
+          {"Name": "day", "Type": "string", "Comment": "Day partition"}
+        ],
+        "StorageDescriptor": {
+          "Columns": [
+            {"Name": "transaction_id", "Type": "string", "Comment": "Unique transaction ID"},
+            {"Name": "customer_id", "Type": "string", "Comment": "Customer identifier"},
+            {"Name": "product_id", "Type": "string", "Comment": "Product SKU"},
+            {"Name": "total_amount", "Type": "decimal(10,2)", "Comment": "Total amount in USD"},
+            {"Name": "customer_email", "Type": "string", "Comment": "Customer email (PII)", "Parameters": {"classification": "PII"}}
+          ],
+          "Location": "s3://training-data-lake/bronze/sales/transactions/",
+          "InputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+          "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+          "Compressed": false,
+          "NumberOfBuckets": 0,
+          "SerdeInfo": {
+            "SerializationLibrary": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+            "Parameters": {
+              "field.delim": ",",
+              "skip.header.line.count": "1"
+            }
+          },
+          "StoredAsSubDirectories": false
+        }
+      }
+    }
+  ]
+}

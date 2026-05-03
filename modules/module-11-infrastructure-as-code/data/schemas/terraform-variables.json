@@ -1,0 +1,227 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/terraform-variables.schema.json",
+  "title": "Terraform Variables Schema",
+  "description": "Schema for validating Terraform variable definitions",
+  "type": "object",
+  "properties": {
+    "environment": {
+      "type": "string",
+      "description": "Environment name",
+      "enum": ["dev", "staging", "prod", "prod-dr"],
+      "examples": ["dev", "staging", "prod"]
+    },
+    "region": {
+      "type": "string",
+      "description": "AWS region",
+      "pattern": "^[a-z]{2}-[a-z]+-[0-9]{1}$",
+      "examples": ["us-east-1", "us-west-2", "eu-west-1"]
+    },
+    "vpc_cidr": {
+      "type": "string",
+      "description": "CIDR block for VPC",
+      "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$",
+      "examples": ["10.0.0.0/16", "172.16.0.0/16"]
+    },
+    "availability_zones": {
+      "type": "array",
+      "description": "List of availability zones",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]{2}-[a-z]+-[0-9]{1}[a-z]$"
+      },
+      "minItems": 2,
+      "maxItems": 6,
+      "examples": [["us-east-1a", "us-east-1b", "us-east-1c"]]
+    },
+    "public_subnet_cidrs": {
+      "type": "array",
+      "description": "CIDR blocks for public subnets",
+      "items": {
+        "type": "string",
+        "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$"
+      },
+      "minItems": 1,
+      "examples": [["10.0.1.0/24", "10.0.2.0/24"]]
+    },
+    "private_subnet_cidrs": {
+      "type": "array",
+      "description": "CIDR blocks for private subnets",
+      "items": {
+        "type": "string",
+        "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$"
+      },
+      "minItems": 1,
+      "examples": [["10.0.10.0/24", "10.0.11.0/24"]]
+    },
+    "database_subnet_cidrs": {
+      "type": "array",
+      "description": "CIDR blocks for database subnets",
+      "items": {
+        "type": "string",
+        "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$"
+      },
+      "minItems": 2,
+      "examples": [["10.0.20.0/24", "10.0.21.0/24"]]
+    },
+    "instance_types": {
+      "type": "object",
+      "description": "EC2 instance types for different tiers",
+      "properties": {
+        "web": {
+          "type": "string",
+          "pattern": "^[a-z][0-9][a-z]?\\.(nano|micro|small|medium|large|xlarge|[0-9]+xlarge)$",
+          "examples": ["t3.small", "t3.medium"]
+        },
+        "app": {
+          "type": "string",
+          "pattern": "^[a-z][0-9][a-z]?\\.(nano|micro|small|medium|large|xlarge|[0-9]+xlarge)$",
+          "examples": ["t3.medium", "c5.large"]
+        },
+        "db": {
+          "type": "string",
+          "pattern": "^db\\.[a-z][0-9][a-z]?\\.(micro|small|medium|large|xlarge|[0-9]+xlarge)$",
+          "examples": ["db.t3.small", "db.r5.large"]
+        }
+      },
+      "required": ["web", "app", "db"]
+    },
+    "auto_scaling": {
+      "type": "object",
+      "description": "Auto scaling configuration",
+      "properties": {
+        "min_size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Minimum number of instances"
+        },
+        "max_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000,
+          "description": "Maximum number of instances"
+        },
+        "desired_capacity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Desired number of instances"
+        }
+      },
+      "required": ["min_size", "max_size", "desired_capacity"]
+    },
+    "enable_nat_gateway": {
+      "type": "boolean",
+      "description": "Enable NAT Gateway for private subnets",
+      "default": true
+    },
+    "enable_vpn_gateway": {
+      "type": "boolean",
+      "description": "Enable VPN Gateway",
+      "default": false
+    },
+    "enable_monitoring": {
+      "type": "boolean",
+      "description": "Enable CloudWatch detailed monitoring",
+      "default": true
+    },
+    "backup_retention_days": {
+      "type": "integer",
+      "description": "Number of days to retain backups",
+      "minimum": 0,
+      "maximum": 365,
+      "default": 7
+    },
+    "enable_multi_az": {
+      "type": "boolean",
+      "description": "Enable Multi-AZ deployment for databases",
+      "default": false
+    },
+    "enable_deletion_protection": {
+      "type": "boolean",
+      "description": "Enable deletion protection for critical resources",
+      "default": false
+    },
+    "tags": {
+      "type": "object",
+      "description": "Resource tags",
+      "properties": {
+        "Environment": {
+          "type": "string",
+          "enum": ["Development", "Staging", "Production", "Production-DR"]
+        },
+        "ManagedBy": {
+          "type": "string",
+          "const": "Terraform"
+        },
+        "CostCenter": {
+          "type": "string",
+          "examples": ["Engineering", "Production", "Research"]
+        },
+        "Project": {
+          "type": "string",
+          "examples": ["DataPlatform", "Analytics", "MLOps"]
+        },
+        "Owner": {
+          "type": "string",
+          "format": "email",
+          "examples": ["team@company.com"]
+        },
+        "Compliance": {
+          "type": "string",
+          "enum": ["SOC2", "HIPAA", "PCI-DSS", "GDPR", "None"]
+        },
+        "DataClassification": {
+          "type": "string",
+          "enum": ["Public", "Internal", "Confidential", "Restricted"]
+        }
+      },
+      "required": ["Environment", "ManagedBy", "Project"],
+      "additionalProperties": true
+    },
+    "disaster_recovery": {
+      "type": "object",
+      "description": "Disaster recovery configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable disaster recovery"
+        },
+        "primary_region": {
+          "type": "string",
+          "description": "Primary region for DR",
+          "pattern": "^[a-z]{2}-[a-z]+-[0-9]{1}$"
+        },
+        "failover_priority": {
+          "type": "integer",
+          "description": "Failover priority (1 = highest)",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "rto_minutes": {
+          "type": "integer",
+          "description": "Recovery Time Objective in minutes",
+          "minimum": 0,
+          "examples": [15, 60, 240]
+        },
+        "rpo_minutes": {
+          "type": "integer",
+          "description": "Recovery Point Objective in minutes",
+          "minimum": 0,
+          "examples": [5, 15, 60]
+        }
+      }
+    }
+  },
+  "required": [
+    "environment",
+    "region",
+    "vpc_cidr",
+    "availability_zones",
+    "public_subnet_cidrs",
+    "private_subnet_cidrs",
+    "tags"
+  ],
+  "additionalProperties": false
+}

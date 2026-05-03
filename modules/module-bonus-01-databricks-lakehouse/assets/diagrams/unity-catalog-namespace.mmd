@@ -1,0 +1,222 @@
+```mermaid
+graph TB
+    Metastore[Metastore<br/>unity_catalog<br/>Root governance object]
+
+    subgraph "Development Environment"
+        DevCatalog[Catalog: dev_catalog<br/>Environment: Development<br/>Owner: DevOps Team]
+
+        DevSales[Schema: sales<br/>Domain: Sales Data]
+        DevMarketing[Schema: marketing<br/>Domain: Marketing Data]
+
+        DevCustomers[Table: customers<br/>PII Data<br/>Row Filter: Region]
+        DevOrders[Table: orders<br/>Transactional Data]
+        DevCampaigns[Table: campaigns<br/>Campaign Metrics]
+
+        DevCatalog --> DevSales
+        DevCatalog --> DevMarketing
+        DevSales --> DevCustomers
+        DevSales --> DevOrders
+        DevMarketing --> DevCampaigns
+    end
+
+    subgraph "Staging Environment"
+        StagingCatalog[Catalog: staging_catalog<br/>Environment: Staging<br/>Owner: QA Team]
+
+        StagingSales[Schema: sales<br/>Validated Data]
+
+        StagingCustomers[Table: customers<br/>Masked PII<br/>Data Quality Checks]
+        StagingOrders[Table: orders<br/>Referential Integrity]
+
+        StagingCatalog --> StagingSales
+        StagingSales --> StagingCustomers
+        StagingSales --> StagingOrders
+    end
+
+    subgraph "Production Environment"
+        ProdCatalog[Catalog: prod_catalog<br/>Environment: Production<br/>Owner: Data Engineering]
+
+        ProdSales[Schema: sales<br/>Production Data<br/>SLA: 99.9%]
+        ProdReporting[Schema: reporting<br/>Read-Only Views]
+
+        ProdCustomers[Table: customers<br/>Encrypted PII<br/>Column-Level Security]
+        ProdOrders[Table: orders<br/>Partitioned by date<br/>Optimized]
+
+        RevenueView[View: monthly_revenue<br/>Dynamic Security<br/>Finance Team Only]
+
+        ProdCatalog --> ProdSales
+        ProdCatalog --> ProdReporting
+        ProdSales --> ProdCustomers
+        ProdSales --> ProdOrders
+        ProdReporting --> RevenueView
+    end
+
+    Metastore --> DevCatalog
+    Metastore --> StagingCatalog
+    Metastore --> ProdCatalog
+
+    subgraph "Permission Model"
+        direction LR
+        P1[Metastore Admin<br/>Full Control]
+        P2[Catalog Owner<br/>USE CATALOG<br/>CREATE SCHEMA]
+        P3[Schema Owner<br/>USE SCHEMA<br/>CREATE TABLE]
+        P4[Data Engineer<br/>SELECT, INSERT<br/>UPDATE, DELETE]
+        P5[Analyst<br/>SELECT Only]
+
+        P1 --> P2
+        P2 --> P3
+        P3 --> P4
+        P4 --> P5
+    end
+
+    subgraph "Data Lineage"
+        Source[Source Table<br/>dev_catalog.sales.orders]
+        Transform[Transformation<br/>ETL Notebook]
+        Target[Target Table<br/>prod_catalog.sales.orders]
+        Dashboard[Dashboard<br/>Revenue Report]
+
+        Source -->|Unity Catalog<br/>Tracks Lineage| Transform
+        Transform --> Target
+        Target --> Dashboard
+    end
+
+    style Metastore fill:#f3e5f5
+
+    style DevCatalog fill:#e3f2fd
+    style DevSales fill:#e3f2fd
+    style DevMarketing fill:#e3f2fd
+    style DevCustomers fill:#e3f2fd
+    style DevOrders fill:#e3f2fd
+    style DevCampaigns fill:#e3f2fd
+
+    style StagingCatalog fill:#fff3e0
+    style StagingSales fill:#fff3e0
+    style StagingCustomers fill:#fff3e0
+    style StagingOrders fill:#fff3e0
+
+    style ProdCatalog fill:#e8f5e9
+    style ProdSales fill:#e8f5e9
+    style ProdReporting fill:#e8f5e9
+    style ProdCustomers fill:#e8f5e9
+    style ProdOrders fill:#e8f5e9
+    style RevenueView fill:#e8f5e9
+
+    style P1 fill:#ffcdd2
+    style P2 fill:#f8bbd0
+    style P3 fill:#f48fb1
+    style P4 fill:#ce93d8
+    style P5 fill:#b39ddb
+```
+
+**Three-Level Namespace:**
+
+## Traditional (2 levels)
+```
+database.table
+sales.customers
+```
+
+## Unity Catalog (3 levels)
+```
+catalog.schema.table
+prod_catalog.sales.customers
+```
+
+---
+
+## Benefits
+
+### 1. Environment Isolation
+- **Dev**: Experimental work, frequent changes
+- **Staging**: Pre-production testing, data validation
+- **Prod**: Production data, strict access control
+
+### 2. Domain Separation
+- **Sales Schema**: Sales-related tables
+- **Marketing Schema**: Marketing analytics
+- **Finance Schema**: Financial reporting
+
+### 3. Multi-Tenant Data Sharing
+- Team A: `team_a_catalog.sales.customers`
+- Team B: `team_b_catalog.sales.customers`
+- Same workspace, isolated data
+
+---
+
+## Permission Hierarchy
+
+```sql
+-- Metastore Admin (Full Control)
+GRANT USAGE ON METASTORE TO `admin_group`
+
+-- Catalog Level
+GRANT USE CATALOG ON CATALOG prod_catalog TO `data_engineers`
+GRANT CREATE SCHEMA ON CATALOG prod_catalog TO `data_engineers`
+
+-- Schema Level
+GRANT USE SCHEMA ON SCHEMA prod_catalog.sales TO `analysts`
+GRANT SELECT ON SCHEMA prod_catalog.sales TO `analysts`
+
+-- Table Level
+GRANT SELECT ON TABLE prod_catalog.sales.customers TO `sales_team`
+GRANT INSERT ON TABLE prod_catalog.sales.customers TO `etl_service`
+
+-- Column Level
+GRANT SELECT (customer_id, name, country)
+  ON TABLE prod_catalog.sales.customers
+  TO `analysts`
+-- Excludes: email, phone (PII columns)
+```
+
+---
+
+## Row-Level Security
+
+```sql
+-- Create filter function
+CREATE FUNCTION prod_catalog.sales.region_filter(country STRING)
+RETURN is_account_group_member('us_team') AND country = 'USA'
+    OR is_account_group_member('eu_team') AND country IN ('UK', 'Germany')
+
+-- Apply to table
+ALTER TABLE prod_catalog.sales.customers
+SET ROW FILTER prod_catalog.sales.region_filter ON (country)
+```
+
+Now:
+- US Team: Only sees US customers
+- EU Team: Only sees UK/Germany customers
+- Admins: See all rows
+
+---
+
+## Data Lineage Example
+
+Unity Catalog automatically tracks:
+```
+Bronze Table (Raw)
+    ↓ [ETL Notebook]
+Silver Table (Cleaned)
+    ↓ [Aggregation Job]
+Gold Table (Metrics)
+    ↓ [Dashboard Query]
+Business Report
+```
+
+**View in UI**: Data Explorer → Select Table → Lineage Tab
+
+---
+
+## Fully-Qualified Names
+
+```sql
+-- Development
+SELECT * FROM dev_catalog.sales.customers
+
+-- Staging
+SELECT * FROM staging_catalog.sales.customers
+
+-- Production
+SELECT * FROM prod_catalog.sales.customers
+```
+
+**Same workspace, different environments!**

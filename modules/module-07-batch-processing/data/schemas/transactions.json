@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Transaction",
+  "description": "E-commerce transaction record for batch processing exercises",
+  "type": "object",
+  "required": ["transaction_id", "user_id", "product_id", "amount", "timestamp", "status"],
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "description": "Unique transaction identifier",
+      "pattern": "^TXN[0-9]{10}$",
+      "examples": ["TXN0000000001", "TXN0123456789"]
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User identifier",
+      "pattern": "^USER[0-9]{6}$",
+      "examples": ["USER000001", "USER999999"]
+    },
+    "product_id": {
+      "type": "string",
+      "description": "Product identifier",
+      "pattern": "^PROD[0-9]{5}$",
+      "examples": ["PROD00001", "PROD99999"]
+    },
+    "amount": {
+      "type": "number",
+      "description": "Transaction amount in USD",
+      "minimum": 0.01,
+      "maximum": 10000.00,
+      "multipleOf": 0.01
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Number of items purchased",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "Transaction timestamp in ISO 8601 format",
+      "format": "date-time",
+      "examples": ["2024-03-07T10:30:00Z"]
+    },
+    "status": {
+      "type": "string",
+      "description": "Transaction status",
+      "enum": ["completed", "pending", "failed", "refunded"]
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "Payment method used",
+      "enum": ["credit_card", "debit_card", "paypal", "bank_transfer", "crypto"]
+    },
+    "country": {
+      "type": "string",
+      "description": "Country code (ISO 3166-1 alpha-2)",
+      "pattern": "^[A-Z]{2}$",
+      "examples": ["US", "UK", "CA", "DE", "FR", "ES", "IT", "BR", "MX", "AR"]
+    },
+    "category": {
+      "type": "string",
+      "description": "Product category",
+      "enum": ["electronics", "clothing", "books", "home", "sports", "toys", "food", "beauty"]
+    },
+    "discount": {
+      "type": "number",
+      "description": "Discount percentage applied",
+      "minimum": 0,
+      "maximum": 100
+    }
+  }
+}

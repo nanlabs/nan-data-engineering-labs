@@ -1,0 +1,374 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/terraform-outputs.schema.json",
+  "title": "Terraform Outputs Schema",
+  "description": "Schema for validating Terraform output values",
+  "type": "object",
+  "properties": {
+    "vpc_id": {
+      "type": "object",
+      "description": "VPC identifier",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^vpc-[a-f0-9]{8,17}$",
+          "examples": ["vpc-0123456789abcdef0"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "sensitive": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": ["value"]
+    },
+    "vpc_cidr_block": {
+      "type": "object",
+      "description": "VPC CIDR block",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$",
+          "examples": ["10.0.0.0/16"]
+        }
+      },
+      "required": ["value"]
+    },
+    "public_subnet_ids": {
+      "type": "object",
+      "description": "Public subnet IDs",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^subnet-[a-f0-9]{8,17}$"
+          },
+          "examples": [["subnet-0123456789abcdef0", "subnet-0123456789abcdef1"]]
+        }
+      },
+      "required": ["value"]
+    },
+    "private_subnet_ids": {
+      "type": "object",
+      "description": "Private subnet IDs",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^subnet-[a-f0-9]{8,17}$"
+          }
+        }
+      },
+      "required": ["value"]
+    },
+    "database_subnet_ids": {
+      "type": "object",
+      "description": "Database subnet IDs",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^subnet-[a-f0-9]{8,17}$"
+          }
+        }
+      },
+      "required": ["value"]
+    },
+    "nat_gateway_ids": {
+      "type": "object",
+      "description": "NAT Gateway IDs",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^nat-[a-f0-9]{8,17}$"
+          }
+        }
+      }
+    },
+    "internet_gateway_id": {
+      "type": "object",
+      "description": "Internet Gateway ID",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^igw-[a-f0-9]{8,17}$",
+          "examples": ["igw-0123456789abcdef0"]
+        }
+      }
+    },
+    "security_group_ids": {
+      "type": "object",
+      "description": "Security Group IDs",
+      "properties": {
+        "value": {
+          "type": "object",
+          "properties": {
+            "web": {
+              "type": "string",
+              "pattern": "^sg-[a-f0-9]{8,17}$"
+            },
+            "app": {
+              "type": "string",
+              "pattern": "^sg-[a-f0-9]{8,17}$"
+            },
+            "db": {
+              "type": "string",
+              "pattern": "^sg-[a-f0-9]{8,17}$"
+            },
+            "alb": {
+              "type": "string",
+              "pattern": "^sg-[a-f0-9]{8,17}$"
+            }
+          }
+        }
+      }
+    },
+    "load_balancer_dns": {
+      "type": "object",
+      "description": "Load Balancer DNS name",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-]+\\.elb\\.[a-z]{2}-[a-z]+-[0-9]{1}\\.amazonaws\\.com$",
+          "examples": ["my-alb-123456789.us-east-1.elb.amazonaws.com"]
+        }
+      }
+    },
+    "load_balancer_arn": {
+      "type": "object",
+      "description": "Load Balancer ARN",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^arn:aws:elasticloadbalancing:[a-z]{2}-[a-z]+-[0-9]{1}:[0-9]{12}:loadbalancer/.+",
+          "examples": ["arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/1234567890abcdef"]
+        }
+      }
+    },
+    "rds_endpoint": {
+      "type": "object",
+      "description": "RDS database endpoint",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.[a-z]{2}-[a-z]+-[0-9]{1}\\.rds\\.amazonaws\\.com:[0-9]{1,5}$",
+          "examples": ["mydb.c1234567890.us-east-1.rds.amazonaws.com:5432"]
+        },
+        "sensitive": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "rds_instance_id": {
+      "type": "object",
+      "description": "RDS instance identifier",
+      "properties": {
+        "value": {
+          "type": "string",
+          "examples": ["mydb-prod"]
+        }
+      }
+    },
+    "s3_bucket_name": {
+      "type": "object",
+      "description": "S3 bucket name",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^[a-z0-9.-]{3,63}$",
+          "examples": ["my-data-bucket-prod"]
+        }
+      }
+    },
+    "s3_bucket_arn": {
+      "type": "object",
+      "description": "S3 bucket ARN",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^arn:aws:s3:::[a-z0-9.-]{3,63}$",
+          "examples": ["arn:aws:s3:::my-data-bucket-prod"]
+        }
+      }
+    },
+    "ecs_cluster_id": {
+      "type": "object",
+      "description": "ECS cluster ID",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^arn:aws:ecs:[a-z]{2}-[a-z]+-[0-9]{1}:[0-9]{12}:cluster/[a-zA-Z0-9-_]+$",
+          "examples": ["arn:aws:ecs:us-east-1:123456789012:cluster/my-cluster"]
+        }
+      }
+    },
+    "ecs_cluster_name": {
+      "type": "object",
+      "description": "ECS cluster name",
+      "properties": {
+        "value": {
+          "type": "string",
+          "examples": ["my-cluster-prod"]
+        }
+      }
+    },
+    "eks_cluster_endpoint": {
+      "type": "object",
+      "description": "EKS cluster endpoint",
+      "properties": {
+        "value": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://[A-F0-9]+\\.gr[0-9]+\\.[a-z]{2}-[a-z]+-[0-9]{1}\\.eks\\.amazonaws\\.com$",
+          "examples": ["https://A1B2C3D4E5F6.gr7.us-east-1.eks.amazonaws.com"]
+        },
+        "sensitive": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "eks_cluster_name": {
+      "type": "object",
+      "description": "EKS cluster name",
+      "properties": {
+        "value": {
+          "type": "string",
+          "examples": ["my-eks-cluster-prod"]
+        }
+      }
+    },
+    "lambda_function_arns": {
+      "type": "object",
+      "description": "Lambda function ARNs",
+      "properties": {
+        "value": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^arn:aws:lambda:[a-z]{2}-[a-z]+-[0-9]{1}:[0-9]{12}:function:[a-zA-Z0-9-_]+$"
+          },
+          "examples": [{
+            "extractor": "arn:aws:lambda:us-east-1:123456789012:function:data-extractor",
+            "transformer": "arn:aws:lambda:us-east-1:123456789012:function:data-transformer"
+          }]
+        }
+      }
+    },
+    "dynamodb_table_names": {
+      "type": "object",
+      "description": "DynamoDB table names",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "examples": [["users-table", "events-table", "config-table"]]
+        }
+      }
+    },
+    "kms_key_id": {
+      "type": "object",
+      "description": "KMS key ID for encryption",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+          "examples": ["12345678-1234-1234-1234-123456789012"]
+        },
+        "sensitive": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "kms_key_arn": {
+      "type": "object",
+      "description": "KMS key ARN",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^arn:aws:kms:[a-z]{2}-[a-z]+-[0-9]{1}:[0-9]{12}:key/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+        },
+        "sensitive": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "cloudwatch_log_group_names": {
+      "type": "object",
+      "description": "CloudWatch Log Group names",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^/aws/[a-zA-Z0-9-_/]+$"
+          },
+          "examples": [["/aws/lambda/my-function", "/aws/ecs/my-cluster"]]
+        }
+      }
+    },
+    "iam_role_arns": {
+      "type": "object",
+      "description": "IAM role ARNs",
+      "properties": {
+        "value": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9-_]+$"
+          },
+          "examples": [{
+            "ecs_task_execution": "arn:aws:iam::123456789012:role/ecsTaskExecutionRole",
+            "lambda_execution": "arn:aws:iam::123456789012:role/lambda-execution-role"
+          }]
+        }
+      }
+    },
+    "route53_zone_id": {
+      "type": "object",
+      "description": "Route53 Hosted Zone ID",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^Z[A-Z0-9]{1,31}$",
+          "examples": ["Z1234567890ABC"]
+        }
+      }
+    },
+    "cloudfront_distribution_id": {
+      "type": "object",
+      "description": "CloudFront distribution ID",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^E[A-Z0-9]{12,13}$",
+          "examples": ["E1234567890ABC"]
+        }
+      }
+    },
+    "cloudfront_domain_name": {
+      "type": "object",
+      "description": "CloudFront distribution domain name",
+      "properties": {
+        "value": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+\\.cloudfront\\.net$",
+          "examples": ["d1234567890abc.cloudfront.net"]
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,421 @@
+```mermaid
+sequenceDiagram
+    %% Enterprise Data Lakehouse - ETL Pipeline Flow
+    %% Detailed sequence diagram showing extraction to gold aggregation
+
+    participant SourceDB as Source Systems<br/>(RDS, DynamoDB, APIs)
+    participant EventBridge as Amazon EventBridge<br/>Scheduler
+    participant StepFunctions as Step Functions<br/>Orchestrator
+    participant Lambda as Lambda Functions<br/>Extractors
+    participant DMS as AWS DMS<br/>CDC Service
+    participant RawZone as S3 Raw Zone<br/>Landing
+    participant GlueCrawler as Glue Crawler<br/>Metadata
+    participant GlueCatalog as Glue Data Catalog<br/>Registry
+    participant GlueJob as Glue ETL Jobs<br/>Transformation
+    participant DataQuality as Glue Data Quality<br/>Validation
+    participant BronzeZone as S3 Bronze Zone<br/>Validated
+    participant EMRCluster as EMR Spark Cluster<br/>Processing
+    participant SilverZone as S3 Silver Zone<br/>Delta Lake
+    participant AthenaSQL as Amazon Athena<br/>SQL Engine
+    participant GoldZone as S3 Gold Zone<br/>Aggregates
+    participant SNS as Amazon SNS<br/>Notifications
+    participant CloudWatch as CloudWatch<br/>Monitoring
+    participant ErrorQueue as DLQ<br/>Dead Letter Queue
+
+    %% ========================================
+    %% PHASE 1: EXTRACTION
+    %% ========================================
+
+    Note over SourceDB,ErrorQueue: Phase 1: Data Extraction (Daily 2:00 AM UTC)
+
+    EventBridge->>StepFunctions: Trigger daily ETL workflow<br/>Schedule: cron(0 2 * * ? *)
+    activate StepFunctions
+
+    StepFunctions->>CloudWatch: Log workflow start<br/>Execution ID: exec-20260310-001
+    CloudWatch-->>StepFunctions: Logged
+
+    par Full Extract Path
+        StepFunctions->>Lambda: Extract RDS full dump<br/>Table: customers
+        activate Lambda
+        Lambda->>SourceDB: SELECT * FROM customers<br/>WHERE updated_at >= ?
+        SourceDB-->>Lambda: 100K rows returned
+
+        Lambda->>Lambda: Validate row count<br/>Check: count > 0
+        Lambda->>Lambda: Calculate checksum<br/>MD5 hash
+
+        Lambda->>RawZone: Write to S3<br/>s3://raw/rds/customers/<br/>date=2026-03-10/data.json
+        RawZone-->>Lambda: Upload complete<br/>Size: 50 MB
+
+        Lambda->>CloudWatch: Log extraction metrics<br/>Rows: 100K, Duration: 45s
+        deactivate Lambda
+
+    and CDC Path
+        StepFunctions->>DMS: Check CDC changes<br/>Table: orders
+        activate DMS
+        DMS->>SourceDB: Read binlog/WAL<br/>Since last checkpoint
+        SourceDB-->>DMS: 5K change records
+
+        DMS->>DMS: Parse CDC events<br/>INSERT/UPDATE/DELETE
+        DMS->>DMS: Add metadata<br/>timestamp, operation
+
+        DMS->>RawZone: Write CDC log<br/>s3://raw/cdc/orders/<br/>date=2026-03-10/changes.json
+        RawZone-->>DMS: Upload complete<br/>Size: 2 MB
+        deactivate DMS
+
+    and API Extract Path
+        StepFunctions->>Lambda: Extract Salesforce API<br/>Object: Account
+        activate Lambda
+        Lambda->>SourceDB: GET /services/data/v56.0/<br/>query?q=SELECT...
+        SourceDB-->>Lambda: API response: 200<br/>10K records
+
+        Lambda->>Lambda: Handle pagination<br/>Next page token
+        Lambda->>SourceDB: GET next page
+        SourceDB-->>Lambda: 10K more records
+
+        Lambda->>Lambda: Rate limit check<br/>Wait if needed
+
+        Lambda->>RawZone: Write to S3<br/>s3://raw/api/salesforce/<br/>date=2026-03-10/accounts.json
+        RawZone-->>Lambda: Upload complete
+        deactivate Lambda
+    end
+
+    StepFunctions->>CloudWatch: Extraction phase complete<br/>Duration: 2 minutes
+
+    %% Error handling for extraction
+    alt Extraction Error
+        Lambda->>ErrorQueue: Send failed extraction<br/>Error: Connection timeout
+        ErrorQueue->>SNS: Publish alert<br/>Priority: P1
+        SNS->>CloudWatch: Alert sent to on-call
+    end
+
+    %% ========================================
+    %% PHASE 2: RAW TO BRONZE TRANSFORMATION
+    %% ========================================
+
+    Note over RawZone,ErrorQueue: Phase 2: Bronze Transformation (Validation & Standardization)
+
+    StepFunctions->>GlueCrawler: Crawl raw zone<br/>Update catalog
+    activate GlueCrawler
+    GlueCrawler->>RawZone: Scan new files<br/>Pattern: date=2026-03-10/*
+    RawZone-->>GlueCrawler: Files discovered: 15
+
+    GlueCrawler->>GlueCrawler: Infer schemas<br/>Sample 2 MB per file
+    GlueCrawler->>GlueCatalog: Update tables<br/>Create partitions
+    GlueCatalog-->>GlueCrawler: Catalog updated
+    deactivate GlueCrawler
+
+    StepFunctions->>GlueJob: Start Bronze transformation<br/>Job: raw_to_bronze_customers
+    activate GlueJob
+
+    GlueJob->>GlueCatalog: Read table metadata<br/>Table: raw.customers
+    GlueCatalog-->>GlueJob: Schema returned
+
+    GlueJob->>RawZone: Read raw data<br/>Partition: date=2026-03-10
+    RawZone-->>GlueJob: 100K rows loaded
+
+    GlueJob->>GlueJob: Step 1: Parse JSON<br/>Handle nested structures
+    GlueJob->>GlueJob: Step 2: Flatten schema<br/>Normalize columns
+    GlueJob->>GlueJob: Step 3: Data type casting<br/>String -> Int/Date/etc
+
+    GlueJob->>DataQuality: Run quality rules<br/>Ruleset: bronze_customers
+    activate DataQuality
+
+    DataQuality->>DataQuality: Rule 1: Null check<br/>customer_id NOT NULL
+    DataQuality->>DataQuality: Rule 2: Format check<br/>email MATCHES regex
+    DataQuality->>DataQuality: Rule 3: Range check<br/>created_at <= NOW()
+    DataQuality->>DataQuality: Rule 4: Uniqueness<br/>customer_id unique
+
+    DataQuality-->>GlueJob: Quality score: 96.5%<br/>Failed: 3,500 rows
+    deactivate DataQuality
+
+    alt Quality Score < 95%
+        GlueJob->>ErrorQueue: Quality failure<br/>Score below threshold
+        ErrorQueue->>SNS: Alert data team<br/>Priority: P2
+        GlueJob->>StepFunctions: Fail job
+        StepFunctions->>CloudWatch: Job failed - quality
+    else Quality Score >= 95%
+        GlueJob->>GlueJob: Step 4: Remove invalid rows<br/>Write to quarantine
+        GlueJob->>GlueJob: Step 5: Add metadata<br/>processing_time, job_id
+        GlueJob->>GlueJob: Step 6: Partition data<br/>By year/month/day
+
+        GlueJob->>BronzeZone: Write Parquet files<br/>s3://bronze/customers/<br/>year=2026/month=03/day=10/
+        BronzeZone-->>GlueJob: Write complete<br/>96,500 rows, 18 MB
+
+        GlueJob->>GlueCatalog: Update statistics<br/>Row count, file size
+        GlueCatalog-->>GlueJob: Stats updated
+
+        GlueJob->>CloudWatch: Log job metrics<br/>Success, 96.5% quality
+        deactivate GlueJob
+    end
+
+    %% Parallel Bronze jobs
+    par Other Bronze Jobs
+        StepFunctions->>GlueJob: Transform orders table
+        activate GlueJob
+        Note right of GlueJob: Similar steps:<br/>Parse, validate,<br/>cast types,<br/>quality check,<br/>write Parquet
+        GlueJob->>BronzeZone: Write orders Bronze
+        deactivate GlueJob
+
+    and Products Bronze
+        StepFunctions->>GlueJob: Transform products table
+        activate GlueJob
+        GlueJob->>BronzeZone: Write products Bronze
+        deactivate GlueJob
+
+    and Events Bronze
+        StepFunctions->>GlueJob: Transform clickstream
+        activate GlueJob
+        GlueJob->>BronzeZone: Write events Bronze
+        deactivate GlueJob
+    end
+
+    StepFunctions->>CloudWatch: Bronze phase complete<br/>Duration: 15 minutes
+
+    %% ========================================
+    %% PHASE 3: BRONZE TO SILVER TRANSFORMATION
+    %% ========================================
+
+    Note over BronzeZone,ErrorQueue: Phase 3: Silver Transformation (Business Logic & SCD)
+
+    StepFunctions->>EMRCluster: Submit Spark job<br/>Job: bronze_to_silver_dim_customer
+    activate EMRCluster
+
+    EMRCluster->>GlueCatalog: Read table schema<br/>Table: bronze.customers
+    GlueCatalog-->>EMRCluster: Schema metadata
+
+    EMRCluster->>BronzeZone: Read Bronze data<br/>Spark DataFrame
+    BronzeZone-->>EMRCluster: 96,500 rows loaded
+
+    EMRCluster->>EMRCluster: Step 1: Deduplication<br/>PARTITION BY customer_id<br/>ORDER BY updated_at DESC
+
+    EMRCluster->>SilverZone: Read existing Silver<br/>Table: dim_customer<br/>Delta Lake
+    SilverZone-->>EMRCluster: Current dimension: 950K rows
+
+    EMRCluster->>EMRCluster: Step 2: SCD Type 2 logic<br/>Compare new vs existing
+
+    EMRCluster->>EMRCluster: Identify changes:<br/>- New customers: 2,500<br/>- Updated customers: 5,000<br/>- No change: 89,000
+
+    EMRCluster->>EMRCluster: Step 3: Close expired records<br/>SET effective_to = NOW()<br/>SET is_current = false
+
+    EMRCluster->>EMRCluster: Step 4: Insert new versions<br/>SET effective_from = NOW()<br/>SET effective_to = '9999-12-31'<br/>SET is_current = true
+
+    EMRCluster->>EMRCluster: Step 5: Data enrichment<br/>- Geocode addresses<br/>- Calculate age<br/>- Derive segments
+
+    EMRCluster->>EMRCluster: Step 6: Business rules<br/>- Email validation<br/>- Phone formatting<br/>- Name standardization
+
+    EMRCluster->>DataQuality: Validate Silver quality<br/>Ruleset: silver_dim_customer
+    activate DataQuality
+
+    DataQuality->>DataQuality: Rule: Referential integrity<br/>Check foreign keys
+    DataQuality->>DataQuality: Rule: No duplicates<br/>current records only
+    DataQuality->>DataQuality: Rule: Complete history<br/>No gaps in effective dates
+
+    DataQuality-->>EMRCluster: Quality score: 99.2%
+    deactivate DataQuality
+
+    EMRCluster->>SilverZone: MERGE into Delta table<br/>ACID transaction
+    activate SilverZone
+    SilverZone->>SilverZone: Start transaction
+    SilverZone->>SilverZone: Update expired records
+    SilverZone->>SilverZone: Insert new records
+    SilverZone->>SilverZone: Commit transaction
+    SilverZone->>SilverZone: Optimize table<br/>Compaction + Z-ordering
+    SilverZone-->>EMRCluster: Merge complete<br/>Total rows: 957,500
+    deactivate SilverZone
+
+    EMRCluster->>GlueCatalog: Update table stats<br/>Latest partition info
+    GlueCatalog-->>EMRCluster: Updated
+
+    EMRCluster->>CloudWatch: Log Spark metrics<br/>Shuffle: 2.5 GB<br/>Duration: 8 minutes
+    deactivate EMRCluster
+
+    %% Silver Fact Table Processing
+    StepFunctions->>EMRCluster: Submit fact_sales job
+    activate EMRCluster
+
+    EMRCluster->>BronzeZone: Read orders Bronze
+    BronzeZone-->>EMRCluster: Orders loaded
+
+    EMRCluster->>BronzeZone: Read order_items Bronze
+    BronzeZone-->>EMRCluster: Line items loaded
+
+    EMRCluster->>SilverZone: Read dim_customer<br/>For joins
+    SilverZone-->>EMRCluster: Dimension loaded
+
+    EMRCluster->>SilverZone: Read dim_product<br/>For joins
+    SilverZone-->>EMRCluster: Dimension loaded
+
+    EMRCluster->>SilverZone: Read dim_date<br/>For joins
+    SilverZone-->>EMRCluster: Dimension loaded
+
+    EMRCluster->>EMRCluster: Step 1: Join operations<br/>orders <- order_items<br/>LEFT JOIN dimensions
+
+    EMRCluster->>EMRCluster: Step 2: Calculate measures<br/>- Line total<br/>- Discounts<br/>- Tax amounts<br/>- Profit margins
+
+    EMRCluster->>EMRCluster: Step 3: Handle late arrivals<br/>Check processing_date<br/>vs order_date
+
+    EMRCluster->>EMRCluster: Step 4: Deduplication<br/>Remove duplicate orders
+
+    EMRCluster->>DataQuality: Validate fact table<br/>Referential integrity
+    activate DataQuality
+    DataQuality->>DataQuality: Check all FKs exist<br/>in dimensions
+    DataQuality->>DataQuality: Check measure ranges<br/>Amount > 0, Qty > 0
+    DataQuality-->>EMRCluster: Quality: 99.8%
+    deactivate DataQuality
+
+    EMRCluster->>SilverZone: APPEND to fact_sales<br/>Delta Lake
+    SilverZone-->>EMRCluster: 45,000 rows appended
+
+    EMRCluster->>CloudWatch: Fact job complete<br/>Duration: 12 minutes
+    deactivate EMRCluster
+
+    StepFunctions->>CloudWatch: Silver phase complete<br/>Duration: 25 minutes
+
+    alt Silver Phase Error
+        EMRCluster->>ErrorQueue: Job failure<br/>Error: OOM exception
+        ErrorQueue->>SNS: Alert engineers<br/>Priority: P1
+        SNS->>CloudWatch: On-call notified
+        StepFunctions->>StepFunctions: Retry with more memory<br/>Max retries: 3
+    end
+
+    %% ========================================
+    %% PHASE 4: SILVER TO GOLD AGGREGATION
+    %% ========================================
+
+    Note over SilverZone,ErrorQueue: Phase 4: Gold Aggregation (Business Metrics)
+
+    StepFunctions->>AthenaSQL: Execute aggregation query<br/>CTAS: gold_sales_analytics
+    activate AthenaSQL
+
+    AthenaSQL->>GlueCatalog: Read Silver schemas<br/>fact_sales + dimensions
+    GlueCatalog-->>AthenaSQL: Schemas returned
+
+    AthenaSQL->>SilverZone: Scan Silver data<br/>Predicates pushed down
+    SilverZone-->>AthenaSQL: Optimized read<br/>Only required columns
+
+    AthenaSQL->>AthenaSQL: Step 1: Daily aggregation<br/>GROUP BY date, customer, product<br/>SUM(revenue, profit, units)
+
+    AthenaSQL->>AthenaSQL: Step 2: Calculate KPIs<br/>- Profit margin %<br/>- Growth rate YoY<br/>- Running totals<br/>- Moving averages
+
+    AthenaSQL->>AthenaSQL: Step 3: Monthly rollup<br/>Aggregate daily to monthly
+
+    AthenaSQL->>AthenaSQL: Step 4: YTD calculations<br/>Running YTD sums
+
+    AthenaSQL->>GoldZone: Write aggregated data<br/>CREATE TABLE AS SELECT<br/>Format: Delta Lake
+    GoldZone-->>AthenaSQL: Table created<br/>5,000 aggregated rows
+
+    AthenaSQL->>GlueCatalog: Register Gold table<br/>Update partitions
+    GlueCatalog-->>AthenaSQL: Registered
+
+    AthenaSQL->>CloudWatch: Log query metrics<br/>Data scanned: 500 MB<br/>Duration: 45 seconds
+    deactivate AthenaSQL
+
+    %% Customer 360 Gold Table
+    StepFunctions->>EMRCluster: Build Customer 360<br/>Wide table denormalized
+    activate EMRCluster
+
+    EMRCluster->>SilverZone: Read multiple Silver tables<br/>- dim_customer<br/>- fact_sales<br/>- fact_web_sessions<br/>- fact_support_tickets
+    SilverZone-->>EMRCluster: All loaded
+
+    EMRCluster->>EMRCluster: Step 1: Customer aggregates<br/>COUNT orders, SUM revenue<br/>AVG order value, etc
+
+    EMRCluster->>EMRCluster: Step 2: RFM metrics<br/>Recency, Frequency, Monetary
+
+    EMRCluster->>EMRCluster: Step 3: Segmentation<br/>ML-based clustering<br/>High/Medium/Low value
+
+    EMRCluster->>EMRCluster: Step 4: Lifetime value<br/>CLV calculation<br/>Predictive LTV
+
+    EMRCluster->>EMRCluster: Step 5: Flatten to wide table<br/>200+ columns per customer
+
+    EMRCluster->>GoldZone: Write Customer 360<br/>Delta Lake MERGE
+    GoldZone-->>EMRCluster: Complete: 950K customers
+
+    deactivate EMRCluster
+
+    %% Executive KPI Dashboard
+    StepFunctions->>AthenaSQL: Build Executive KPIs<br/>Highest aggregation
+    activate AthenaSQL
+
+    AthenaSQL->>GoldZone: Read multiple Gold marts<br/>- Sales analytics<br/>- Financial metrics<br/>- Marketing performance
+    GoldZone-->>AthenaSQL: Data loaded
+
+    AthenaSQL->>AthenaSQL: Calculate top-level KPIs<br/>- Total revenue<br/>- YoY growth<br/>- Customer count<br/>- Churn rate<br/>- Net profit margin
+
+    AthenaSQL->>AthenaSQL: Compare to targets<br/>Variance analysis<br/>Green/Yellow/Red status
+
+    AthenaSQL->>GoldZone: Write KPI dashboard table<br/>Highly summarized
+    GoldZone-->>AthenaSQL: 50 KPI rows written
+
+    deactivate AthenaSQL
+
+    StepFunctions->>CloudWatch: Gold phase complete<br/>Duration: 10 minutes
+
+    %% ========================================
+    %% PHASE 5: POST-PROCESSING
+    %% ========================================
+
+    Note over StepFunctions,ErrorQueue: Phase 5: Post-Processing & Notifications
+
+    StepFunctions->>GlueJob: Run data quality report<br/>Aggregated metrics
+    activate GlueJob
+
+    GlueJob->>BronzeZone: Query row counts<br/>Quality scores
+    BronzeZone-->>GlueJob: Bronze metrics
+
+    GlueJob->>SilverZone: Query row counts<br/>Quality scores
+    SilverZone-->>GlueJob: Silver metrics
+
+    GlueJob->>GoldZone: Query row counts<br/>Freshness timestamps
+    GoldZone-->>GlueJob: Gold metrics
+
+    GlueJob->>GlueJob: Generate quality report<br/>Calculate scores<br/>Identify issues
+
+    GlueJob->>CloudWatch: Publish DQ metrics<br/>Custom metrics
+    CloudWatch-->>GlueJob: Metrics published
+
+    deactivate GlueJob
+
+    StepFunctions->>StepFunctions: Check SLA compliance<br/>Target: 3 hours end-to-end
+
+    alt SLA Met
+        StepFunctions->>SNS: Success notification<br/>All zones updated<br/>Quality: 98.5%<br/>Duration: 52 minutes
+        SNS->>CloudWatch: Notification sent
+
+    else SLA Missed
+        StepFunctions->>SNS: SLA breach alert<br/>Duration: 190 minutes<br/>Target: 180 minutes
+        SNS->>CloudWatch: Alert escalated
+    end
+
+    StepFunctions->>CloudWatch: Workflow complete<br/>Status: SUCCESS<br/>Total duration: 52 minutes<br/>Records processed: 500K
+
+    deactivate StepFunctions
+
+    %% ========================================
+    %% ERROR HANDLING FLOW
+    %% ========================================
+
+    Note over ErrorQueue,CloudWatch: Error Handling & Recovery
+
+    opt Error Recovery Path
+        ErrorQueue->>Lambda: Process DLQ messages<br/>Retry with backoff
+        activate Lambda
+
+        Lambda->>Lambda: Analyze error type<br/>Transient vs Permanent
+
+        alt Transient Error
+            Lambda->>StepFunctions: Retry failed step<br/>Attempt: 2/3
+            StepFunctions->>GlueJob: Re-run job
+            GlueJob->>BronzeZone: Second attempt
+            BronzeZone-->>GlueJob: Success
+
+        else Permanent Error
+            Lambda->>SNS: Manual intervention needed<br/>Error: Schema mismatch<br/>Priority: P0
+            SNS->>CloudWatch: Engineering team alerted
+        end
+
+        deactivate Lambda
+    end
+
+    %% Monitoring Dashboard
+    Note over CloudWatch: All metrics visualized in CloudWatch Dashboard<br/>Real-time monitoring + alerting
+```

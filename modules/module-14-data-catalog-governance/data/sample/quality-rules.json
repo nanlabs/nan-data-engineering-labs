@@ -1,0 +1,339 @@
+{
+  "ruleset_name": "sales_transactions_quality_rules",
+  "description": "Data quality validation rules for sales transaction data",
+  "target_table": {
+    "database_name": "dev_sales_bronze_db",
+    "table_name": "sales_transactions"
+  },
+  "rules": [
+    {
+      "rule_name": "transaction_id_uniqueness",
+      "rule_type": "Uniqueness",
+      "description": "Ensure transaction_id is unique",
+      "expression": "Uniqueness \"transaction_id\" > 0.99",
+      "severity": "CRITICAL",
+      "threshold": 0.99
+    },
+    {
+      "rule_name": "transaction_id_completeness",
+      "rule_type": "Completeness",
+      "description": "Ensure transaction_id is not null",
+      "expression": "Completeness \"transaction_id\" = 1.0",
+      "severity": "CRITICAL",
+      "threshold": 1.0
+    },
+    {
+      "rule_name": "date_completeness",
+      "rule_type": "Completeness",
+      "description": "Ensure date field is populated",
+      "expression": "Completeness \"date\" > 0.99",
+      "severity": "HIGH",
+      "threshold": 0.99
+    },
+    {
+      "rule_name": "date_format_validity",
+      "rule_type": "PatternMatch",
+      "description": "Ensure date follows YYYY-MM-DD format",
+      "expression": "ColumnValues \"date\" matches \"^\\\\d{4}-\\\\d{2}-\\\\d{2}$\"",
+      "severity": "HIGH",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "customer_id_completeness",
+      "rule_type": "Completeness",
+      "description": "Ensure customer_id is not null",
+      "expression": "Completeness \"customer_id\" > 0.98",
+      "severity": "HIGH",
+      "threshold": 0.98
+    },
+    {
+      "rule_name": "customer_id_format",
+      "rule_type": "PatternMatch",
+      "description": "Ensure customer_id follows CUST-NNNN format",
+      "expression": "ColumnValues \"customer_id\" matches \"^CUST-\\\\d{4,6}$\"",
+      "severity": "MEDIUM",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "product_id_completeness",
+      "rule_type": "Completeness",
+      "description": "Ensure product_id is not null",
+      "expression": "Completeness \"product_id\" = 1.0",
+      "severity": "CRITICAL",
+      "threshold": 1.0
+    },
+    {
+      "rule_name": "product_id_format",
+      "rule_type": "PatternMatch",
+      "description": "Ensure product_id follows PROD-XXXNNN format",
+      "expression": "ColumnValues \"product_id\" matches \"^PROD-[A-Z]{1,4}\\\\d{3,4}$\"",
+      "severity": "MEDIUM",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "category_completeness",
+      "rule_type": "Completeness",
+      "description": "Ensure category is not null",
+      "expression": "Completeness \"category\" > 0.95",
+      "severity": "MEDIUM",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "category_validity",
+      "rule_type": "ReferentialIntegrity",
+      "description": "Ensure category is from valid list",
+      "expression": "ColumnValues \"category\" in [\"Electronics\",\"Home\",\"Books\",\"Clothing\",\"Grocery\",\"Sports\",\"Toys\",\"Furniture\",\"Beauty\",\"Office\"]",
+      "severity": "MEDIUM",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "quantity_non_negative",
+      "rule_type": "RangeCheck",
+      "description": "Ensure quantity is positive",
+      "expression": "ColumnValues \"quantity\" > 0",
+      "severity": "HIGH",
+      "threshold": 0.99
+    },
+    {
+      "rule_name": "quantity_realistic_range",
+      "rule_type": "RangeCheck",
+      "description": "Ensure quantity is within realistic range (1-1000)",
+      "expression": "ColumnValues \"quantity\" between 1 and 1000",
+      "severity": "MEDIUM",
+      "threshold": 0.98
+    },
+    {
+      "rule_name": "unit_price_non_negative",
+      "rule_type": "RangeCheck",
+      "description": "Ensure unit_price is positive",
+      "expression": "ColumnValues \"unit_price\" > 0",
+      "severity": "CRITICAL",
+      "threshold": 1.0
+    },
+    {
+      "rule_name": "unit_price_realistic_range",
+      "rule_type": "RangeCheck",
+      "description": "Ensure unit_price is within realistic range (0.01-10000)",
+      "expression": "ColumnValues \"unit_price\" between 0.01 and 10000",
+      "severity": "HIGH",
+      "threshold": 0.99
+    },
+    {
+      "rule_name": "total_amount_non_negative",
+      "rule_type": "RangeCheck",
+      "description": "Ensure total_amount is positive",
+      "expression": "ColumnValues \"total_amount\" > 0",
+      "severity": "CRITICAL",
+      "threshold": 1.0
+    },
+    {
+      "rule_name": "total_amount_calculation",
+      "rule_type": "CustomSQL",
+      "description": "Ensure total_amount equals quantity * unit_price (within 1% tolerance)",
+      "expression": "(ColumnValues \"total_amount\" - (ColValue(\"quantity\") * ColValue(\"unit_price\"))) / ColValue(\"total_amount\") < 0.01",
+      "severity": "HIGH",
+      "threshold": 0.99
+    },
+    {
+      "rule_name": "payment_method_completeness",
+      "rule_type": "Completeness",
+      "description": "Ensure payment_method is not null",
+      "expression": "Completeness \"payment_method\" > 0.98",
+      "severity": "MEDIUM",
+      "threshold": 0.98
+    },
+    {
+      "rule_name": "payment_method_validity",
+      "rule_type": "ReferentialIntegrity",
+      "description": "Ensure payment_method is from valid list",
+      "expression": "ColumnValues \"payment_method\" in [\"credit_card\",\"debit_card\",\"paypal\",\"apple_pay\",\"google_pay\",\"cash\",\"financing\"]",
+      "severity": "MEDIUM",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "store_location_completeness",
+      "rule_type": "Completeness",
+      "description": "Ensure store_location is not null",
+      "expression": "Completeness \"store_location\" > 0.95",
+      "severity": "LOW",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "region_completeness",
+      "rule_type": "Completeness",
+      "description": "Ensure region is not null",
+      "expression": "Completeness \"region\" > 0.98",
+      "severity": "MEDIUM",
+      "threshold": 0.98
+    },
+    {
+      "rule_name": "region_validity",
+      "rule_type": "ReferentialIntegrity",
+      "description": "Ensure region is from valid US regions",
+      "expression": "ColumnValues \"region\" in [\"US-EAST\",\"US-WEST\",\"US-CENTRAL\",\"US-SOUTH\"]",
+      "severity": "MEDIUM",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "customer_email_format",
+      "rule_type": "PatternMatch",
+      "description": "Ensure customer_email is valid email format",
+      "expression": "ColumnValues \"customer_email\" matches \"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$\"",
+      "severity": "HIGH",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "customer_phone_format",
+      "rule_type": "PatternMatch",
+      "description": "Ensure customer_phone follows +1-NNN-NNNN format",
+      "expression": "ColumnValues \"customer_phone\" matches \"^\\\\+1-\\\\d{3}-\\\\d{4}$\"",
+      "severity": "MEDIUM",
+      "threshold": 0.90
+    },
+    {
+      "rule_name": "status_completeness",
+      "rule_type": "Completeness",
+      "description": "Ensure status is not null",
+      "expression": "Completeness \"status\" > 0.99",
+      "severity": "HIGH",
+      "threshold": 0.99
+    },
+    {
+      "rule_name": "status_validity",
+      "rule_type": "ReferentialIntegrity",
+      "description": "Ensure status is from valid list",
+      "expression": "ColumnValues \"status\" in [\"completed\",\"pending\",\"failed\",\"cancelled\"]",
+      "severity": "HIGH",
+      "threshold": 0.98
+    },
+    {
+      "rule_name": "row_count_minimum",
+      "rule_type": "RowCount",
+      "description": "Ensure minimum number of rows (at least 10 transactions per day)",
+      "expression": "RowCount > 10",
+      "severity": "HIGH",
+      "threshold": 1.0
+    },
+    {
+      "rule_name": "duplicate_rows",
+      "rule_type": "Uniqueness",
+      "description": "Check for duplicate rows based on all columns",
+      "expression": "Uniqueness [\"transaction_id\", \"date\", \"customer_id\"] > 0.999",
+      "severity": "CRITICAL",
+      "threshold": 0.999
+    }
+  ],
+  "quality_thresholds": {
+    "bronze_layer": {
+      "minimum_score": 0.85,
+      "critical_rules_pass_rate": 1.0,
+      "high_severity_pass_rate": 0.95,
+      "medium_severity_pass_rate": 0.90,
+      "low_severity_pass_rate": 0.85
+    },
+    "silver_layer": {
+      "minimum_score": 0.95,
+      "critical_rules_pass_rate": 1.0,
+      "high_severity_pass_rate": 0.98,
+      "medium_severity_pass_rate": 0.95,
+      "low_severity_pass_rate": 0.90
+    },
+    "gold_layer": {
+      "minimum_score": 0.99,
+      "critical_rules_pass_rate": 1.0,
+      "high_severity_pass_rate": 0.99,
+      "medium_severity_pass_rate": 0.98,
+      "low_severity_pass_rate": 0.95
+    }
+  },
+  "actions_on_failure": {
+    "critical": {
+      "action": "STOP_PIPELINE",
+      "notification": "sns_topic_arn:123456789012:data-quality-critical",
+      "quarantine": true,
+      "create_ticket": true
+    },
+    "high": {
+      "action": "QUARANTINE_DATA",
+      "notification": "sns_topic_arn:123456789012:data-quality-high",
+      "quarantine": true,
+      "create_ticket": false
+    },
+    "medium": {
+      "action": "LOG_WARNING",
+      "notification": "sns_topic_arn:123456789012:data-quality-medium",
+      "quarantine": false,
+      "create_ticket": false
+    },
+    "low": {
+      "action": "LOG_INFO",
+      "notification": null,
+      "quarantine": false,
+      "create_ticket": false
+    }
+  },
+  "validation_schedule": {
+    "frequency": "on_data_arrival",
+    "event_pattern": {
+      "source": ["aws.s3"],
+      "detail_type": ["Object Created"],
+      "detail": {
+        "bucket": {
+          "name": ["training-data-lake"]
+        },
+        "object": {
+          "key": [{"prefix": "bronze/sales/transactions/"}]
+        }
+      }
+    },
+    "fallback_schedule": "cron(0 3 * * ? *)"
+  },
+  "custom_sql_rules": [
+    {
+      "rule_name": "daily_transaction_volume_anomaly",
+      "description": "Check if daily transaction count is within 3 standard deviations of historical average",
+      "sql": "SELECT COUNT(*) as daily_count, AVG(historical_avg) as avg, STDDEV(historical_avg) as std FROM current_data, historical_stats WHERE ABS(daily_count - avg) <= 3 * std",
+      "severity": "MEDIUM",
+      "threshold": 0.95
+    },
+    {
+      "rule_name": "revenue_consistency_check",
+      "description": "Ensure total daily revenue is within expected range based on historical patterns",
+      "sql": "SELECT SUM(total_amount) as daily_revenue FROM transactions WHERE daily_revenue BETWEEN 0.7 * historical_avg_revenue AND 1.5 * historical_avg_revenue",
+      "severity": "HIGH",
+      "threshold": 0.98
+    },
+    {
+      "rule_name": "cross_field_validation",
+      "description": "Validate relationships between related fields",
+      "sql": "SELECT * FROM transactions WHERE (payment_method = 'cash' AND total_amount > 500) OR (status = 'completed' AND total_amount <= 0)",
+      "severity": "MEDIUM",
+      "threshold": 0.99,
+      "expected_violations": 0
+    }
+  ],
+  "data_profiling": {
+    "enabled": true,
+    "columns_to_profile": [
+      "quantity",
+      "unit_price",
+      "total_amount",
+      "category",
+      "region",
+      "payment_method",
+      "status"
+    ],
+    "statistics": [
+      "min",
+      "max",
+      "avg",
+      "median",
+      "stddev",
+      "distinct_count",
+      "null_count",
+      "percentile_25",
+      "percentile_75",
+      "percentile_95"
+    ]
+  }
+}

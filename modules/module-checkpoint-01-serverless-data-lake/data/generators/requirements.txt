@@ -1,0 +1,23 @@
+# CloudMart Data Generator Dependencies
+# =====================================
+# Install with: pip install -r requirements.txt
+
+# Data generation and manipulation
+faker>=20.0.0              # Generate realistic fake data
+pandas>=2.0.0              # Data manipulation and analysis
+numpy>=1.24.0              # Numerical operations
+
+# Data formats
+pyarrow>=14.0.0            # Parquet file format support
+fastparquet>=2023.10.0     # Alternative Parquet implementation
+
+# AWS integration
+boto3>=1.28.0              # AWS SDK for Python
+botocore>=1.31.0           # Core functionality for boto3
+
+# Progress and utilities
+tqdm>=4.66.0               # Progress bars for long operations
+
+# Optional: for better performance
+# pytz>=2023.3             # Timezone handling
+# python-dateutil>=2.8.2    # Extended date utilities

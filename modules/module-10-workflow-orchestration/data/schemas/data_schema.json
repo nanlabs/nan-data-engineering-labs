@@ -1,0 +1,56 @@
+{
+  "users": {
+    "description": "Schema para tabla de usuarios",
+    "fields": [
+      {"name": "id", "type": "integer", "required": true, "primary_key": true},
+      {"name": "name", "type": "string", "required": true, "max_length": 100},
+      {"name": "email", "type": "string", "required": true, "format": "email", "unique": true},
+      {"name": "age", "type": "integer", "required": false, "min": 18, "max": 120},
+      {"name": "city", "type": "string", "required": false, "max_length": 100},
+      {"name": "registration_date", "type": "date", "required": true},
+      {"name": "status", "type": "string", "required": true, "enum": ["active", "inactive", "suspended"]}
+    ],
+    "quality_rules": [
+      {"rule": "no_nulls", "columns": ["id", "name", "email"]},
+      {"rule": "unique", "columns": ["email"]},
+      {"rule": "email_format", "column": "email"},
+      {"rule": "age_range", "column": "age", "min": 18, "max": 120}
+    ]
+  },
+  "orders": {
+    "description": "Schema para tabla de órdenes",
+    "fields": [
+      {"name": "order_id", "type": "string", "required": true, "primary_key": true},
+      {"name": "customer_id", "type": "string", "required": true},
+      {"name": "product", "type": "string", "required": true, "max_length": 100},
+      {"name": "category", "type": "string", "required": false, "max_length": 50},
+      {"name": "amount", "type": "decimal", "required": true, "precision": 10, "scale": 2, "min": 0},
+      {"name": "quantity", "type": "integer", "required": true, "min": 1},
+      {"name": "order_date", "type": "date", "required": true},
+      {"name": "status", "type": "string", "required": true, "enum": ["pending", "completed", "shipped", "cancelled"]}
+    ],
+    "quality_rules": [
+      {"rule": "no_nulls", "columns": ["order_id", "customer_id", "product", "amount", "order_date"]},
+      {"rule": "positive_amount", "column": "amount"},
+      {"rule": "positive_quantity", "column": "quantity"},
+      {"rule": "valid_status", "column": "status"}
+    ]
+  },
+  "sensor_readings": {
+    "description": "Schema para lecturas de sensores",
+    "fields": [
+      {"name": "sensor_id", "type": "string", "required": true, "max_length": 50},
+      {"name": "location", "type": "string", "required": true, "max_length": 100},
+      {"name": "temperature", "type": "decimal", "required": true, "precision": 5, "scale": 2, "min": -50, "max": 100},
+      {"name": "humidity", "type": "decimal", "required": true, "precision": 5, "scale": 2, "min": 0, "max": 100},
+      {"name": "timestamp", "type": "timestamp", "required": true},
+      {"name": "status", "type": "string", "required": true, "enum": ["normal", "warning", "critical"]}
+    ],
+    "quality_rules": [
+      {"rule": "no_nulls", "columns": ["sensor_id", "temperature", "humidity", "timestamp"]},
+      {"rule": "temperature_range", "column": "temperature", "min": -50, "max": 100},
+      {"rule": "humidity_range", "column": "humidity", "min": 0, "max": 100},
+      {"rule": "recent_timestamp", "column": "timestamp", "max_age_hours": 24}
+    ]
+  }
+}

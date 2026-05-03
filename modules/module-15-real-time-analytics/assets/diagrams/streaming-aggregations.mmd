@@ -1,0 +1,120 @@
+graph TB
+    %% Streaming Aggregations - Real-Time Metrics
+
+    subgraph "Event Stream"
+        ES[Raw Events<br/>user_id, product_id, amount, timestamp]:::stream
+    end
+
+    subgraph "1. COUNT Aggregation"
+        C1["SELECT<br/>  TUMBLE_START(ts, INTERVAL '1' MINUTE) as window_start,<br/>  COUNT(*) as event_count<br/>FROM events<br/>GROUP BY TUMBLE(ts, INTERVAL '1' MINUTE)"]:::sql
+
+        C2[Result:<br/>10:00 → 1,523 events<br/>10:01 → 1,689 events<br/>10:02 → 1,445 events]:::result
+
+        C3[Use Case: Live traffic monitoring]:::usecase
+    end
+
+    ES --> C1
+    C1 --> C2
+    C2 --> C3
+
+    subgraph "2. SUM Aggregation"
+        S1["SELECT<br/>  product_id,<br/>  SUM(amount) as total_revenue<br/>FROM transactions<br/>GROUP BY product_id,<br/>  TUMBLE(event_time, INTERVAL '5' MINUTE)"]:::sql
+
+        S2[Result:<br/>PROD_123 → $12,450<br/>PROD_456 → $8,920<br/>PROD_789 → $15,670]:::result
+
+        S3[Use Case: Real-time revenue dashboard]:::usecase
+    end
+
+    ES --> S1
+    S1 --> S2
+    S2 --> S3
+
+    subgraph "3. AVG with Sliding Window"
+        A1["SELECT<br/>  service_name,<br/>  AVG(response_time_ms) as avg_latency<br/>FROM metrics<br/>GROUP BY service_name,<br/>  HOP(ts, INTERVAL '1' MINUTE, INTERVAL '5' MINUTE)"]:::sql
+
+        A2[Result:<br/>api-gateway → 45.2ms<br/>auth-service → 12.8ms<br/>payment-service → 89.5ms]:::result
+
+        A3[Use Case: SLA monitoring]:::usecase
+    end
+
+    ES --> A1
+    A1 --> A2
+    A2 --> A3
+
+    subgraph "4. Top-N Query"
+        T1["SELECT *<br/>FROM (<br/>  SELECT product_id, SUM(quantity) as total_qty,<br/>    ROW_NUMBER() OVER (<br/>      PARTITION BY TUMBLE(ts, INTERVAL '1' HOUR)<br/>      ORDER BY SUM(quantity) DESC<br/>    ) as rank<br/>  FROM sales<br/>  GROUP BY product_id, TUMBLE(ts, INTERVAL '1' HOUR)<br/>)<br/>WHERE rank <= 10"]:::sql
+
+        T2[Result (Top 10 Products):<br/>1. PROD_123 → 2,450 units<br/>2. PROD_456 → 1,980 units<br/>3. PROD_789 → 1,750 units<br/>...<br/>10. PROD_321 → 890 units]:::result
+
+        T3[Use Case: Trending products]:::usecase
+    end
+
+    ES --> T1
+    T1 --> T2
+    T2 --> T3
+
+    subgraph "5. DISTINCT Count"
+        D1["SELECT<br/>  TUMBLE_START(ts, INTERVAL '1' MINUTE) as window,<br/>  COUNT(DISTINCT user_id) as unique_users<br/>FROM page_views<br/>GROUP BY TUMBLE(ts, INTERVAL '1' MINUTE)"]:::sql
+
+        D2[Result:<br/>10:00 → 523 unique users<br/>10:01 → 587 unique users<br/>10:02 → 612 unique users]:::result
+
+        D3[Use Case: DAU/MAU metrics]:::usecase
+    end
+
+    ES --> D1
+    D1 --> D2
+    D2 --> D3
+
+    subgraph "6. Percentile Calculation"
+        P1["SELECT<br/>  TUMBLE_START(ts, INTERVAL '5' MINUTE) as window,<br/>  service,<br/>  PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY latency) as p50,<br/>  PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY latency) as p95,<br/>  PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY latency) as p99<br/>FROM api_logs<br/>GROUP BY service, TUMBLE(ts, INTERVAL '5' MINUTE)"]:::sql
+
+        P2[Result (API Service):<br/>p50: 25ms<br/>p95: 120ms<br/>p99: 450ms]:::result
+
+        P3[Use Case: Performance monitoring]:::usecase
+    end
+
+    ES --> P1
+    P1 --> P2
+    P2 --> P3
+
+    %% Output to Dashboard
+    subgraph "Real-Time Dashboard"
+        DASH1[CloudWatch Dashboard<br/>Auto-refresh: 10s]:::dashboard
+        DASH2[QuickSight SPICE<br/>In-memory cache]:::dashboard
+        DASH3[Grafana + Prometheus<br/>Custom metrics]:::dashboard
+    end
+
+    C3 --> DASH1
+    S3 --> DASH2
+    A3 --> DASH3
+    T3 --> DASH2
+    D3 --> DASH1
+    P3 --> DASH3
+
+    %% Styling
+    classDef stream fill:#4A90E2,stroke:#2E6FA8,stroke-width:3px,color:#fff
+    classDef sql fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff,text-align:left
+    classDef result fill:#7ED321,stroke:#5A9E18,stroke-width:2px,color:#fff,text-align:left
+    classDef usecase fill:#E74C3C,stroke:#C0392B,stroke-width:2px,color:#fff
+    classDef dashboard fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+
+    %% Advanced Patterns
+    subgraph "Advanced Aggregation Patterns"
+        ADV["Multi-dimensional rollup:<br/>SELECT region, product_category, SUM(revenue)<br/>FROM sales<br/>GROUP BY ROLLUP(region, product_category)<br/><br/>Deduplication:<br/>SELECT DISTINCT event_id, user_id, action<br/>FROM events MATCH_RECOGNIZE (<br/>  PARTITION BY event_id<br/>  ORDER BY ts<br/>  MEASURES FIRST(A.user_id) as user_id<br/>  PATTERN (A B*)<br/>)<br/><br/>Late data handling:<br/>WATERMARK FOR ts AS ts - INTERVAL '1' MINUTE"]:::advanced
+    end
+
+    classDef advanced fill:#F39C12,stroke:#E67E22,stroke-width:2px,color:#fff,text-align:left
+
+    %% Performance Tips
+    subgraph "Performance Optimization"
+        OPT["1. Use tumbling for high throughput<br/>2. Pre-aggregate in Kafka (ksqlDB)<br/>3. Enable mini-batch execution<br/>4. Use RocksDB for state backend<br/>5. Tune checkpoint interval (1-5 min)<br/>6. Increase parallelism (# of KPUs)<br/>7. Use async I/O for lookups<br/>8. Enable incremental checkpoints"]:::opt
+    end
+
+    classDef opt fill:#1ABC9C,stroke:#16A085,stroke-width:2px,color:#fff,text-align:left
+
+    %% Real-World Benchmarks
+    subgraph "Benchmarks"
+        BENCH["Netflix: 2M events/sec<br/>• 200+ Flink jobs<br/>• <1s latency<br/>• 30 TB state<br/><br/>Alibaba: 10M events/sec<br/>• 4,000 Flink clusters<br/>• <500ms latency<br/>• Real-time GMV dashboard"]:::bench
+    end
+
+    classDef bench fill:#E67E22,stroke:#CA6F1E,stroke-width:2px,color:#fff,text-align:left

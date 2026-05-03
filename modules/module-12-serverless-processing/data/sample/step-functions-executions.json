@@ -1,0 +1,304 @@
+[
+  {
+    "executionId": "exec-001",
+    "workflowName": "data-processing-pipeline",
+    "startTime": "2024-01-15T10:00:00Z",
+    "endTime": "2024-01-15T10:15:23Z",
+    "status": "SUCCEEDED",
+    "input": {
+      "bucket": "data-lake-raw",
+      "key": "sales/2024/01/15/data.csv",
+      "recordCount": 10000
+    },
+    "output": {
+      "processedRecords": 9987,
+      "failedRecords": 13,
+      "outputBucket": "data-lake-processed",
+      "outputKey": "sales/2024/01/15/processed.parquet"
+    },
+    "stateTransitions": [
+      {
+        "state": "ExtractData",
+        "status": "SUCCEEDED",
+        "duration": 45.2,
+        "retryCount": 0
+      },
+      {
+        "state": "TransformData",
+        "status": "SUCCEEDED",
+        "duration": 523.8,
+        "retryCount": 0
+      },
+      {
+        "state": "ValidateData",
+        "status": "SUCCEEDED",
+        "duration": 89.5,
+        "retryCount": 0
+      },
+      {
+        "state": "LoadData",
+        "status": "SUCCEEDED",
+        "duration": 234.7,
+        "retryCount": 0
+      }
+    ],
+    "totalDuration": 923.2,
+    "cost": 0.0234
+  },
+  {
+    "executionId": "exec-002",
+    "workflowName": "data-processing-pipeline",
+    "startTime": "2024-01-15T11:00:00Z",
+    "endTime": "2024-01-15T11:08:12Z",
+    "status": "FAILED",
+    "input": {
+      "bucket": "data-lake-raw",
+      "key": "customers/2024/01/15/data.json",
+      "recordCount": 5000
+    },
+    "error": {
+      "type": "ValidationError",
+      "message": "Schema validation failed: missing required field 'email'",
+      "state": "ValidateData"
+    },
+    "stateTransitions": [
+      {
+        "state": "ExtractData",
+        "status": "SUCCEEDED",
+        "duration": 23.4,
+        "retryCount": 0
+      },
+      {
+        "state": "TransformData",
+        "status": "SUCCEEDED",
+        "duration": 156.7,
+        "retryCount": 0
+      },
+      {
+        "state": "ValidateData",
+        "status": "FAILED",
+        "duration": 12.8,
+        "retryCount": 3
+      }
+    ],
+    "totalDuration": 492.1,
+    "cost": 0.0089
+  },
+  {
+    "executionId": "exec-003",
+    "workflowName": "parallel-processing-pipeline",
+    "startTime": "2024-01-15T12:00:00Z",
+    "endTime": "2024-01-15T12:25:45Z",
+    "status": "SUCCEEDED",
+    "input": {
+      "sources": [
+        {"bucket": "data-lake-raw", "key": "sales/2024/01/15/batch1.csv"},
+        {"bucket": "data-lake-raw", "key": "sales/2024/01/15/batch2.csv"},
+        {"bucket": "data-lake-raw", "key": "sales/2024/01/15/batch3.csv"},
+        {"bucket": "data-lake-raw", "key": "sales/2024/01/15/batch4.csv"}
+      ],
+      "totalRecords": 40000
+    },
+    "output": {
+      "processedRecords": 39856,
+      "failedRecords": 144,
+      "outputBucket": "data-lake-processed",
+      "parallelBranches": 4,
+      "aggregatedMetrics": {
+        "totalRevenue": 2456789.45,
+        "totalTransactions": 39856,
+        "averageOrderValue": 61.67
+      }
+    },
+    "stateTransitions": [
+      {
+        "state": "PrepareParallel",
+        "status": "SUCCEEDED",
+        "duration": 12.3,
+        "retryCount": 0
+      },
+      {
+        "state": "ParallelProcessing",
+        "status": "SUCCEEDED",
+        "duration": 1421.6,
+        "branches": [
+          {"branch": 1, "duration": 1356.2, "status": "SUCCEEDED"},
+          {"branch": 2, "duration": 1398.7, "status": "SUCCEEDED"},
+          {"branch": 3, "duration": 1421.6, "status": "SUCCEEDED"},
+          {"branch": 4, "duration": 1389.4, "status": "SUCCEEDED"}
+        ],
+        "retryCount": 0
+      },
+      {
+        "state": "AggregateResults",
+        "status": "SUCCEEDED",
+        "duration": 89.3,
+        "retryCount": 0
+      },
+      {
+        "state": "SendNotification",
+        "status": "SUCCEEDED",
+        "duration": 3.2,
+        "retryCount": 0
+      }
+    ],
+    "totalDuration": 1545.2,
+    "cost": 0.0456
+  },
+  {
+    "executionId": "exec-004",
+    "workflowName": "map-state-pipeline",
+    "startTime": "2024-01-15T13:00:00Z",
+    "endTime": "2024-01-15T13:42:18Z",
+    "status": "SUCCEEDED",
+    "input": {
+      "bucket": "data-lake-raw",
+      "filePattern": "products/2024/01/15/*.json",
+      "fileCount": 250,
+      "maxConcurrency": 40
+    },
+    "output": {
+      "processedFiles": 247,
+      "failedFiles": 3,
+      "totalRecords": 125000,
+      "processedRecords": 124623,
+      "outputBucket": "data-lake-processed"
+    },
+    "stateTransitions": [
+      {
+        "state": "ListFiles",
+        "status": "SUCCEEDED",
+        "duration": 8.9,
+        "retryCount": 0
+      },
+      {
+        "state": "MapState",
+        "status": "SUCCEEDED",
+        "duration": 2510.4,
+        "itemsProcessed": 250,
+        "itemsSucceeded": 247,
+        "itemsFailed": 3,
+        "maxConcurrency": 40,
+        "retryCount": 0
+      },
+      {
+        "state": "GenerateSummary",
+        "status": "SUCCEEDED",
+        "duration": 15.6,
+        "retryCount": 0
+      }
+    ],
+    "totalDuration": 2538.1,
+    "cost": 0.0892
+  },
+  {
+    "executionId": "exec-005",
+    "workflowName": "human-approval-pipeline",
+    "startTime": "2024-01-15T14:00:00Z",
+    "endTime": "2024-01-15T15:23:45Z",
+    "status": "SUCCEEDED",
+    "input": {
+      "approvalRequest": {
+        "type": "data-migration",
+        "source": "legacy-database",
+        "destination": "data-lake",
+        "estimatedRecords": 1000000,
+        "requestedBy": "data-engineer@company.com"
+      }
+    },
+    "output": {
+      "approvalStatus": "APPROVED",
+      "approvedBy": "manager@company.com",
+      "approvalTime": "2024-01-15T14:45:00Z",
+      "migrationCompleted": true,
+      "recordsMigrated": 998765
+    },
+    "stateTransitions": [
+      {
+        "state": "PrepareApprovalRequest",
+        "status": "SUCCEEDED",
+        "duration": 5.2,
+        "retryCount": 0
+      },
+      {
+        "state": "SendApprovalEmail",
+        "status": "SUCCEEDED",
+        "duration": 2.3,
+        "retryCount": 0
+      },
+      {
+        "state": "WaitForApproval",
+        "status": "SUCCEEDED",
+        "duration": 2692.8,
+        "tokenReceived": true,
+        "retryCount": 0
+      },
+      {
+        "state": "ExecuteMigration",
+        "status": "SUCCEEDED",
+        "duration": 2315.6,
+        "retryCount": 0
+      },
+      {
+        "state": "SendCompletionEmail",
+        "status": "SUCCEEDED",
+        "duration": 1.8,
+        "retryCount": 0
+      }
+    ],
+    "totalDuration": 5025.3,
+    "cost": 0.0156
+  },
+  {
+    "executionId": "exec-006",
+    "workflowName": "saga-transaction-pipeline",
+    "startTime": "2024-01-15T16:00:00Z",
+    "endTime": "2024-01-15T16:05:34Z",
+    "status": "FAILED_COMPENSATED",
+    "input": {
+      "transaction": {
+        "orderId": "ORD-12345",
+        "customerId": "CUST-67890",
+        "items": [
+          {"productId": "PROD-001", "quantity": 2, "price": 99.99},
+          {"productId": "PROD-002", "quantity": 1, "price": 149.99}
+        ],
+        "totalAmount": 349.97
+      }
+    },
+    "error": {
+      "type": "PaymentFailed",
+      "message": "Credit card declined - insufficient funds",
+      "state": "ChargePayment",
+      "compensationExecuted": true
+    },
+    "stateTransitions": [
+      {
+        "state": "ReserveInventory",
+        "status": "SUCCEEDED",
+        "duration": 23.4,
+        "retryCount": 0
+      },
+      {
+        "state": "ChargePayment",
+        "status": "FAILED",
+        "duration": 156.8,
+        "retryCount": 3
+      },
+      {
+        "state": "CompensateReleaseInventory",
+        "status": "SUCCEEDED",
+        "duration": 18.9,
+        "retryCount": 0
+      },
+      {
+        "state": "NotifyCustomer",
+        "status": "SUCCEEDED",
+        "duration": 2.1,
+        "retryCount": 0
+      }
+    ],
+    "totalDuration": 334.7,
+    "cost": 0.0067
+  }
+]

@@ -1,0 +1,509 @@
+{
+  "Comment": "Daily Aggregation Workflow for RideShare Analytics Platform. This workflow runs daily to aggregate ride, payment, and rating data, generate reports, and archive results to S3. It uses parallel processing for efficiency and includes comprehensive error handling.",
+  "StartAt": "StartAggregation",
+  "TimeoutSeconds": 900,
+  "States": {
+    "StartAggregation": {
+      "Type": "Pass",
+      "Comment": "Initialize the workflow with timestamp metadata for tracking",
+      "Result": {
+        "workflow_name": "daily_aggregation",
+        "start_time.$": "$$.State.EnteredTime",
+        "execution_id.$": "$$.Execution.Name"
+      },
+      "ResultPath": "$.metadata",
+      "Next": "ParallelProcessing"
+    },
+    "ParallelProcessing": {
+      "Type": "Parallel",
+      "Comment": "Process three aggregation tasks in parallel to maximize efficiency. Each branch aggregates a different dimension (rides, payments, ratings) and stores the results in DynamoDB.",
+      "Branches": [
+        {
+          "StartAt": "AggregateRides",
+          "States": {
+            "AggregateRides": {
+              "Type": "Task",
+              "Comment": "Invoke Lambda to aggregate ride metrics for the past 24 hours. Calculates total rides, completed rides, cancelled rides, average duration, and total revenue.",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "rideshare-daily-aggregation-lambda",
+                "Payload": {
+                  "aggregation_type": "rides",
+                  "time_window_hours": 24,
+                  "execution_id.$": "$.metadata.execution_id"
+                }
+              },
+              "ResultPath": "$.rides_result",
+              "ResultSelector": {
+                "metrics.$": "$.Payload.metrics",
+                "timestamp.$": "$.Payload.timestamp"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException"
+                  ],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2.0
+                },
+                {
+                  "ErrorEquals": [
+                    "States.TaskFailed"
+                  ],
+                  "IntervalSeconds": 5,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 2.5
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "ResultPath": "$.error_info",
+                  "Next": "HandleRidesError"
+                }
+              ],
+              "Next": "StoreRidesMetrics"
+            },
+            "StoreRidesMetrics": {
+              "Type": "Task",
+              "Comment": "Store aggregated ride metrics in DynamoDB for quick access by dashboards and APIs",
+              "Resource": "arn:aws:states:::dynamodb:putItem",
+              "Parameters": {
+                "TableName": "rideshare_aggregated_metrics",
+                "Item": {
+                  "metric_id": {
+                    "S.$": "States.Format('rides_daily_{}', $.metadata.execution_id)"
+                  },
+                  "metric_type": {
+                    "S": "rides_daily"
+                  },
+                  "timestamp": {
+                    "N.$": "States.Format('{}', $.rides_result.timestamp)"
+                  },
+                  "total_rides": {
+                    "N.$": "States.Format('{}', $.rides_result.metrics.total_rides)"
+                  },
+                  "completed_rides": {
+                    "N.$": "States.Format('{}', $.rides_result.metrics.completed_rides)"
+                  },
+                  "cancelled_rides": {
+                    "N.$": "States.Format('{}', $.rides_result.metrics.cancelled_rides)"
+                  },
+                  "avg_duration_minutes": {
+                    "N.$": "States.Format('{}', $.rides_result.metrics.avg_duration)"
+                  },
+                  "total_revenue": {
+                    "N.$": "States.Format('{}', $.rides_result.metrics.total_revenue)"
+                  }
+                }
+              },
+              "ResultPath": "$.dynamodb_result",
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "DynamoDB.ProvisionedThroughputExceededException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 5,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "ResultPath": "$.error_info",
+                  "Next": "HandleRidesError"
+                }
+              ],
+              "End": true
+            },
+            "HandleRidesError": {
+              "Type": "Pass",
+              "Comment": "Capture error details for the rides aggregation branch",
+              "Result": {
+                "status": "failed",
+                "branch": "rides_aggregation"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "AggregatePayments",
+          "States": {
+            "AggregatePayments": {
+              "Type": "Task",
+              "Comment": "Invoke Lambda to aggregate payment metrics for the past 24 hours. Analyzes revenue by payment method and fraud detection statistics.",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "rideshare-daily-aggregation-lambda",
+                "Payload": {
+                  "aggregation_type": "payments",
+                  "time_window_hours": 24,
+                  "execution_id.$": "$.metadata.execution_id"
+                }
+              },
+              "ResultPath": "$.payments_result",
+              "ResultSelector": {
+                "metrics.$": "$.Payload.metrics",
+                "timestamp.$": "$.Payload.timestamp"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException"
+                  ],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2.0
+                },
+                {
+                  "ErrorEquals": [
+                    "States.TaskFailed"
+                  ],
+                  "IntervalSeconds": 5,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 2.5
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "ResultPath": "$.error_info",
+                  "Next": "HandlePaymentsError"
+                }
+              ],
+              "Next": "StorePaymentMetrics"
+            },
+            "StorePaymentMetrics": {
+              "Type": "Task",
+              "Comment": "Store aggregated payment metrics in DynamoDB, including breakdown by payment method",
+              "Resource": "arn:aws:states:::dynamodb:putItem",
+              "Parameters": {
+                "TableName": "rideshare_aggregated_metrics",
+                "Item": {
+                  "metric_id": {
+                    "S.$": "States.Format('payments_daily_{}', $.metadata.execution_id)"
+                  },
+                  "metric_type": {
+                    "S": "payments_daily"
+                  },
+                  "timestamp": {
+                    "N.$": "States.Format('{}', $.payments_result.timestamp)"
+                  },
+                  "total_revenue": {
+                    "N.$": "States.Format('{}', $.payments_result.metrics.total_revenue)"
+                  },
+                  "credit_card_revenue": {
+                    "N.$": "States.Format('{}', $.payments_result.metrics.by_payment_method.credit_card)"
+                  },
+                  "cash_revenue": {
+                    "N.$": "States.Format('{}', $.payments_result.metrics.by_payment_method.cash)"
+                  },
+                  "digital_wallet_revenue": {
+                    "N.$": "States.Format('{}', $.payments_result.metrics.by_payment_method.digital_wallet)"
+                  },
+                  "fraud_detected_count": {
+                    "N.$": "States.Format('{}', $.payments_result.metrics.fraud_detected)"
+                  }
+                }
+              },
+              "ResultPath": "$.dynamodb_result",
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "DynamoDB.ProvisionedThroughputExceededException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 5,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "ResultPath": "$.error_info",
+                  "Next": "HandlePaymentsError"
+                }
+              ],
+              "End": true
+            },
+            "HandlePaymentsError": {
+              "Type": "Pass",
+              "Comment": "Capture error details for the payments aggregation branch",
+              "Result": {
+                "status": "failed",
+                "branch": "payments_aggregation"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "AggregateRatings",
+          "States": {
+            "AggregateRatings": {
+              "Type": "Task",
+              "Comment": "Invoke Lambda to aggregate rating metrics for the past 24 hours. Calculates average ratings, distribution, and identifies low-rating alerts.",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "rideshare-daily-aggregation-lambda",
+                "Payload": {
+                  "aggregation_type": "ratings",
+                  "time_window_hours": 24,
+                  "execution_id.$": "$.metadata.execution_id"
+                }
+              },
+              "ResultPath": "$.ratings_result",
+              "ResultSelector": {
+                "metrics.$": "$.Payload.metrics",
+                "timestamp.$": "$.Payload.timestamp"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException"
+                  ],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2.0
+                },
+                {
+                  "ErrorEquals": [
+                    "States.TaskFailed"
+                  ],
+                  "IntervalSeconds": 5,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 2.5
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "ResultPath": "$.error_info",
+                  "Next": "HandleRatingsError"
+                }
+              ],
+              "Next": "StoreRatingMetrics"
+            },
+            "StoreRatingMetrics": {
+              "Type": "Task",
+              "Comment": "Store aggregated rating metrics in DynamoDB, including distribution across star ratings",
+              "Resource": "arn:aws:states:::dynamodb:putItem",
+              "Parameters": {
+                "TableName": "rideshare_aggregated_metrics",
+                "Item": {
+                  "metric_id": {
+                    "S.$": "States.Format('ratings_daily_{}', $.metadata.execution_id)"
+                  },
+                  "metric_type": {
+                    "S": "ratings_daily"
+                  },
+                  "timestamp": {
+                    "N.$": "States.Format('{}', $.ratings_result.timestamp)"
+                  },
+                  "avg_rating": {
+                    "N.$": "States.Format('{}', $.ratings_result.metrics.avg_rating)"
+                  },
+                  "total_ratings": {
+                    "N.$": "States.Format('{}', $.ratings_result.metrics.total_ratings)"
+                  },
+                  "five_star_pct": {
+                    "N.$": "States.Format('{}', $.ratings_result.metrics.distribution.five_star_pct)"
+                  },
+                  "four_star_pct": {
+                    "N.$": "States.Format('{}', $.ratings_result.metrics.distribution.four_star_pct)"
+                  },
+                  "three_star_pct": {
+                    "N.$": "States.Format('{}', $.ratings_result.metrics.distribution.three_star_pct)"
+                  },
+                  "two_star_pct": {
+                    "N.$": "States.Format('{}', $.ratings_result.metrics.distribution.two_star_pct)"
+                  },
+                  "one_star_pct": {
+                    "N.$": "States.Format('{}', $.ratings_result.metrics.distribution.one_star_pct)"
+                  },
+                  "low_rating_alert_count": {
+                    "N.$": "States.Format('{}', $.ratings_result.metrics.low_rating_alerts)"
+                  }
+                }
+              },
+              "ResultPath": "$.dynamodb_result",
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "DynamoDB.ProvisionedThroughputExceededException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 5,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "ResultPath": "$.error_info",
+                  "Next": "HandleRatingsError"
+                }
+              ],
+              "End": true
+            },
+            "HandleRatingsError": {
+              "Type": "Pass",
+              "Comment": "Capture error details for the ratings aggregation branch",
+              "Result": {
+                "status": "failed",
+                "branch": "ratings_aggregation"
+              },
+              "End": true
+            }
+          }
+        }
+      ],
+      "ResultPath": "$.parallel_results",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.workflow_error",
+          "Next": "NotifyFailure"
+        }
+      ],
+      "Next": "GenerateReport"
+    },
+    "GenerateReport": {
+      "Type": "Task",
+      "Comment": "Generate a comprehensive daily report combining all aggregated metrics. This Lambda function creates a formatted JSON report with insights and trends.",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "rideshare-daily-report-generator",
+        "Payload": {
+          "report_type": "daily_summary",
+          "execution_id.$": "$.metadata.execution_id",
+          "parallel_results.$": "$.parallel_results"
+        }
+      },
+      "ResultPath": "$.report",
+      "ResultSelector": {
+        "report_data.$": "$.Payload.report",
+        "s3_key.$": "$.Payload.s3_key"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException"
+          ],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 2,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error_info",
+          "Next": "NotifyFailure"
+        }
+      ],
+      "Next": "ArchiveToS3"
+    },
+    "ArchiveToS3": {
+      "Type": "Task",
+      "Comment": "Archive the daily report to S3 for long-term storage and compliance. Reports are organized by date for easy retrieval.",
+      "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
+      "Parameters": {
+        "Bucket": "rideshare-analytics-reports",
+        "Key.$": "$.report.s3_key",
+        "Body.$": "$.report.report_data",
+        "ContentType": "application/json",
+        "ServerSideEncryption": "AES256",
+        "Tagging": "Type=DailyReport&Retention=365days"
+      },
+      "ResultPath": "$.s3_result",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "S3.InternalError",
+            "S3.ServiceUnavailable"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error_info",
+          "Next": "NotifyFailure"
+        }
+      ],
+      "Next": "SendNotification"
+    },
+    "SendNotification": {
+      "Type": "Task",
+      "Comment": "Send success notification to operations team via SNS. Includes summary of key metrics.",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:rideshare-daily-aggregation-success",
+        "Subject": "✅ Daily Aggregation Workflow Completed Successfully",
+        "Message.$": "States.Format('Daily aggregation workflow completed successfully.\n\nExecution ID: {}\nStart Time: {}\nTotal Rides: {}\nTotal Revenue: ${}\nAverage Rating: {}\n\nReport archived to S3: {}', $.metadata.execution_id, $.metadata.start_time, $.parallel_results[0].rides_result.metrics.total_rides, $.parallel_results[1].payments_result.metrics.total_revenue, $.parallel_results[2].ratings_result.metrics.avg_rating, $.report.s3_key)"
+      },
+      "ResultPath": "$.notification_result",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "SNS.ServiceException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "End": true
+    },
+    "NotifyFailure": {
+      "Type": "Task",
+      "Comment": "Send failure notification to operations team via SNS with error details. Triggers incident response procedures.",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:rideshare-daily-aggregation-failure",
+        "Subject": "🚨 ALERT: Daily Aggregation Workflow Failed",
+        "Message.$": "States.Format('Daily aggregation workflow FAILED.\n\nExecution ID: {}\nStart Time: {}\nError: {}\n\nImmediate action required. Check Step Functions console for details.\n\nExecution ARN: {}', $.metadata.execution_id, $.metadata.start_time, $.error_info.Error, $$.Execution.Id)"
+      },
+      "ResultPath": "$.failure_notification_result",
+      "Next": "FailWorkflow"
+    },
+    "FailWorkflow": {
+      "Type": "Fail",
+      "Comment": "Explicitly fail the workflow to trigger DLQ processing and alerting",
+      "Error": "WorkflowFailed",
+      "Cause": "One or more critical steps in the daily aggregation workflow failed. Check logs and error notifications for details."
+    }
+  }
+}

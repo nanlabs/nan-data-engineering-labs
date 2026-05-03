@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Transaction Schema",
+  "description": "Schema for transaction data with data quality rules",
+  "type": "object",
+  "properties": {
+    "transaction_id": {
+      "type": "integer",
+      "description": "Unique transaction identifier",
+      "minimum": 1
+    },
+    "customer_id": {
+      "type": "integer",
+      "description": "Customer ID (foreign key to customers)",
+      "minimum": 1
+    },
+    "product_id": {
+      "type": "integer",
+      "description": "Product ID (foreign key to products)",
+      "minimum": 1
+    },
+    "amount": {
+      "type": "number",
+      "description": "Unit amount",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Quantity purchased",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "total": {
+      "type": "number",
+      "description": "Total amount (should equal amount * quantity)",
+      "minimum": 0
+    },
+    "transaction_date": {
+      "type": "string",
+      "description": "Transaction timestamp",
+      "format": "date-time"
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "Payment method used",
+      "enum": ["credit_card", "debit_card", "paypal", "bank_transfer"]
+    },
+    "status": {
+      "type": "string",
+      "description": "Transaction status",
+      "enum": ["completed", "pending", "failed", "refunded"]
+    },
+    "currency": {
+      "type": "string",
+      "description": "Currency code",
+      "enum": ["USD", "EUR", "GBP", "JPY", "CAD"]
+    }
+  },
+  "required": [
+    "transaction_id",
+    "customer_id",
+    "product_id",
+    "amount",
+    "quantity",
+    "transaction_date",
+    "status"
+  ],
+  "additionalProperties": false,
+
+  "qualityRules": {
+    "completeness": {
+      "critical_columns": ["transaction_id", "customer_id", "amount", "transaction_date"],
+      "threshold": 0.98
+    },
+    "uniqueness": {
+      "unique_columns": ["transaction_id"]
+    },
+    "validity": {
+      "amount_range": [0, 1000000],
+      "quantity_range": [1, 1000],
+      "allowed_payment_methods": ["credit_card", "debit_card", "paypal", "bank_transfer"],
+      "allowed_statuses": ["completed", "pending", "failed", "refunded"]
+    },
+    "consistency": {
+      "total_equals_amount_times_quantity": true,
+      "transaction_date_not_future": true
+    },
+    "referential_integrity": {
+      "customer_id_must_exist": true,
+      "product_id_must_exist": true
+    },
+    "timeliness": {
+      "max_age_hours": 24,
+      "max_latency_hours": 4
+    }
+  }
+}

@@ -1,0 +1,132 @@
+graph TB
+    %% Lake Formation Access Control - Fine-Grained Permissions
+
+    subgraph "Data Lake - S3"
+        S3_1[S3 Bucket<br/>data-lake-prod]:::s3
+        S3_2[Raw Zone<br/>landing/]:::s3
+        S3_3[Processed Zone<br/>curated/]:::s3
+        S3_4[Analytics Zone<br/>analytics/]:::s3
+    end
+
+    S3_1 --> S3_2
+    S3_1 --> S3_3
+    S3_1 --> S3_4
+
+    subgraph "AWS Lake Formation"
+        LF1[Central Catalog<br/>Glue Data Catalog]:::lakeform
+        LF2[Permissions Manager<br/>GRANT/REVOKE]:::lakeform
+        LF3[Data Filters<br/>Row/Column Security]:::lakeform
+        LF4[LF-Tags<br/>Tag-Based Access]:::lakeform
+    end
+
+    S3_2 --> LF1
+    S3_3 --> LF1
+    S3_4 --> LF1
+
+    LF1 --> LF2
+    LF2 --> LF3
+    LF2 --> LF4
+
+    subgraph "Database-Level Permissions"
+        DB1[Database: sales<br/>Tables: orders, customers]:::database
+        DB2["GRANT SELECT ON DATABASE sales<br/>TO ROLE data_analyst"]:::database
+        DB3["GRANT CREATE_TABLE ON DATABASE sales<br/>TO ROLE data_engineer"]:::database
+    end
+
+    LF1 --> DB1
+    DB1 --> DB2
+    DB1 --> DB3
+
+    subgraph "Table-Level Permissions"
+        TBL1[Table: customers<br/>Columns: id, name, email, ssn]:::table
+        TBL2["GRANT SELECT ON TABLE customers<br/>TO ROLE analyst<br/>(All columns except ssn)"]:::table
+        TBL3["GRANT SELECT, INSERT, UPDATE<br/>TO ROLE engineer<br/>(Full access)"]:::table
+    end
+
+    DB1 --> TBL1
+    TBL1 --> TBL2
+    TBL1 --> TBL3
+
+    subgraph "Column-Level Security"
+        COL1[Column Filter<br/>Exclude PII columns]:::column
+        COL2["Visible Columns:<br/>• customer_id ✅<br/>• name ✅<br/>• email ❌ (PII)<br/>• ssn ❌ (PII)<br/>• address ❌ (PII)"]:::column
+        COL3["Expression Filter:<br/>CASE WHEN role='admin'<br/>  THEN ssn<br/>  ELSE 'XXX-XX-' || RIGHT(ssn,4)<br/>END"]:::column
+    end
+
+    TBL2 --> COL1
+    COL1 --> COL2
+    COL1 --> COL3
+
+    subgraph "Row-Level Security"
+        ROW1[Data Filter<br/>WHERE Clause]:::row
+        ROW2["Region Filter:<br/>WHERE region = 'US-EAST'<br/><br/>Analyst can only see<br/>US-EAST data"]:::row
+        ROW3["User Filter:<br/>WHERE owner = SESSION_USER<br/><br/>Users see only their data"]:::row
+    end
+
+    TBL2 --> ROW1
+    ROW1 --> ROW2
+    ROW1 --> ROW3
+
+    subgraph "LF-Tags (Tag-Based Access)"
+        TAG1[Create LF-Tags<br/>Key: Sensitivity<br/>Values: Public, Confidential, Restricted]:::lftag
+        TAG2[Tag Resources<br/>customers → Restricted<br/>products → Public]:::lftag
+        TAG3["GRANT SELECT WHERE Sensitivity='Public'<br/>TO ROLE external_analyst"]:::lftag
+    end
+
+    LF4 --> TAG1
+    TAG1 --> TAG2
+    TAG2 --> TAG3
+
+    subgraph "Query Engines"
+        QE1[Amazon Athena<br/>SQL Queries]:::query
+        QE2[Amazon Redshift Spectrum<br/>Federated Queries]:::query
+        QE3[AWS Glue ETL<br/>Spark Jobs]:::query
+        QE4[Amazon EMR<br/>Hive/Presto]:::query
+    end
+
+    LF3 --> QE1
+    LF3 --> QE2
+    LF3 --> QE3
+    LF3 --> QE4
+
+    %% Styling
+    classDef s3 fill:#27AE60,stroke:#229954,stroke-width:3px,color:#fff
+    classDef lakeform fill:#FF9900,stroke:#CC7A00,stroke-width:3px,color:#fff
+    classDef database fill:#3498DB,stroke:#2980B9,stroke-width:3px,color:#fff
+    classDef table fill:#9B59B6,stroke:#8E44AD,stroke-width:3px,color:#fff
+    classDef column fill:#E74C3C,stroke:#C0392B,stroke-width:2px,color:#fff,text-align:left
+    classDef row fill:#F39C12,stroke:#E67E22,stroke-width:2px,color:#fff,text-align:left
+    classDef lftag fill:#16A085,stroke:#138D75,stroke-width:3px,color:#fff
+    classDef query fill:#1ABC9C,stroke:#17A589,stroke-width:3px,color:#fff
+
+    %% Permission Examples
+    subgraph "Use Case Examples"
+        UC["Data Analyst:<br/>✅ SELECT on sales, marketing databases<br/>✅ Row filter: region = user's region<br/>✅ Column mask: PII redacted<br/>❌ No INSERT, UPDATE, DELETE<br/><br/>Data Engineer:<br/>✅ Full access to raw zone<br/>✅ CREATE TABLE, ALTER TABLE<br/>✅ GRANT permissions to others<br/>❌ No access to production zone<br/><br/>External Partner:<br/>✅ SELECT on public datasets only<br/>✅ LF-Tag: Sensitivity = 'Public'<br/>❌ No access to confidential data"]:::usecase
+    end
+
+    classDef usecase fill:#34495E,stroke:#2C3E50,stroke-width:2px,color:#fff,text-align:left
+
+    ROW3 --> UC
+
+    %% Migration Path
+    subgraph "Migration: S3 Bucket Policies → Lake Formation"
+        MIG["Step 1: Register S3 location<br/>  aws lakeformation register-resource<br/><br/>Step 2: Grant Lake Formation permissions<br/>  GRANT SELECT ON TABLE mytable TO ROLE analyst<br/><br/>Step 3: Revoke S3 bucket policy<br/>  Remove direct S3 access<br/><br/>Step 4: Update IAM policies<br/>  Remove s3:GetObject, add lakeformation:GetDataAccess"]:::migration
+    end
+
+    classDef migration fill:#E67E22,stroke:#CA6F1E,stroke-width:2px,color:#fff,text-align:left
+
+    LF2 --> MIG
+
+    %% Performance
+    subgraph "Performance & Cost"
+        PERF["Query Performance:<br/>• Column filters: No impact<br/>• Row filters: 5-10% overhead<br/>• LF-Tags: Minimal overhead<br/><br/>Cost:<br/>• Lake Formation: No additional charge<br/>• Glue Catalog: $1/100K requests<br/>• Storage: S3 standard pricing<br/><br/>Scalability:<br/>• 10M+ tables supported<br/>• 100K+ concurrent queries<br/>• Multi-region replication"]:::perf
+    end
+
+    classDef perf fill:#7ED321,stroke:#5A9E18,stroke-width:2px,color:#fff,text-align:left
+
+    %% Best Practices
+    subgraph "Best Practices"
+        BP["✅ Use LF-Tags for scalable access<br/>✅ Apply least privilege (deny by default)<br/>✅ Separate prod/dev/test databases<br/>✅ Audit permissions with CloudTrail<br/>✅ Use data filters for PII protection<br/>✅ Test permissions before deploying<br/>❌ Don't grant Super permissions widely<br/>❌ Avoid mixing S3 + LF permissions<br/>❌ Don't skip IAM integration"]:::bp
+    end
+
+    classDef bp fill:#2C3E50,stroke:#1C2833,stroke-width:2px,color:#fff,text-align:left

@@ -1,0 +1,66 @@
+graph TB
+    %% Lambda Architecture - Batch + Speed + Serving Layers
+
+    subgraph "Data Sources"
+        DS1[User Events<br/>Kinesis Stream]:::source
+        DS2[Transaction Logs<br/>S3 Raw Zone]:::source
+        DS3[Database CDC<br/>DynamoDB Streams]:::source
+    end
+
+    subgraph "Batch Layer - Historical Processing"
+        BL1[S3 Data Lake<br/>Bronze Zone]:::batch
+        BL2[Spark Batch Jobs<br/>Daily/Hourly]:::batch
+        BL3[Parquet Tables<br/>Silver Zone]:::batch
+        BL4[Batch Views<br/>Aggregated Data]:::batch
+    end
+
+    subgraph "Speed Layer - Real-time Processing"
+        SL1[Kinesis Analytics<br/>Real-time SQL]:::speed
+        SL2[Lambda Functions<br/>Stream Processing]:::speed
+        SL3[Redis Cache<br/>Hot Data]:::speed
+        SL4[Speed Views<br/>Recent Data]:::speed
+    end
+
+    subgraph "Serving Layer - Query Interface"
+        SV1[Redshift<br/>Batch Analytics]:::serving
+        SV2[DynamoDB<br/>Real-time Queries]:::serving
+        SV3[Query API<br/>Merge Views]:::serving
+        SV4[Dashboards<br/>BI Tools]:::serving
+    end
+
+    %% Data Flow - Batch Path
+    DS2 --> BL1
+    DS3 --> BL1
+    BL1 --> BL2
+    BL2 --> BL3
+    BL3 --> BL4
+    BL4 --> SV1
+
+    %% Data Flow - Speed Path
+    DS1 --> SL1
+    DS1 --> SL2
+    SL1 --> SL3
+    SL2 --> SL3
+    SL3 --> SL4
+    SL4 --> SV2
+
+    %% Serving Layer Merge
+    SV1 --> SV3
+    SV2 --> SV3
+    SV3 --> SV4
+
+    %% Recomputation Path (batch override speed)
+    BL4 -.->|"Override<br/>old data"| SL4
+
+    %% Styling
+    classDef source fill:#4A90E2,stroke:#2E6FA8,stroke-width:3px,color:#fff
+    classDef batch fill:#7ED321,stroke:#5A9E18,stroke-width:3px,color:#fff
+    classDef speed fill:#F5A623,stroke:#C17F1A,stroke-width:3px,color:#fff
+    classDef serving fill:#BD10E0,stroke:#8A0CA8,stroke-width:3px,color:#fff
+
+    %% Notes
+    subgraph "Legend"
+        L1[Batch: Complete accuracy<br/>2-24 hour latency]:::batch
+        L2[Speed: Approximate results<br/>Seconds latency]:::speed
+        L3[Serving: Merged views<br/>Best of both]:::serving
+    end

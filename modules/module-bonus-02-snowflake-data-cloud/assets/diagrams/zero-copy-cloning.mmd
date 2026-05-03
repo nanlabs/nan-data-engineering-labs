@@ -1,0 +1,395 @@
+graph TB
+    %% ============================================================================
+    %% ZERO-COPY CLONING MECHANISM
+    %% ============================================================================
+    %% This diagram illustrates Snowflake's instant cloning feature using
+    %% metadata pointers and copy-on-write semantics.
+    %%
+    %% Key Concepts:
+    %% - Metadata-only operation (instant, regardless of data size)
+    %% - Micro-partitions shared between original and clone
+    %% - Copy-on-write: New partitions created only for modified data
+    %% - Storage costs only for diverged data
+    %% ============================================================================
+
+    %% Starting Point
+    Start([Original Production Table: SALES_DB.PROD.ORDERS])
+
+    %% ============================================================================
+    %% ORIGINAL TABLE STATE (Before Clone)
+    %% ============================================================================
+    subgraph OriginalTable["📊 ORIGINAL TABLE (1 TB, 10,000 micro-partitions)"]
+        style OriginalTable fill:#4A90E2,stroke:#333,stroke-width:3px
+
+        %% Metadata Node
+        OriMeta["📋 Metadata Entry<br/>━━━━━━━━━━━━━━━<br/>Table: ORDERS<br/>Row Count: 100M rows<br/>Size: 1 TB compressed<br/>Partitions: 10,000<br/>Created: 2026-01-01"]
+
+        %% Sample Micro-partitions
+        subgraph OriPartitions["Micro-partitions (Physical Storage)"]
+            MP1["MP_001<br/>━━━━━━<br/>Rows: 1-10,000<br/>Date: 2025-01-01<br/>Status: ACTIVE<br/>Size: 100 MB"]
+
+            MP2["MP_002<br/>━━━━━━<br/>Rows: 10,001-20,000<br/>Date: 2025-01-02<br/>Status: ACTIVE<br/>Size: 100 MB"]
+
+            MP3["MP_003<br/>━━━━━━<br/>Rows: 20,001-30,000<br/>Date: 2025-01-03<br/>Status: ACTIVE<br/>Size: 100 MB"]
+
+            MP4["MP_004<br/>━━━━━━<br/>Rows: 30,001-40,000<br/>Date: 2025-01-04<br/>Status: ACTIVE<br/>Size: 100 MB"]
+
+            MPEllipsis["... (partitions 5-9,999) ..."]
+
+            MP10000["MP_10000<br/>━━━━━━<br/>Rows: 99,990,001-100M<br/>Date: 2026-01-01<br/>Status: ACTIVE<br/>Size: 100 MB"]
+        end
+
+        OriMeta --> MP1
+        OriMeta --> MP2
+        OriMeta --> MP3
+        OriMeta --> MP4
+        OriMeta -.-> MPEllipsis
+        OriMeta --> MP10000
+    end
+
+    Start --> OriMeta
+
+    %% ============================================================================
+    %% CLONE OPERATION
+    %% ============================================================================
+    subgraph CloneOperation["⚡ CLONE OPERATION (Instant - Metadata Only)"]
+        style CloneOperation fill:#7ED321,stroke:#333,stroke-width:3px
+
+        CloneSQL["SQL Command:<br/>━━━━━━━━━━━━━━━━━━━━━<br/>CREATE TABLE DEV.ORDERS<br/>CLONE PROD.ORDERS;<br/><br/>⏱️ Execution Time: ~2 seconds<br/>(Regardless of table size!)<br/><br/>💾 Storage Impact: 0 bytes<br/>(No data copied yet)"]
+
+        MetaCopy["Metadata Copy Process:<br/>━━━━━━━━━━━━━━━━━━━━━<br/>1. Copy metadata entry<br/>2. Point to same micro-partitions<br/>3. Update access control<br/>4. Return success<br/><br/>❌ NOT copied:<br/>- Actual data<br/>- Micro-partitions<br/>- File contents"]
+    end
+
+    OriMeta -.->|"Instant copy"| CloneSQL
+    CloneSQL --> MetaCopy
+
+    %% ============================================================================
+    %% CLONED TABLE STATE (After Clone, Before Modifications)
+    %% ============================================================================
+    subgraph ClonedTable["📊 CLONED TABLE (Same 1 TB, Same 10,000 micro-partitions)"]
+        style ClonedTable fill:#F5A623,stroke:#333,stroke-width:3px
+
+        %% Cloned Metadata
+        CloneMeta["📋 Metadata Entry (NEW)<br/>━━━━━━━━━━━━━━━━━━━━━<br/>Table: DEV.ORDERS<br/>Row Count: 100M rows<br/>Size: 0 TB additional<br/>Partitions: 10,000 (shared)<br/>Created: 2026-03-09"]
+
+        %% Pointers to SAME partitions
+        subgraph ClonePointers["Micro-partition Pointers (References)"]
+            Ptr1["Pointer → MP_001<br/>━━━━━━━━━━━━<br/>Type: READ-ONLY ref<br/>Cost: 0 bytes"]
+
+            Ptr2["Pointer → MP_002<br/>━━━━━━━━━━━━<br/>Type: READ-ONLY ref<br/>Cost: 0 bytes"]
+
+            Ptr3["Pointer → MP_003<br/>━━━━━━━━━━━━<br/>Type: READ-ONLY ref<br/>Cost: 0 bytes"]
+
+            Ptr4["Pointer → MP_004<br/>━━━━━━━━━━━━<br/>Type: READ-ONLY ref<br/>Cost: 0 bytes"]
+
+            PtrEllipsis["... (pointers 5-9,999) ..."]
+
+            Ptr10000["Pointer → MP_10000<br/>━━━━━━━━━━━━<br/>Type: READ-ONLY ref<br/>Cost: 0 bytes"]
+        end
+
+        CloneMeta --> Ptr1
+        CloneMeta --> Ptr2
+        CloneMeta --> Ptr3
+        CloneMeta --> Ptr4
+        CloneMeta -.-> PtrEllipsis
+        CloneMeta --> Ptr10000
+
+        %% References to original partitions
+        Ptr1 -.->|"References"| MP1
+        Ptr2 -.->|"References"| MP2
+        Ptr3 -.->|"References"| MP3
+        Ptr4 -.->|"References"| MP4
+        Ptr10000 -.->|"References"| MP10000
+    end
+
+    MetaCopy --> CloneMeta
+
+    %% ============================================================================
+    %% MODIFICATION SCENARIO (Copy-on-Write)
+    %% ============================================================================
+    subgraph Modification["✏️ MODIFICATION TO CLONE (Copy-on-Write Triggers)"]
+        style Modification fill:#BD10E0,stroke:#333,stroke-width:3px
+
+        ModSQL["SQL Update on Clone:<br/>━━━━━━━━━━━━━━━━━━━━━<br/>UPDATE DEV.ORDERS<br/>SET status = 'PROCESSED'<br/>WHERE order_date = '2025-01-02';<br/><br/>🎯 Affects: 10,000 rows<br/>📦 Touches: MP_002 only"]
+
+        CopyOnWrite["Copy-on-Write Process:<br/>━━━━━━━━━━━━━━━━━━━━━<br/>1. Identify affected partition: MP_002<br/>2. Create NEW partition: MP_10001<br/>3. Copy MP_002 → MP_10001<br/>4. Apply UPDATE to MP_10001<br/>5. Update clone metadata pointer<br/>6. Original MP_002 unchanged"]
+
+        NewPartition["MP_10001 (NEW)<br/>━━━━━━━━━━━━<br/>Rows: 10,001-20,000<br/>Date: 2025-01-02<br/>Status: ACTIVE<br/>Size: 100 MB<br/>💰 NEW COST: +100 MB<br/><br/>Modified data!"]
+    end
+
+    CloneMeta -.->|"User executes"| ModSQL
+    ModSQL --> CopyOnWrite
+    CopyOnWrite --> NewPartition
+
+    %% Update pointer
+    Ptr2 -.->|"BEFORE: Points to"| MP2
+    Ptr2 -->|"AFTER: Points to"| NewPartition
+
+    %% ============================================================================
+    %% STORAGE COST TRACKING OVER TIME
+    %% ============================================================================
+    subgraph StorageCosts["💰 STORAGE COST TRACKING"]
+        style StorageCosts fill:#FFE5E5,stroke:#E74C3C,stroke-width:2px
+
+        Timeline["Timeline of Clone Evolution<br/>━━━━━━━━━━━━━━━━━━━━━━━━━━"]
+
+        T0["T+0 (Clone Creation)<br/>━━━━━━━━━━━━━━━━━<br/>Original: 1 TB<br/>Clone: 0 TB additional<br/>Total: 1 TB<br/>Cost: $23/month"]
+
+        T1["T+1 hour (Modify 10%)<br/>━━━━━━━━━━━━━━━━━<br/>Original: 1 TB<br/>Clone: 0.1 TB new<br/>Total: 1.1 TB<br/>Cost: $25.30/month"]
+
+        T2["T+1 day (Modify 50%)<br/>━━━━━━━━━━━━━━━━━<br/>Original: 1 TB<br/>Clone: 0.5 TB new<br/>Total: 1.5 TB<br/>Cost: $34.50/month"]
+
+        T3["T+1 week (Modify 100%)<br/>━━━━━━━━━━━━━━━━━<br/>Original: 1 TB<br/>Clone: 1 TB new<br/>Total: 2 TB<br/>Cost: $46/month<br/>⚠️ Full copy equivalent!"]
+
+        Timeline --> T0
+        T0 --> T1
+        T1 --> T2
+        T2 --> T3
+    end
+
+    NewPartition -.-> T1
+
+    %% ============================================================================
+    %% USE CASES
+    %% ============================================================================
+    subgraph UseCases["🎯 USE CASES FOR ZERO-COPY CLONING"]
+        style UseCases fill:#E8F4F8,stroke:#3498DB,stroke-width:2px
+
+        UseCase1["1️⃣ Development & Testing<br/>━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Need production-like data<br/>Solution: CLONE PROD.CUSTOMERS AS DEV.CUSTOMERS<br/>Benefit: Instant, realistic test data<br/>Cost: $0 until modifications<br/>Typical Use: Test schema changes, new features"]
+
+        UseCase2["2️⃣ Data Analysis Sandboxes<br/>━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Analyst needs to experiment<br/>Solution: CLONE PROD.SALES AS ANALYST_WS.SALES<br/>Benefit: No risk to production<br/>Cost: Only changed data<br/>Typical Use: Ad-hoc analysis, what-if scenarios"]
+
+        UseCase3["3️⃣ Pre-Production Staging<br/>━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Test ETL pipeline<br/>Solution: CLONE PROD.* AS STAGING.*<br/>Benefit: Exact replica, instant setup<br/>Cost: Storage only for new data loaded<br/>Typical Use: CI/CD testing, integration tests"]
+
+        UseCase4["4️⃣ Backup & Disaster Recovery<br/>━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Quick recovery point<br/>Solution: CLONE PROD.* AS BACKUP_2026_03_09.*<br/>Benefit: Instant snapshot, no backup window<br/>Cost: Time Travel covers short-term (free)<br/>Typical Use: Before major deployments"]
+
+        UseCase5["5️⃣ Data Distribution<br/>━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Share data with other teams<br/>Solution: CLONE CENTRAL.DATASET AS TEAM_A.DATASET<br/>Benefit: Isolated permissions, no data movement<br/>Cost: Only team-specific modifications<br/>Typical Use: Multi-tenant, per-team schemas"]
+
+        UseCase6["6️⃣ Blue-Green Deployments<br/>━━━━━━━━━━━━━━━━━━━━━<br/>Scenario: Zero-downtime schema changes<br/>Solution: CLONE PROD AS PROD_V2, modify PROD_V2, swap<br/>Benefit: Instant rollback if issues<br/>Cost: ~2x storage during transition<br/>Typical Use: Major schema migrations"]
+    end
+
+    %% ============================================================================
+    %% ADVANCED CLONING FEATURES
+    %% ============================================================================
+    subgraph AdvancedFeatures["🚀 ADVANCED CLONING FEATURES"]
+        style AdvancedFeatures fill:#FFF9E6,stroke:#F39C12,stroke-width:2px
+
+        Feature1["Time Travel Cloning<br/>━━━━━━━━━━━━━━━━━━━━━<br/>CREATE TABLE ORDERS_YESTERDAY<br/>CLONE ORDERS<br/>AT(OFFSET => -86400);  -- 1 day ago<br/><br/>Use Case: Clone from historical state<br/>Benefit: Point-in-time recovery without backups"]
+
+        Feature2["Query Result Cloning<br/>━━━━━━━━━━━━━━━━━━━━━<br/>CREATE TABLE ORDERS_2025<br/>CLONE ORDERS<br/>BEFORE(STATEMENT => 'query_id');<br/><br/>Use Case: Clone before specific query<br/>Benefit: Forensic analysis"]
+
+        Feature3["Schema-Level Cloning<br/>━━━━━━━━━━━━━━━━━━━━━<br/>CREATE SCHEMA DEV.SALES_SCHEMA<br/>CLONE PROD.SALES_SCHEMA;<br/><br/>Use Case: Clone all tables at once<br/>Benefit: Consistent multi-table snapshot"]
+
+        Feature4["Database-Level Cloning<br/>━━━━━━━━━━━━━━━━━━━━━<br/>CREATE DATABASE SALES_DB_CLONE<br/>CLONE SALES_DB;<br/><br/>Use Case: Entire database replica<br/>Benefit: Complete environment duplication"]
+
+        Feature5["Clone Chains<br/>━━━━━━━━━━━━━━━━━━━━━<br/>PROD → STAGING (clone)<br/>STAGING → DEV (clone)<br/>DEV → ANALYST (clone)<br/><br/>Use Case: Hierarchical environments<br/>Benefit: Storage only for cumulative changes"]
+    end
+
+    %% ============================================================================
+    %% SQL EXAMPLES
+    %% ============================================================================
+    subgraph SQLExamples["💻 COMPLETE SQL EXAMPLES"]
+        style SQLExamples fill:#D5F4E6,stroke:#27AE60,stroke-width:2px
+
+        Example1["-- Basic clone
+        CREATE TABLE dev_orders
+        CLONE prod_orders;
+
+        -- Returns in 2 seconds even for 10TB table!
+        -- Storage cost: $0 until you modify data"]
+
+        Example2["-- Clone at specific timestamp
+        CREATE TABLE orders_snapshot
+        CLONE orders
+        AT(TIMESTAMP => '2026-03-08 14:30:00'::TIMESTAMP);
+
+        -- Gets data as it existed at that moment
+        -- Requires Time Travel retention period"]
+
+        Example3["-- Clone with offset (24 hours ago)
+        CREATE TABLE orders_yesterday
+        CLONE orders
+        AT(OFFSET => -86400);
+
+        -- Useful for daily comparisons
+        -- Example: What changed in last 24 hours?"]
+
+        Example4["-- Clone entire schema
+        CREATE SCHEMA dev_schema
+        CLONE prod_schema;
+
+        -- Clones all tables, views, stages, sequences
+        -- Maintains referential structure"]
+
+        Example5["-- Clone and immediately modify
+        CREATE TABLE test_orders
+        CLONE prod_orders;
+
+        UPDATE test_orders
+        SET amount = amount * 0.9
+        WHERE region = 'US';  -- 10% discount test
+
+        -- Only modified partitions cost storage
+        -- Original prod_orders untouched"]
+
+        Example6["-- Clone for A/B testing
+        CREATE TABLE orders_control CLONE orders;
+        CREATE TABLE orders_treatment CLONE orders;
+
+        -- Apply different transformations
+        UPDATE orders_treatment
+        SET pricing_model = 'dynamic';
+
+        -- Compare results
+        -- Cost: Only delta storage"]
+    end
+
+    %% ============================================================================
+    %% BEST PRACTICES
+    %% ============================================================================
+    subgraph BestPractices["✅ BEST PRACTICES"]
+        style BestPractices fill:#F3E5F5,stroke:#8E24AA,stroke-width:2px
+
+        BP1["1️⃣ Use clones instead of copying data<br/>❌ CREATE TABLE dev AS SELECT * FROM prod;<br/>✅ CREATE TABLE dev CLONE prod;<br/>Reason: CTAS copies all data (slow, expensive)"]
+
+        BP2["2️⃣ Monitor clone storage costs<br/>SELECT table_name, active_bytes, time_travel_bytes<br/>FROM INFORMATION_SCHEMA.TABLE_STORAGE_METRICS;<br/>Reason: Track divergence, drop unused clones"]
+
+        BP3["3️⃣ Drop clones when done<br/>DROP TABLE IF EXISTS temp_analysis_clone;<br/>Reason: Avoid paying for stale clone data"]
+
+        BP4["4️⃣ Use Time Travel for short-term needs<br/>Time Travel: Free (within retention period)<br/>Clones: Cost $ if modified<br/>Reason: SELECT AT(OFFSET) is cheaper than clone"]
+
+        BP5["5️⃣ Clone frequently for safety<br/>CREATE TABLE backup_pre_migration CLONE orders;<br/>-- Do risky operation --<br/>-- If problem: DROP TABLE orders; RENAME backup TO orders;<br/>Reason: Instant rollback capability"]
+
+        BP6["6️⃣ Leverage clones for CI/CD<br/>Pipeline: Clone → Load test data → Run tests → Drop<br/>Reason: Isolated, reproducible test environments"]
+
+        BP7["7️⃣ Document clone lineage<br/>CREATE TABLE orders_clone_2026_03_09<br/>  CLONE orders<br/>  COMMENT = 'Pre-schema-migration backup';<br/>Reason: Know why clones exist"]
+    end
+
+    %% ============================================================================
+    %% MONITORING QUERIES
+    %% ============================================================================
+    subgraph MonitoringQueries["📊 MONITORING QUERIES"]
+        style MonitoringQueries fill:#FFE5E5,stroke:#E74C3C,stroke-width:2px
+
+        Query1["-- Find all clones in account
+        SELECT
+            table_catalog || '.' || table_schema || '.' || table_name AS full_name,
+            row_count,
+            bytes / POW(1024, 3) AS size_gb,
+            created
+        FROM INFORMATION_SCHEMA.TABLES
+        WHERE comment LIKE '%CLONE%'
+           OR table_name LIKE '%_clone%'
+        ORDER BY bytes DESC;"]
+
+        Query2["-- Storage cost breakdown by table
+        SELECT
+            table_name,
+            active_bytes / POW(1024, 3) AS active_gb,
+            time_travel_bytes / POW(1024, 3) AS time_travel_gb,
+            failsafe_bytes / POW(1024, 3) AS failsafe_gb,
+            (active_bytes + time_travel_bytes + failsafe_bytes) / POW(1024, 3) AS total_gb
+        FROM SNOWFLAKE.ACCOUNT_USAGE.TABLE_STORAGE_METRICS
+        WHERE table_name LIKE '%clone%'
+        ORDER BY total_gb DESC;"]
+
+        Query3["-- Identify clone divergence
+        WITH base_tables AS (
+            SELECT table_name, bytes AS base_bytes
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE table_name NOT LIKE '%clone%'
+        ),
+        clone_tables AS (
+            SELECT table_name, bytes AS clone_bytes
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE table_name LIKE '%clone%'
+        )
+        SELECT
+            c.table_name,
+            b.base_bytes / POW(1024, 3) AS original_gb,
+            c.clone_bytes / POW(1024, 3) AS clone_gb,
+            (c.clone_bytes - b.base_bytes) / POW(1024, 3) AS divergence_gb,
+            ROUND((c.clone_bytes - b.base_bytes) * 100.0 / b.base_bytes, 2) AS divergence_pct
+        FROM clone_tables c
+        JOIN base_tables b ON REPLACE(c.table_name, '_clone', '') = b.table_name;"]
+    end
+
+    %% ============================================================================
+    %% COST CALCULATION
+    %% ============================================================================
+    subgraph CostCalculation["💰 COST CALCULATION EXAMPLE"]
+        style CostCalculation fill:#E8F4F8,stroke:#3498DB,stroke-width:2px
+
+        Calc["Scenario: 10 TB production table
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        Option 1: COPY DATA (Traditional)
+        CREATE TABLE dev AS SELECT * FROM prod;
+        - Execution time: 30-60 minutes
+        - Storage cost: +10 TB × $23/TB = +$230/month
+        - Compute cost: ~$50 (warehouse time)
+        - Total first month: $280
+
+        Option 2: ZERO-COPY CLONE (Snowflake)
+        CREATE TABLE dev CLONE prod;
+        - Execution time: 2 seconds ⚡
+        - Storage cost: $0 initially
+        - Compute cost: $0 (metadata operation)
+        - Total first month: $0
+
+        After 1 week of modifications (20% of data):
+        - Storage cost: +2 TB × $23/TB = +$46/month
+        - Total: $46/month
+
+        Savings: $280 - $46 = $234/month (83% cheaper!)
+
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        🔑 Key Insight: Cloning is 100% free until you
+        modify data. Even after heavy modifications,
+        it's cheaper than traditional copies.
+        "]
+    end
+
+    %% ============================================================================
+    %% NOTES
+    %% ============================================================================
+    %%
+    %% TECHNICAL DETAILS:
+    %%
+    %% 1. Micro-partition Immutability:
+    %%    - Snowflake micro-partitions are IMMUTABLE (never modified in place)
+    %%    - Any UPDATE/DELETE creates a NEW micro-partition
+    %%    - Old partition marked for deletion (removed after Time Travel window)
+    %%    - This immutability enables instant cloning
+    %%
+    %% 2. Metadata-Only Cloning:
+    %%    - Clone operation copies ONLY metadata (table definition, pointers)
+    %%    - Metadata size: ~1 KB per table (negligible)
+    %%    - No data movement across network or storage
+    %%    - Cloning 1 GB table takes same time as 1 PB table
+    %%
+    %% 3. Copy-on-Write Semantics:
+    %%    - When clone is modified, affected partitions are copied
+    %%    - Only changed partitions cost additional storage
+    %%    - Original and clone share unchanged partitions
+    %%    - Example: Update 1 row → ~100 MB new partition created
+    %%
+    %% 4. Storage Cost Attribution:
+    %%    - Original table always charged for its data
+    %%    - Clone charged only for NEW partitions (diverged data)
+    %%    - Shared partitions charged to original (not double-billed)
+    %%    - Drop original → clone inherits full storage cost
+    %%
+    %% 5. Time Travel Interaction:
+    %%    - Cloning doesn't reset Time Travel window
+    %%    - Clone inherits Time Travel retention setting
+    %%    - Can clone FROM a historical point (AT/BEFORE)
+    %%    - Both original and clone have independent Time Travel
+    %%
+    %% LIMITATIONS:
+    %% - Can't clone external tables (no Snowflake-managed storage)
+    %% - Can't clone temporary tables (session-scoped)
+    %% - Can't clone tables with active streams (must drop/recreate)
+    %% - Can't clone across regions/accounts (use replication)
+    %%
+    %% ============================================================================
