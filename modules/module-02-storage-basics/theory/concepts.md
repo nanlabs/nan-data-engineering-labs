@@ -320,12 +320,11 @@ Best for big data - each line is a complete JSON:
 
 **Key Features:**
 
-1. **Columnar Storage:** Lee solo columns necesarias
 1. **Columnar Storage:** Reads only the required columns
 ```python
 # Query: SELECT amount, timestamp FROM transactions WHERE amount > 100
-# Parquet: Solo lee 2 columnas (amount, timestamp)
-# CSV: Lee todas las columnas
+# Parquet: Reads only 2 columns (amount, timestamp)
+# CSV: Reads all columns
 ```
 
 2. **Predicate Pushdown:** Filters at the storage layer
@@ -336,8 +335,8 @@ Best for big data - each line is a complete JSON:
 
 3. **Compression:** Per column
 ```python
-# user_id: Dictionary encoding (muchos duplicados)
-# amount: Delta encoding (valores cercanos)
+# user_id: Dictionary encoding (many duplicates)
+# amount: Delta encoding (close values)
 # timestamp: Delta + RLE encoding
 ```
 

@@ -408,7 +408,7 @@ One-time export        → CSV
 - **User Profiles**: Parquet partitioned by country
 - **Result**: $2M/year savings in storage costs
 
-## Conclusion
+## Closing Notes
 
 ### The Clear Winner for Data Lakes: Parquet ⭐
 
