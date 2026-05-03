@@ -57,7 +57,7 @@ isort==5.13.2                 # Import sorting
 # ------------------------------
 # Development Tools
 # ------------------------------
-python-dotenv==1.0.0          # Environment variable management
+python-dotenv==1.2.2          # Environment variable management
 loguru==0.7.2                 # Simplified logging
 rich==13.7.0                  # Rich terminal output
 click==8.1.7                  # CLI creation toolkit
