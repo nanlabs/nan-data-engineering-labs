@@ -14,7 +14,7 @@ This directory contains the infrastructure configuration for the SQL Fundamental
 
 ---
 
-## Prerequisitos
+## Prerequisites
 
 ### Required Software
 
@@ -62,7 +62,7 @@ nano .env  # o tu editor preferido
 # Iniciar contenedor PostgreSQL
 docker-compose up -d
 
-# Verificar logs para confirmar inicialización
+# Verify logs to confirm initialization
 docker-compose logs -f postgres
 
 # Esperar por "database system is ready to accept connections"
@@ -78,16 +78,16 @@ docker-compose logs -f postgres
 ### 3. Verify Connection
 
 ```bash
-# Probar conexión con psql
+# Test connection with psql
 docker exec -it sql-foundations-postgres psql -U dataengineer -d ecommerce
 
-# O desde el host (si psql está instalado)
+# Or from host (if psql is installed)
 psql -h localhost -p 5432 -U dataengineer -d ecommerce
 # Password: training123
 
-# Consulta rápida de prueba
-\dt  # Listar tablas
-SELECT COUNT(*) FROM users;  # Debería retornar 50
+# Quick test query
+\dt  # List tables
+SELECT COUNT(*) FROM users;  # Should return 50
 \q   # Salir
 ```
 
@@ -195,7 +195,7 @@ Registro de actividad de usuarios.
 | activity_type | VARCHAR(50) | Tipo de actividad |
 | activity_timestamp | TIMESTAMP | When the activity occurred |
 | product_id | INTEGER FK | Producto relacionado (opcional) |
-| details | JSONB | Metadatos adicionales |
+| details | JSONB | Additional metadata |
 
 **Sample size**: 1,000 activities
 **Tipos**: login, logout, view_product, add_to_cart, purchase, review
@@ -298,7 +298,7 @@ Para usar `postgresql.conf` personalizado:
 
 ---
 
-## Uso
+## Usage
 
 ### Common Docker Commands
 
@@ -370,17 +370,17 @@ print(df)
 # psql
 psql -h localhost -p 5432 -U dataengineer -d ecommerce
 
-# Con contraseña en comando (no recomendado)
+# With password in command (not recommended)
 PGPASSWORD=training123 psql -h localhost -p 5432 -U dataengineer -d ecommerce
 
-# String de conexión
+# Connection string
 psql "postgresql://dataengineer:training123@localhost:5432/ecommerce"
 ```
 
 ### Useful psql commands
 
 ```sql
--- Listar bases de datos
+-- List databases
 \l
 
 -- Listar tablas
@@ -389,7 +389,7 @@ psql "postgresql://dataengineer:training123@localhost:5432/ecommerce"
 -- Describir tabla
 \d users
 
--- Listar índices
+-- List indexes
 \di
 
 -- Listar vistas
@@ -398,15 +398,15 @@ psql "postgresql://dataengineer:training123@localhost:5432/ecommerce"
 -- Listar funciones
 \df
 
--- Mostrar base de datos actual
+-- Show current database
 \conninfo
 
--- Ejecutar archivo SQL
+-- Execute SQL file
 \i /path/to/file.sql
 
 -- Establecer formato de salida
 \x  -- Display expandido (vertical)
-\a  -- Sin alineación (sin padding)
+\a  -- Unaligned output (no padding)
 \t  -- Solo tuplas (sin encabezados)
 
 -- Timing
@@ -446,50 +446,50 @@ psql "postgresql://dataengineer:training123@localhost:5432/ecommerce"
 docker-compose logs postgres
 ```
 
-**Problemas comunes**:
-- Memoria insuficiente (aumentar RAM de Docker)
-- Volumen de datos corrupto (eliminar con `docker-compose down -v`)
-- Problemas de permisos (ejecutar `docker-compose down -v` e intentar nuevamente)
+**Common issues**:
+- Insufficient memory (increase Docker RAM)
+- Corrupted data volume (remove with `docker-compose down -v`)
+- Permission problems (run `docker-compose down -v` and try again)
 
-### No Puede Conectar
+### Cannot Connect
 
 **Verify which container is running**:
 ```bash
 docker-compose ps
 ```
 
-**Verificar salud**:
+**Verify health**:
 ```bash
 docker inspect sql-foundations-postgres | grep Health
 ```
 
-**Probar desde dentro del contenedor**:
+**Test from inside the container**:
 ```bash
 docker exec -it sql-foundations-postgres psql -U dataengineer -d ecommerce -c "SELECT 1"
 ```
 
-**Problemas de firewall**:
-- Asegurar que Docker tiene excepciones de firewall
-- En Linux, verificar `ufw` o `iptables`
+**Firewall issues**:
+- Ensure Docker has firewall exceptions
+- On Linux, check `ufw` or `iptables`
 
-### database No Inicializada
+### Database Not Initialized
 
-Si faltan tables:
+If tables are missing:
 
-1. Verificar si `init.sql`was executed:
+1. Verify whether `init.sql` was executed:
    ```bash
    docker-compose logs postgres | grep "initialization"
    ```
 
-2. Re-inicializar:
+2. Reinitialize:
    ```bash
-   docker-compose down -v  # ¡Elimina volúmenes!
+   docker-compose down -v  # Deletes volumes!
    docker-compose up -d
    ```
 
 ### queries Lentas
 
-**Ejecutar ANALYZE**:
+**Run ANALYZE**:
 ```sql
 ANALYZE;
 ```
@@ -508,19 +508,19 @@ Editar `docker-compose.yml` y aumentar `shared_buffers` y `effective_cache_size`
 
 ### Location of Persistent Data
 
-Los datos se almacenan en volumen Docker: `sql-foundations-postgres-data`
+Data is stored in Docker volume: `sql-foundations-postgres-data`
 
 **Find volume location**:
 ```bash
 docker volume inspect sql-foundations-postgres-data
 ```
 
-**Respaldar datos**:
+**Back up data**:
 ```bash
-# Volcar base de datos
+# Dump database
 docker exec -t sql-foundations-postgres pg_dump -U dataengineer ecommerce > backup.sql
 
-# Restaurar base de datos
+# Restore database
 docker exec -i sql-foundations-postgres psql -U dataengineer -d ecommerce < backup.sql
 ```
 
@@ -532,7 +532,7 @@ Crear archivos `.env` separados:
 # Desarrollo
 docker-compose --env-file .env.dev up -d
 
-# Producción (¡no hacer commit!)
+# Production (do not commit!)
 docker-compose --env-file .env.prod up -d
 ```
 
@@ -578,12 +578,12 @@ For production, enable SSL:
 
 **Check statistics**:
 ```sql
--- Tamaños de tablas
+-- Table sizes
 SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename))
 FROM pg_tables
 WHERE schemaname = 'public';
 
--- Tasa de acierto de caché
+-- Cache hit rate
 SELECT
     sum(heap_blks_read) as heap_read,
     sum(heap_blks_hit) as heap_hit,

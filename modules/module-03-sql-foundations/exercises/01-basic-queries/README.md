@@ -1,6 +1,6 @@
 # Exercise 01: Basic Queries
 
-## 🎯 Objetivos de Aprendizaje
+## 🎯 Learning Objectives
 
 By completing this exercise, you will be able to:
 
@@ -20,25 +20,25 @@ By completing this exercise, you will be able to:
 -- Seleccionar todas las columnas
 SELECT * FROM users;
 
--- Seleccionar columnas específicas
+-- Select specific columns
 SELECT first_name, last_name, email FROM users;
 
 -- Usar alias
 SELECT first_name AS nombre, last_name AS apellido FROM users;
 ```
 
-### 2. WHERE y Filtrado
+### 2. WHERE and Filtering
 ```sql
--- Condición simple
+-- Simple condition
 SELECT * FROM users WHERE country = 'US';
 
--- Múltiples condiciones con AND
+-- Multiple conditions with AND
 SELECT * FROM users WHERE country = 'US' AND is_active = TRUE;
 
 -- Condiciones con OR
 SELECT * FROM users WHERE country = 'US' OR country = 'GB';
 
--- Negación con NOT
+-- Negation with NOT
 SELECT * FROM users WHERE NOT country = 'US';
 ```
 
@@ -82,7 +82,7 @@ SELECT * FROM users ORDER BY registration_date ASC;
 -- Orden descendente
 SELECT * FROM products ORDER BY price DESC;
 
--- Ordenar por múltiples columnas
+-- Sort by multiple columns
 SELECT * FROM users ORDER BY country ASC, loyalty_points DESC;
 ```
 
@@ -91,12 +91,12 @@ SELECT * FROM users ORDER BY country ASC, loyalty_points DESC;
 -- Limitar resultados
 SELECT * FROM users LIMIT 10;
 
--- Paginación
-SELECT * FROM users ORDER BY user_id LIMIT 10 OFFSET 0;  -- Página 1
-SELECT * FROM users ORDER BY user_id LIMIT 10 OFFSET 10; -- Página 2
+-- Pagination
+SELECT * FROM users ORDER BY user_id LIMIT 10 OFFSET 0;  -- Page 1
+SELECT * FROM users ORDER BY user_id LIMIT 10 OFFSET 10; -- Page 2
 ```
 
-## 🎓 Ejercicios
+## 🎓 Exercises
 
 ### Setup
 1. Make sure you have the database running:
@@ -105,7 +105,7 @@ cd infrastructure
 docker-compose up -d
 ```
 
-2. Navega al directorio del ejercicio:
+2. Navigate to the exercise directory:
 ```bash
 cd exercises/01-basic-queries
 ```
@@ -113,35 +113,35 @@ cd exercises/01-basic-queries
 ### Exercise 1: Basic Projection
 **Archivo**: `starter/01_projection.sql`
 
-Escribe querys para:
+Escribe queries para:
 - Obtener todos los usuarios con solo nombre, apellido y email
 - Obtain products with name and price, using descriptive aliases in Spanish
 - Get the first 5 orders with id, date and total
 
-### Ejercicio 2: Filtrado con WHERE
+### Exercise 2: Filtering with WHERE
 **Archivo**: `starter/02_filtering.sql`
 
-Escribe querys para:
+Escribe queries para:
 - Usuarios activos de Estados Unidos
 - Productos con precio menor a $50
 - Orders with status 'delivered' or 'shipped'
 - Usuarios que NO son de US, GB o CA
 - Productos sin stock (stock_quantity = 0)
 
-### Ejercicio 3: Pattern Matching
+### Exercise 3: Pattern Matching
 **Archivo**: `starter/03_patterns.sql`
 
-Escribe querys para:
+Escribe queries para:
 - Usuarios con email de Gmail
 - Productos que contienen "Laptop" en el nombre
 - Usuarios cuyo nombre comienza con 'J'
 - Products in 'Electronics' or 'Books' category
 - Orders in a specific date range
 
-### Ejercicio 4: Ordenamiento
+### Exercise 4: Ordenamiento
 **Archivo**: `starter/04_sorting.sql`
 
-Escribe querys para:
+Escribe queries para:
 - Usuarios ordenados por puntos de lealtad (mayor a menor)
 - Productos ordenados por precio (menor a mayor)
 - Most recent orders first
@@ -151,7 +151,7 @@ Escribe querys para:
 ### Exercise 5: Pagination
 **Archivo**: `starter/05_pagination.sql`
 
-Escribe querys para:
+Escribe queries para:
 - Primeros 10 usuarios
 - Page 3 Users (records 21-30)
 - Top 5 most expensive products
@@ -169,7 +169,7 @@ queries complejas combinando todo lo aprendido:
 ## ✅ Success Criteria
 
 Para cada query:
-- ✓ Retorna los datos correctos
+- ✓ Returns correct data
 - ✓ Use valid SQL syntax
 - ✓ Includes comments explaining the logic
 - ✓ Follow formatting conventions (capital letters for keywords)
@@ -177,12 +177,12 @@ Para cada query:
 
 ## 🔍 Testing
 
-Ejecuta tus querys:
+Ejecuta tus queries:
 ```bash
-# Ejecutar archivo individual
+# Run individual file
 psql -h localhost -U dataengineer -d ecommerce -f starter/01_projection.sql
 
-# Ejecutar todos los archivos
+# Run all files
 for f in starter/*.sql; do
     echo "=== Ejecutando $f ==="
     psql -h localhost -U dataengineer -d ecommerce -f "$f"
@@ -195,7 +195,7 @@ Do you need help? query`hints.md`for clues without revealing the full solution.
 
 ## 📖 Soluciones
 
-The complete solutions are in`solution/`. Intenta resolver los ejercicios por tu cuenta primero.
+The complete solutions are in`solution/`. Try to solve the exercises on your own first.
 
 ## 📚 Additional Resources
 
@@ -206,7 +206,7 @@ The complete solutions are in`solution/`. Intenta resolver los ejercicios por tu
 ## ⏱️ Tiempo Estimado
 
 - **Lectura**: 15 minutos
-- **Ejercicios**: 45-60 minutos
+- **Exercises**: 45-60 minutos
 - **Total**: ~75 minutos
 
 ## 🎯 Next Steps

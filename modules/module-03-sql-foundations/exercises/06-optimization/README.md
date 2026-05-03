@@ -1,6 +1,6 @@
 # Exercise 06: Query Optimization
 
-## 🎯 Objetivos
+## 🎯 Objectives
 
 - Analizar query plans con EXPLAIN
 - Identificar problemas de performance
@@ -21,24 +21,24 @@ ORDER BY order_date DESC;
 
 ### indexes
 ```sql
--- Crear índice
+-- Create index
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 
--- Índice compuesto
+-- Composite index
 CREATE INDEX idx_orders_user_date ON orders(user_id, order_date);
 
--- Ver índices existentes
+-- View existing indexes
 \di+ orders
 ```
 
 ### Optimization
 - Evitar SELECT *
 - Usar LIMIT apropiadamente
-- Filtrar antes de JOIN cuando sea posible
-- Considerar materializar CTEs complejos
-- Usar EXISTS en lugar de IN para grandes datasets
+- Filter before JOIN when possible
+- Consider materializing complex CTEs
+- Use EXISTS instead of IN for large datasets
 
-## 🎓 Ejercicios
+## 🎓 Exercises
 
 See starter/ for performance analysis exercises, index creation, and query comparison.
 

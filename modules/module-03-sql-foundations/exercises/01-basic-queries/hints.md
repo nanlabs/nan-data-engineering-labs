@@ -20,7 +20,7 @@ Do you need help? There are clues here without revealing the full solutions.
 - 💡 No existe `SELECT * EXCEPT` en PostgreSQL
 - 💡 You must explicitly list the columns you want
 
-## Filtrado (02_filtering.sql)
+## Filtering (02_filtering.sql)
 
 **Query 1 - Multiple conditions**
 - 💡 Usa `AND` para combinar condiciones que deben cumplirse todas
@@ -102,16 +102,16 @@ Do you need help? There are clues here without revealing the full solutions.
 - 💡 Recommended order: WHERE → (more restrictions first) → ORDER BY → LIMIT
 - 💡 Use parentheses for clarity if you combine AND/OR
 
-**Query 3 - Filtrar y limitar**
+**Query 3 - Filter and limit**
 - 💡 WHERE se aplica ANTES de ORDER BY y LIMIT
-- 💡 Flujo: Filtrar → Ordenar → Limitar
+- 💡 Flow: Filter → Sort → Limit
 
 **Query 6 - OR con LIKE**
 - 💡 You need parentheses:`WHERE is_available = TRUE AND (condicion1 OR condicion2)`
 - 💡 Without parentheses:`AND` tiene precedencia sobre `OR`
 
 **Query BONUS - Query complejo**
-- 💡 Construye paso a paso:
+- 💡 Build step by step:
   1. Start with the most restrictive condition
   2. Agrega condiciones con AND
   3. Agrega ORDER BY al final
@@ -139,7 +139,7 @@ Do you need help? There are clues here without revealing the full solutions.
 
 ### Testing
 ```bash
-# Ver primeras líneas del resultado
+# View first lines of result
 psql -h localhost -U dataengineer -d ecommerce -c "SELECT * FROM users LIMIT 5"
 
 # Contar resultados

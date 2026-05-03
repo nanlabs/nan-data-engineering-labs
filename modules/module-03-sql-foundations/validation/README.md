@@ -6,8 +6,8 @@ This directory contains automated tests to validate the exercises in the SQL Fou
 
 ```
 validation/
-├── conftest.py              # Configuración pytest y fixtures
-├── helpers.py               # Utilidades de validación
+├── conftest.py              # Pytest configuration and fixtures
+├── helpers.py               # Validation utilities
 ├── test_exercise_01.py      # Tests para Basic Queries
 ├── test_exercise_02.py      # Tests para Joins
 ├── test_exercises_03_06.py  # Tests para Aggregations, Window Functions, CTEs, Optimization
@@ -19,7 +19,7 @@ validation/
 ### 1. Instalar Dependencias
 
 ```bash
-# Asegúrate de estar en el directorio del módulo
+# Make sure you are in the module directory
 cd modules/module-03-sql-foundations
 
 # Instalar pytest y dependencias
@@ -35,10 +35,10 @@ The tests require that the database be running with data:
 cd infrastructure
 docker-compose up -d
 
-# Esperar a que PostgreSQL esté listo
+# Wait for PostgreSQL to be ready
 sleep 5
 
-# Verificar que la BD tiene datos
+# Verify that the DB has data
 psql -h localhost -U dataengineer -d ecommerce -c "SELECT COUNT(*) FROM users;"
 ```
 
@@ -61,16 +61,16 @@ POSTGRES_USER=dataengineer
 POSTGRES_PASSWORD=training123
 ```
 
-## 🧪 Ejecutar Tests
+## 🧪 Run Tests
 
-### Todos los Tests
+### All Tests
 
 ```bash
-# Desde el directorio del módulo
+# From the module directory
 pytest validation/ -v
 ```
 
-### Tests por Ejercicio
+### Tests by Exercise
 
 ```bash
 # Exercise 01: Basic Queries
@@ -95,61 +95,61 @@ pytest validation/ -v -m exercise06
 ### Specific Tests
 
 ```bash
-# Test específico por nombre
+# Specific test by name
 pytest validation/test_exercise_01.py::TestProjection::test_select_specific_columns -v
 
-# Clase de tests
+# Test class
 pytest validation/test_exercise_01.py::TestProjection -v
 
-# Archivo completo
+# Full file
 pytest validation/test_exercise_01.py -v
 ```
 
 ### Useful Options
 
 ```bash
-# Mostrar output detallado
+# Show detailed output
 pytest validation/ -v -s
 
-# Detener en primer fallo
+# Stop on first failure
 pytest validation/ -x
 
-# Ejecutar tests en paralelo (requiere pytest-xdist)
+# Run tests in parallel (requires pytest-xdist)
 pytest validation/ -n auto
 
-# Excluir tests lentos
+# Exclude slow tests
 pytest validation/ -v -m "not slow"
 
-# Generar reporte de cobertura (requiere pytest-cov)
+# Generate coverage report (requires pytest-cov)
 pytest validation/ --cov=validation --cov-report=html
 ```
 
-## 📊 Estructura de Tests
+## 📊 Test Structure
 
 ### conftest.py
 
-Fixtures compartidas:
+Shared fixtures:
 
 - `db_connection`: Database connection (scope: session)
-- `db_cursor`: Cursor con auto-rollback (scope: function)
-- `execute_query`: Helper para ejecutar queries
-- `execute_file`: Helper para ejecutar archivos SQL
+- `db_cursor`: Cursor with auto-rollback (scope: function)
+- `execute_query`: Helper to execute queries
+- `execute_file`: Helper to execute SQL files
 - `verify_db_setup`: Verify that the DB is configured
 
 ### helpers.py
 
-Utilidades:
+Utilities:
 
-- `compare_results()`: Comparar resultados de queries
-- `validate_schema()`: Validar columns esperadas
-- `benchmark_query()`: Medir performance
-- `assert_no_nulls()`: Verificar ausencia de NULLs
-- `assert_unique()`: Verificar unicidad
-- `assert_range()`: Verificar rangos de valores
-- `get_query_plan()`: Obtener EXPLAIN plan
-- `QueryValidator`: Validaciones comunes (pagination, JOIN integrity)
+- `compare_results()`: Compare query results
+- `validate_schema()`: Validate expected columns
+- `benchmark_query()`: Measure performance
+- `assert_no_nulls()`: Verify absence of NULLs
+- `assert_unique()`: Verify uniqueness
+- `assert_range()`: Verify value ranges
+- `get_query_plan()`: Get EXPLAIN plan
+- `QueryValidator`: Common validations (pagination, JOIN integrity)
 
-## 📝 Ejemplo de Uso
+## 📝 Ejemplo de Usage
 
 ### Basic Test
 
@@ -210,8 +210,8 @@ def test_join_performance(db_cursor):
 ### Exercise 01: Basic Queries
 
 - ✓ Projection of specific columns
-- ✓ Uso de alias
-- ✓ Filtrado con WHERE (=, <, >, !=)
+- ✓ Usage de alias
+- ✓ Filtering with WHERE (=, <, >, !=)
 - ✓ Logical operators (AND, OR, NOT)
 - ✓ Pattern matching (LIKE, IN, BETWEEN)
 - ✓ NULL handling (IS NULL, IS NOT NULL)
@@ -311,7 +311,7 @@ conn.autocommit = False
 # Excluir tests marcados como slow
 pytest validation/ -m "not slow"
 
-# O ejecutar en paralelo
+# Or run in parallel
 pytest validation/ -n auto
 ```
 

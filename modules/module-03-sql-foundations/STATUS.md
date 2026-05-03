@@ -22,7 +22,7 @@
 
 ## Directory Completion Status
 
-### ✅ Paso 1/8: Base Structure
+### ✅ Step 1/8: Base Structure
 **Status**: ✅ Complete
 **Files**: 4/4 created
 - [x] README.md - Module overview and getting started
@@ -30,7 +30,7 @@
 - [x] .gitignore - Local file exclusions
 - [x] STATUS.md - This file
 
-### 📚 Paso 2/8: Theory Documentation
+### 📚 Step 2/8: Theory Documentation
 **Status**: ✅ Complete
 **Target Files**: 3
 - [x] theory/concepts.md (~8,500 words) - SQL fundamentals and core concepts
@@ -47,7 +47,7 @@
 - Interactive learning platforms and books
 - Practice databases and tools
 
-### 🏗️ Paso 3/8: Infrastructure
+### 🏗️ Step 3/8: Infrastructure
 **Status**: ✅ Complete
 **Target Files**: 4
 - [x] infrastructure/docker-compose.yml - Docker Compose configuration with PostgreSQL 15
@@ -64,7 +64,7 @@
 - Health checks and logging configuration
 - Comprehensive setup documentation
 
-### 💾 Paso 4/8: Data
+### 💾 Step 4/8: Data
 **Status**: ✅ Complete
 **Target Files**: 11
 - [x] data/schemas/01_users.sql
@@ -88,7 +88,7 @@
 - Troubleshooting guides and best practices
 - Import/export commands for CSV data
 
-### 🎯 Paso 5/8: Exercises
+### 🎯 Step 5/8: Exercises
 **Status**: ✅ Complete
 **Target Files**: 29
 
@@ -125,7 +125,7 @@
 - [x] starter/optimization.sql
 - [x] solution/optimization.sql
 
-### ✅ Paso 6/8: Validation
+### ✅ Step 6/8: Validation
 **Status**: ✅ Complete
 **Target Files**: 5
 
@@ -144,7 +144,7 @@
 - JOIN integrity validation
 - CI/CD integration examples
 
-### 🎨 Paso 7/8: Assets
+### 🎨 Step 7/8: Assets
 **Status**: ✅ Complete
 **Target Files**: 7/7 created
 - [x] assets/diagrams/query-execution-flow.md
@@ -162,7 +162,7 @@
 - Query optimization guide with EXPLAIN, indexes, anti-patterns
 - Learning paths and quick lookup guide
 
-### 🔧 Paso 8/8: Scripts & Automation
+### 🔧 Step 8/8: Scripts & Automation
 **Status**: ✅ Complete
 **Target Files**: 6/6 created
 - [x] scripts/setup.sh - Complete environment setup (400+ lines)
@@ -247,24 +247,24 @@
 | Phase | Estimated | Actual | Status |
 |-------|-----------|--------|--------|
 | Planning | 1h | 1h | ✅ Done |
-| Paso 1 (Base) | 0.5h | 0.5h | ✅ Done |
-| Paso 2 (Theory) | 4h | 3h | ✅ Done |
-| Paso 3 (Infrastructure) | 1h | 1h | ✅ Done |
-| Paso 4 (Data) | 2h | - | ⏳ Pending |
-| Paso 5 (Exercises) | 6h | - | ⏳ Pending |
-| Paso 6 (Validation) | 3h | - | ⏳ Pending |
-| Paso 7 (Assets) | 2h | - | ⏳ Pending |
-| Paso 8 (Scripts/Docs) | 2h | - | ⏳ Pending |
+| Step 1 (Base) | 0.5h | 0.5h | ✅ Done |
+| Step 2 (Theory) | 4h | 3h | ✅ Done |
+| Step 3 (Infrastructure) | 1h | 1h | ✅ Done |
+| Step 4 (Data) | 2h | - | ⏳ Pending |
+| Step 5 (Exercises) | 6h | - | ⏳ Pending |
+| Step 6 (Validation) | 3h | - | ⏳ Pending |
+| Step 7 (Assets) | 2h | - | ⏳ Pending |
+| Step 8 (Scripts/Docs) | 2h | - | ⏳ Pending |
 | **Total** | **21.5h** | **5.5h** | **26% Complete** |
 
 ---
 
 ## Next Actions
 
-1. ✅ Complete Paso 1/8 (Base structure)
-2. ✅ Complete Paso 2/8 (Theory documentation)
-3. ✅ Complete Paso 3/8 (Infrastructure setup)
-4. ⏭️ Begin Paso 4/8 (Data - schemas and migrations)
+1. ✅ Complete Step 1/8 (Base structure)
+2. ✅ Complete Step 2/8 (Theory documentation)
+3. ✅ Complete Step 3/8 (Infrastructure setup)
+4. ⏭️ Begin Step 4/8 (Data - schemas and migrations)
 5. Create data/schemas/ directory with table definitions
 6. Create data/seeds/ with CSV sample data
 7. Create data/migrations/ for schema changes
@@ -274,4 +274,4 @@
 
 **Last Updated**: February 2, 2026
 **Updated By**: AI Assistant
-**Next Review**: After Paso 3 completion
+**Next Review**: After Step 3 completion

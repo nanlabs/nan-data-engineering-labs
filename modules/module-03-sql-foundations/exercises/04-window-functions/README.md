@@ -1,11 +1,11 @@
 # Exercise 04: Window Functions
 
-## 🎯 Objetivos
+## 🎯 Objectives
 
 - Usar ROW_NUMBER(), RANK(), DENSE_RANK()
 - Apply analytical functions: LAG(), LEAD(), FIRST_VALUE(), LAST_VALUE()
 - Usar agregaciones con OVER()
-- Particionar datos con PARTITION BY
+- Partition data with PARTITION BY
 - Ordenar ventanas con ORDER BY
 
 ## 📚 Conceptos Clave
@@ -22,7 +22,7 @@ FROM products;
 
 ### PARTITION BY
 ```sql
--- Top 3 productos por categoría
+-- Top 3 products by category
 SELECT *
 FROM (
     SELECT
@@ -47,7 +47,7 @@ SELECT
 FROM orders;
 ```
 
-## 🎓 Ejercicios
+## 🎓 Exercises
 
 See starter/ for complete exercises with ranking, temporal analysis, and more.
 

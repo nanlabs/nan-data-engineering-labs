@@ -1,6 +1,6 @@
 # Exercise 02: Joins
 
-## 🎯 Objetivos de Aprendizaje
+## 🎯 Learning Objectives
 
 By completing this exercise, you will be able to:
 
@@ -19,12 +19,12 @@ By completing this exercise, you will be able to:
 Retorna solo los registros que tienen coincidencias en ambas tables.
 
 ```sql
--- Sintaxis básica
+-- Basic syntax
 SELECT columns
 FROM table1
 INNER JOIN table2 ON table1.key = table2.key;
 
--- Ejemplo: Órdenes con información de usuario
+-- Example: Orders with user information
 SELECT
     o.order_id,
     o.order_date,
@@ -40,7 +40,7 @@ INNER JOIN users u ON o.user_id = u.user_id;
 Retorna todos los registros de la table izquierda, con o sin coincidencias en la derecha.
 
 ```sql
--- Todos los usuarios y sus órdenes (si tienen)
+-- All users and their orders (if any)
 SELECT
     u.first_name,
     u.last_name,
@@ -49,7 +49,7 @@ SELECT
 FROM users u
 LEFT JOIN orders o ON u.user_id = o.user_id;
 
--- Usuarios que NO han hecho órdenes
+-- Users who have NOT placed orders
 SELECT u.*
 FROM users u
 LEFT JOIN orders o ON u.user_id = o.user_id
@@ -62,7 +62,7 @@ WHERE o.order_id IS NULL;
 Similar a LEFT JOIN pero retorna todos los registros de la table derecha.
 
 ```sql
--- Todas las órdenes y sus usuarios
+-- All orders and their users
 SELECT
     o.order_id,
     o.total_amount,
@@ -78,7 +78,7 @@ RIGHT JOIN orders o ON u.user_id = o.user_id;
 Retorna todos los registros de ambas tables, con o sin coincidencias.
 
 ```sql
--- Todos los usuarios y órdenes, estén o no relacionados
+-- All users and orders, whether related or not
 SELECT
     u.user_id,
     u.first_name,
@@ -94,7 +94,7 @@ FULL OUTER JOIN orders o ON u.user_id = o.user_id;
 Combine 3 or more tables in a query.
 
 ```sql
--- Órdenes con usuario y detalles de productos
+-- Orders with user and product details
 SELECT
     o.order_id,
     u.first_name || ' ' || u.last_name AS customer,
@@ -127,11 +127,11 @@ INNER JOIN products p ON oi1.product_id = p.product_id
 WHERE u1.user_id < u2.user_id;
 ```
 
-## 🎓 Ejercicios
+## 🎓 Exercises
 
 ### Setup
 1. Make sure you have the database running
-2. Navega al directorio del ejercicio:
+2. Navigate to the exercise directory:
 ```bash
 cd exercises/02-joins
 ```
@@ -139,16 +139,16 @@ cd exercises/02-joins
 ### Exercise 1: Basic INNER JOIN
 **Archivo**: `starter/01_inner_join.sql`
 
-Escribe querys para:
+Escribe queries para:
 - Orders with user name
 - Products in orders with product name
 - Items de orden con precio actual del producto
 - Actividad de usuarios con nombre del usuario
 
-### Ejercicio 2: LEFT JOIN
+### Exercise 2: LEFT JOIN
 **Archivo**: `starter/02_left_join.sql`
 
-Escribe querys para:
+Escribe queries para:
 - All users with order count (even without orders)
 - Todos los productos con total vendido (incluso sin ventas)
 - Users who have NOT placed orders
@@ -163,7 +163,7 @@ queries complejas con 3+ tables:
 - Most purchased products with order information
 - Actividad de usuarios con productos relacionados
 
-### Ejercicio 4: Agregaciones con JOIN
+### Exercise 4: Agregaciones con JOIN
 **Archivo**: `starter/04_aggregations.sql`
 
 Combine JOINs with aggregation functions:
@@ -172,7 +172,7 @@ Combine JOINs with aggregation functions:
 - Most popular products by country
 - Revenue by product category
 
-### Ejercicio 5: Casos Especiales
+### Exercise 5: Special Cases
 **Archivo**: `starter/05_special_cases.sql`
 
 Situaciones avanzadas:
@@ -181,7 +181,7 @@ Situaciones avanzadas:
 - Cross-tabulation con JOINs
 - Queries con filtros en tables unidas
 
-### Ejercicio 6: Casos de Uso Reales
+### Exercise 6: Real Use Cases
 **Archivo**: `starter/06_real_world.sql`
 
 Practical queries for analytics:
@@ -218,35 +218,35 @@ Para cada query:
 - ✓ ON clause precisa con las claves correctas
 - ✓ Alias de table para legibilidad
 - ✓ Appropriate selection of columns
-- ✓ Filtros aplicados correctamente
-- ✓ Resultados ordenados cuando corresponda
+- ✓ Correctly applied filters
+- ✓ Ordered results when applicable
 
 ## 🔍 Visualizar JOINs
 
 ```sql
 -- INNER JOIN: Solo coincidencias
--- users: A, B, C (tienen órdenes)
--- orders: órdenes de A, B, C
--- Resultado: A, B, C con sus órdenes
+-- users: A, B, C (have orders)
+-- orders: orders from A, B, C
+-- Result: A, B, C with their orders
 
 -- LEFT JOIN: Todos de la izquierda
--- users: A, B, C, D (D sin órdenes)
--- orders: órdenes de A, B, C
--- Resultado: A, B, C con órdenes, D con NULL en columnas de orders
+-- users: A, B, C, D (D without orders)
+-- orders: orders from A, B, C
+-- Result: A, B, C with orders, D with NULL in order columns
 
 -- RIGHT JOIN: Todos de la derecha
 -- users: A, B, C
--- orders: órdenes de A, B, C, y una órden "huérfana" X
--- Resultado: A, B, C con órdenes, X con NULL en columnas de users
+-- orders: orders from A, B, C, and one orphan order X
+-- Result: A, B, C with orders, X with NULL in user columns
 
 -- FULL OUTER JOIN: Todos de ambos lados
--- Resultado: Todos los usuarios (con/sin órdenes) + todas las órdenes (con/sin usuario)
+-- Result: All users (with/without orders) + all orders (with/without user)
 ```
 
 ## 🔍 Testing
 
 ```bash
-# Ejecutar archivo individual
+# Run individual file
 psql -h localhost -U dataengineer -d ecommerce -f starter/01_inner_join.sql
 
 # Comparar con soluciones
@@ -271,7 +271,7 @@ The complete solutions are in`solution/`.
 ## ⏱️ Tiempo Estimado
 
 - **Lectura**: 20 minutos
-- **Ejercicios**: 60-90 minutos
+- **Exercises**: 60-90 minutos
 - **Total**: ~110 minutos
 
 ## 🎯 Next Steps

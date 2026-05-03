@@ -1,10 +1,10 @@
 # Exercise 03: Aggregations
 
-## 🎯 Objetivos
+## 🎯 Objectives
 
 - Use aggregation functions: COUNT, SUM, AVG, MIN, MAX
 - Agrupar resultados con GROUP BY
-- Filtrar grupos con HAVING
+- Filter groups with HAVING
 - Combinar agregaciones con JOINs
 - Entender diferencia entre WHERE y HAVING
 
@@ -35,7 +35,7 @@ ORDER BY total_spent DESC;
 
 ### HAVING
 ```sql
--- Usuarios con más de 5 órdenes
+-- Users with more than 5 orders
 SELECT
     user_id,
     COUNT(*) AS num_orders
@@ -44,8 +44,8 @@ GROUP BY user_id
 HAVING COUNT(*) > 5;
 ```
 
-## 🎓 Ejercicios
+## 🎓 Exercises
 
-Ver archivos starter/ para ejercicios detallados.
+See starter/ files for detailed exercises.
 
 ## ⏱️ Tiempo Estimado: ~90 minutos

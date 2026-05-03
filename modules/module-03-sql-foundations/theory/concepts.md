@@ -110,7 +110,7 @@ Tabla Orders:
 - **2NF**: Sin dependencias parciales de clave primaria
 - **3NF**: Sin dependencias transitivas
 
-Los data warehouses frecuentemente **desnormalizan** para performance de querys (esquemas estrella/copo de nieve).
+Los data warehouses frecuentemente **desnormalizan** para performance de queries (esquemas estrella/copo de nieve).
 
 ### Propiedades ACID
 
@@ -161,10 +161,10 @@ FROM users;
 Eliminar valores duplicados:
 
 ```sql
--- Todos los países únicos
+-- All unique countries
 SELECT DISTINCT country FROM users;
 
--- Combinaciones únicas
+-- Unique combinations
 SELECT DISTINCT country, city FROM users;
 ```
 
@@ -183,7 +183,7 @@ FROM products;
 
 ---
 
-## Filtrado con WHERE
+## Filtering with WHERE
 
 ### Basic Filtering
 
@@ -247,10 +247,10 @@ WHERE order_date BETWEEN '2024-01-01' AND '2024-12-31';
 -- % coincide con cualquier secuencia de caracteres
 SELECT * FROM users WHERE email LIKE '%@gmail.com';
 
--- _ coincide con un solo carácter
+-- _ matches a single character
 SELECT * FROM users WHERE first_name LIKE 'J__n';  -- John, Joan
 
--- Insensible a mayúsculas: ILIKE (PostgreSQL)
+-- Case-insensitive: ILIKE (PostgreSQL)
 SELECT * FROM users WHERE email ILIKE '%GMAIL.COM';
 ```
 
@@ -300,7 +300,7 @@ Pagination:
 -- First 10 rows
 SELECT * FROM products LIMIT 10;
 
--- Saltar primeras 20, obtener siguientes 10 (página 3)
+-- Skip first 20, get next 10 (page 3)
 SELECT * FROM products
 ORDER BY product_id
 LIMIT 10 OFFSET 20;
@@ -312,7 +312,7 @@ LIMIT 10 OFFSET 20;
 ### FETCH (Standard SQL)
 
 ```sql
--- Paginación SQL estándar
+-- Standard SQL pagination
 SELECT * FROM products
 ORDER BY product_id
 OFFSET 20 ROWS

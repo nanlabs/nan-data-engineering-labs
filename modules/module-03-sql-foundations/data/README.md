@@ -12,7 +12,7 @@ data/
 │   ├── 03_orders.sql
 │   ├── 04_order_items.sql
 │   └── 05_user_activity.sql
-├── seeds/                # Datos de muestra en CSV
+├── seeds/                # Sample data en CSV
 │   ├── users.csv
 │   └── products.csv
 ├── migrations/           # Scripts de cambios de esquema
@@ -57,9 +57,9 @@ Los archivos en `schemas/` contienen las definiciones DDL (Data Definition Langu
 **columns clave**: activity_id (PK), user_id (FK), activity_type, details (JSONB)
 **indexes**: user_id, activity_timestamp, activity_type, details (GIN)
 
-## 📊 Seeds (Datos de Muestra)
+## 📊 Seeds (Sample Data)
 
-Los archivos CSV en `seeds/` contienen datos de muestra para testing y desarrollo:
+Los archivos CSV en `seeds/` contain sample data for testing and development:
 
 ### users.csv
 
@@ -110,7 +110,7 @@ Los scripts en `migrations/` documentan cambios incrementales al esquema:
 
 - Agrega column `preferences` (JSONB)
 - Create GIN index for efficient searches
-**Uso**: Almacenar configuraciones personalizadas (tema, notificaciones, etc.)
+**Usage**: Store custom configurations (tema, notificaciones, etc.)
 
 ### 002_add_product_ratings.sql
 
@@ -120,7 +120,7 @@ Los scripts en `migrations/` documentan cambios incrementales al esquema:
 - Agrega column `average_rating` (DECIMAL 3,2)
 - Agrega column `review_count` (INTEGER)
 - Constraints de rango (0-5.00)
-- index para filtrado por rating
+- index for rating-based filtering
 **Use**: Show top rated products, search filters
 
 ### 003_add_order_tracking.sql
@@ -137,7 +137,7 @@ Los scripts en `migrations/` documentan cambios incrementales al esquema:
 ### Aplicar Migrations
 
 ```bash
-# Aplicar migración individual
+# Apply individual migration
 psql -h localhost -U dataengineer -d ecommerce -f data/migrations/001_add_user_preferences.sql
 
 # Aplicar todas las migraciones
@@ -155,7 +155,7 @@ Cada archivo de migration incluye comentarios con comandos de rollback al final:
 # Ver comandos de rollback
 tail -n 10 data/migrations/001_add_user_preferences.sql
 
-# Ejecutar rollback manualmente
+# Execute rollback manually
 psql -h localhost -U dataengineer -d ecommerce -c "ALTER TABLE users DROP COLUMN IF EXISTS preferences;"
 ```
 
@@ -164,12 +164,12 @@ psql -h localhost -U dataengineer -d ecommerce -c "ALTER TABLE users DROP COLUMN
 ### Recrear Esquema desde Cero
 
 ```bash
-# Opción 1: Usar init.sql en infrastructure/
+# Option 1: Use init.sql in infrastructure/
 cd infrastructure
 docker-compose down -v
 docker-compose up -d
 
-# Opción 2: Aplicar schemas manualmente
+# Option 2: Apply schemas manually
 psql -h localhost -U dataengineer -d ecommerce << EOF
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
@@ -187,11 +187,11 @@ done
 -- Listar todas las tablas
 \dt
 
--- Describir tabla específica
+-- Describe specific table
 \d users
 \d+ products  -- Incluye comentarios
 
--- Ver índices de una tabla
+-- View indexes for a table
 \di+ users
 
 -- Ver constraints
@@ -200,7 +200,7 @@ FROM pg_constraint
 WHERE conrelid = 'users'::regclass;
 ```
 
-### Exportar Datos
+### Export Data
 
 ```bash
 # Exportar tabla a CSV
@@ -264,7 +264,7 @@ ORDER BY idx_scan DESC;
 - **indexes**: idx_{table}_{columns} (idx_users_email)
 - **Constraints**: {table}_{column}_{type} (users_email_format)
 
-### 2. Tipos de Datos
+### 2. Data Types
 
 - **IDs**: SERIAL para auto-increment
 - **Dinero**: DECIMAL(10,2) nunca FLOAT

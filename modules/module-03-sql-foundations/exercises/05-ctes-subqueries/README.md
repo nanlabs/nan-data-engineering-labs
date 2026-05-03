@@ -1,6 +1,6 @@
 # Exercise 05: CTEs & Subqueries
 
-## 🎯 Objetivos
+## 🎯 Objectives
 
 - Crear Common Table Expressions (WITH clause)
 - Usar subqueries en SELECT, FROM y WHERE
@@ -39,12 +39,12 @@ INNER JOIN top_users tu ON u.user_id = tu.user_id;
 
 ### Subquery en WHERE
 ```sql
--- Productos más caros que el promedio
+-- Products more expensive than average
 SELECT * FROM products
 WHERE price > (SELECT AVG(price) FROM products);
 ```
 
-## 🎓 Ejercicios
+## 🎓 Exercises
 
 See starter/ for exercises with recursive CTEs, correlated subqueries, and more.
 

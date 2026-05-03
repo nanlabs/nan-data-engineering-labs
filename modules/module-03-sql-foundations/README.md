@@ -7,41 +7,41 @@ Master SQL fundamentals and advanced querying techniques essential for modern da
 This module teaches SQL from a data engineering perspective, focusing on real-world scenarios you will encounter when working with data lakes, warehouses, and analytical workloads. You will learn to write efficient queries, optimize performance and take advantage of SQL through different engines (PostgreSQL, Athena, Spark SQL).
 
 **Duration**: 12-15 hours
-**Dificultad**: Principiante a Intermedio
+**Difficulty**: Beginner to Intermediate
 **Prerequisites**: Basic understanding of databases and data structures
 
-## Objetivos de Aprendizaje
+## Learning Objectives
 
 Upon completion of this module, you will be able to:
 
 1. **Write complex SQL queries** using SELECT, WHERE, JOIN, GROUP BY and aggregation functions
-2. **Realizar operaciones multi-table** con joins INNER, LEFT, RIGHT, FULL y CROSS
+2. **Perform multi-table operations** con joins INNER, LEFT, RIGHT, FULL y CROSS
 3. **Use window functions** for analytical queries (ROW_NUMBER, RANK, LAG, LEAD, NTILE)
-4. **Dominar Common Table Expressions (CTEs)** para querys legibles y mantenibles
+4. **Master Common Table Expressions (CTEs)** for readable and maintainable queries
 5. **Optimize query performance** using EXPLAIN, indexes and query planning
 6. **Handle data transformations** with CASE, COALESCE, type conversion and string functions
 7. **Work with dates and timestamps** for time series analysis and partitioning
 8. **Understand query execution plans** and how databases process SQL
 9. **Apply SQL best practices** for data engineering workflows
 10. **Use SQL across different engines** (PostgreSQL, Presto/Athena, Spark SQL)
-11. **Debuggear y resolver problemas** de querys lentas y errores comunes de SQL
+11. **Debug and solve problems** of slow queries and common SQL errors
 12. **Write efficient analytical queries** for data pipeline transformations
 
 
-## Prerequisitos
+## Prerequisites
 
-### Conocimientos Requeridos
+### Required Knowledge
 - Basic understanding of relational databases
-- Familiaridad con tipos de datos (integers, strings, dates)
+- Familiarity with data types (integers, strings, dates)
 - Basic command line commands
 
-### Software Requerido
+### Required Software
 - Python 3.9+
 - Docker y Docker Compose
 - Cliente PostgreSQL (psql)
 - 2GB de espacio libre en disco
 
-### Recomendado pero Opcional
+### Recommended but Optional
 - Basic understanding of data warehousing concepts
 - Familiarity with any programming language
 - Experience with data analysis tools
@@ -50,38 +50,38 @@ Upon completion of this module, you will be able to:
 
 ```
 module-03-sql-foundations/
-├── theory/                      # Documentación conceptual
+├── theory/                      # Conceptual documentation
 │   ├── concepts.md             # Fundamentos de SQL (20,000+ palabras)
-│   ├── architecture.md         # Ejecución y optimización de consultas
-│   └── resources.md            # Materiales de aprendizaje adicionales
-├── exercises/                   # Práctica hands-on
+│   ├── architecture.md         # Query execution and optimization
+│   └── resources.md            # Additional learning materials
+├── exercises/                   # Hands-on practice
 │   ├── 01-basic-queries/       # SELECT, WHERE, ORDER BY
 │   ├── 02-joins/               # Operaciones multi-tabla
-│   ├── 03-aggregations/        # GROUP BY, funciones de agregación
-│   ├── 04-window-functions/    # Consultas analíticas
-│   ├── 05-ctes-subqueries/     # Composición de consultas complejas
+│   ├── 03-aggregations/        # GROUP BY, aggregation functions
+│   ├── 04-window-functions/    # Analytical queries
+│   ├── 05-ctes-subqueries/     # Complex query composition
 │   └── 06-optimization/        # Ajuste de rendimiento
 ├── data/                        # Datasets de muestra
-│   ├── schemas/                # Esquemas de base de datos
-│   ├── seeds/                  # Datos de muestra
-│   └── migrations/             # Scripts de evolución de esquema
+│   ├── schemas/                # Database schemas
+│   ├── seeds/                  # Sample data
+│   └── migrations/             # Schema evolution scripts
 ├── infrastructure/              # Setup de desarrollo local
 │   ├── docker-compose.yml      # Contenedor PostgreSQL
-│   └── init.sql                # Inicialización de base de datos
+│   └── init.sql                # Database initialization
 ├── validation/                  # Tests automatizados
-│   └── test_*.py               # Validación de ejercicios
+│   └── test_*.py               # Exercise validation
 ├── assets/                      # Recursos visuales
-│   ├── diagrams/               # Diagramas de ejecución SQL
-│   └── cheatsheets/            # Guías de referencia rápida
-├── scripts/                     # Scripts de automatización
-│   ├── setup.sh                # Configuración del entorno
-│   └── validate.sh             # Ejecutar todas las validaciones
-└── docs/                        # Documentación adicional
-    ├── sql-guide.md            # Guía completa de SQL
-    └── troubleshooting.md      # Problemas comunes y soluciones
+│   ├── diagrams/               # SQL execution diagrams
+│   └── cheatsheets/            # Quick reference guides
+├── scripts/                     # Automation scripts
+│   ├── setup.sh                # Environment setup
+│   └── validate.sh             # Run all validations
+└── docs/                        # Additional documentation
+    ├── sql-guide.md            # Complete SQL guide
+    └── troubleshooting.md      # Common problems and solutions
 ```
 
-## Comenzando
+## Getting Started
 
 ### 1. Clonar y Navegar
 ```bash
@@ -120,11 +120,11 @@ cat theory/concepts.md | less
 cat theory/architecture.md | less
 ```
 
-### 7. Completar Ejercicios en Orden
+### 7. Complete Exercises in Order
 ```bash
 cd exercises/01-basic-queries
 cat README.md
-# Seguir instrucciones en cada ejercicio
+# Follow instructions in each exercise
 ```
 
 ### 8. Validar tu Aprendizaje
@@ -134,10 +134,10 @@ bash scripts/validate.sh
 pytest validation/ -v
 ```
 
-## Ejercicios
+## Exercises
 
 ### Exercise 01: Basic queries
-**Objetivo**: Dominar operaciones fundamentales de SQL
+**Objective**: Master fundamental SQL operations
 
 **Temas**:
 - SELECT de columns y expresiones
@@ -153,7 +153,7 @@ pytest validation/ -v
 
 ---
 
-### Ejercicio 02: Joins y Relaciones
+### Exercise 02: Joins and Relationships
 **Goal**: Combine data from multiple tables
 
 **Temas**:
@@ -170,13 +170,13 @@ pytest validation/ -v
 
 ---
 
-### Ejercicio 03: Agregaciones y Agrupamiento
-**Objetivo**: Resumir y analizar datos
+### Exercise 03: Aggregations and Grouping
+**Objective**: Summarize and analyze data
 
 **Temas**:
 - COUNT, SUM, AVG, MIN, MAX
 - GROUP BY with one or multiple columns
-- HAVING para agregados filtrados
+- HAVING para filtered aggregates
 - Agregaciones con DISTINCT
 - GROUP BY con JOINs
 - Common Aggregation Patterns
@@ -187,7 +187,7 @@ pytest validation/ -v
 
 ---
 
-### Ejercicio 04: Funciones de Ventana
+### Exercise 04: Window Functions
 **Objective**: Perform advanced analytical queries
 
 **Temas**:
@@ -204,25 +204,25 @@ pytest validation/ -v
 
 ---
 
-### Ejercicio 05: CTEs y Subquerys
-**Objetivo**: Escribir querys complejas y mantenibles
+### Exercise 05: CTEs y Subqueries
+**Objective**: Escribir queries complejas y mantenibles
 
 **Temas**:
 - Common Table Expressions (WITH)
 - CTEs recursivos
-- Subquerys en SELECT, WHERE, FROM
-- Subquerys correlacionadas vs no correlacionadas
+- Subqueries en SELECT, WHERE, FROM
+- Subqueries correlacionadas vs no correlacionadas
 - Query readability best practices
 - Performance comparison
 
-**Datasets**: Escenarios complejos multi-table
+**Datasets**: Complex multi-table scenarios
 
 **Tiempo**: 2-3 horas
 
 ---
 
 ### Exercise 06: Query optimization
-**Objetivo**: Analizar y mejorar el performance de querys
+**Objective**: Analizar y mejorar el performance de queries
 
 **Temas**:
 - EXPLAIN y EXPLAIN ANALYZE
@@ -230,7 +230,7 @@ pytest validation/ -v
 - Query planning and execution
 - Optimizing the order of JOINs
 - Evitar anti-patrones comunes
-- monitor performance de querys
+- monitor performance de queries
 
 **Datasets**: Dataset grande (1M+ rows)
 
@@ -249,7 +249,7 @@ users (user_id, email, first_name, last_name, created_at, country)
 -- Tabla de productos
 products (product_id, name, category, price, stock)
 
--- Tabla de órdenes
+-- Orders table
 orders (order_id, user_id, order_date, total_amount, status)
 
 -- Tabla de items de orden
@@ -282,7 +282,7 @@ user_activity (activity_id, user_id, event_type, event_time, session_id)
 
 ## Validation
 
-### Ejecutar Todos los Tests
+### Run All Tests
 ```bash
 bash scripts/validate.sh
 ```
@@ -295,7 +295,7 @@ pytest validation/test_exercise_02.py -v
 
 ### Verificar performance de queries
 ```bash
-# Ejecutar benchmarks de optimización
+# Run optimization benchmarks
 python validation/benchmark_queries.py
 ```
 
@@ -306,12 +306,12 @@ python validation/benchmark_queries.py
 - [ ] Leer `theory/architecture.md`(query execution)
 - [ ] Revisar `theory/resources.md` (materiales adicionales)
 
-### Ejercicios
+### Exercises
 - [ ] Exercise 01: Basic queries ✓
-- [ ] Ejercicio 02: Joins y Relaciones ✓
-- [ ] Ejercicio 03: Agregaciones y Agrupamiento ✓
-- [ ] Ejercicio 04: Funciones de Ventana ✓
-- [ ] Ejercicio 05: CTEs y Subquerys ✓
+- [ ] Exercise 02: Joins and Relationships ✓
+- [ ] Exercise 03: Aggregations and Grouping ✓
+- [ ] Exercise 04: Window Functions ✓
+- [ ] Exercise 05: CTEs y Subqueries ✓
 - [ ] Exercise 06: Query optimization ✓
 
 ### Validation
@@ -320,8 +320,8 @@ python validation/benchmark_queries.py
 - [ ] I can explain query execution plans
 
 ### Optional Challenges
-- [ ] Resolver todos los problemas bonus en ejercicios
-- [ ] Escribir 5 querys complejas desde cero
+- [ ] Solve all bonus problems in exercises
+- [ ] Escribir 5 queries complejas desde cero
 - [ ] Optimizar una query lenta 10x
 - [ ] Completar PostgreSQL Exercises (pgexercises.com)
 
@@ -329,7 +329,7 @@ python validation/benchmark_queries.py
 
 ### Database connection failure
 ```bash
-# Verificar que Docker está corriendo
+# Verify that Docker is running
 docker ps
 
 # Reiniciar PostgreSQL
@@ -343,19 +343,19 @@ docker-compose restart
 EXPLAIN ANALYZE
 SELECT * FROM large_table WHERE condition;
 
--- Verificar índices faltantes
+-- Check missing indexes
 SELECT * FROM pg_indexes WHERE tablename = 'your_table';
 ```
 
-### Datos de Muestra Faltantes
+### Missing Sample Data
 ```bash
-# Re-inicializar base de datos
+# Reinitialize database
 bash scripts/setup.sh --reset
 ```
 
 Ver `docs/troubleshooting.md`for complete troubleshooting guide.
 
-## Siguientes Pasos
+## Next Steps
 
 After completing this module:
 
@@ -372,7 +372,7 @@ After completing this module:
 ## Soporte
 
 - Consultar `docs/troubleshooting.md` para problemas comunes
-- Revisar pistas de ejercicios en `exercises/*/hints.md`
+- Review exercise hints en `exercises/*/hints.md`
 - See PostgreSQL documentation for function references
 
 ---
@@ -384,7 +384,7 @@ After completing this module:
 - [ ] Todas las validaciones pasando
 - [ ] Ready for next module
 
-## Siguientes Pasos
+## Next Steps
 
 After completing this module, you will be ready to:
 [List of modules that depend on it]
