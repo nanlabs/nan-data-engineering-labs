@@ -36,13 +36,13 @@ A company migrated 50TB of CSV data to Parquet with Snappy compression:
 
 ### What is a Data Lake?
 
-Un **data lake** es un repositorio centralizado que almacena datos estructurados, semi-estructurados y no estructurados a cualquier escala. A diferencia de data warehouses, acepta datos en formato raw.
+A **data lake** is a centralized repository that stores structured, semi-structured, and unstructured data at any scale. Unlike data warehouses, it accepts data in raw format.
 
-**features:**
-- **Schema-on-read:** Aplicas estructura cuando lees, no cuando escribes
-- **Multi-format:** CSV, JSON, Parquet, Avro, ORC, binarios
-- **Cost-effective:** storage en S3 desde $0.023/GB/mes
-- **Scalable:** Petabytes sin limits de capacidad
+**Features:**
+- **Schema-on-read:** You apply structure when reading, not when writing
+- **Multi-format:** CSV, JSON, Parquet, Avro, ORC, binary files
+- **Cost-effective:** Storage on S3 starts at $0.023/GB/month
+- **Scalable:** Petabytes with virtually no capacity limits
 
 ### Medallion Architecture
 
@@ -68,7 +68,7 @@ The **Medallion** architecture organizes data lakes in layers (Bronze → Silver
 
 #### Bronze Layer (Raw Zone)
 
-**Purpose:** Almacenar datos tal como llegan de las fuentes.
+**Purpose:** Store data exactly as it arrives from source systems.
 
 **Characteristics:**
 - Original format (CSV, JSON, logs)
@@ -103,7 +103,7 @@ s3://datalake-bronze/
 
 #### Silver Layer (Cleaned Zone)
 
-**Purpose:** Datos validados, deduplicados y normalizados.
+**Purpose:** Validated, deduplicated, and normalized data.
 
 **Transformations:**
 - ✅ Schema validation
@@ -134,7 +134,7 @@ s3://datalake-silver/
 
 #### Gold Layer (Curated Zone)
 
-**Purpose:** Datos listos para consumo por BI, ML y aplicaciones.
+**Purpose:** Data ready for consumption by BI, ML, and applications.
 
 **Transformations:**
 - ✅ Aggregations (daily, weekly, monthly)
@@ -321,19 +321,20 @@ Best for big data - each line is a complete JSON:
 **Key Features:**
 
 1. **Columnar Storage:** Lee solo columns necesarias
+1. **Columnar Storage:** Reads only the required columns
 ```python
 # Query: SELECT amount, timestamp FROM transactions WHERE amount > 100
 # Parquet: Solo lee 2 columnas (amount, timestamp)
 # CSV: Lee todas las columnas
 ```
 
-2. **Predicate Pushdown:** Filtra en storage layer
+2. **Predicate Pushdown:** Filters at the storage layer
 ```python
 # WHERE amount > 100
-# Parquet lee statistics en footer, skipea row groups completos
+# Parquet reads footer statistics and skips entire row groups
 ```
 
-3. **Compression:** Por column
+3. **Compression:** Per column
 ```python
 # user_id: Dictionary encoding (muchos duplicados)
 # amount: Delta encoding (valores cercanos)
@@ -789,7 +790,7 @@ Monthly cost: $2.07
 
 ## Schema Evolution
 
-Schema evolution permite cambiar estructura de datos sin breaking existing applications.
+Schema evolution allows changing data structure without breaking existing applications.
 
 ### Types of Schema Changes
 

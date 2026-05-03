@@ -1,6 +1,6 @@
 # Module 02: Storage Basics - Learning Resources
 
-Curated resources para dominar storage de datos y formatos de archivo.
+Curated resources to master data storage and file formats.
 
 ## 📚 Official Documentation
 
