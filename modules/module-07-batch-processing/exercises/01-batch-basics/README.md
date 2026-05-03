@@ -41,8 +41,8 @@ df['category'] = 'category'  # Muy eficiente para strings repetidos
 
 **Archivo**: `starter/batch_reader.py`
 
-Implementa un `BatchReader` que:
-1. Lee archivos CSV en chunks
+Implement un `BatchReader` que:
+1. Read archivos CSV en chunks
 2. Procesa cada chunk
 3. Agrega resultados
 
@@ -63,7 +63,7 @@ python starter/batch_reader.py
 ```
 
 **Esperado**:
-- Lee archivo en chunks de 100K
+- Read archivo en chunks de 100K
 - Apply transformation to each chunk
 - Retorna resultado agregado
 
@@ -71,7 +71,7 @@ python starter/batch_reader.py
 
 **Archivo**: `starter/memory_optimizer.py`
 
-Implementa optimizaciones de memoria:
+Implement optimizaciones de memoria:
 1. Detect optimal data types
 2. Convert dtypes automatically
 3. Reporta ahorro de memoria
@@ -125,7 +125,7 @@ class BatchProcessor:
 
 **Archivo**: `starter/batch_aggregator.py`
 
-Implementa aggregations incrementales:
+Implement aggregations incrementales:
 
 ```python
 class BatchAggregator:
@@ -141,7 +141,7 @@ class BatchAggregator:
         pass
 ```
 
-**Aggregations a implementar**:
+**Aggregations a implement**:
 - Total records
 - Sum de amounts
 - Count by category

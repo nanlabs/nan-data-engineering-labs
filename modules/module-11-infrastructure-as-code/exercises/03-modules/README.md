@@ -2,7 +2,7 @@
 
 ## Description
 
-En este exercise you will learn a crear y utilizar modules de Terraform para hacer tu código más reutilizable, mantenible y organizado. Los modules son la clave para escalar tu infraestructura como código de manera profesional. Crearás modules personalizados y utilizarás modules públicos del Terraform Registry.
+En este exercise you will learn a create y utilizar modules de Terraform para hacer tu código más reutilizable, mantenible y organizado. Los modules son la clave para escalar tu infraestructura como código de manera profesional. Crearás modules personalizados y utilizarás modules públicos del Terraform Registry.
 
 **Estimated Duration:** 150-180 minutes
 
@@ -57,7 +57,7 @@ touch main.tf variables.tf outputs.tf terraform.tfvars
 
 ```hcl
 # modules/s3-bucket/main.tf
-# Module reutilizable para crear buckets S3 con best practices
+# Module reutilizable para create buckets S3 con best practices
 
 # Bucket principal
 resource "aws_s3_bucket" "this" {
@@ -377,7 +377,7 @@ output "bucket_details" {
 ```markdown
 # S3 Bucket Module
 
-Module Terraform para crear buckets S3 con best practices de seguridad y configuration.
+Module Terraform para create buckets S3 con best practices de seguridad y configuration.
 
 ## Features
 
@@ -480,7 +480,7 @@ provider "aws" {
   }
 }
 
-# Usar el module para crear múltiples buckets
+# Usar el module para create múltiples buckets
 module "raw_data_bucket" {
   source = "./modules/s3-bucket"
 
@@ -721,7 +721,7 @@ variable "replication_configuration" {
       var.replication_configuration == null ||
       (var.replication_configuration.enabled && var.replication_configuration.destination_bucket != "")
     )
-    error_message = "Si replication está enabled, destination_bucket es requerido."
+    error_message = "Si replication está enabled, destination_bucket es required."
   }
 }
 
@@ -1421,7 +1421,7 @@ all_buckets = {
 
 ### Description
 
-Crearás un module completo y complejo que orquesta múltiples recursos de AWS para implementar un Data Lake con S3, Glue, y IAM.
+Crearás un module completo y complejo que orquesta múltiples recursos de AWS para implement un Data Lake con S3, Glue, y IAM.
 
 ### Steps
 
@@ -2189,9 +2189,9 @@ output "public_module_bucket" {
 ### ❌ Desventajas
 
 1. **Mantenimiento**: Tú eres responsable del mantenimiento
-2. **Tiempo de Desarrollo**: Requiere tiempo crear y documentar
+2. **Tiempo de Desarrollo**: Requiere tiempo create y documentar
 3. **Actualización**: Debes mantenerte al día con cambios de AWS
-4. **Testing**: Debes crear tus propios tests
+4. **Testing**: Debes create tus propios tests
 
 ## Cuándo Usar Cada Uno
 
@@ -2653,7 +2653,7 @@ terraform init -upgrade
 2. Actualizar en dev environment primero
 3. Testing completo
 4. Actualizar staging
-5. Esperar 1-2 semanas
+5. Esperar 1-2 weeks
 6. Actualizar producción con plan/apply cuidadoso
 ```
 

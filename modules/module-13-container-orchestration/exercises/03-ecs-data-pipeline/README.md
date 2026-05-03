@@ -23,7 +23,7 @@
 Construirás un **ETL Pipeline completo** que:
 1. **Extract**: Descarga datos de múltiples fuentes (S3, APIs)
 2. **Transform**: Procesa datos en paralelo (3 transformations)
-3. **Validate**: Valida calidad de datos
+3. **Validate**: Validate calidad de datos
 4. **Load**: Carga a Redshift/RDS
 5. **Notify**: Envía reporte por SNS
 
@@ -79,7 +79,7 @@ Construirás un **ETL Pipeline completo** que:
 
 ### Step 1.1: Extract Container
 
-Crea `containers/extract/extract.py`:
+Create `containers/extract/extract.py`:
 
 ```python
 """
@@ -165,7 +165,7 @@ CMD ["python", "extract.py"]
 
 ### Step 1.2: Transform Containers (3 paralelas)
 
-Crea `containers/transform/transform_sales.py`:
+Create `containers/transform/transform_sales.py`:
 
 ```python
 """
@@ -229,7 +229,7 @@ Similar files: `transform_customers.py`, `transform_products.py`
 
 ### Step 1.3: Validate Container
 
-Crea `containers/validate/validate.py`:
+Create `containers/validate/validate.py`:
 
 ```python
 """
@@ -324,7 +324,7 @@ if __name__ == '__main__':
 
 ### Step 1.4: Load Container
 
-Crea `containers/load/load.py`:
+Create `containers/load/load.py`:
 
 ```python
 """
@@ -423,7 +423,7 @@ if __name__ == '__main__':
 
 ### Step 2.1: State Machine Definition
 
-Crea `stepfunctions/etl_pipeline.asl.json`:
+Create `stepfunctions/etl_pipeline.asl.json`:
 
 ```json
 {
@@ -633,7 +633,7 @@ Crea `stepfunctions/etl_pipeline.asl.json`:
 
 ### Step 2.2: Terraform for Step Functions
 
-Crea `terraform/stepfunctions.tf`:
+Create `terraform/stepfunctions.tf`:
 
 ```hcl
 # Step Functions State Machine

@@ -347,7 +347,7 @@ class DataQualityProfiler:
         self.report = {}
 
     def run_full_profile(self):
-        """Ejecuta profiling completo."""
+        """Execute profiling completo."""
         self.report['overview'] = self._profile_overview()
         self.report['columns'] = self._profile_columns()
         self.report['quality_issues'] = self._detect_quality_issues()

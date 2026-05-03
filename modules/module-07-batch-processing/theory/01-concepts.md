@@ -92,7 +92,7 @@ def daily_batch():
 ```
 
 **Pros**:
-- ✅ Simple de implementar
+- ✅ Simple de implement
 - ✅ Siempre consistente
 - ✅ No state management
 
@@ -395,7 +395,7 @@ df.to_avro('output.avro')
 ### Problem: Dataset No Cabe en Memoria
 
 ```python
-# ❌ Malo: Lee todo en memoria
+# ❌ Malo: Read todo en memoria
 df = pd.read_csv('huge_file.csv')  # 50GB - OOM!
 ```
 
@@ -460,13 +460,13 @@ df = read_data_since(last_run)
 df = read_all_data()
 ```
 
-### 4. Implementa Idempotencia
+### 4. Implement Idempotencia
 
 ```python
 # ✅ Safe para re-runs
 write(data, mode='overwrite', partition_key=date)
 
-# ❌ Crea duplicados
+# ❌ Create duplicados
 write(data, mode='append')
 ```
 

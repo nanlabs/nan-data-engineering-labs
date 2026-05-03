@@ -26,7 +26,7 @@ Al completar este exercise, serás capaz de:
 
 Construirás un **ETL Pipeline completo** orquestado por Step Functions que:
 1. Extrae datos de una API externa
-2. Valida la calidad de los datos
+2. Validate la calidad de los datos
 3. Transforma datos en paralelo (customers y orders)
 4. Carga resultados a Data Warehouse (S3 + Glue)
 5. Genera reporte y envía notificación

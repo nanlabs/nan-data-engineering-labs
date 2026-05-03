@@ -1,10 +1,10 @@
 # Module 10: Orquestación de Workflows con Apache Airflow
 
-Domina la orquestación de workflows y automatización de pipelines de datos usando Apache Airflow, la plataforma estándar de la industria para crear, programar y monitorear pipelines de datos.
+Domina la orquestación de workflows y automatización de pipelines de datos usando Apache Airflow, la plataforma estándar de la industria para create, programar y monitorear pipelines de datos.
 
 ## 📋 Description General
 
-Este module proporciona entrenamiento integral en Apache Airflow 2.8, cubriendo desde conceptos básicos hasta patrones de despliegue en producción. You will learn a diseñar, implementar, probar y desplegar pipelines de datos robustos que pueden orquestar workflows complejos a través de múltiples sistemas.
+Este module proporciona entrenamiento integral en Apache Airflow 2.8, cubriendo desde conceptos básicos hasta patrones de despliegue en producción. You will learn a diseñar, implement, probar y desplegar pipelines de datos robustos que pueden orquestar workflows complejos a través de múltiples sistemas.
 
 **¿Por qué orquestación de workflows?** Los pipelines de datos modernos involucran múltiples steps, dependencias e integraciones. Airflow proporciona:
 - **Gestión de dependencias**: Define el orden y relaciones de las tareas

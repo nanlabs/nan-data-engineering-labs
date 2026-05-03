@@ -12,7 +12,7 @@ Learn estrategias de particionamiento para batch processing eficiente:
 
 ### Why Partition?
 
-1. **Performance**: Lee solo particiones relevantes (partition pruning)
+1. **Performance**: Read solo particiones relevantes (partition pruning)
 2. **Parallelization**: Process partitions in parallel
 3. **Maintainability**: Delete old data easily
 4. **Cost Optimization**: Reduce data scanned en cloud
@@ -70,8 +70,8 @@ class DatePartitioner:
 
 **Features**:
 - Extrae year/month/day de timestamp
-- Crea estructura de directorios
-- Escribe Parquet por partition
+- Create estructura de directorios
+- Write Parquet por partition
 - Read specific partitions
 
 ### Parte 2: Range Partitioning

@@ -225,7 +225,7 @@ class QualityMonitor:
 
     def check_quality(self, df: pd.DataFrame, checks: dict):
         """
-        Ejecuta checks de calidad y registra resultados.
+        Execute checks de calidad y registra resultados.
 
         Args:
             checks: dict con format {'dimension': score}
@@ -422,7 +422,7 @@ def console_alert_handler(alert):
     print(f"{icon} [{alert['severity']}] {alert['timestamp']}: {alert['message']}")
 
 def file_alert_handler(alert):
-    """Handler que escribe a archivo."""
+    """Handler que write a archivo."""
     with open('data_quality_alerts.log', 'a') as f:
         f.write(f"{alert['timestamp']} | {alert['severity']} | {alert['message']}\n")
 

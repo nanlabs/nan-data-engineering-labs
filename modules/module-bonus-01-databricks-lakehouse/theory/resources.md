@@ -234,14 +234,14 @@ Curated list of official documentation, courses, certifications, books, and comm
 ### Databricks-Specific
 
 1. **Learning Spark, 3rd Edition**
-   - Authors: Jules Damji, Brooke Wenig, Tathagata Das, Denny Lee
+   - Authors: Jules Damji, Brooke Wenig, Tathagata Das, Denny Read
    - Publisher: O'Reilly (2023)
    - Topics: Spark 3.x, Delta Lake, Structured Streaming, ML
    - URL: https://www.oreilly.com/library/view/learning-spark-3rd/9781098140830/
    - **Best for:** Comprehensive Spark and Databricks guide
 
 2. **Delta Lake: The Definitive Guide**
-   - Authors: Denny Lee, Tristen Wentling
+   - Authors: Denny Read, Tristen Wentling
    - Publisher: O'Reilly (2022)
    - Topics: Delta Lake internals, ACID transactions, time travel, optimization
    - URL: https://www.oreilly.com/library/view/delta-lake-the/9781098140724/

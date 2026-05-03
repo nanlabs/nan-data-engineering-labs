@@ -17,7 +17,7 @@ En este exercise construirás una infraestructura de datos enterprise-grade comp
 
 Al completar este exercise serás capaz de:
 
-1. ✅ Diseñar e implementar Data Lake completo con arquitectura medallion
+1. ✅ Diseñar e implement Data Lake completo con arquitectura medallion
 2. ✅ Configurar AWS Glue Database y Crawlers para metadata management
 3. ✅ Crear Athena workgroups y saved queries para analytics
 4. ✅ Implementar IAM roles y policies granulares para data access

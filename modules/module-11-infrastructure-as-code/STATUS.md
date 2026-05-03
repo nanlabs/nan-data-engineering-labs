@@ -126,7 +126,7 @@ Module completo sobre Infrastructure as Code (IaC) usando Terraform para gestion
 Al completar este module, el estudiante domina:
 
 ### Level Básico ✅
-- ✅ Instalar y configurar Terraform
+- ✅ Instalar y configure Terraform
 - ✅ Escribir configuraciones básicas HCL
 - ✅ Crear recursos simples (S3, IAM)
 - ✅ Entender el workflow: init → plan → apply → destroy

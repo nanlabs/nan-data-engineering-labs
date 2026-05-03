@@ -98,8 +98,8 @@ Un **DAG** es la unidad fundamental en Airflow que representa un workflow.
 **Categorías:**
 
 1. **Action Operators** - Ejecutan acciones
-   - `PythonOperator`: Ejecuta función Python
-   - `BashOperator`: Ejecuta comando bash
+   - `PythonOperator`: Execute función Python
+   - `BashOperator`: Execute comando bash
    - `EmailOperator`: Envía email
    - `SimpleHttpOperator`: HTTP request
 
@@ -134,12 +134,12 @@ Un **DAG** es la unidad fundamental en Airflow que representa un workflow.
 **Tipos:**
 
 1. **SequentialExecutor** (default)
-   - Ejecuta tasks secuencialmente
+   - Execute tasks secuencialmente
    - Solo para testing/desarrollo
    - SQLite backend
 
 2. **LocalExecutor**
-   - Ejecuta tasks en paralelo localmente
+   - Execute tasks en paralelo localmente
    - Usa multiprocessing
    - PostgreSQL/MySQL required
 
@@ -645,7 +645,7 @@ Execution Timeline:
 
 ### Catchup & Backfilling
 
-**Catchup**: Si DAG empieza tarde o estuvo pausado, ¿debe ejecutar runs perdidos?
+**Catchup**: Si DAG empieza tarde o estuvo pausado, ¿debe execute runs perdidos?
 
 ```python
 dag = DAG(

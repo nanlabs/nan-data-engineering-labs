@@ -104,7 +104,7 @@ kubectl create namespace spark-jobs
 
 ### Step 1.3: Configure RBAC
 
-Crea `k8s/spark-rbac.yaml`:
+Create `k8s/spark-rbac.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -150,7 +150,7 @@ kubectl apply -f k8s/spark-rbac.yaml
 
 ### Step 2.1: Create IAM Policy
 
-Crea `terraform/spark-s3-policy.tf`:
+Create `terraform/spark-s3-policy.tf`:
 
 ```hcl
 resource "aws_iam_policy" "spark_s3_access" {
@@ -212,7 +212,7 @@ kubectl describe sa spark -n spark-jobs
 
 ### Step 3.1: Create PySpark Script
 
-Crea `spark-jobs/etl_large_dataset.py`:
+Create `spark-jobs/etl_large_dataset.py`:
 
 ```python
 """
@@ -312,7 +312,7 @@ if __name__ == "__main__":
 
 ### Step 3.2: Build Custom Spark Image
 
-Crea `spark-jobs/Dockerfile`:
+Create `spark-jobs/Dockerfile`:
 
 ```dockerfile
 FROM apache/spark-py:v3.4.1
@@ -350,7 +350,7 @@ docker push $ECR_URL/spark-etl:3.4.1
 
 ### Step 4.1: Create SparkApplication
 
-Crea `k8s/spark-application.yaml`:
+Create `k8s/spark-application.yaml`:
 
 ```yaml
 apiVersion: sparkoperator.k8s.io/v1beta2
@@ -449,7 +449,7 @@ kubectl logs -l spark-role=executor -n spark-jobs -f
 
 ### Step 5.1: Generate Large Dataset
 
-Crea `scripts/generate_sales_data.py`:
+Create `scripts/generate_sales_data.py`:
 
 ```python
 """
@@ -534,7 +534,7 @@ open http://localhost:4040
 
 ### Step 6.2: Create Spark History Server
 
-Crea `k8s/spark-history-server.yaml`:
+Create `k8s/spark-history-server.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -632,7 +632,7 @@ spec:
 
 ### Step 7.1: ScheduledSparkApplication
 
-Crea `k8s/scheduled-spark-application.yaml`:
+Create `k8s/scheduled-spark-application.yaml`:
 
 ```yaml
 apiVersion: sparkoperator.k8s.io/v1beta2

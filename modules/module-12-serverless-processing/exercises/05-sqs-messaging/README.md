@@ -275,7 +275,7 @@ resource "aws_sqs_queue" "orders_fifo" {
   fifo_throughput_limit      = "perMessageGroupId"
 
   visibility_timeout_seconds = 300  # 5 min
-  message_retention_seconds  = 1209600  # 14 días
+  message_retention_seconds  = 1209600  # 14 days
 
   # Dead Letter Queue
   redrive_policy = jsonencode({
@@ -288,7 +288,7 @@ resource "aws_sqs_queue" "orders_fifo" {
 resource "aws_sqs_queue" "dlq" {
   name                      = "orders-dlq-${var.environment}.fifo"
   fifo_queue                = true
-  message_retention_seconds = 1209600  # 14 días
+  message_retention_seconds = 1209600  # 14 days
 }
 
 # CloudWatch Alarm para DLQ

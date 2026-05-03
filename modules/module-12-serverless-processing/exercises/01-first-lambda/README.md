@@ -24,7 +24,7 @@ Al completar este exercise, serás capaz de:
 
 ## 📚 Context
 
-Vas a crear una función Lambda que se dispara automáticamente cuando se sube un archivo CSV a un bucket S3. La Lambda procesará el CSV y guardará estadísticas en JSON.
+Vas a create una función Lambda que se dispara automáticamente cuando se sube un archivo CSV a un bucket S3. La Lambda procesará el CSV y guardará estadísticas en JSON.
 
 **Arquitectura**:
 
@@ -444,7 +444,7 @@ import pandas as pd
 
 @pytest.fixture
 def s3_event():
-    """Evento S3 de prueba"""
+    """Evento S3 de test"""
     return {
         'Records': [{
             'eventSource': 'aws:s3',
@@ -469,7 +469,7 @@ def lambda_context():
 
 @pytest.fixture
 def sample_csv():
-    """CSV de prueba"""
+    """CSV de test"""
     return b"""user_id,name,age,city
 1,Alice,25,NYC
 2,Bob,30,SF
@@ -559,7 +559,7 @@ open htmlcov/index.html
 ### 4.1 Empaquetar Lambda
 
 ```bash
-# Script para crear deployment package
+# Script para create deployment package
 cd src/
 
 # Instalar dependencias en directorio local
@@ -640,13 +640,13 @@ terraform output lambda_function_name
 
 ## 🧪 Parte 5: Testing en AWS
 
-### 5.1 Crear CSV de Prueba
+### 5.1 Crear CSV de Test
 
 ```bash
 # Obtener nombre del bucket
 BUCKET=$(terraform output -raw bucket_name)
 
-# Crear CSV de prueba
+# Crear CSV de test
 cat > test_data.csv << EOF
 user_id,name,age,city,signup_date
 1,Alice Johnson,28,New York,2024-01-15
@@ -814,7 +814,7 @@ rm infrastructure/lambda.zip
 - [ ] S3 bucket configurado con event notifications
 - [ ] IAM roles con permisos mínimos
 - [ ] Unit tests pasando (>80% coverage)
-- [ ] CSV de prueba procesado exitosamente
+- [ ] CSV de test procesado exitosamente
 - [ ] Logs estructurados en CloudWatch
 - [ ] Métricas visibles en CloudWatch
 - [ ] Infraestructura como código (Terraform)

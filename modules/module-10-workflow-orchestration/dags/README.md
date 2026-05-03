@@ -21,7 +21,7 @@ dags/
 
 Primer DAG de introducción que muestra:
 - Configuration básica de un DAG
-- PythonOperator para ejecutar funciones Python
+- PythonOperator para execute funciones Python
 - BashOperator para comandos shell
 - Dependencias secuenciales (`>>`)
 - Tags y metadata
@@ -193,15 +193,15 @@ airflow dags delete ex01_hello_world
 ### Performance
 - Usa `catchup=False` para evitar backfilling
 - Define SLAs apropiados
-- Implementa idempotencia en tasks
+- Implement idempotencia en tasks
 - Usa pools para limitar concurrencia
 
 ### Producción
 - Siempre define `owner`
-- Configura `retries` y `retry_delay`
-- Implementa callbacks de error
+- Configure `retries` y `retry_delay`
+- Implement callbacks de error
 - Usa tags para organización
-- Documenta tus DAGs con docstrings
+- Document tus DAGs con docstrings
 
 ## 📚 Recursos Adicionales
 
@@ -212,19 +212,19 @@ airflow dags delete ex01_hello_world
 ## ❓ Troubleshooting
 
 **DAG no aparece en la UI**
-- Verifica que no hay errores de sintaxis: `python dags/tu_dag.py`
+- Verify que no hay errores de sintaxis: `python dags/tu_dag.py`
 - Revisa import errors en Admin → Import Errors
 - Asegúrate que el archivo está en `$AIRFLOW_HOME/dags/`
 
 **Task falla**
 - Revisa logs en la UI o con `airflow tasks logs`
-- Verifica dependencias instaladas
+- Verify dependencias instaladas
 - Comprueba configuration de connections/variables
 
 **SLA violation**
 - Ajusta los tiempos de SLA según tu entorno
 - Revisa que tasks no están bloqueados
-- Verifica recursos del sistema (CPU, memoria)
+- Verify recursos del sistema (CPU, memoria)
 
 ---
 

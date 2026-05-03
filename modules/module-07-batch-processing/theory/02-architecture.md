@@ -375,7 +375,7 @@ df.write.partitionBy("year", "month").parquet("data/")
 df = spark.read.parquet("data/").filter("year = 2024 AND month = 3")
 ```
 
-**Beneficio**: Lee solo particiones relevantes
+**Beneficio**: Read solo particiones relevantes
 
 ### 2. Caching
 
@@ -509,7 +509,7 @@ def resilient_batch():
         # Intenta procesar
         result = process_batch()
 
-        # Valida resultado
+        # Validate resultado
         if not validate(result):
             raise ValidationError("Data quality check failed")
 
@@ -546,7 +546,7 @@ def batch_with_checkpoint(partitions):
         save_checkpoint(checkpoint_file, completed)
 ```
 
-### 3. Implementa Idempotencia
+### 3. Implement Idempotencia
 
 ```python
 def idempotent_write(df, date):
@@ -557,11 +557,11 @@ def idempotent_write(df, date):
     df.write.mode("overwrite").parquet(output_path)
 ```
 
-### 4. Valida Inputs y Outputs
+### 4. Validate Inputs y Outputs
 
 ```python
 def validated_batch(input_path, output_path):
-    # Valida input existe
+    # Validate input existe
     if not input_exists(input_path):
         raise InputError(f"Input not found: {input_path}")
 
@@ -569,7 +569,7 @@ def validated_batch(input_path, output_path):
     df = spark.read.parquet(input_path)
     result = transform(df)
 
-    # Valida output
+    # Validate output
     assert result.count() > 0, "Empty output"
     assert not result.filter(col("id").isNull()).count(), "Null IDs"
 
@@ -577,7 +577,7 @@ def validated_batch(input_path, output_path):
     result.write.parquet(output_path)
 ```
 
-### 5. Documenta Dependencies
+### 5. Document Dependencies
 
 ```yaml
 # batch_job.yaml

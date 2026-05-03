@@ -575,7 +575,7 @@ result = large_df.join(broadcast(small_df), "key")
 df_filtered = df.filter(df.amount > 100)
 df_selected = df_filtered.select("id", "amount")
 df_grouped = df_selected.groupBy("category").sum()
-result = df_grouped.collect()  # Ejecuta todo optimizado
+result = df_grouped.collect()  # Execute todo optimizado
 
 # vs
 

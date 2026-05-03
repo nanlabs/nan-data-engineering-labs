@@ -445,7 +445,7 @@ class AnomalyDetectionPipeline:
         return self
 
     def detect(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Ejecuta todas las reglas de detección."""
+        """Execute todas las reglas de detección."""
         df_flagged = df.copy()
         df_flagged['anomaly_flags'] = ''
         df_flagged['anomaly_count'] = 0

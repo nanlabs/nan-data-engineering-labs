@@ -65,7 +65,7 @@ import re
 from typing import Dict, List
 
 def validate_accuracy(record: Dict) -> List[str]:
-    """Valida la exactitud de un registro."""
+    """Validate la exactitud de un registro."""
     errors = []
 
     # Validar email
@@ -335,7 +335,7 @@ employees = pd.DataFrame({
 })
 
 def validate_logical_consistency(df: pd.DataFrame) -> List[Dict]:
-    """Valida reglas lógicas de negocio."""
+    """Validate reglas lógicas de negocio."""
     issues = []
 
     for idx, row in df.iterrows():
@@ -443,7 +443,7 @@ print(f"Compliance con SLA (4h): {timeliness_report['sla_compliance_rate']:.1f}%
 def check_data_freshness(df: pd.DataFrame,
                          timestamp_col: str,
                          max_age_hours: int = 24) -> Dict:
-    """Verifica que los datos sean recientes."""
+    """Verify que los datos sean recientes."""
     current_time = datetime.now()
     latest_record = pd.to_datetime(df[timestamp_col]).max()
 
@@ -488,7 +488,7 @@ VALID_DOMAINS = {
 def validate_domain(df: pd.DataFrame,
                    column: str,
                    valid_values: List) -> pd.DataFrame:
-    """Valida que los valores estén en el dominio permitido."""
+    """Validate que los valores estén en el dominio permitido."""
     invalid_records = df[~df[column].isin(valid_values)]
 
     if len(invalid_records) > 0:
@@ -509,7 +509,7 @@ def validate_range(df: pd.DataFrame,
                    column: str,
                    min_val: float = None,
                    max_val: float = None) -> pd.DataFrame:
-    """Valida que los valores estén en el rango permitido."""
+    """Validate que los valores estén en el rango permitido."""
     conditions = []
 
     if min_val is not None:
@@ -555,7 +555,7 @@ REGEX_PATTERNS = {
 def validate_format(df: pd.DataFrame,
                     column: str,
                     pattern_name: str) -> pd.DataFrame:
-    """Valida que los valores cumplan un formato específico."""
+    """Validate que los valores cumplan un formato específico."""
     pattern = REGEX_PATTERNS.get(pattern_name)
 
     if not pattern:
@@ -585,7 +585,7 @@ validate_format(customers, 'phone', 'phone_us')
 **5.4 Business Rule Validation:**
 ```python
 class BusinessRuleValidator:
-    """Valida reglas de negocio complejas."""
+    """Validate reglas de negocio complejas."""
 
     @staticmethod
     def rule_order_amount_with_discount(row):
@@ -866,7 +866,7 @@ class DataIngestor:
         self.validation_errors = []
 
     def validate_record(self, record: Dict) -> bool:
-        """Valida un registro contra schema."""
+        """Validate un registro contra schema."""
         errors = []
 
         # Validar campos requeridos
@@ -874,7 +874,7 @@ class DataIngestor:
                           if v.get('required', False)]
         for field in required_fields:
             if field not in record or record[field] is None:
-                errors.append(f"Campo requerido faltante: {field}")
+                errors.append(f"Campo required faltante: {field}")
 
         # Validar tipos
         for field, rules in self.schema.items():
@@ -991,7 +991,7 @@ clean_data, validation_report = pipeline.get_results()
 
 ```python
 def validate_output(df: pd.DataFrame, expectations: Dict) -> Dict:
-    """Valida datos de salida antes de escribir."""
+    """Validate datos de salida antes de escribir."""
     results = {
         'passed': True,
         'checks': []
@@ -1235,7 +1235,7 @@ DATA_QUALITY_SLAS = {
 }
 
 def check_sla_compliance(df: pd.DataFrame, slas: Dict) -> Dict:
-    """Verifica compliance con SLAs de calidad."""
+    """Verify compliance con SLAs de calidad."""
     results = {}
 
     for dimension, sla in slas.items():

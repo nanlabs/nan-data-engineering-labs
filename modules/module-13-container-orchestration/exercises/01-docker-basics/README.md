@@ -22,9 +22,9 @@
 ## 📚 Context
 
 Crearás una aplicación ETL simple containerizada que:
-- Lee archivos CSV de S3 (o local)
+- Read archivos CSV de S3 (o local)
 - Procesa con pandas
-- Escribe resultados a PostgreSQL
+- Write resultados a PostgreSQL
 - Todo dockerizado con Docker Compose
 
 **Arquitectura**:
@@ -56,7 +56,7 @@ Crearás una aplicación ETL simple containerizada que:
 
 ### Step 1.1: Crear ETL Script
 
-Crea `etl/app.py`:
+Create `etl/app.py`:
 
 ```python
 """
@@ -238,7 +238,7 @@ if __name__ == "__main__":
 
 ### Step 1.2: Requirements
 
-Crea `etl/requirements.txt`:
+Create `etl/requirements.txt`:
 
 ```txt
 pandas==2.1.0
@@ -252,7 +252,7 @@ sqlalchemy==2.0.20
 
 ### Step 2.1: Dockerfile Simple
 
-Crea `etl/Dockerfile`:
+Create `etl/Dockerfile`:
 
 ```dockerfile
 # Base image
@@ -288,7 +288,7 @@ docker run --rm data-etl:v1.0
 
 ### Step 3.1: Optimized Dockerfile
 
-Crea `etl/Dockerfile.optimized`:
+Create `etl/Dockerfile.optimized`:
 
 ```dockerfile
 # ============================================
@@ -363,7 +363,7 @@ docker images | grep data-etl
 
 ### Step 4.1: docker-compose.yml
 
-Crea `docker-compose.yml`:
+Create `docker-compose.yml`:
 
 ```yaml
 version: '3.8'
@@ -436,7 +436,7 @@ networks:
 
 ### Step 4.2: Sample Data
 
-Crea `data/input/sales_2024_01.csv`:
+Create `data/input/sales_2024_01.csv`:
 
 ```csv
 order_id,order_date,product,quantity,price

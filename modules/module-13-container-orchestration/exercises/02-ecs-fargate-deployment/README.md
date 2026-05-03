@@ -74,7 +74,7 @@ Desplegarás la aplicación ETL del exercise 01 en AWS ECS Fargate como:
 
 ### Step 1.1: VPC y Networking
 
-Crea `terraform/vpc.tf`:
+Create `terraform/vpc.tf`:
 
 ```hcl
 # VPC
@@ -188,7 +188,7 @@ data "aws_availability_zones" "available" {
 
 ### Step 1.2: Security Groups
 
-Crea `terraform/security_groups.tf`:
+Create `terraform/security_groups.tf`:
 
 ```hcl
 # ALB Security Group
@@ -262,7 +262,7 @@ resource "aws_security_group" "rds" {
 
 ### Step 1.3: RDS PostgreSQL
 
-Crea `terraform/rds.tf`:
+Create `terraform/rds.tf`:
 
 ```hcl
 # DB Subnet Group
@@ -328,7 +328,7 @@ resource "aws_secretsmanager_secret_version" "db_password" {
 
 ### Step 1.4: ECS Cluster
 
-Crea `terraform/ecs.tf`:
+Create `terraform/ecs.tf`:
 
 ```hcl
 # ECS Cluster
@@ -437,7 +437,7 @@ data "aws_caller_identity" "current" {}
 
 ### Step 1.5: Task Definition
 
-Crea `terraform/task_definition.tf`:
+Create `terraform/task_definition.tf`:
 
 ```hcl
 # API Task Definition
@@ -504,7 +504,7 @@ resource "aws_ecr_repository" "app" {
 
 ### Step 1.6: ECS Service con ALB
 
-Crea `terraform/service.tf`:
+Create `terraform/service.tf`:
 
 ```hcl
 # Application Load Balancer
@@ -616,7 +616,7 @@ output "alb_dns_name" {
 
 ### Step 1.7: Scheduled Task
 
-Crea `terraform/scheduled_task.tf`:
+Create `terraform/scheduled_task.tf`:
 
 ```hcl
 # EventBridge Rule (daily at 2 AM UTC)

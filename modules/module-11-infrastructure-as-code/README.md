@@ -10,11 +10,11 @@ Aprende a gestionar infraestructura cloud de forma **declarativa, reproducible y
 
 ### ¿Por qué Infrastructure as Code?
 
-- 🚀 **Automatización**: Despliega infraestructura en minutes, no días
-- 📝 **Documentación as Code**: La infraestructura se auto-documenta
+- 🚀 **Automatización**: Despliega infraestructura en minutes, no days
+- 📝 **Documentación as Code**: La infraestructura se auto-document
 - 🔄 **Reproducibilidad**: Ambientes idénticos dev/staging/prod
 - 🔒 **Control de versiones**: History completo de cambios en Git
-- 🧪 **Testing**: Valida infraestructura antes de aplicar
+- 🧪 **Testing**: Validate infraestructura antes de aplicar
 - 💰 **Costo-beneficio**: Destruye/crea entornos on-demand
 
 ## 🎯 Objectives de Aprendizaje
@@ -83,7 +83,7 @@ Al completar este module, serás capaz de:
 
 - `conftest.py`: Fixtures de pytest
 - `test_terraform.py`: Tests automatizados
-- 40+ tests para validar configuraciones
+- 40+ tests para validate configuraciones
 
 ### Scripts ([scripts/](scripts/))
 
@@ -122,7 +122,7 @@ pip install -r requirements.txt
 
 ### 3. Estudiar Theory
 
-Lee en orden:
+Read en orden:
 1. [theory/01-terraform-fundamentals.md](theory/01-terraform-fundamentals.md)
 2. [theory/02-terraform-advanced.md](theory/02-terraform-advanced.md)
 3. [theory/03-iac-patterns.md](theory/03-iac-patterns.md)
@@ -240,10 +240,10 @@ module-11-infrastructure-as-code/
 - [ ] Exercise 06: Production Ready ✅
 
 ### Habilidades Prácticas
-- [ ] Puedo crear un recurso S3 con Terraform
+- [ ] Puedo create un recurso S3 con Terraform
 - [ ] Puedo escribir un module reutilizable
 - [ ] Entiendo cómo funciona remote state + locking
-- [ ] Puedo implementar CI/CD para Terraform
+- [ ] Puedo implement CI/CD para Terraform
 - [ ] Puedo diseñar infraestructura multi-entorno
 - [ ] Entiendo patrones de security y compliance
 
@@ -321,7 +321,7 @@ Este module prepara para:
 
 ## 💡 Tips para Éxito
 
-1. **Práctica > Theory**: Escribe Terraform real, no solo leas
+1. **Práctica > Theory**: Write Terraform real, no solo leas
 2. **Empieza simple**: Master los básicos antes de avanzar
 3. **Usa LocalStack**: Evita costos AWS mientras aprendes
 4. **Git desde día 1**: Versiona toda tu infraestructura

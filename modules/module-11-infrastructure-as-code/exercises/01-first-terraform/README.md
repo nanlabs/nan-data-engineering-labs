@@ -17,7 +17,7 @@ Este exercise te introduce al mundo de Infrastructure as Code con Terraform. You
 
 Al completar este exercise serás capaz de:
 
-1. ✅ Instalar y configurar Terraform en tu entorno local
+1. ✅ Instalar y configure Terraform en tu entorno local
 2. ✅ Escribir configuraciones básicas de Terraform (HCL)
 3. ✅ Crear y gestionar recursos de infraestructura con Terraform
 4. ✅ Utilizar variables y outputs en tus configuraciones
@@ -242,7 +242,7 @@ terraform plan -out=tfplan
 #### 2.4. Aplicar la Configuration
 
 ```bash
-# Aplicar los cambios y crear el bucket
+# Aplicar los cambios y create el bucket
 terraform apply
 
 # O aplicar sin confirmación
@@ -285,7 +285,7 @@ Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
 
 - **terraform {}**: Bloque de configuration de Terraform (versión, providers)
 - **provider**: Configuration del proveedor de infraestructura (AWS, Azure, GCP, etc.)
-- **resource**: Componente de infraestructura que quieres crear
+- **resource**: Componente de infraestructura que quieres create
 - **HCL**: HashiCorp Configuration Language - sintaxis declarativa de Terraform
 
 ---
@@ -314,7 +314,7 @@ variable "aws_region" {
 }
 
 variable "bucket_name" {
-  description = "Nombre del bucket S3 a crear"
+  description = "Nombre del bucket S3 a create"
   type        = string
   default     = "mi-bucket-terraform"
 
@@ -524,7 +524,7 @@ versioning_status = "Enabled"
 - **Variables**: Parámetros de entrada que hacen tu código reutilizable
 - **Outputs**: Exponen información de los recursos creados
 - **terraform.tfvars**: Archivo para valores de variables (no debe versionarse si contiene secretos)
-- **Validations**: Reglas para validar valores de variables
+- **Validations**: Reglas para validate valores de variables
 - **merge()**: Función para combinar mapas/objetos
 
 ---
@@ -554,7 +554,7 @@ cat .terraform.lock.hcl
 **¿Qué hace `terraform init`?**
 - Descarga providers definidos en `required_providers`
 - Inicializa el backend (dónde se guarda el state)
-- Crea el directorio `.terraform/`
+- Create el directorio `.terraform/`
 - Genera `.terraform.lock.hcl` (lockfile de dependencias)
 
 #### 4.2. Terraform Plan - Previsualización
@@ -665,7 +665,7 @@ chmod +x comandos-utiles.sh
 #### 4.6. Experimento: Ciclo de Vida Completo
 
 <details>
-<summary>📄 experiment.tf - Recurso de Prueba</summary>
+<summary>📄 experiment.tf - Recurso de Test</summary>
 
 ```hcl
 # experiment.tf
@@ -753,7 +753,7 @@ Destroy complete! Resources: 3 destroyed.
 
 - **init**: Primera etapa, descarga plugins y prepara backend
 - **plan**: Previsualiza cambios sin aplicarlos (dry-run)
-- **apply**: Ejecuta cambios en la infraestructura real
+- **apply**: Execute cambios en la infraestructura real
 - **destroy**: Elimina recursos gestionados por Terraform
 - **state**: Archivo que mantiene el estado actual de la infraestructura
 
@@ -1164,13 +1164,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_bucket_lifecycle" {
     id     = "archive-old-versions"
     status = "Enabled"
 
-    # Mover versiones antiguas a Glacier después de 90 días
+    # Mover versiones antiguas a Glacier después de 90 days
     noncurrent_version_transition {
       noncurrent_days = 90
       storage_class   = "GLACIER"
     }
 
-    # Eliminar versiones antiguas después de 365 días
+    # Eliminar versiones antiguas después de 365 days
     noncurrent_version_expiration {
       noncurrent_days = 365
     }
@@ -1180,7 +1180,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_bucket_lifecycle" {
     id     = "delete-incomplete-uploads"
     status = "Enabled"
 
-    # Limpiar uploads incompletos después de 7 días
+    # Limpiar uploads incompletos después de 7 days
     abort_incomplete_multipart_upload {
       days_after_initiation = 7
     }
@@ -1287,12 +1287,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_bucket_lifecycle" {
     status = "Enabled"
 
     noncurrent_version_transition {
-      noncurrent_days = 60  # ← Cambio de 90 a 60 días (in-place)
+      noncurrent_days = 60  # ← Cambio de 90 a 60 days (in-place)
       storage_class   = "GLACIER"
     }
 
     noncurrent_version_expiration {
-      noncurrent_days = 180  # ← Cambio de 365 a 180 días (in-place)
+      noncurrent_days = 180  # ← Cambio de 365 a 180 days (in-place)
     }
   }
 
@@ -1301,7 +1301,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_bucket_lifecycle" {
     status = "Enabled"
 
     abort_incomplete_multipart_upload {
-      days_after_initiation = 3  # ← Cambio de 7 a 3 días (in-place)
+      days_after_initiation = 3  # ← Cambio de 7 a 3 days (in-place)
     }
   }
 }
@@ -1667,7 +1667,7 @@ terraform console
 
 ¡Felicitaciones! Has completed tu primer exercise con Terraform. Ahora sabes:
 
-✅ Instalar y configurar Terraform
+✅ Instalar y configure Terraform
 ✅ Crear recursos con HCL
 ✅ Usar variables y outputs
 ✅ Gestionar el ciclo de vida de recursos

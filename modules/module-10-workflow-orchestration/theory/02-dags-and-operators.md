@@ -288,7 +288,7 @@ cleanup = PythonOperator(
 
 ### PythonOperator
 
-Ejecuta función Python.
+Execute función Python.
 
 ```python
 from airflow.operators.python import PythonOperator
@@ -342,7 +342,7 @@ task = PythonOperator(
 
 ### BashOperator
 
-Ejecuta comando bash.
+Execute comando bash.
 
 ```python
 from airflow.operators.bash import BashOperator
@@ -379,7 +379,7 @@ task = BashOperator(
 
 ### PythonVirtualenvOperator
 
-Ejecuta código en virtualenv aislado.
+Execute código en virtualenv aislado.
 
 ```python
 from airflow.operators.python import PythonVirtualenvOperator
@@ -437,7 +437,7 @@ task = SimpleHttpOperator(
 
 ### PostgresOperator
 
-Ejecuta SQL en PostgreSQL.
+Execute SQL en PostgreSQL.
 
 ```python
 from airflow.providers.postgres.operators.postgres import PostgresOperator
@@ -534,7 +534,7 @@ task = DockerOperator(
 
 ### KubernetesPodOperator
 
-Ejecuta task en Kubernetes Pod.
+Execute task en Kubernetes Pod.
 
 ```python
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator

@@ -75,7 +75,7 @@
 ❌ **No ideal para**:
 - Aplicaciones con tráfico constante 24/7 (más caro que EC2)
 - Procesos de larga duración (>15 minutes)
-- Aplicaciones con cold start crítico (<100ms latency requerido)
+- Aplicaciones con cold start crítico (<100ms latency required)
 - Workloads con requerimientos de GPU intensivo
 
 ---
@@ -84,7 +84,7 @@
 
 ### ¿Qué es AWS Lambda?
 
-AWS Lambda es el servicio de **Function as a Service (FaaS)** de AWS. Ejecuta código en respuesta a eventos sin provisionar servidores.
+AWS Lambda es el servicio de **Function as a Service (FaaS)** de AWS. Execute código en respuesta a eventos sin provisionar servidores.
 
 **Analogía**: Lambda es como un "chef on-demand". Solo llamas al chef cuando necesitas cocinar (evento), el chef prepara el plato (ejecuta tu código), y solo pagas por el tiempo que estuvo cocinando.
 
@@ -391,7 +391,7 @@ SQS Queue → [Lambda polls every second] → Lambda procesa batch
 - **Recomendación**: Configurar según el proceso más largo esperado + margen
 
 ```python
-# Si tu proceso toma 2 minutes, configurar timeout de 2.5 minutes
+# Si tu proceso toma 2 minutes, configure timeout de 2.5 minutes
 ```
 
 #### Environment Variables
@@ -625,7 +625,7 @@ def lambda_handler(event, context):
 rate(5 minutes)           # Cada 5 minutes
 rate(1 hour)              # Cada hora
 rate(1 day)               # Cada día
-cron(0 9 * * ? *)         # Todos los días a las 9 AM UTC
+cron(0 9 * * ? *)         # Todos los days a las 9 AM UTC
 cron(0 18 ? * MON-FRI *)  # Lunes a viernes a las 6 PM
 ```
 

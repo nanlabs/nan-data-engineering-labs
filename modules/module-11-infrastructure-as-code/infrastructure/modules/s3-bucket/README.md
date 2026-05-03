@@ -1,6 +1,6 @@
 # Module: S3 Bucket
 
-Module reutilizable para crear un bucket S3 con seguridad por defecto.
+Module reutilizable para create un bucket S3 con seguridad por defecto.
 
 ## Features
 

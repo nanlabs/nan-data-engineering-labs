@@ -82,7 +82,7 @@ Construirás una **plataforma completa de data engineering** production-ready:
 
 ### Step 1.1: Create Namespaces
 
-Crea `k8s/namespaces.yaml`:
+Create `k8s/namespaces.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -262,7 +262,7 @@ kubectl wait --for=condition=ready pod -l component=webserver -n airflow --timeo
 
 ### Step 2.2: Sample Airflow DAG
 
-Crea `dags/data_pipeline.py`:
+Create `dags/data_pipeline.py`:
 
 ```python
 """
@@ -386,7 +386,7 @@ kubectl wait --for=condition=ready pod -l name=strimzi-cluster-operator -n kafka
 
 ### Step 3.2: Create Kafka Cluster
 
-Crea `k8s/kafka-cluster.yaml`:
+Create `k8s/kafka-cluster.yaml`:
 
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
@@ -457,7 +457,7 @@ kubectl wait kafka/data-kafka --for=condition=Ready --timeout=600s -n kafka
 
 ### Step 3.3: Create Kafka Topics
 
-Crea `k8s/kafka-topics.yaml`:
+Create `k8s/kafka-topics.yaml`:
 
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
@@ -548,7 +548,7 @@ kubectl port-forward svc/kube-prometheus-grafana 3000:80 -n monitoring
 
 ### Step 4.3: Custom Grafana Dashboard
 
-Crea `k8s/grafana-dashboard.yaml`:
+Create `k8s/grafana-dashboard.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -610,7 +610,7 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 ### Step 5.2: Create ArgoCD Application
 
-Crea `k8s/argocd-application.yaml`:
+Create `k8s/argocd-application.yaml`:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -650,7 +650,7 @@ spec:
 
 ### Step 6.1: Network Policies
 
-Crea `k8s/network-policies.yaml`:
+Create `k8s/network-policies.yaml`:
 
 ```yaml
 # Deny all ingress by default
@@ -738,7 +738,7 @@ spec:
 
 ### Step 6.2: Pod Security Standards
 
-Crea `k8s/pod-security.yaml`:
+Create `k8s/pod-security.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -753,7 +753,7 @@ metadata:
 
 ### Step 6.3: Resource Quotas
 
-Crea `k8s/resource-quotas.yaml`:
+Create `k8s/resource-quotas.yaml`:
 
 ```yaml
 apiVersion: v1

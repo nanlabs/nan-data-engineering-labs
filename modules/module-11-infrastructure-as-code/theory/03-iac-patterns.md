@@ -24,7 +24,7 @@ Los patrones de Infrastructure as Code son **solutions probadas y reutilizables*
 - 🏗️ **Organizational Patterns**: Cómo estructurar proyectos y equipos
 - 🔒 **Security Patterns**: Cómo asegurar infraestructura y secretos
 - 🌍 **Multi-Environment Patterns**: Cómo gestionar dev/staging/prod
-- 📊 **Testing Patterns**: Cómo validar infraestructura
+- 📊 **Testing Patterns**: Cómo validate infraestructura
 
 ### Principios Fundamentales
 
@@ -90,16 +90,16 @@ resource "aws_instance" "web" {
 **Imperative (Scripts)**: Describes los steps para llegar ahí.
 
 ```bash
-# "Crea servidor 1, crea servidor 2, crea servidor 3"
+# "Create servidor 1, crea servidor 2, crea servidor 3"
 for i in {1..3}; do
   aws ec2 run-instances --instance-type t2.micro --image-id ami-12345678
 done
 ```
 
 **Terraform es declarativo:**
-- Terraform calcula automáticamente qué crear/modificar/destruir
+- Terraform calcula automáticamente qué create/modificar/destruir
 - El state file rastrea la realidad actual
-- Idempotente: ejecutar múltiples veces produce el mismo resultado
+- Idempotente: execute múltiples veces produce el mismo resultado
 
 #### 3. DRY (Don't Repeat Yourself)
 
@@ -1177,7 +1177,7 @@ echo "2. If needed, run 'terraform apply' to sync infrastructure"
 
 **Solution:**
 
-1. **NO ejecutar `terraform apply` aún.**
+1. **NO execute `terraform apply` aún.**
 
 2. Restaurar state backup más reciente:
    \`\`\`bash
@@ -1248,7 +1248,7 @@ echo "2. If needed, run 'terraform apply' to sync infrastructure"
 **Ejecutar quarterly (cada 3 meses):**
 
 \`\`\`bash
-# 1. Restaurar backup en ambiente de prueba
+# 1. Restaurar backup en ambiente de test
 ./scripts/restore-state.sh <RECENT_BACKUP> dev-dr-test
 
 # 2. Verificar plan

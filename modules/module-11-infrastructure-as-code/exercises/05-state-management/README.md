@@ -30,7 +30,7 @@ El manejo apropiado del state es **crítico** en Terraform. El state file es la 
 
 ### Step 1.1: Entender Local State
 
-Crea un proyecto simple:
+Create un proyecto simple:
 
 ```bash
 mkdir -p ~/terraform-state-demo/local
@@ -86,7 +86,7 @@ cat terraform.tfstate | jq '.resources'
 
 #### 1.2.1: Crear Backend Infrastructure
 
-Primero, necesitamos crear el bucket S3 y tabla DynamoDB para el backend:
+Primero, necesitamos create el bucket S3 y tabla DynamoDB para el backend:
 
 **backend-resources.tf:**
 ```hcl

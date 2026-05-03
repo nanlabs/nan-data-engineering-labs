@@ -97,7 +97,7 @@ class BatchETLPipeline:
 
 **Archivo**: `starter/transformations.py`
 
-Implementa transformaciones de negocio:
+Implement transformaciones de negocio:
 
 ```python
 class BusinessTransformations:

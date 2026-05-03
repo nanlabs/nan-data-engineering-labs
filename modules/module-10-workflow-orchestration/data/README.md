@@ -212,7 +212,7 @@ df = pd.read_csv('/opt/airflow/data/sample/users.csv')
 
 ### Exercise 04: Pipeline ETL
 - ✅ API externa (JSONPlaceholder) - no requiere datos locales
-- ✅ `database_schema.sql` para crear tablas
+- ✅ `database_schema.sql` para create tablas
 - ✅ `users.csv` + `sales.csv` para pipeline completo
 
 ### Exercise 05: Monitoreo
@@ -280,7 +280,7 @@ if __name__ == '__main__':
 
 ## ✅ Validation
 
-Para validar la integridad de los datos:
+Para validate la integridad de los datos:
 
 ```bash
 # Contar registros
@@ -298,7 +298,7 @@ psql --dry-run -f data/schemas/database_schema.sql
 1. **No modificar datos de ejemplo**: Estos están versionados en Git
 2. **Crear copias locales**: Si necesitas modificar, copia primero
 3. **Usar datos sintéticos**: No usar datos reales de producción
-4. **Validar antes de usar**: Siempre validar schema y calidad
+4. **Validar antes de usar**: Siempre validate schema y calidad
 5. **Documentar cambios**: Si añades datasets, actualiza este README
 
 ## 📚 Recursos Adicionales

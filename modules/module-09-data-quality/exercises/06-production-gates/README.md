@@ -62,7 +62,7 @@ class QualityGateEngine:
 
     def validate(self, df, stage_name: str):
         """
-        Ejecuta validaciones y aplica acciones.
+        Execute validaciones y aplica acciones.
 
         Returns:
             tuple: (passed: bool, df_clean, df_quarantined)
@@ -148,7 +148,7 @@ class QualityGateEngine:
 # Validators para usar con gates
 
 def completeness_validator(df, required_columns: list, threshold: float = 95):
-    """Valida completitud de columnas requeridas."""
+    """Validate completitud de columnas requeridas."""
     scores = {}
     for col in required_columns:
         if col in df.columns:
@@ -164,7 +164,7 @@ def completeness_validator(df, required_columns: list, threshold: float = 95):
     }
 
 def uniqueness_validator(df, unique_columns: list):
-    """Valida unicidad."""
+    """Validate unicidad."""
     duplicates = df.duplicated(subset=unique_columns, keep=False)
     violation_mask = duplicates
 
@@ -177,7 +177,7 @@ def uniqueness_validator(df, unique_columns: list):
     }
 
 def validity_validator(df, column: str, validator_func: callable):
-    """Valida valores válidos."""
+    """Validate valores válidos."""
     valid_mask = df[column].apply(validator_func)
     score = (valid_mask.sum() / len(df)) * 100
 
@@ -446,7 +446,7 @@ class CircuitBreaker:
     def call(self, func, *args, **kwargs):
         """Execute function with circuit breaker protection."""
 
-        # Si está OPEN, verificar si debemos pasar a HALF_OPEN
+        # Si está OPEN, verify si debemos pasar a HALF_OPEN
         if self.state == CircuitState.OPEN:
             if datetime.now() - self.last_failure_time > timedelta(seconds=self.timeout_seconds):
                 print("⚡ Circuit breaker transitioning to HALF_OPEN (testing recovery)")
@@ -668,7 +668,7 @@ class ProductionDataPipeline:
         self.monitor = QualityMonitor(name)
 
     def run(self, input_data: pd.DataFrame):
-        """Ejecuta pipeline completo."""
+        """Execute pipeline completo."""
         print(f"\n{'='*80}")
         print(f"STARTING PIPELINE: {self.name}")
         print(f"{'='*80}\n")
@@ -748,7 +748,7 @@ class ProductionDataPipeline:
             raise
 
     def _configure_raw_data_gates(self):
-        """Configura gates para raw data."""
+        """Configure gates para raw data."""
         self.quality_gate_engine.gates = []  # Reset
 
         self.quality_gate_engine.add_gate(QualityGate(
@@ -768,7 +768,7 @@ class ProductionDataPipeline:
         ))
 
     def _configure_final_gates(self):
-        """Configura gates finales."""
+        """Configure gates finales."""
         self.quality_gate_engine.gates = []  # Reset
 
         self.quality_gate_engine.add_gate(QualityGate(

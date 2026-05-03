@@ -289,7 +289,7 @@ from airflow.operators.python import PythonOperator
 import great_expectations as gx
 
 def validate_data(**context):
-    """Task para validar datos con GE."""
+    """Task para validate datos con GE."""
     ge_context = gx.get_context()
 
     results = ge_context.run_checkpoint(
@@ -649,7 +649,7 @@ class DataPipeline:
         return self
 
     def run(self, input_data: pd.DataFrame):
-        """Ejecuta pipeline con gates."""
+        """Execute pipeline con gates."""
         self.data = input_data
 
         for gate in self.gates:
@@ -883,7 +883,7 @@ class DataContract:
     delivery: Dict
 
 def validate_against_contract(df: pd.DataFrame, contract_path: str) -> Dict:
-    """Valida datos contra contrato."""
+    """Validate datos contra contrato."""
     # Load contract
     with open(contract_path) as f:
         contract_spec = yaml.safe_load(f)

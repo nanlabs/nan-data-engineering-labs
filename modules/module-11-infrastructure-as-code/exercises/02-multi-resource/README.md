@@ -19,8 +19,8 @@ Al completar este exercise serás capaz de:
 
 1. ✅ Gestionar múltiples recursos relacionados en una misma configuration
 2. ✅ Definir y manejar dependencias explícitas e implícitas
-3. ✅ Utilizar `count` para crear múltiples instancias de un recurso
-4. ✅ Utilizar `for_each` para crear recursos dinámicamente
+3. ✅ Utilizar `count` para create múltiples instancias de un recurso
+4. ✅ Utilizar `for_each` para create recursos dinámicamente
 5. ✅ Implementar lifecycle rules avanzadas
 6. ✅ Importar recursos existentes a Terraform
 
@@ -439,7 +439,7 @@ infrastructure_summary = {
 ### Conceptos Clave
 
 - **for_each**: Crear recursos dinámicamente desde un map o set
-- **Conditional Resources**: Usar count para crear recursos condicionalmente
+- **Conditional Resources**: Usar count para create recursos condicionalmente
 - **Resource References**: Referenciar otros recursos usando interpolación
 - **Dynamic Blocks**: (Exploraremos más en tareas siguientes)
 
@@ -1083,7 +1083,7 @@ Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
 
 ### Description
 
-Dominarás las construcciones `count` y `for_each` para crear recursos dinámicamente, entendiendo cuándo usar cada una.
+Dominarás las construcciones `count` y `for_each` para create recursos dinámicamente, entendiendo cuándo usar cada una.
 
 ### Steps
 
@@ -1368,7 +1368,7 @@ output "project_environment_buckets" {
 #### 4.2. Experimentar con Count y For_Each
 
 <details>
-<summary>📄 test-count-foreach.sh - Script de Prueba</summary>
+<summary>📄 test-count-foreach.sh - Script de Test</summary>
 
 ```bash
 #!/bin/bash
@@ -1629,18 +1629,18 @@ resource "aws_s3_bucket" "validated" {
   )
 
   lifecycle {
-    # Precondición: Validar ANTES de crear/modificar
+    # Precondición: Validar ANTES de create/modificar
     precondition {
       condition     = var.data_retention_days >= 7
-      error_message = "Los datos deben retenerse mínimo 7 días (compliance requirement)."
+      error_message = "Los datos deben retenerse mínimo 7 days (compliance requirement)."
     }
 
     precondition {
       condition     = var.data_retention_days <= 2555  # ~7 años
-      error_message = "Retención máxima es 7 años (2555 días)."
+      error_message = "Retención máxima es 7 años (2555 days)."
     }
 
-    # Postcondición: Validar DESPUÉS de crear
+    # Postcondición: Validar DESPUÉS de create
     postcondition {
       condition     = self.bucket_domain_name != ""
       error_message = "El bucket no se creó correctamente (domain name vacío)."
@@ -1708,7 +1708,7 @@ resource "null_resource" "bucket_config_monitor" {
       echo "Bucket ID: ${aws_s3_bucket.primary.id}"
       echo "Timestamp: ${timestamp()}"
 
-      # Aquí podrías ejecutar scripts de sincronización, notificaciones, etc.
+      # Aquí podrías execute scripts de sincronización, notificaciones, etc.
     EOT
   }
 }
@@ -1821,10 +1821,10 @@ Error: Resource precondition failed
 on lifecycle-rules.tf line 95, in resource "aws_s3_bucket" "validated":
    95:     precondition {
    96:       condition     = var.data_retention_days >= 7
-   97:       error_message = "Los datos deben retenerse mínimo 7 días (compliance requirement)."
+   97:       error_message = "Los datos deben retenerse mínimo 7 days (compliance requirement)."
    98:     }
 
-Los datos deben retenerse mínimo 7 días (compliance requirement).
+Los datos deben retenerse mínimo 7 days (compliance requirement).
 ```
 
 ### Conceptos Clave
@@ -1852,7 +1852,7 @@ You will learn a importar recursos existentes (creados fuera de Terraform) a tu 
 
 ```hcl
 #!/bin/bash
-# Script para crear recursos "existentes" (simulación)
+# Script para create recursos "existentes" (simulación)
 
 set -e
 
@@ -2086,7 +2086,7 @@ terraform plan -target=aws_s3_bucket.imported_legacy \
 echo -e "\n8️⃣  Recursos en el state después del import:"
 terraform state list | grep imported
 
-echo -e "\n✅ Importación completada"
+echo -e "\n✅ Importación completed"
 echo "Los recursos ahora están gestionados por Terraform"
 ```
 
@@ -2200,7 +2200,7 @@ aws_s3_bucket_versioning.imported_legacy_versioning: Import complete!
 aws_iam_role.imported_legacy: Import prepared!
 aws_iam_role.imported_legacy: Import complete!
 
-✅ Importación completada
+✅ Importación completed
 Los recursos ahora están gestionados por Terraform
 ```
 

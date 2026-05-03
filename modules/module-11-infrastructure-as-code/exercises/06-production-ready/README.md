@@ -154,7 +154,7 @@ EOF
 
 ```hcl
 # Module: S3 Data Lake
-# Crea un data lake con capas bronze/silver/gold + seguridad
+# Create un data lake con capas bronze/silver/gold + seguridad
 
 terraform {
   required_version = ">= 1.0"
@@ -353,7 +353,7 @@ output "bucket_domains" {
 ```markdown
 # S3 Data Lake Module
 
-Module reutilizable para crear un Data Lake con capas bronze/silver/gold.
+Module reutilizable para create un Data Lake con capas bronze/silver/gold.
 
 ## Características
 
@@ -386,8 +386,8 @@ module "data_lake" {
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| project_name | string | - | Nombre del proyecto (requerido) |
-| environment | string | - | dev/staging/prod (requerido) |
+| project_name | string | - | Nombre del proyecto (required) |
+| environment | string | - | dev/staging/prod (required) |
 | enable_versioning | bool | true | Habilitar versionado |
 | enable_lifecycle | bool | true | Lifecycle rules |
 | bronze_retention_days | number | 730 | Retención datos bronze |

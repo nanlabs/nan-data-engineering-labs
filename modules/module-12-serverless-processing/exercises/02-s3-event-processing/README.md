@@ -398,7 +398,7 @@ resource "random_id" "suffix" {
 resource "aws_sqs_queue" "processing_queue" {
   name                       = "file-processing-queue-${var.environment}"
   visibility_timeout_seconds = 300  # 5 min (debe ser >= Lambda timeout)
-  message_retention_seconds  = 1209600  # 14 días
+  message_retention_seconds  = 1209600  # 14 days
   receive_wait_time_seconds  = 10  # Long polling
 
   # Dead Letter Queue config
@@ -411,7 +411,7 @@ resource "aws_sqs_queue" "processing_queue" {
 # Dead Letter Queue
 resource "aws_sqs_queue" "dlq" {
   name                      = "file-processing-dlq-${var.environment}"
-  message_retention_seconds = 1209600  # 14 días
+  message_retention_seconds = 1209600  # 14 days
 }
 
 # CloudWatch Alarm para DLQ
@@ -699,7 +699,7 @@ output "glue_database" {
 
 ## 🧪 Parte 3: Testing
 
-### 3.1 Generar Datos de Prueba
+### 3.1 Generar Datos de Test
 
 **`scripts/generate_test_data.py`**:
 
@@ -738,7 +738,7 @@ print(f"Generated {len(df)} records")
 cd infrastructure/
 terraform apply
 
-# 2. Generar datos de prueba
+# 2. Generar datos de test
 cd ../scripts/
 python generate_test_data.py
 

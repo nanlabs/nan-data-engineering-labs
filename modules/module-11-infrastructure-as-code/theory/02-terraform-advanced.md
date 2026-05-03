@@ -561,7 +561,7 @@ variable "instance_count" {
 
 ## Composición de Modules
 
-La **composición de modules** es la práctica de combinar múltiples modules pequeños para crear arquitecturas complejas.
+La **composición de modules** es la práctica de combinar múltiples modules pequeños para create arquitecturas complejas.
 
 ### Ejemplo: Data Platform Architecture
 
@@ -1225,7 +1225,7 @@ module "vpc" {
 
 ## Count y For Each
 
-`count` y `for_each` son **meta-arguments** que permiten crear múltiples instancias de un resource o module.
+`count` y `for_each` son **meta-arguments** que permiten create múltiples instancias de un resource o module.
 
 ### Count
 
@@ -1399,7 +1399,7 @@ resource "aws_subnet" "private" {
 |-----------|------|-------|
 | Cantidad dinámica de recursos idénticos | `count` | Más simple |
 | Recursos basados en lista con lógica | `for_each` | Más flexible |
-| Condicional (crear o no) | `count` (0 o 1) | Idiomatic |
+| Condicional (create o no) | `count` (0 o 1) | Idiomatic |
 | Resources identificados por nombre | `for_each` | Key significativa |
 | Puede cambiar orden de elementos | `for_each` | No afecta existing resources |
 
@@ -1878,7 +1878,7 @@ cidrhost("10.0.0.0/24", 5)     # "10.0.0.5"
 # cidrnetmask - get netmask
 cidrnetmask("10.0.0.0/24")     # "255.255.255.0"
 
-# cidrsubnet - crear subnet
+# cidrsubnet - create subnet
 cidrsubnet("10.0.0.0/16", 8, 1)   # "10.0.1.0/24"
 cidrsubnet("10.0.0.0/16", 8, 2)   # "10.0.2.0/24"
 
@@ -2047,7 +2047,7 @@ resource "aws_lambda_function" "processor" {
   role          = aws_iam_role.lambda.arn
   # ...
 
-  # Asegurar que policies estén attached antes de crear función
+  # Asegurar que policies estén attached antes de create función
   depends_on = [aws_iam_role_policy_attachment.lambda_basic]
 }
 ```
@@ -2087,7 +2087,7 @@ terraform graph | dot -Tsvg > graph.svg
 
 ### create_before_destroy
 
-Crea el nuevo resource antes de destruir el viejo.
+Create el nuevo resource antes de destruir el viejo.
 
 ```hcl
 resource "aws_launch_template" "app" {
@@ -2308,7 +2308,7 @@ resource "aws_db_instance" "main" {
 
 | En lugar de | Usa |
 |-------------|-----|
-| `remote-exec` para configurar servidor | User data, Cloud-init, o Packer |
+| `remote-exec` para configure servidor | User data, Cloud-init, o Packer |
 | `local-exec` para scripts | Herramientas separadas de orchestration |
 | Provisioners para config management | Ansible, Chef, Puppet |
 
@@ -2322,7 +2322,7 @@ resource "aws_db_instance" "main" {
 
 #### local-exec
 
-Ejecuta comando en la máquina donde se ejecuta Terraform.
+Execute comando en la máquina donde se ejecuta Terraform.
 
 ```hcl
 resource "aws_instance" "web" {
@@ -2369,7 +2369,7 @@ resource "aws_instance" "web" {
 
 #### remote-exec
 
-Ejecuta comando en el resource remoto.
+Execute comando en el resource remoto.
 
 ```hcl
 resource "aws_instance" "web" {
@@ -2467,7 +2467,7 @@ resource "aws_instance" "web" {
 
 ```hcl
 resource "null_resource" "configure_monitoring" {
-  # Trigger: re-ejecutar cuando instances cambien
+  # Trigger: re-execute cuando instances cambien
   triggers = {
     instance_ids = join(",", aws_instance.web[*].id)
   }
@@ -2640,7 +2640,7 @@ DynamoDB table previene que múltiples usuarios ejecuten Terraform simultáneame
 terraform apply
 # State locked
 
-# Usuario 2 intenta ejecutar:
+# Usuario 2 intenta execute:
 terraform apply
 # Error: Error acquiring the state lock
 # Lock Info:
@@ -3096,7 +3096,7 @@ resource "aws_instance" "imported" {
 ```
 
 ```bash
-# 5. Plan para verificar (no debe haber cambios)
+# 5. Plan para verify (no debe haber cambios)
 terraform plan
 
 # Debería mostrar: No changes. Infrastructure is up-to-date.

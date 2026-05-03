@@ -29,7 +29,7 @@
 ```python
 def validate_not_null(df: pd.DataFrame, columns: list) -> dict:
     """
-    Valida que columnas no tengan nulls.
+    Validate que columnas no tengan nulls.
 
     Returns:
         dict con resultados: {'passed': bool, 'violations': list}
@@ -58,7 +58,7 @@ def validate_not_null(df: pd.DataFrame, columns: list) -> dict:
 import re
 
 def validate_email_format(df: pd.DataFrame, column: str) -> dict:
-    """Valida formato de emails."""
+    """Validate formato de emails."""
     email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
     invalid = df[~df[column].str.match(email_pattern, na=False)]
@@ -69,14 +69,14 @@ def validate_email_format(df: pd.DataFrame, column: str) -> dict:
     }
 
 def validate_phone_format(df: pd.DataFrame, column: str, min_length: int = 10) -> dict:
-    """Valida formato de teléfonos."""
+    """Validate formato de teléfonos."""
     # TODO: Implementar
     # Eliminar caracteres no numéricos
     # Validar longitud mínima
     pass
 
 def validate_date_format(df: pd.DataFrame, column: str, format: str = '%Y-%m-%d') -> dict:
-    """Valida formato de fechas."""
+    """Validate formato de fechas."""
     # TODO: Implementar
     pass
 ```
@@ -85,7 +85,7 @@ def validate_date_format(df: pd.DataFrame, column: str, format: str = '%Y-%m-%d'
 
 ```python
 def validate_range(df: pd.DataFrame, column: str, min_val=None, max_val=None) -> dict:
-    """Valida que valores estén en rango."""
+    """Validate que valores estén en rango."""
     violations = []
 
     if min_val is not None:
@@ -117,7 +117,7 @@ result = validate_range(transactions, 'amount', min_val=0, max_val=1000000)
 
 ```python
 def validate_in_domain(df: pd.DataFrame, column: str, valid_values: list) -> dict:
-    """Valida que valores estén en dominio permitido."""
+    """Validate que valores estén en dominio permitido."""
     # TODO: Implementar
     # Encontrar valores no en valid_values
     # Retornar violations con valores inválidos
@@ -136,7 +136,7 @@ result = validate_in_domain(customers, 'account_status', valid_statuses)
 
 ```python
 def validate_uniqueness(df: pd.DataFrame, columns: list) -> dict:
-    """Valida que combinación de columnas sea única."""
+    """Validate que combinación de columnas sea única."""
     duplicates = df[df.duplicated(subset=columns, keep=False)]
 
     return {
@@ -156,7 +156,7 @@ def validate_foreign_key(
     primary_key: str
 ) -> dict:
     """
-    Valida integridad referencial entre tablas.
+    Validate integridad referencial entre tablas.
 
     Example:
         validate_foreign_key(
@@ -191,7 +191,7 @@ class BusinessRuleValidator:
     def validate_dates_logical_order(df: pd.DataFrame,
                                      earlier_col: str,
                                      later_col: str) -> dict:
-        """Valida que earlier_date < later_date."""
+        """Validate que earlier_date < later_date."""
         df_copy = df.copy()
         df_copy[earlier_col] = pd.to_datetime(df_copy[earlier_col])
         df_copy[later_col] = pd.to_datetime(df_copy[later_col])
@@ -208,7 +208,7 @@ class BusinessRuleValidator:
                                   field: str,
                                   formula: callable) -> dict:
         """
-        Valida que campo calculado sea correcto.
+        Validate que campo calculado sea correcto.
 
         Example:
             validate_calculated_field(
@@ -228,7 +228,7 @@ class BusinessRuleValidator:
                                     constraint_func: callable,
                                     constraint_name: str) -> dict:
         """
-        Valida constraint arbitrario.
+        Validate constraint arbitrario.
 
         Example:
             validate_business_constraint(
@@ -274,7 +274,7 @@ class ValidationEngine:
         return self
 
     def validate(self, df: pd.DataFrame) -> Dict:
-        """Ejecuta todas las validaciones."""
+        """Execute todas las validaciones."""
         self.results = []
 
         for rule in self.rules:

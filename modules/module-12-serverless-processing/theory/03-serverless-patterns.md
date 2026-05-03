@@ -403,7 +403,7 @@ def lambda_handler(event, context):
 # API Gateway valida x-api-key header
 # Lambda recibe request solo si API key es válida
 def lambda_handler(event, context):
-    # No necesitas validar, API Gateway ya lo hizo
+    # No necesitas validate, API Gateway ya lo hizo
     return {'statusCode': 200, 'body': 'Authenticated'}
 ```
 
@@ -485,7 +485,7 @@ def handler(event, context):
 
 ### Request Validation
 
-**API Gateway puede validar request antes de invocar Lambda**:
+**API Gateway puede validate request antes de invocar Lambda**:
 
 ```json
 {

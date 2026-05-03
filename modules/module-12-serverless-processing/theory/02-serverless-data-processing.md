@@ -638,7 +638,7 @@ def lambda_handler(event, context):
 resource "aws_sqs_queue" "processing_queue" {
   name                       = "data-processing-queue"
   visibility_timeout_seconds = 300  # 5 min (debe ser >= lambda timeout)
-  message_retention_seconds  = 1209600  # 14 días
+  message_retention_seconds  = 1209600  # 14 days
 
   # Dead Letter Queue
   redrive_policy = jsonencode({
@@ -649,7 +649,7 @@ resource "aws_sqs_queue" "processing_queue" {
 
 resource "aws_sqs_queue" "dlq" {
   name                       = "data-processing-dlq"
-  message_retention_seconds  = 1209600  # 14 días
+  message_retention_seconds  = 1209600  # 14 days
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_trigger" {
@@ -978,7 +978,7 @@ def lambda_handler(event, context):
 
 ### 1. Idempotencia
 
-Asegúrate que ejecutar la misma Lambda múltiples veces con el mismo input produce el mismo resultado.
+Asegúrate que execute la misma Lambda múltiples veces con el mismo input produce el mismo resultado.
 
 ```python
 # ✅ Idempotente

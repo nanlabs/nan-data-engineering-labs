@@ -59,7 +59,7 @@ broker_config = {
     'num.partitions': 3,
     'default.replication.factor': 3,
     'min.insync.replicas': 2,  # Mínimo replicas para ack
-    'log.retention.hours': 168,  # 7 días
+    'log.retention.hours': 168,  # 7 days
     'log.segment.bytes': 1073741824  # 1GB
 }
 ```
@@ -77,7 +77,7 @@ topic = NewTopic(
     num_partitions=6,
     replication_factor=3,
     topic_configs={
-        'retention.ms': '604800000',  # 7 días
+        'retention.ms': '604800000',  # 7 days
         'compression.type': 'snappy',
         'cleanup.policy': 'delete'  # o 'compact' para log compaction
     }
@@ -741,7 +741,7 @@ Combina batch y streaming para balance entre latency y accuracy:
 ```python
 # Batch layer (cada hora)
 def batch_processing():
-    # Leer últimos 7 días completos
+    # Leer últimos 7 days completos
     df = spark.read.parquet('s3://data/history/')
 
     # Cálculo exacto

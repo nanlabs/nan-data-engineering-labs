@@ -132,7 +132,7 @@ print(f"✅ Expectation suite '{suite_name}' creada con {len(validator.get_expec
 # - date_of_birth en el pasado
 
 suite_name = "customers_suite"
-# ... implementar
+# ... implement
 ```
 
 **Task 1.4: Auto-Profiling**
@@ -370,7 +370,7 @@ from airflow.operators.python import PythonOperator
 import great_expectations as gx
 
 def run_ge_validation(**context):
-    """Airflow task para ejecutar validation GE."""
+    """Airflow task para execute validation GE."""
     ge_context = gx.get_context()
 
     results = ge_context.run_checkpoint(

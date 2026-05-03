@@ -490,7 +490,7 @@ def apply_aggregate(stream, window_size=60):
 
 **1. At-Most-Once** (puede perderse):
 ```python
-# Lee mensaje → Procesa → Commit offset
+# Read mensaje → Procesa → Commit offset
 # Si falla antes de commit, se pierde el mensaje
 consumer.poll()
 process_message(msg)
@@ -499,7 +499,7 @@ consumer.commit()  # ← Si falla aquí, mensaje perdido
 
 **2. At-Least-Once** (puede duplicarse):
 ```python
-# Lee mensaje → Commit offset → Procesa
+# Read mensaje → Commit offset → Procesa
 # Si falla después de commit pero antes de procesar, se duplic
 consumer.commit()  # ← Commit primero
 process_message(msg)  # ← Si falla aquí, mensaje ya committed

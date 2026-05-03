@@ -70,7 +70,7 @@ class SparkManager:
 
 **Archivo**: `starter/spark_operations.py`
 
-Implementa operaciones comunes:
+Implement operaciones comunes:
 
 ```python
 class SparkOperations:
@@ -150,7 +150,7 @@ class SparkOptimizer:
 
 **Archivo**: `starter/spark_pipeline.py`
 
-Crea un batch pipeline completo:
+Create un batch pipeline completo:
 
 ```python
 class SparkBatchPipeline:

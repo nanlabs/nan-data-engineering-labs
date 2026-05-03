@@ -151,7 +151,7 @@ aws sts get-caller-identity
 
 ### 3. Comenzar con la Theory
 
-Lee los archivos de theory en orden:
+Read los archivos de theory en orden:
 1. `theory/01-serverless-fundamentals.md`
 2. `theory/02-serverless-data-processing.md`
 3. `theory/03-serverless-patterns.md`

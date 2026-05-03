@@ -54,7 +54,7 @@ Con Infrastructure as Code:
 
 #### Problema: Gestión Manual de Infraestructura
 
-Imagina que necesitas crear un entorno de producción con:
+Imagina que necesitas create un entorno de producción con:
 - 3 servidores web
 - 1 base de datos
 - 1 balanceador de carga
@@ -93,7 +93,7 @@ resource "aws_instance" "web" {
 
 ### 1. Reproducibilidad
 
-La capacidad de crear la misma infraestructura múltiples veces de manera consistente.
+La capacidad de create la misma infraestructura múltiples veces de manera consistente.
 
 **Sin IaC:**
 ```
@@ -150,7 +150,7 @@ resource "aws_instance" "app" {
 ```
 
 - Pull requests para revisar cambios
-- CI/CD para validar antes de aplicar
+- CI/CD para validate antes de aplicar
 - Comentarios y discusiones en el código
 
 ### 4. Consistencia Entre Entornos
@@ -286,7 +286,7 @@ server = aws.ec2.Instance('my-server',
 
 **Pros:**
 - Lenguajes de programación reales (Python, TypeScript, Go)
-- Lógica compleja más fácil de implementar
+- Lógica compleja más fácil de implement
 - Type safety con TypeScript
 - Testing con frameworks estándar
 
@@ -364,10 +364,10 @@ Terraform tiene una arquitectura modular compuesta por tres componentes principa
 ### 1. Terraform Core
 
 **Funciones:**
-- Lee configuration (archivos .tf)
+- Read configuration (archivos .tf)
 - Construye el grafo de recursos y dependencias
 - Determina el orden de operaciones
-- Ejecuta el plan de cambios
+- Execute el plan de cambios
 - Actualiza el state
 
 **Workflow interno:**
@@ -399,7 +399,7 @@ Cada provider:
 - Se descarga automáticamente en `terraform init`
 - Traduce HCL a llamadas API
 - Maneja autenticación
-- Implementa recursos y data sources específicos
+- Implement recursos y data sources específicos
 
 ### 3. State
 
@@ -517,7 +517,7 @@ resource "aws_s3_bucket" "data" {
   bucket = "my-data-bucket"
 }
 
-# 4. Data source block - Lee información existente
+# 4. Data source block - Read información existente
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"]
@@ -728,7 +728,7 @@ El workflow de Terraform sigue un ciclo predecible:
 
 ### 1. Write: Escribir Configuration
 
-Crea archivos `.tf` con tu configuration:
+Create archivos `.tf` con tu configuration:
 
 ```hcl
 # main.tf
@@ -762,7 +762,7 @@ terraform init
 - Descarga providers especificados
 - Inicializa backend para state
 - Descarga modules referenciados
-- Crea `.terraform/` directory
+- Create `.terraform/` directory
 
 **Output típico:**
 ```
@@ -775,7 +775,7 @@ Initializing provider plugins...
 Terraform has been successfully initialized!
 ```
 
-**Cuándo ejecutar init:**
+**Cuándo execute init:**
 - Primera vez en un directorio nuevo
 - Después de agregar nuevos providers
 - Después de cambiar configuration de backend
@@ -788,8 +788,8 @@ terraform plan
 ```
 
 **¿Qué hace `plan`?**
-- Lee configuration actual
-- Lee state actual
+- Read configuration actual
+- Read state actual
 - Consulta estado real de recursos (refresh)
 - Calcula diferencias (diff)
 - Muestra qué cambios se aplicarán
@@ -832,9 +832,9 @@ terraform apply
 ```
 
 **¿Qué hace `apply`?**
-- Ejecuta un `plan` (a menos que uses plan guardado)
+- Execute un `plan` (a menos que uses plan guardado)
 - Pide confirmación
-- Ejecuta cambios en el orden correcto (basado en dependencias)
+- Execute cambios en el orden correcto (basado en dependencias)
 - Actualiza state file
 
 **Output típico:**
@@ -1074,11 +1074,11 @@ aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY2
 
 4. **IAM Role (EC2 Instance Profile)**
 En instancias EC2 con IAM role asignado
-✅ **RECOMENDADO** para ejecutar desde EC2
+✅ **RECOMENDADO** para execute desde EC2
 
 5. **ECS Task Role**
 En ECS tasks con task role asignado
-✅ **RECOMENDADO** para ejecutar desde ECS
+✅ **RECOMENDADO** para execute desde ECS
 
 ### Providers Comunes
 
@@ -1399,12 +1399,12 @@ Los **data sources** permiten leer información desde fuentes externas y usarla 
 ### Diferencia: Resource vs Data Source
 
 ```hcl
-# RESOURCE: Crea/gestiona un recurso
+# RESOURCE: Create/gestiona un recurso
 resource "aws_s3_bucket" "new_bucket" {
   bucket = "my-new-bucket"
 }
 
-# DATA SOURCE: Lee un recurso existente
+# DATA SOURCE: Read un recurso existente
 data "aws_s3_bucket" "existing_bucket" {
   bucket = "already-exists-bucket"
 }
@@ -1470,7 +1470,7 @@ data "aws_availability_zones" "available" {
   }
 }
 
-# Usar para crear subnets en múltiples AZs
+# Usar para create subnets en múltiples AZs
 resource "aws_subnet" "private" {
   count             = 3
   vpc_id            = aws_vpc.main.id
@@ -2132,7 +2132,7 @@ terraform init -migrate-state     # Migra state a nuevo backend
 
 ### terraform validate
 
-Valida sintaxis de configuration.
+Validate sintaxis de configuration.
 
 ```bash
 terraform validate
@@ -2280,7 +2280,7 @@ terraform graph | dot -Tpng > graph.png
 
 ## Primer Proyecto Completo
 
-Vamos a crear un proyecto completo step a step: un entorno básico de aplicación web en AWS.
+Vamos a create un proyecto completo step a step: un entorno básico de aplicación web en AWS.
 
 ### Arquitectura
 

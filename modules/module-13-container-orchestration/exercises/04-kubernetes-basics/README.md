@@ -60,7 +60,7 @@ Construirás una **aplicación de data engineering completa en Kubernetes**:
 
 ### Step 1.1: Cluster Configuration
 
-Crea `terraform/eks-cluster.tf`:
+Create `terraform/eks-cluster.tf`:
 
 ```hcl
 # EKS Cluster
@@ -218,7 +218,7 @@ kubectl get nodes
 
 ### Step 2.1: Application Code
 
-Crea `app/main.py`:
+Create `app/main.py`:
 
 ```python
 from fastapi import FastAPI, HTTPException
@@ -327,7 +327,7 @@ docker push $(terraform output -raw ecr_url)/data-api:latest
 
 ### Step 2.2: Kubernetes Manifests
 
-Crea `k8s/namespace.yaml`:
+Create `k8s/namespace.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -338,7 +338,7 @@ metadata:
     name: data-pipeline
 ```
 
-Crea `k8s/configmap.yaml`:
+Create `k8s/configmap.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -352,7 +352,7 @@ data:
   DB_NAME: "dataeng"
 ```
 
-Crea `k8s/secret.yaml` (usando External Secrets o manual):
+Create `k8s/secret.yaml` (usando External Secrets o manual):
 
 ```yaml
 apiVersion: v1
@@ -366,7 +366,7 @@ stringData:
   DB_PASSWORD: "your-secure-password"  # Use Secrets Manager in production
 ```
 
-Crea `k8s/deployment.yaml`:
+Create `k8s/deployment.yaml`:
 
 ```yaml
 apiVersion: apps/v1
@@ -439,7 +439,7 @@ spec:
           periodSeconds: 5
 ```
 
-Crea `k8s/service.yaml`:
+Create `k8s/service.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -463,7 +463,7 @@ spec:
 
 ### Step 3.1: Storage Class
 
-Crea `k8s/storageclass.yaml`:
+Create `k8s/storageclass.yaml`:
 
 ```yaml
 apiVersion: storage.k8s.io/v1
@@ -482,7 +482,7 @@ allowVolumeExpansion: true
 
 ### Step 3.2: PostgreSQL StatefulSet
 
-Crea `k8s/postgres-statefulset.yaml`:
+Create `k8s/postgres-statefulset.yaml`:
 
 ```yaml
 apiVersion: apps/v1
@@ -559,7 +559,7 @@ spec:
 
 ### Step 3.3: Initialize Database
 
-Crea `k8s/init-db-job.yaml`:
+Create `k8s/init-db-job.yaml`:
 
 ```yaml
 apiVersion: batch/v1
@@ -644,7 +644,7 @@ kubectl get deployment -n kube-system aws-load-balancer-controller
 
 ### Step 4.2: Create Ingress
 
-Crea `k8s/ingress.yaml`:
+Create `k8s/ingress.yaml`:
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -678,7 +678,7 @@ spec:
 
 ## ⏰ Parte 5: ETL CronJob
 
-Crea `k8s/etl-cronjob.yaml`:
+Create `k8s/etl-cronjob.yaml`:
 
 ```yaml
 apiVersion: batch/v1

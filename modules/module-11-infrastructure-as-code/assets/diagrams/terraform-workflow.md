@@ -6,7 +6,7 @@
 flowchart TD
     Start([Inicio]) --> Write[Escribir Configuration .tf]
     Write --> Init[terraform init]
-    Init --> InitDesc[Descarga Providers<br/>Inicializa Backend<br/>Configura Modules]
+    Init --> InitDesc[Descarga Providers<br/>Inicializa Backend<br/>Configure Modules]
     InitDesc --> Validate[terraform validate]
     Validate --> ValidDesc{¿Sintaxis<br/>Correcta?}
     ValidDesc -->|No| Fix[Corregir Errores]
@@ -17,7 +17,7 @@ flowchart TD
     PlanDesc --> Review{¿Revisar<br/>Cambios?}
     Review -->|Modificar| Write
     Review -->|Aprobar| Apply[terraform apply]
-    Apply --> ApplyDesc[Crea/Modifica<br/>Recursos]
+    Apply --> ApplyDesc[Create/Modifica<br/>Recursos]
     ApplyDesc --> State[(State File<br/>terraform.tfstate)]
     State --> Monitor[Monitorear Recursos]
     Monitor --> Change{¿Requiere<br/>Cambios?}

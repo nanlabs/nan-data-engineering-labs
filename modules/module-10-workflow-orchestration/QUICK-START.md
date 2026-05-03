@@ -130,7 +130,7 @@ pytest --cov=../exercises --cov-report=html
 
 ### Fundamentos
 - [ ] Entiendo qué es un DAG
-- [ ] Puedo crear un DAG básico con PythonOperator
+- [ ] Puedo create un DAG básico con PythonOperator
 - [ ] Entiendo las dependencias con `>>`
 - [ ] Sé usar XComs para pasar datos
 - [ ] Conozco schedule_interval y start_date
@@ -169,7 +169,7 @@ docker-compose exec webserver airflow dags list-import-errors
 # Ver logs detallados
 docker-compose exec webserver airflow tasks logs DAG_ID TASK_ID DATE
 
-# Re-ejecutar task
+# Re-execute task
 docker-compose exec webserver airflow tasks run DAG_ID TASK_ID DATE
 
 # Limpiar estado
@@ -210,7 +210,7 @@ docker-compose up -d
 module-10-workflow-orchestration/
 ├── dags/                     # 👈 TUS DAGs VAN AQUÍ
 │   ├── ex01_hello_world.py  # Ejemplos listo para usar
-│   └── tu_dag.py             # Crea tus propios DAGs aquí
+│   └── tu_dag.py             # Create tus propios DAGs aquí
 │
 ├── infrastructure/
 │   ├── docker-compose.yml    # Configuration de servicios
@@ -235,23 +235,23 @@ module-10-workflow-orchestration/
 1. **Desarrollo Local**:
    - Edita DAGs en `dags/` directamente
    - Airflow detecta cambios automáticamente
-   - Valida sintaxis con `python tu_dag.py` antes
+   - Validate sintaxis con `python tu_dag.py` antes
 
 2. **Debugging**:
    - Usa `print()` liberalmente - aparece en logs
-   - Prueba tasks individualmente con `airflow tasks test`
+   - Test tasks individualmente con `airflow tasks test`
    - Revisa XCom viewer en la UI (Graph → XCom)
 
 3. **Performance**:
    - Usa `catchup=False` para evitar backfill
    - Limita parallelism con pools
-   - Implementa idempotencia en tasks
+   - Implement idempotencia en tasks
 
 4. **Producción**:
    - Siempre define SLAs para tasks críticos
-   - Implementa callbacks de error
+   - Implement callbacks de error
    - Usa secrets para credenciales
-   - Escribe tests para tus DAGs
+   - Write tests para tus DAGs
 
 ## 📚 Recursos Útiles
 
@@ -266,7 +266,7 @@ module-10-workflow-orchestration/
 2. Busca en [theory/02-dags-and-operators.md](theory/02-dags-and-operators.md) para código
 3. Consulta [theory/03-production-patterns.md](theory/03-production-patterns.md) para producción
 4. Revisa DAGs de ejemplo en `dags/` para patrones
-5. Ejecuta `./scripts/validate.sh` para verificar tu setup
+5. Execute `./scripts/validate.sh` para verify tu setup
 
 ## ✅ Verificación Final
 
