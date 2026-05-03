@@ -1,12 +1,12 @@
 # Validation and Testing
 
-Suite completa de tests automatizados para validar ejercicios.
+Suite completa of tests automatizados for validar exercises.
 
-## 📂 Estructura
+## 📂 Structure
 
 ```
 validation/
-├── conftest.py              # Fixtures de Spark
+├── conftest.py              # Fixtures of Spark
 ├── test_01_delta_basics.py
 ├── test_02_medallion.py
 ├── test_03_time_travel.py
@@ -20,7 +20,7 @@ validation/
 
 ```bash
 # Instalar dependencias
-pip install -r requirements.txt
+pIP install -r requirements.txt
 
 # Ejecutar todos los tests
 pytest -v
@@ -28,17 +28,17 @@ pytest -v
 # Ejecutar test específico
 pytest -v validation/test_01_delta_basics.py
 
-# Generar reporte de cobertura
+# Generar reporte of cobertura
 pytest --cov=../exercises --cov-report=html
 ```
 
 ## ✅ Cobertura
 
-- **Ejercicio 01**: 8 tests (create, append, overwrite, query)
-- **Ejercicio 02**: 6 tests (pipeline medallion completo)
-- **Ejercicio 03**: 4 tests (time travel, rollback)
-- **Ejercicio 04**: 3 tests (schema evolution)
-- **Ejercicio 05**: 3 tests (optimization)
-- **Ejercicio 06**: 2 tests (comparison)
+- **Exercise 01**: 8 tests (create, append, overwrite, query)
+- **Exercise 02**: 6 tests (pIPeline medallion completo)
+- **Exercise 03**: 4 tests (time travel, rolelback)
+- **Exercise 04**: 3 tests (schema evolution)
+- **Exercise 05**: 3 tests (optimization)
+- **Exercise 06**: 2 tests (comparison)
 
 **Total**: 26 tests automatizados

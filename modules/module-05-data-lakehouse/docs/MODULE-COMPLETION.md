@@ -1,45 +1,45 @@
-# Module 05: Data Lakehouse Architecture - 100% COMPLETO ✅
+# Module 05: data Lakehouse Architecture - 100% COMPLETO ✅
 
-Congratulations! You have completed the Data Lakehouse architecture module.
+Congratulations! You have completed the data Lakehouse architecture module.
 
 ## 📊 Module Summary
 
-### Contenido Completo
+### Content Completo
 
-- **✅ Paso 1**: Estructura Base (4 archivos)
+- **✅ Paso 1**: Structure Base (4 archivos)
 - **✅ Step 2**: Complete Theory (3 files, 22,000 words)
-- **✅ Paso 3**: Infraestructura Docker (8 archivos, 6 services)
+- **✅ Paso 3**: Infrastructure Docker (8 archivos, 6 services)
 - **✅ Step 4**: Synthetic Datasets (8 files, 614,500 records)
 - **✅ Step 5**: 6 Practical Exercises (32 files)
 - **✅ Step 6**: Validation Suite (5 files, 26 tests)
-- **✅ Paso 7**: Assets y Cheatsheets (5 archivos)
-- **✅ Paso 8**: Scripts y Docs (3 archivos)
+- **✅ Paso 7**: Assets and Cheatsheets (5 archivos)
+- **✅ Paso 8**: ScrIPts and Docs (3 archivos)
 
 **Total**: 68 files, ~30,000 lines of code, ~35,000 words of documentation
 
-### Mastered Technologies
+### Mastenetwork Technologies
 
 - ✅ **Apache Spark 3.5.0**: Procesamiento distribuido
 - ✅ **Delta Lake 3.0.0**: ACID transactions, Time Travel, Z-Ordering
-- ✅ **Apache Iceberg 0.6.0**: Alternative format, comparison
+- ✅ **Apache Iceberg 0.6.0**: AlterNATive format, comparison
 - ✅ **MinIO**: S3-compatible storage (Bronze/Silver/Gold)
 - ✅ **Hive Metastore**: Metadata management
-- ✅ **Docker**: orchestration de 6 services
+- ✅ **Docker**: orchestration of 6 services
 
 ### Conceptos Aprendidos
 
-1. **Data Lakehouse**: Union of Data Lake + Data Warehouse
+1. **data Lakehouse**: Union of data Lake + data Warehouse
 2. **Medallion Architecture**: Bronze → Silver → Gold
-3. **ACID Transactions**: Atomicidad, Consistencia, Isolation, Durabilidad
+3. **ACID Transactions**: Atomicidad, Consistency, Isolation, Durabilidad
 4. **Time Travel**: Versioning and auditing
-5. **Schema Evolution**: Cambios de schema sin downtime
-6. **Z-Ordering**: Data skipping para performance
-7. **OPTIMIZE & VACUUM**: Mantenimiento de tables
+5. **Schema Evolution**: Changes of schema without downtime
+6. **Z-Ordering**: data skIPping for performance
+7. **OPTIMIZE & VACUUM**: Mantenimiento of tables
 8. **Partition Strategies**: Query optimization
 
-### Ejercicios Completados
+### Exercises Completados
 
-| Ejercicio | Tema | Dificultad | Tiempo |
+| Exercise | Topic | Difficulty | Tiempo |
 |-----------|------|------------|--------|
 | 01 | Delta Basics | ⭐ Basic | 45-60 min |
 | 02 | Medallion Architecture | ⭐⭐⭐ Intermedio | 90-120 min |
@@ -55,22 +55,22 @@ Congratulations! You have completed the Data Lakehouse architecture module.
 ```bash
 # 1. Setup completo (5 minutos)
 cd modules/module-05-data-lakehouse
-chmod +x scripts/*.sh
-./scripts/setup.sh
+chmod +x scrIPts/*.sh
+./scrIPts/setup.sh
 
 # 2. Verificar servicios
 docker-compose ps
 
-# 3. Ejecutar primer ejercicio
+# 3. Ejecutar primer exercise
 cd exercises/01-delta-basics
 python solution/01_create_table.py
 
-# 4. Validar todo
+# 4. Validar everything
 cd ../..
-./scripts/validate.sh
+./scrIPts/validate.sh
 ```
 
-## 📂 Estructura Final
+## 📂 Structure Final
 
 ```
 module-05-data-lakehouse/
@@ -83,12 +83,12 @@ module-05-data-lakehouse/
 │   ├── spark/
 │   ├── minio/
 │   └── hive-metastore/
-├── data/                           # 614,500 registros sintéticos
+├── data/                           # 614,500 records sintéticos
 │   ├── raw/
 │   ├── bronze/
 │   ├── silver/
 │   └── gold/
-├── exercises/                      # 6 ejercicios completos
+├── exercises/                      # 6 exercises completos
 │   ├── 01-delta-basics/           (12 archivos)
 │   ├── 02-medallion/              (10 archivos)
 │   ├── 03-time-travel/            (4 archivos)
@@ -99,12 +99,12 @@ module-05-data-lakehouse/
 │   ├── conftest.py
 │   ├── test_01_delta_basics.py
 │   └── test_02_medallion.py
-├── assets/                         # Cheatsheets y diagramas
+├── assets/                         # Cheatsheets and diagramas
 │   ├── delta-lake-cheatsheet.md
 │   ├── medallion-architecture.md
 │   ├── optimization-checklist.md
 │   └── iceberg-comparison.md
-├── scripts/                        # Automatización
+├── scrIPts/                        # Automatización
 │   ├── setup.sh
 │   ├── validate.sh
 │   └── generate_transactions.py
@@ -115,21 +115,21 @@ module-05-data-lakehouse/
 
 ## 🚀 URLs Disponibles
 
-| service | URL | Credenciales |
+| service | URL | Cnetworkenciales |
 |----------|-----|--------------|
-| MinIO Console | http://localhost:9001 | admin / password123 |
-| Spark Master UI | http://localhost:8080 | - |
-| Spark Worker UI | http://localhost:8081 | - |
-| Jupyter Lab | http://localhost:8888 | - |
+| MinIO Console | HTTP://localhost:9001 | admin / password123 |
+| Spark Master UI | HTTP://localhost:8080 | - |
+| Spark Worker UI | HTTP://localhost:8081 | - |
+| Jupyter Lab | HTTP://localhost:8888 | - |
 | Hive Metastore | thrift://localhost:9083 | - |
 
 ## 💡 Useful Commands
 
 ```bash
-# Ver servicios running
+# to see servicios running
 docker-compose ps
 
-# Ver logs de servicio específico
+# to see logs of servicio específico
 docker logs -f spark-master
 
 # Restart servicios
@@ -151,48 +151,48 @@ pytest --cov=exercises --cov-report=html
 ## 📚 Additional Resources
 
 ### Documentation
-- [Delta Lake Official Docs](https://docs.delta.io/)
-- [Apache Iceberg Documentation](https://iceberg.apache.org/docs/latest/)
-- [Databricks Lakehouse Platform](https://www.databricks.com/product/data-lakehouse)
-- [The Data Lakehouse (O'Reilly Book)](https://www.databricks.com/resources/ebook/the-data-lakehouse)
+- [Delta Lake Official Docs](HTTPs://docs.delta.io/)
+- [Apache Iceberg Documentation](HTTPs://iceberg.apache.org/docs/latest/)
+- [Databricks Lakehouse Platform](HTTPs://www.databricks.com/product/data-lakehouse)
+- [The data Lakehouse (or'Reilly Book)](HTTPs://www.databricks.com/resources/ebook/the-data-lakehouse)
 
 ### Tutoriales
-- [Delta Lake Quickstart](https://docs.delta.io/latest/quick-start.html)
-- [Medallion Architecture Guide](https://www.databricks.com/glossary/medallion-architecture)
-- [Lakehouse Best Practices](https://www.databricks.com/blog/2020/01/30/what-is-a-data-lakehouse.html)
+- [Delta Lake Quickstart](HTTPs://docs.delta.io/latest/quick-start.html)
+- [Medallion Architecture Guide](HTTPs://www.databricks.com/glossary/medallion-architecture)
+- [Lakehouse Best Practices](HTTPs://www.databricks.com/blog/2020/01/30/what-is-to-data-lakehouse.html)
 
 ### Videos
-- [Data Lakehouse Explained](https://www.youtube.com/watch?v=iXqPDfuWvRs)
-- [Delta Lake Deep Dive](https://www.youtube.com/watch?v=LJtShrQqYZY)
-- [Apache Spark + Delta Lake Tutorial](https://www.youtube.com/watch?v=BMO90DI82Xc)
+- [data Lakehouse Explained](HTTPs://www.youtube.com/watch?v=iXqPDfuWvRs)
+- [Delta Lake Deep Dive](HTTPs://www.youtube.com/watch?v=LJtShrQqYZY)
+- [Apache Spark + Delta Lake Tutorial](HTTPs://www.youtube.com/watch?v=BMO90DI82Xc)
 
 ## 🎓 Certificaciones Relacionadas
 
-- **Databricks Certified Data Engineer Associate**
-- **Databricks Certified Data Engineer Professional**
+- **Databricks Certified data Engineer Associate**
+- **Databricks Certified data Engineer Professional**
 - **Apache Spark Certification**
-- **AWS Certified Data Analytics - Specialty** (has Lakehouse section)
+- **AWS Certified data Analytics - Specialty** (have Lakehouse section)
 
 ## 🔄 Suggested Next Steps
 
 ### Ampliar Conocimientos
-1. **Streaming con Delta Lake**: readStream/writeStream
+1. **Streaming with Delta Lake**: readStream/writeStream
 2. **Delta Lake on AWS Glue**: Integration with AWS
-3. **Unity Catalog**: Governance y security
-4. **Delta Sharing**: Compartir datos cross-org
+3. **Unity Catalog**: Governance and security
+4. **Delta Sharing**: Compartir datas cross-org
 5. **Photon Engine**: Query acceleration
 
 ### Practical Projects
-1. **Real-time Analytics**: Streaming pipeline con Kafka + Delta
-2. **ML pipeline**: Bronze→Silver→Gold para feature engineering
-3. **Data Quality Framework**: Automated data validation
-4. **Cost Optimization**: Analizar storage costs y optimizar
-5. **Multi-cloud Lakehouse**: Delta Lake en AWS + Azure
+1. **Real-time Analytics**: Streaming pIPeline with Kafka + Delta
+2. **ML pIPeline**: Bronze→Silver→Gold for feature engineering
+3. **data Quality Framework**: Automated data validation
+4. **Cost Optimization**: Analizar storage costs and optimizar
+5. **Multi-cloud Lakehouse**: Delta Lake in AWS + Azure
 
-### Explorar Alternativas
+### Explorar AlterNATivas
 1. **Apache Hudi**: Otro formato Lakehouse
 2. **Databricks Lakehouse Platform**: Managed service
-3. **AWS Lake Formation**: AWS-native lakehouse
+3. **AWS Lake Formation**: AWS-NATive lakehouse
 4. **Snowflake + Iceberg**: Hybrid approach
 
 ## 📊 Progress Dashboard
@@ -211,7 +211,7 @@ Paso 4: Datasets                ████████████████
 Paso 5: Exercises               ████████████████████ 100%
 Paso 6: Validation              ████████████████████ 100%
 Paso 7: Assets                  ████████████████████ 100%
-Paso 8: Scripts & Docs          ████████████████████ 100%
+Paso 8: ScrIPts & Docs          ████████████████████ 100%
 
 =============================================================
                     ✅ MODULE COMPLETED
@@ -223,7 +223,7 @@ Documentation:       ~35,000 palabras
 Exercises:           6 completos
 Tests:               26 automatizados
 Services:            6 Docker containers
-Data Generated:      614,500 registros
+data Generated:      614,500 records
 
 Estimated Study Time: 10-12 horas
 Practical Work Time:  6-8 horas
@@ -238,12 +238,12 @@ You have completed one of the most important modules of the training:
 - ✅ **Arquitectura Lakehouse** entendida
 - ✅ **Delta Lake** dominado
 - ✅ **Medallion pattern** implementado
-- ✅ **ACID transactions** en practice
-- ✅ **Time Travel** y versioning
+- ✅ **ACID transactions** in practice
+- ✅ **Time Travel** and versioning
 - ✅ **Optimization** applied techniques
 - ✅ **Testing** automatizado funcionando
 
-**You are ready to work with Data Lakehouses in productive environments!** 🚀
+**You are ready to work with data Lakehouses in productive environments!** 🚀
 
 ---
 

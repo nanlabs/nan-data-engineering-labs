@@ -1,27 +1,27 @@
-# 💡 Hints - Ejercicio 05: Optimization
+# 💡 Hints - Exercise 05: Optimization
 
-## 🎯 Conceptos Clave
+## 🎯 Conceptos Key
 
 ### Optimization in Delta Lake
 Delta Lake provides several techniques to optimize performance:
-- **OPTIMIZE**: Compact small files (reduce small file problem)
-- **Z-ORDERING**: Co-localiza datos relacionados (mejora data skipping)
-- **VACUUM**: Limpia archivos antiguos no referenciados
-- **Data Skipping**: Automatic based on statistics
+- **OPTIMIZE**: Compact small files (networkuce small file problem)
+- **Z-ORDERING**: Co-localiza datas relacionados (improvement data skIPping)
+- **VACUUM**: Limpia archivos antiguos not referencedos
+- **data SkIPping**: Automatic based on statistics
 
 ### Small File Problem
 Many small files → Metadata overhead → Slow queries
 **Fix**: OPTIMIZE compacts files into larger files
 
 ### Z-Ordering
-Co-locates related data based on multiple columns
-**Benefit**: Reduce data read in queries with multiple filters
+Co-locates related data based on multIPle columns
+**Benefit**: Networkuce data read in queries with multIPle filters
 
 ---
 
 ## 📝 optimization.py
 
-### 1. Ver estado actual
+### 1. to see estado actual
 ```python
 from delta.tables import DeltaTable
 
@@ -30,17 +30,17 @@ detail = delta_table.detail()
 
 # Métricas importantes
 detail.select(
-    "numFiles",           # Número de archivos
+    "numFiles",           # Número of archivos
     "sizeInBytes",        # Tamaño total
-    "partitionColumns"    # Columnas de particionamiento
+    "partitionColumns"    # Columns of particionamiento
 ).show(truncate=False)
 
-# También puedes ver
+# También you can to see
 detail.select(
     "format",             # delta
-    "createdAt",          # Cuándo se creó
-    "minReaderVersion",   # Versión mínima reader
-    "minWriterVersion"    # Versión mínima writer
+    "createdAt",          # when se creó
+    "minReaderVersion",   # Version mínima reader
+    "minWriterVersion"    # Version mínima writer
 ).show(truncate=False)
 ```
 
@@ -49,11 +49,11 @@ detail.select(
 # Compactar todos los archivos
 delta_table.optimize().executeCompaction()
 
-# Ver resultado
+# to see result
 metrics = delta_table.optimize().executeCompaction()
 print(f"Files compacted: {metrics.metrics}")
 
-# Compactar solo partición específica
+# Compactar only partición específica
 delta_table.optimize() \
     .where("date = '2024-01-15'") \
     .executeCompaction()
@@ -67,39 +67,39 @@ delta_table.optimize() \
 **When to use:**
 - After many small appends
 - After streaming with micro-batches
-- Antes de queries heavy de analytics
+- Antes of queries heavy of analytics
 
 ### 3. Z-ORDER
 ```python
-# Z-ORDER por una columna
+# Z-ORDER by una column
 delta_table.optimize().executeZOrderBy("country")
 
-# Z-ORDER por múltiples columnas
+# Z-ORDER by múltIPles columns
 delta_table.optimize().executeZOrderBy("country", "date", "customer_id")
 
-# Z-ORDER en partición específica
+# Z-ORDER in partición específica
 delta_table.optimize() \
     .where("year = '2024' AND month = '01'") \
     .executeZOrderBy("country", "product_id")
 ```
 
 **When to use Z-ORDER:**
-- columns usadas frecuentemente en WHERE
-- columns con alta cardinalidad
-- Multiple filter columns in queries
-- NO en columns ya particionadas (redundante)
+- columns usadas frecuentemente in WHERE
+- columns with alta cardinalidad
+- MultIPle filter columns in queries
+- not in columns ya particionadas (networkundante)
 
-**Ejemplo:**
+**Example:**
 ```python
 # Query: SELECT * FROM table WHERE country = 'USA' AND date = '2024-01-15'
-# Z-ORDER por: country, date
+# Z-ORDER by: country, date
 delta_table.optimize().executeZOrderBy("country", "date")
 
-# Mejora: Z-ordering co-locates USA + 2024-01-15 data
-# Result: Data skipping lee menos archivos
+# Improvement: Z-ordering co-locates USA + 2024-01-15 data
+# Result: data skIPping lee less archivos
 ```
 
-### 4. Verificar mejoras
+### 4. Verificar improvements
 ```python
 # Comparar antes/después
 print("ANTES:")
@@ -114,20 +114,20 @@ delta_table = DeltaTable.forPath(spark, path)  # Refresh
 detail_after = delta_table.detail()
 detail_after.select("numFiles", "sizeInBytes").show()
 
-# Calcular mejora
+# Calcular improvement
 files_before = detail_before.select("numFiles").collect()[0][0]
 files_after = detail_after.select("numFiles").collect()[0][0]
-reduction = (1 - files_after/files_before) * 100
-print(f"📉 Reducción de archivos: {reduction:.1f}%")
+networkuction = (1 - files_after/files_before) * 100
+print(f"📉 Networkucción of archivos: {networkuction:.1f}%")
 ```
 
-### 5. Test de performance
+### 5. Test of performance
 ```python
 import time
 
 df = spark.read.format("delta").load(path)
 
-# Query 1: Sin optimización
+# Query 1: without optimización
 start = time.time()
 count1 = df.filter("country = 'USA' AND date = '2024-01-15'").count()
 time1 = time.time() - start
@@ -135,7 +135,7 @@ time1 = time.time() - start
 # OPTIMIZE + Z-ORDER
 delta_table.optimize().executeZOrderBy("country", "date")
 
-# Query 2: Con optimización
+# Query 2: with optimización
 df_optimized = spark.read.format("delta").load(path)
 start = time.time()
 count2 = df_optimized.filter("country = 'USA' AND date = '2024-01-15'").count()
@@ -152,20 +152,20 @@ from delta.tables import DeltaTable
 
 delta_table = DeltaTable.forPath(spark, path)
 
-# Ver historial de archivos
+# to see historial of archivos
 history = delta_table.history()
 print(f"Versiones: {history.count()}")
 
-# VACUUM con retention (default 7 días = 168 horas)
-delta_table.vacuum()  # Borra archivos > 7 días no referenciados
+# VACUUM with retention (default 7 días = 168 horas)
+delta_table.vacuum()  # Borra archivos > 7 días not referencedos
 
-# VACUUM más agresivo (30 días)
-delta_table.vacuum(24 * 30)  # 30 días en horas
+# VACUUM more agresivo (30 días)
+delta_table.vacuum(24 * 30)  # 30 días in horas
 
-# VACUUM todo (⚠️ SOLO PARA TESTING)
-# Deshabilitar check de retention
+# VACUUM everything (⚠️ only for TESTING)
+# Deshabilitar check of retention
 spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
-delta_table.vacuum(0)  # Borra TODO no referenciado en versión actual
+delta_table.vacuum(0)  # Borra everything not referencedo in version actual
 
 # Re-habilitar check
 spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "true")
@@ -173,15 +173,15 @@ spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "true")
 
 **⚠️ CAUTION with VACUUM:**
 - Delete physical files → You CANNOT Time Travel vacuumed versions
-- Puede romper operaciones concurrentes (usa retention adecuado)
+- he/she can romper operaciones concurrentes (usa retention adecuado)
 - In production: NEVER use vacuum(0), use 168+ hours
 
-**Ejemplo seguro:**
+**Example seguro:**
 ```python
-# Retener 30 días de history
+# Retener 30 días of history
 delta_table.vacuum(24 * 30)
 
-# O configurar globalmente
+# or configurar globalmente
 spark.conf.set(
     "spark.databricks.delta.deletedFileRetentionDuration",
     "interval 30 days"
@@ -194,45 +194,45 @@ spark.conf.set(
 
 ### Error 1: VACUUM muy agresivo
 ```
-AnalysisException: Are you sure you want to vacuum files with such a low retention period?
+AnalysisException: Are you sure you want to vacuum files with such to low retention period?
 ```
 **Solution:** Disable check (for testing only):
 ```python
 spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
 ```
 
-### Error 2: Z-ORDER en column particionada
+### Error 2: Z-ORDER in column particionada
 ```python
-# ❌ MAL - date ya es partition column
+# ❌ MAL - date ya is partition column
 delta_table.optimize().executeZOrderBy("date")
 
-# ✅ BIEN - Z-ORDER en otras columnas
+# ✅ BIEN - Z-ORDER in otras columns
 delta_table.optimize().executeZOrderBy("country", "customer_id")
 ```
 
-### Error 3: OPTIMIZE sin suficiente memoria
+### Error 3: OPTIMIZE without suficiente memory
 ```
 OutOfMemory: Not enough memory to execute compaction
 ```
 **Solution:** Optimize by partition:
 ```python
-# En lugar de
+# in lugar of
 delta_table.optimize().executeCompaction()
 
-# Hacer
+# to make
 for partition in partitions:
     delta_table.optimize() \
         .where(f"date = '{partition}'") \
         .executeCompaction()
 ```
 
-### Error 4: Data skipping no funciona
+### Error 4: data skIPping not funciona
 ```python
-# ❌ MAL - columna string sin Z-ORDER
-df.filter("description LIKE '%keyword%'")  # Full scan
+# ❌ MAL - column string without Z-ORDER
+df.filter("descrIPtion LIKE '%keyword%'")  # Full scan
 
-# ✅ BIEN - columna con Z-ORDER
-df.filter("country = 'USA'")  # Data skipping works
+# ✅ BIEN - column with Z-ORDER
+df.filter("country = 'USA'")  # data skIPping works
 ```
 
 ---
@@ -241,7 +241,7 @@ df.filter("country = 'USA'")  # Data skipping works
 
 ### Auto Optimize
 ```python
-# Habilitar auto OPTIMIZE en tabla
+# Habilitar auto OPTIMIZE in table
 spark.sql(f"""
     ALTER TABLE delta.`{path}`
     SET TBLPROPERTIES (
@@ -257,51 +257,51 @@ df.write.format("delta").mode("append").save(path)
 
 ### Optimized Writes
 ```python
-# Optimiza tamaño de archivos al escribir
+# Optimiza tamaño of archivos to the escribir
 df.write.format("delta") \
     .option("optimizeWrite", "true") \
     .mode("append") \
     .save(path)
 
-# Resultado: Archivos más grandes desde el principio
+# Result: Archivos more grandes desde el princIPio
 ```
 
-### Data Skipping Statistics
+### data SkIPping Statistics
 ```python
-# Ver statistics usadas para skipping
+# to see statistics usadas for skIPping
 detail = delta_table.detail()
 detail.select("numFiles", "statistics").show(truncate=False)
 
 # Statistics incluyen:
-# - numRecords: Registros por archivo
-# - minValues: Valores mínimos por columna
-# - maxValues: Valores máximos por columna
-# - nullCount: Conteo de nulls
+# - numRecords: Records by archivo
+# - minValues: Valores mínimos by column
+# - maxValues: Valores máximos by column
+# - nullCount: Conteo of nulls
 
-# Querying usa estas stats para skip archivos completos
+# Querying usa are stats for skIP archivos completos
 ```
 
-### Partition Pruning vs Data Skipping
+### Partition Pruning vs data SkIPping
 ```python
 # Partition Pruning: Elimina particiones completas
-# - Basado en estructura de directorios
+# - Basado in structure of directorios
 # - Muy eficiente, overhead mínimo
-df.filter("year = 2024")  # Pruning de carpetas
+df.filter("year = 2024")  # Pruning of carpetas
 
-# Data Skipping: Elimina archivos dentro de particiones
-# - Basado en statistics (min/max)
+# data SkIPping: Elimina archivos dentro of particiones
+# - Basado in statistics (min/max)
 # - Requiere leer metadata
-df.filter("country = 'USA'")  # Skipping de archivos
+df.filter("country = 'USA'")  # SkIPping of archivos
 
 # Combinación óptima
 df.filter("year = 2024 AND country = 'USA'")
 # 1. Pruning elimina years != 2024
-# 2. Skipping elimina files sin USA dentro de 2024
+# 2. SkIPping elimina files without USA dentro of 2024
 ```
 
 ### Bloom Filters (Advanced)
 ```python
-# Para columnas de alta cardinalidad (IDs, emails)
+# for columns of alta cardinalidad (IDs, emails)
 spark.sql(f"""
     ALTER TABLE delta.`{path}`
     SET TBLPROPERTIES (
@@ -311,19 +311,19 @@ spark.sql(f"""
     )
 """)
 
-# Queries por customer_id ahora usan Bloom Filter
+# Queries by customer_id ahora usan Bloom Filter
 df.filter("customer_id = '12345'")  # Muy rápido
 ```
 
 ---
 
-## 📊 Monitoring y Metrics
+## 📊 Monitoring and Metrics
 
 ### View OPTIMIZE metrics
 ```python
 result = delta_table.optimize().executeCompaction()
 
-# Acceder a métricas
+# Acceder to métricas
 metrics = result.metrics
 print(f"Files added: {metrics.get('numFilesAdded', 0)}")
 print(f"Files removed: {metrics.get('numFilesRemoved', 0)}")
@@ -343,25 +343,25 @@ print(f"  Bytes rewritten: {metrics.get('numBytesAdded', 0)}")
 
 ### Query Metrics
 ```python
-# Ver qué archivos se leyeron
+# to see what archivos se leyeron
 df = spark.read.format("delta").load(path)
 result = df.filter("country = 'USA'").count()
 
-# En Spark UI:
+# in Spark UI:
 # - "number of files read"
 # - "size of files read MB"
-# - "data skipping files pruned"
+# - "data skIPping files pruned"
 ```
 
 ---
 
-## ✅ Checklist de Completitud
+## ✅ Checklist of Completitud
 
-- [ ] Estado inicial muestra numFiles y sizeInBytes
-- [ ] OPTIMIZE reduces number of files
-- [ ] Z-ORDER se aplica correctamente a columns apropiadas
+- [ ] Estado inicial muestra numFiles and sizeInBytes
+- [ ] OPTIMIZE networkuces number of files
+- [ ] Z-ORDER se aplica correctamente to columns apropiadas
 - [ ] Status after optimization shows improvements
-- [ ] Test de performance muestra speedup
-- [ ] VACUUM ejecuta sin errores
+- [ ] Test of performance muestra speedup
+- [ ] VACUUM ejecuta without errores
 - [ ] Code handles retentionDurationCheck appropriately
-- [ ] No hay errors de memoria en OPTIMIZE
+- [ ] not there is errors of memory in OPTIMIZE

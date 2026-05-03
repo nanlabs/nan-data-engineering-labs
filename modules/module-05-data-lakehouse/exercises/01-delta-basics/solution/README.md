@@ -1,11 +1,11 @@
 # ✅ Solution - Exercise 01: Delta Basics
 
-Esta carpeta contiene las soluciones completas para el Ejercicio 01.
+this carpeta contiene las soluciones completas for el Exercise 01.
 
 ## 📁 Archivos
 
 - `01_create_table.py` - Crear table Delta particionada
-- `02_append_data.py` - Agregar datos con modo append
+- `02_append_data.py` - Agregar datas with modo append
 - `03_overwrite_partition.py`- Overwrite specific partition
 - `04_query_table.py` - queries SQL sobre table Delta
 
@@ -13,21 +13,21 @@ Esta carpeta contiene las soluciones completas para el Ejercicio 01.
 
 ### Option 1: From Jupyter
 
-1. Abre Jupyter Lab: http://localhost:8888
-2. Navega a `exercises/01-delta-basics/solution/`
+1. Abre Jupyter Lab: HTTP://localhost:8888
+2. Navega to `exercises/01-delta-basics/solution/`
 3. Abre cada archivo `.py`
 4. Run the code
 
 ### Option 2: From Container Terminal
 
 ```bash
-# Acceder al contenedor de Spark
+# Acceder to the contenedor of Spark
 docker exec -it module-05-spark-master bash
 
-# Navegar al directorio
+# Navegar to the directorio
 cd /opt/spark/work-dir/exercises/01-delta-basics/solution
 
-# Ejecutar scripts en orden
+# Ejecutar scrIPts in orden
 spark-submit --master local[2] 01_create_table.py
 spark-submit --master local[2] 02_append_data.py
 spark-submit --master local[2] 03_overwrite_partition.py
@@ -39,25 +39,25 @@ spark-submit --master local[2] 04_query_table.py
 ```bash
 docker exec -it module-05-spark-master bash -c "
   cd /opt/spark/work-dir/exercises/01-delta-basics/solution && \
-  for script in 01_*.py 02_*.py 03_*.py 04_*.py; do
+  for scrIPt in 01_*.py 02_*.py 03_*.py 04_*.py; do
     echo '======================================' && \
-    echo \"Ejecutando \$script\" && \
+    echo \"Ejecutando \$scrIPt\" && \
     echo '======================================' && \
-    spark-submit --master local[2] \$script && \
+    spark-submit --master local[2] \$scrIPt && \
     echo
   done
 "
 ```
 
-## 📚 Conceptos Clave Implementados
+## 📚 Conceptos Key Implementados
 
-### Script 01: Create Table
+### ScrIPt 01: Create Table
 
 **Conceptos**:
 - Delta Lake setup with Spark
-- Lectura de JSON con PySpark
+- Reading of JSON with PySpark
 - Basic transformations (to_timestamp, currentdate)
-- Escritura Delta con particionamiento
+- Escritura Delta with particionamiento
 
 **Key code**:
 ```python
@@ -68,7 +68,7 @@ df.write \
     .save("s3a://bronze/transactions_delta")
 ```
 
-### Script 02: Append Data
+### ScrIPt 02: Append data
 
 **Conceptos**:
 - Modo append vs overwrite
@@ -84,12 +84,12 @@ df.write \
     .save("s3a://bronze/transactions_delta")
 ```
 
-### Script 03: Overwrite Partition
+### ScrIPt 03: Overwrite Partition
 
 **Conceptos**:
-- replaceWhere para sobrescritura selectiva
-- Transformaciones condicionales con when()
-- Data integrity verification
+- replaceWhere for sobrescritura selectiva
+- Transformaciones condicionales with when()
+- data integrity verification
 - Partition pruning
 
 **Key code**:
@@ -101,13 +101,13 @@ df.write \
     .save(path)
 ```
 
-### Script 04: Query Table
+### ScrIPt 04: Query Table
 
 **Conceptos**:
-- Registro de tables Delta como SQL tables
+- Record of tables Delta como SQL tables
 - Spark SQL queries (GROUP BY, agregaciones, window functions)
 - Performance analysis with partitioning
-- DESCRIBE y metadata
+- DESCRIBE and metadata
 
 **Key code**:
 ```python
@@ -115,16 +115,16 @@ df.createOrReplaceTempView("transactions_delta")
 result = spark.sql("SELECT country, COUNT(*) FROM transactions_delta GROUP BY country")
 ```
 
-## 🎯 Resultados Esperados
+## 🎯 Results Esperados
 
-### After running all the scripts:
+### After running all the scrIPts:
 
-1. **table Delta creada** en `s3a://bronze/transactions_delta`
-   - 15,000 registros totales
+1. **table Delta creada** in `s3a://bronze/transactions_delta`
+   - 15,000 records totales
    - Partitioned by country
-   - 3+ versiones en transaction log
+   - 3+ versiones in transaction log
 
-2. **Estructura de archivos**:
+2. **Structure of archivos**:
    ```
    bronze/transactions_delta/
    ├── _delta_log/
@@ -139,24 +139,24 @@ result = spark.sql("SELECT country, COUNT(*) FROM transactions_delta GROUP BY co
    ```
 
 3. **Verificaciones exitosas**:
-   - Total de registros: 15,000
+   - Total of records: 15,000
    - Countries with partitions: 10-20
-   - Status "pending" en USA: 0 (todos cambiados a "expired")
+   - Status "pending" in USA: 0 (todos cambiados to "expinetwork")
    - Other countries: intact
 
 ## 🔍 Manual Verification
 
-Puedes verificar los resultados manualmente con:
+you can verificar los results manualmente with:
 
 ```python
 from pyspark.sql import SparkSession
-from delta import configure_spark_with_delta_pip
+from delta import configure_spark_with_delta_pIP
 from delta.tables import DeltaTable
 
 builder = SparkSession.builder.appName("Verify")
-spark = configure_spark_with_delta_pip(builder).getOrCreate()
+spark = configure_spark_with_delta_pIP(builder).getOrCreate()
 
-# Leer tabla
+# Leer table
 df = spark.read.format("delta").load("s3a://bronze/transactions_delta")
 
 # Verificaciones
@@ -172,32 +172,32 @@ delta_table.history().show(truncate=False)
 
 With the data from this exercise (15K records), you should see:
 
-- **Query con partition pruning** (country='USA'): ~0.5-1s
-- **Query sin partition pruning** (status='completed'): ~1-2s
+- **Query with partition pruning** (country='USA'): ~0.5-1s
+- **Query without partition pruning** (status='completed'): ~1-2s
 - **Speedup**: ~2x faster with partitioning
 
 In production with millions of records, the speedup can be **10-100x**.
 
 ## 🎓 Lo que Aprendiste
 
-✅ Crear y configurar tables Delta Lake  
+✅ Crear and configurar tables Delta Lake  
 ✅ Operaciones ACID (append, overwrite)  
-✅ Particionamiento para performance  
-✅ replaceWhere para updates selectivos  
+✅ Particionamiento for performance  
+✅ replaceWhere for updates selectivos  
 ✅ Spark SQL sobre tables Delta  
-✅ Transaction log y versionado  
+✅ Transaction log and versionado  
 ✅ Window functions and advanced analysis
 
 ## 🚀 Next Steps
 
 Congratulations! You have completed the first exercise.
 
-Ahora puedes:
-1. Experimentar con tus propias queries
+Ahora you can:
+1. Experimentar with tus propias queries
 2. Try different partition sizes
-3. Continuar con **Ejercicio 02: Medallion Architecture**
+3. Continuar with **Exercise 02: Medallion Architecture**
 4. Explore Time Travel (next exercise)
 
 ---
 
-**Questions?** Check the [README principal](../README.md) or query the [hints](../hints.md).
+**Questions?** Check the [README princIPal](../README.md) or query the [hints](../hints.md).

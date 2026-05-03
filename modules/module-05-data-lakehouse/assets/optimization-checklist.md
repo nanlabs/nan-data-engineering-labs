@@ -6,13 +6,13 @@
 
 - [ ] **Problem**: Too many small files (<128MB)
   - **Yesntoma**: Queries lentos, alto overhead
-  - **Solution**:`OPTIMIZE` para compactar
+  - **Solution**:`OPTIMIZE` for compactar
   ```python
   delta_table.optimize().executeCompaction()
   ```
 
-- [ ] **Problema**: Archivos muy grandes (>1GB)
-  - **Yesntoma**: Lentitud en operaciones paralelas
+- [ ] **Problem**: Archivos muy grandes (>1GB)
+  - **Yesntoma**: Lentitud in operaciones paralelas
   - **Solution**: Repartition before writing
   ```python
   df.repartition(100).write.format("delta").save(path)
@@ -29,36 +29,36 @@
   # ✅ Bueno: Usa partición
   df.filter("date = '2024-01-15' AND country = 'USA'")
   
-  # ❌ Malo: No usa partición
+  # ❌ Malo: not usa partición
   df.filter("amount > 1000")
   ```
 
-- [ ] **Evitar**: > 10,000 particiones por table
+- [ ] **Evitar**: > 10,000 particiones by table
 
-### 3. Z-Ordering (Data Skipping)
+### 3. Z-Ordering (data SkIPping)
 
-- [ ] **Aplicar a**: columns de filtros frecuentes (no particiones)
+- [ ] **Aplicar to**: columns of filters frecuentes (not particiones)
   ```python
   delta_table.optimize().executeZOrderBy("user_id", "product_id")
   ```
 
-- [ ] **No aplicar a**: 
-  - columns de alta cardinalidad (>100M valores)
+- [ ] **not aplicar to**: 
+  - columns of alta cardinalidad (>100M valores)
   - columns que nunca se filtran
 
 - [ ] **Reexecution**: Every N days or after mass writes
 
-### 4. Data Skipping
+### 4. data SkIPping
 
-- [ ] **Habilitar**: Statistics collection (habilitado por default)
-- [ ] **Verificar**: Stats en _delta_log
+- [ ] **Habilitar**: Statistics collection (habilitado by default)
+- [ ] **Verificar**: Stats in _delta_log
   ```python
   delta_table.detail().select("numFiles", "sizeInBytes", "numRecords").show()
   ```
 
 ### 5. Vacuum
 
-- [ ] **Antes de VACUUM**: Confirmar retention apropiado
+- [ ] **Antes of VACUUM**: Confirmar retention apropiado
   ```python
   # Retener 7 días (168 horas)
   delta_table.vacuum(168)
@@ -82,16 +82,16 @@
 
 ### 7. Schema Optimization
 
-- [ ] **Usar tipos precisos**:
-  - DecimalType en lugar de Double para dinero
-  - DateType en lugar de StringType para fechas
-  - IntegerType en lugar de LongType cuando sea suficiente
+- [ ] **Usar tIPos precisos**:
+  - DecimalType in lugar of Double for dinero
+  - DateType in lugar of StringType for fechas
+  - IntegerType in lugar of LongType when sea suficiente
 
-- [ ] **Normalizar**: columns con muchos nulls en tables separadas
+- [ ] **Normalizar**: columns with muchos nulls in tables separadas
 
 ### 8. Write Optimization
 
-- [ ] **Batch size**: 10,000-100,000 registros por write ideal
+- [ ] **Batch size**: 10,000-100,000 records by write ideal
 - [ ] **Auto Optimize** (Databricks):
   ```sql
   ALTER TABLE events SET TBLPROPERTIES (
@@ -102,9 +102,9 @@
 
 ### 9. Query Optimization
 
-- [ ] **Pushdown filters**: Filtrar antes de joins
+- [ ] **Pushdown filters**: Filtrar antes of joins
 - [ ] **Select specific columns**: Evitar `SELECT *`
-- [ ] **Broadcast small tables**: Para joins
+- [ ] **Broadcast small tables**: for joins
   ```python
   from pyspark.sql.functions import broadcast
   large_df.join(broadcast(small_df), "id")
@@ -112,22 +112,22 @@
 
 ### 10. Monitoring
 
-- [ ] **Metrics a trackear**:
+- [ ] **Metrics to trackear**:
   - Query execution time
-  - Data skipping ratio
+  - data skIPping ratio
   - Number of files per table
   - Average file size
   - Partition count
 
   ```python
-  # Ver estadísticas
+  # to see estadísticas
   delta_table.detail().select(
       "numFiles", 
       "sizeInBytes", 
       "numRecords"
   ).show()
   
-  # Ver historial de optimization
+  # to see historial of optimization
   delta_table.history().filter("operation = 'OPTIMIZE'").show()
   ```
 
@@ -137,27 +137,27 @@
 |---------|--------|
 | File size promedio | 128MB - 512MB |
 | Particiones | 100 - 5,000 |
-| Files por partition | < 100 |
+| Files by partition | < 100 |
 | Query latency (simple) | < 5s |
 | Query latency (complex) | < 30s |
-| Data skipping % | > 80% |
+| data skIPping % | > 80% |
 
 ## 🔍 Troubleshooting
 
 ### Query lento?
-1. Check si usa partition pruning
+1. Check if usa partition pruning
 2. Check number of files (ejecutar OPTIMIZE?)
 3. Check if Z-ORDER would help
-4. Check execution plan con `.explain()`
+4. Check execution plan with `.explain()`
 
 ### Writes lentos?
 1. Check batch size (too small?)
 2. Check number of write partitions
 3. Check if automatic Z-ORDER is active
-4. Consider disabling merge schema si no necesario
+4. Consider disabling merge schema if not necesario
 
 ### Storage growing fast?
 1. Ejecutar VACUUM
 2. Check retention policy
-3. Check si hay duplicate data
+3. Check if there is duplicate data
 4. Consider archiving old partitions

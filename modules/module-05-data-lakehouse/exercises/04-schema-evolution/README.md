@@ -1,18 +1,18 @@
-# Ejercicio 04: Schema Evolution
+# Exercise 04: Schema Evolution
 
-## 🎯 Objetivo
-Manejar cambios de schema sin romper aplicaciones existentes.
+## 🎯 Objective
+Manejar changes of schema without romper aplicaciones existentes.
 
-**Dificultad**: ⭐⭐⭐⭐ Avanzado | **Tiempo**: 30-45 minutos
+**Difficulty**: ⭐⭐⭐⭐ Avanzado | **Tiempo**: 30-45 minutos
 
 ## 📋Tareas
 
 1. **Add Column**: Agregar `customer_segment` (VIP/Regular/New)
-2. **Change Type**: Cambiar `amount` de Float a Decimal(10,2)
-3. **Rename Column**: Renombrar `user_id` a `customer_id`
+2. **Change Type**: Cambiar `amount` of Float to Decimal(10,2)
+3. **Rename Column**: Renombrar `user_id` to `customer_id`
 4. **Drop Column**: Eliminar column obsoleta
 
-## ✅ Comandos Clave
+## ✅ Commands Key
 
 ```python
 # Merge schema on write
@@ -27,6 +27,6 @@ spark.sql("ALTER TABLE delta.`path` RENAME COLUMN user_id TO customer_id")
 
 ## 🎓 Conceptos
 
-- **Schema enforcement**: Delta valida tipos
-- **Schema evolution**: Permite cambios compatibles  
+- **Schema enforcement**: Delta valida tIPos
+- **Schema evolution**: Permite changes compatibles  
 - **Backward compatibility**: Lectores antiguos funcionan

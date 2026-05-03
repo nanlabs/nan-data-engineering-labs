@@ -1,18 +1,18 @@
-# Ejercicio 06: Apache Iceberg Comparison
+# Exercise 06: Apache Iceberg Comparison
 
-## 🎯 Objetivo
+## 🎯 Objective
 Compare Delta Lake vs Apache Iceberg with practical examples.
 
-**Dificultad**: ⭐⭐⭐⭐ Avanzado | **Tiempo**: 45 minutos
+**Difficulty**: ⭐⭐⭐⭐ Avanzado | **Tiempo**: 45 minutos
 
 ## 📋 Tareas
 
-1. Crear misma table en Delta y Iceberg
+1. Crear misma table in Delta and Iceberg
 2. Comparar operaciones: append, update, time travel
 3. Comparar performance
 4. Comparar metadata storage
 
-## ✅ Comandos Iceberg
+## ✅ Commands Iceberg
 
 ```python
 # Write Iceberg

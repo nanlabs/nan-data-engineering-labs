@@ -1,4 +1,4 @@
-# Hints - Ejercicio 02: Medallion Architecture
+# Hints - Exercise 02: Medallion Architecture
 
 ## Bronze Layer
 

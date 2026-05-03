@@ -8,10 +8,10 @@
 | **Time Travel** | ✅ versionAsOf | ✅ snapshot-id | 🤝 Tie |
 | **Schema Evolution** | ✅ mergeSchema | ✅ Schema evolution | 🤝 Tie |
 | **Partition Evolution** | ⚠️ Limited | ✅ **Hidden partitioning** | 🏆 Iceberg |
-| **Data Skipping** | ✅ Z-Ordering | ⚠️ Manual sorting | 🏆 Delta |
+| **data SkIPping** | ✅ Z-Ordering | ⚠️ Manual sorting | 🏆 Delta |
 | **Multi-Engine Support** | ⚠️ Spark-focused | ✅ **Spark, Trino, Presto, Flink** | 🏆 Iceberg |
 | **Governance** | Databricks | Apache Foundation | 🏆 Iceberg (open) |
-| **Metadata Performance** | ✅ Fast (JSON log) | ⚠️ Slower (multiple files) | 🏆 Delta |
+| **Metadata Performance** | ✅ Fast (JSON log) | ⚠️ Slower (multIPle files) | 🏆 Delta |
 | **Optimization** | ✅ OPTIMIZE command | ⚠️ Manual | 🏆 Delta |
 | **Streaming Support** | ✅ Excellent | ⚠️ Limited | 🏆 Delta |
 | **Cloud Native** | ✅ S3, ADLS, GCS | ✅ S3, ADLS, GCS | 🤝 Tie |
@@ -19,22 +19,22 @@
 
 ## 🎯 Use Cases
 
-### Usa Delta Lake cuando:
+### Usa Delta Lake when:
 
-1. **Databricks Ecosystem**: Tu stack principal es Databricks
-2. **Spark-Heavy**: Tu processing es principalmente PySpark
-3. **Z-Ordering Critical**: Necesitas data skipping avanzado
-4. **Streaming**: Procesamiento de streams continuo
-5. **Simplicity**: You want a simpler setup
+1. **Databricks Ecosystem**: Tu stack princIPal is Databricks
+2. **Spark-Heavy**: Tu processing is princIPalmente PySpark
+3. **Z-Ordering Critical**: Necesitas data skIPping avanzado
+4. **Streaming**: Procesamiento of streams continuo
+5. **Simplicity**: You want to simpler setup
 6. **Optimize Write**: You need automatic compaction
 
-### Usa Apache Iceberg cuando:
+### Usa Apache Iceberg when:
 
 1. **Multi-Engine**: You use Trino, Presto, Flink in addition to Spark
-2. **Partition Evolution**: Cambias estructura de particiones frecuentemente
+2. **Partition Evolution**: Cambias structure of particiones frecuentemente
 3. **Open Governance**: Prefieres Apache Foundation vs empresa
-4. **Cross-Platform**: Integration with multiple platforms
-5. **Analytics Engines**: Heavy use de query engines como Trino
+4. **Cross-Platform**: Integration with multIPle platforms
+5. **Analytics Engines**: Heavy use of query engines como Trino
 6. **Future-Proofing**: Evitar vendor lock-in
 
 ## 💻 Code Comparison
@@ -155,8 +155,8 @@ Delta Table
 
 **Pros**:
 - Simple and fast transaction log
-- Lectura secuencial del log
-- Checkpoint files para performance
+- Reading secuencial of the log
+- Checkpoint files for performance
 
 ### Iceberg Architecture
 
@@ -173,7 +173,7 @@ Iceberg Table
 
 **Pros**:
 - More detailed metadata
-- Partition evolution sin reescritura
+- Partition evolution without reescritura
 - Hidden partitioning (abstraction)
 
 ## 📈 Performance Benchmarks
@@ -213,7 +213,7 @@ df = spark.read.format("iceberg").load("catalog.db.table")
 df.write.format("delta").save("/delta/path")
 ```
 
-⚠️ **Note**: Time Travel history no se preserva en migration
+⚠️ **Note**: Time Travel history not se preserva in migration
 
 ## 💡 Recommendations
 
@@ -224,15 +224,15 @@ df.write.format("delta").save("/delta/path")
 
 ### For Startups
 - **Quick MVP**: Delta Lake (simpler)
-- **Future flexibility**: Iceberg (menos vendor lock-in)
+- **Future flexibility**: Iceberg (less vendor lock-in)
 
-### For Data Engineers
+### For data Engineers
 - **Learn both**: Both are industry standard
-- **Lakehouse pattern**: Aplica con ambos
-- **Skills transferable**: Conceptos son similares
+- **Lakehouse pattern**: Aplica with ambos
+- **Skills transferable**: Conceptos are similares
 
 ## 📚 Resources
 
-- Delta Lake: https://delta.io
-- Apache Iceberg: https://iceberg.apache.org
-- Lakehouse Benchmarking: https://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison
+- Delta Lake: HTTPs://delta.io
+- Apache Iceberg: HTTPs://iceberg.apache.org
+- Lakehouse Benchmarking: HTTPs://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison

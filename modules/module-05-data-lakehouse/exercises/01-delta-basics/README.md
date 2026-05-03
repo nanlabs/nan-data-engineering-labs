@@ -1,42 +1,42 @@
-# Ejercicio 01: Delta Lake Basics
+# Exercise 01: Delta Lake Basics
 
-## 🎯 Objetivo
+## 🎯 Objective
 
-Aprender los fundamentos de Delta Lake:
+Aprender los fundamentos of Delta Lake:
 - Crear tables Delta desde DataFrames
 - Basic operations: append, overwrite
-- Lectura de tables Delta
+- Reading of tables Delta
 - Basic queries with Spark SQL
 
 **Difficulty**: ⭐ Basic
-**Tiempo Estimado**: 45-60 minutos  
-**Prerequisitos**: Docker y Docker Compose instalados
+**Estimated Time**: 45-60 minutos  
+**Prerequisitos**: Docker and Docker Compose instalados
 
 ---
 
-## 📋Exercise Description
+## 📋Exercise DescrIPtion
 
-Your company is migrating from Parquet to Delta Lake as a storage format. You need:
+Your company is migrating from Parquet to Delta Lake as to storage format. You need:
 
-1. **Ingestar datos iniciales** de transactions a una table Delta
-2. **Agregar nuevos registros** con modo append
-3. **Overwrite data** from a specific partition
-4. **Consultar la table** con Spark SQL
-5. **Verificar metadatos** de la table Delta
+1. **Ingestar datas iniciales** of transactions to una table Delta
+2. **Agregar nuevos records** with modo append
+3. **Overwrite data** from to specific partition
+4. **Queryr la table** with Spark SQL
+5. **Verificar metadatas** of la table Delta
 
 ---
 
-## 🗂️ Estructura del Ejercicio
+## 🗂️ Structure of the Exercise
 
 ```
 01-delta-basics/
-├── README.md (este archivo)
+├── README.md (this archivo)
 ├── hints.md
 ├── starter/
-│   ├── 01_create_table.py          # Crear tabla Delta inicial
-│   ├── 02_append_data.py            # Agregar registros
+│   ├── 01_create_table.py          # Crear table Delta inicial
+│   ├── 02_append_data.py            # Agregar records
 │   ├── 03_overwrite_partition.py   # Sobrescribir partición
-│   ├── 04_query_table.py            # Consultas SQL
+│   ├── 04_query_table.py            # Querys SQL
 │   └── requirements.txt
 ├── solution/
 │   ├── 01_create_table.py
@@ -52,7 +52,7 @@ Your company is migrating from Parquet to Delta Lake as a storage format. You ne
 
 ## 🚀 Setup
 
-### 1. Iniciar la infraestructura
+### 1. Iniciar la infrastructure
 
 ```bash
 cd ../../infrastructure
@@ -65,25 +65,25 @@ docker-compose ps
 ```
 
 You should see:
-- `spark-master` (puerto 8080)
-- `spark-worker` (puerto 8081)
-- `minio` (puertos 9000, 9001)
-- `hive-metastore` (puerto 9083)
-- `jupyter` (puerto 8888)
+- `spark-master` (port 8080)
+- `spark-worker` (port 8081)
+- `minio` (ports 9000, 9001)
+- `hive-metastore` (port 9083)
+- `jupyter` (port 8888)
 
-### 2. Acceder a Jupyter
+### 2. Acceder to Jupyter
 
-Abre tu navegador en: http://localhost:8888
+Abre tu navegador in: HTTP://localhost:8888
 
-No requiere password (configurado para desarrollo local).
+not requiere password (configurado for desarrolelo local).
 
-### 3. Ejecutar los scripts
+### 3. Ejecutar los scrIPts
 
-Puedes ejecutar los scripts de dos formas:
+you can ejecutar los scrIPts of dos formas:
 
-**Option A: From Jupyter Notebook**
-- Carga cada script `.py` en una nueva celda
-- Ejecuta celda por celda
+**Option to: From Jupyter Notebook**
+- Carga cada scrIPt `.py` in una nueva celda
+- Ejecuta celda by celda
 
 **Option B: From the container terminal**
 ```bash
@@ -100,50 +100,50 @@ spark-submit --master local[2] 01_create_table.py
 
 **Archivo**: `starter/01_create_table.py`
 
-1. Lee el archivo `data/raw/transactions.json` (primeras 10,000 rows)
-2. Convierte timestamps a formato datetime
-3. Agrega una column `ingestion_date` con la fecha actual
-4. Guarda como table Delta en `s3a://bronze/transactions_delta`
-5. Particiona por `country`
+1. Lee the file `data/raw/transactions.json` (primeras 10,000 rows)
+2. Convierte timestamps to formato datetime
+3. Agrega una column `ingestion_date` with la fecha actual
+4. Guarda como table Delta in `s3a://bronze/transactions_delta`
+5. Particiona by `country`
 
 **Expectativas**:
-- table creada en formato Delta
+- table creada in formato Delta
 - Partitioned by country
-- Metadatos verificables
+- Metadatas verificables
 
-### Tarea 2: Agregar Nuevos Registros
+### Tarea 2: Agregar Nuevos Records
 
 **Archivo**: `starter/02_append_data.py`
 
-1. Lee las siguientes 5,000 transactions del JSON
-2. Procesa igual que en Tarea 1
-3. Agrega los datos a la table existente usando `.mode("append")`
-4. Verifica que el total de registros sea 15,000
+1. Lee las siguientes 5,000 transactions of the JSON
+2. Procesa igual que in Tarea 1
+3. Agrega los datas to la table existente usando `.mode("append")`
+4. Verifica que el total of records sea 15,000
 
 **Expectativas**:
-- Append exitoso sin duplicar datos
-- Total de registros correcto
-- Sin sobrescribir datos existentes
+- Append exitoso without duplicar datas
+- Total of records correcto
+- without sobrescribir datas existentes
 
 ### Task 3: Overwrite Partition
 
 **Archivo**: `starter/03_overwrite_partition.py`
 
-1. Read data from a specific country (ex: "USA")
-2. Modifica el campo `status` de "pending" a "expired"
+1. Read data from to specific country (ex: "USA")
+2. Modifica el campo `status` of "pending" to "expinetwork"
 3. Overwrite only that country's partition using:
    ```python
    .mode("overwrite")
    .option("replaceWhere", "country = 'USA'")
    ```
-4. Verifica que otras particiones no se afectaron
+4. Verifica que otras particiones not se afectaron
 
 **Expectativas**:
 - Only the specified partition is overwritten
 - Otras particiones intactas
-- Cambios reflejados en querys
+- Changes reflejados in querys
 
-### Tarea 4: Consultar con Spark SQL
+### Tarea 4: Queryr with Spark SQL
 
 **Archivo**: `starter/04_query_table.py`
 
@@ -157,7 +157,7 @@ Ejecuta las siguientes querys SQL sobre la table Delta:
    ORDER BY total DESC
    ```
 
-2. **transactions por status**:
+2. **transactions by status**:
    ```sql
    SELECT status, COUNT(*) as count, 
           AVG(amount) as avg_amount
@@ -173,7 +173,7 @@ Ejecuta las siguientes querys SQL sobre la table Delta:
    LIMIT 10
    ```
 
-4. **transactions por mes**:
+4. **transactions by mes**:
    ```sql
    SELECT DATE_TRUNC('month', timestamp) as month,
           COUNT(*) as transactions,
@@ -185,7 +185,7 @@ Ejecuta las siguientes querys SQL sobre la table Delta:
 
 **Expectativas**:
 - Todas las queries ejecutan correctamente
-- Resultados guardados en DataFrames
+- Results guardados in DataFrames
 - Reasonable execution times (<5 seconds)
 
 ---
@@ -194,35 +194,35 @@ Ejecuta las siguientes querys SQL sobre la table Delta:
 
 Your implementation must:
 
-1. **Crear table Delta** con particionamiento correcto
-2. **Append funcionando** sin duplicados
+1. **Crear table Delta** with particionamiento correcto
+2. **Append funcionando** without duplicados
 3. **Partition overwrite** without affecting others
-4. **Queries SQL** devolviendo resultados correctos
+4. **Queries SQL** devolviendo results correctos
 5. **Verificaciones**:
    - `_delta_log/` directory existe
    - Parquet files in subdirectories by country
-   - Transaction log has multiple versions
+   - Transaction log have multIPle versions
 
 ### Quick Verification
 
-Run this script to validate your implementation:
+Run this scrIPt to validate your implementation:
 
 ```python
 from delta.tables import DeltaTable
 
-# Verificar que la tabla existe
+# Verificar que la table existe
 delta_table = DeltaTable.forPath(spark, "s3a://bronze/transactions_delta")
 
-# Ver historial de versiones
+# to see historial of versiones
 history = delta_table.history()
 print(f"Versiones: {history.count()}")
 
-# Debe tener al menos 3 versiones (create, append, overwrite)
+# Debe to have to the less 3 versiones (create, append, overwrite)
 assert history.count() >= 3, "Faltan operaciones"
 
-# Verificar registros
+# Verificar records
 total = spark.read.format("delta").load("s3a://bronze/transactions_delta").count()
-print(f"Total registros: {total}")
+print(f"Total records: {total}")
 
 # Verificar particiones
 partitions = spark.read.format("delta") \
@@ -235,18 +235,18 @@ print("✅ Validación exitosa!")
 
 ---
 
-## 🎓 Conceptos Clave
+## 🎓 Conceptos Key
 
 ### Formato Delta Lake
 
-Delta Lake almacena datos en Parquet + transaction log:
+Delta Lake almacena datas in Parquet + transaction log:
 
 ```
 bronze/transactions_delta/
 ├── _delta_log/
-│   ├── 00000000000000000000.json  # Versión 0 (create)
-│   ├── 00000000000000000001.json  # Versión 1 (append)
-│   ├── 00000000000000000002.json  # Versión 2 (overwrite)
+│   ├── 00000000000000000000.json  # Version 0 (create)
+│   ├── 00000000000000000001.json  # Version 1 (append)
+│   ├── 00000000000000000002.json  # Version 2 (overwrite)
 │   └── _last_checkpoint
 ├── country=USA/
 │   ├── part-00000-xxx.snappy.parquet
@@ -259,7 +259,7 @@ bronze/transactions_delta/
 
 ### Transaction Log
 
-Each operation creates a new entry in`_delta_log/`:
+Each operation creates to new entry in`_delta_log/`:
 
 ```json
 {
@@ -274,24 +274,24 @@ Each operation creates a new entry in`_delta_log/`:
 }
 ```
 
-### Modos de Escritura
+### Modos of Escritura
 
 | Modo | Comportamiento |
 |------|----------------|
-| `append` | Agrega datos sin tocar existentes |
+| `append` | Agrega datas without tocar existentes |
 | `overwrite` | Reemplaza TODA la table |
 | `overwrite` + `replaceWhere`| Replace only partitions that meet the condition |
-| `ignore` | No escribe si la table ya existe |
-| `error` | Falla si la table ya existe (default) |
+| `ignore` | not escribe if la table ya existe |
+| `error` | Falla if la table ya existe (default) |
 
 ---
 
 ## 📚 resources
 
-- [Delta Lake Documentation](https://docs.delta.io/)
-- [PySpark Delta API](https://docs.delta.io/latest/api/python/index.html)
-- [Delta Lake Quickstart](https://docs.delta.io/latest/quick-start.html)
-- [Transaction Log Protocol](https://github.com/delta-io/delta/blob/master/PROTOCOL.md)
+- [Delta Lake Documentation](HTTPs://docs.delta.io/)
+- [PySpark Delta API](HTTPs://docs.delta.io/latest/api/python/index.html)
+- [Delta Lake Quickstart](HTTPs://docs.delta.io/latest/quick-start.html)
+- [Transaction Log Protocol](HTTPs://github.com/delta-io/delta/blob/master/PROTOCOL.md)
 
 ---
 
@@ -306,16 +306,16 @@ docker exec -it module-05-minio mc ls local/bronze
 
 ### Error: "Java heap space"
 
-Aumenta memoria del Spark worker en `docker-compose.yml`:
+Aumenta memory of the Spark worker in `docker-compose.yml`:
 ```yaml
-SPARK_WORKER_MEMORY: 4g  # Aumentar a 8g
+SPARK_WORKER_MEMORY: 4g  # Aumentar to 8g
 ```
 
 ### Slow queries
 
 Verify that the data is partitioned correctly:
 ```python
-# Ver distribución de particiones
+# to see distribución of particiones
 spark.read.format("delta") \
     .load("s3a://bronze/transactions_delta") \
     .groupBy("country").count().show()
@@ -325,9 +325,9 @@ spark.read.format("delta") \
 
 ## 🎯 Next Steps
 
-Una vez completado este ejercicio:
-1. ✅ Continuar con **Ejercicio 02: Medallion Architecture**
-2. Explorar el transaction log con `delta_table.history()`
-3. Experimentar con `df.repartition()` antes de escribir
+Una vez completado this exercise:
+1. ✅ Continuar with **Exercise 02: Medallion Architecture**
+2. Explorar el transaction log with `delta_table.history()`
+3. Experimentar with `df.repartition()` antes of escribir
 
 Good luck! 🚀

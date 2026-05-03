@@ -1,6 +1,6 @@
 # Delta Lake Cheatsheet
 
-## 📝 Comandos Esenciales
+## 📝 Commands Esenciales
 
 ### Crear table
 
@@ -8,10 +8,10 @@
 # Escribir DataFrame como Delta
 df.write.format("delta").mode("overwrite").save("/path/to/table")
 
-# Con particiones
+# with particiones
 df.write.format("delta").partitionBy("country", "date").save("/path")
 
-# Con opciones
+# with opciones
 df.write.format("delta") \
     .option("mergeSchema", "true") \
     .option("overwriteSchema", "true") \
@@ -25,12 +25,12 @@ df.write.format("delta") \
 # Leer Delta table
 df = spark.read.format("delta").load("/path/to/table")
 
-# Leer versión específica (Time Travel)
+# Leer version específica (Time Travel)
 df = spark.read.format("delta") \
     .option("versionAsOf", 2) \
     .load("/path")
 
-# Leer por timestamp
+# Leer by timestamp
 df = spark.read.format("delta") \
     .option("timestampAsOf", "2024-01-15 10:00:00") \
     .load("/path")
@@ -64,16 +64,16 @@ delta_table.alias("target").merge(
 }).execute()
 ```
 
-### Metadatos
+### Metadatas
 
 ```python
-# Ver historial de versiones
+# to see historial of versiones
 delta_table.history().show()
 
-# Ver detalles de tabla
+# to see detalles of table
 delta_table.detail().show()
 
-# Ver archivos
+# to see archivos
 delta_table.toDF().show()
 ```
 
@@ -96,13 +96,13 @@ delta_table.detail().select("numFiles", "sizeInBytes").show()
 ### Schema Evolution
 
 ```python
-# Permitir agregar columnas
+# Permitir agregar columns
 df.write.format("delta") \
     .mode("append") \
     .option("mergeSchema", "true") \
     .save("/path")
 
-# Permitir cambios de schema completos
+# Permitir changes of schema completos
 df.write.format("delta") \
     .mode("overwrite") \
     .option("overwriteSchema", "true") \
@@ -112,7 +112,7 @@ df.write.format("delta") \
 ### SQL
 
 ```sql
--- Crear tabla
+-- Crear table
 CREATE TABLE events USING DELTA LOCATION '/path/to/table';
 
 -- Time Travel
@@ -129,17 +129,17 @@ VACUUM events RETAIN 168 HOURS;
 DESCRIBE HISTORY events;
 ```
 
-## 🔥 Tips Pro
+## 🔥 TIPs Pro
 
-1. **Partitioning**: Usar columns con cardinalidad media (country, date)
-2. **Z-Ordering**: Aplicar a columns de filtros frecuentes
-3. **Vacuum**: Be careful, it eliminates historical Time Travel
-4. **mergeSchema**: Solo para esquemas compatibles (no breaking changes)
+1. **Partitioning**: Usar columns with cardinalidad media (country, date)
+2. **Z-Ordering**: Aplicar to columns of filters frecuentes
+3. **Vacuum**: Be careful, it elimiNATes historical Time Travel
+4. **mergeSchema**: only for esquemas compatibles (not breaking changes)
 5. **OPTIMIZE**: Run after many small writes
 
-## ⚠️ Advertencias
+## ⚠️ Warnings
 
-- VACUUM borra archivos necesarios para Time Travel
-- overwriteSchema puede romper lectores existentes
-- Z-Ordering es costoso, usar solo cuando necesario
+- VACUUM borra archivos necesarios for Time Travel
+- overwriteSchema he/she can romper lectores existentes
+- Z-Ordering is costoso, usar only when necesario
 - Partitions with many unique values ​​cause "small files problem"

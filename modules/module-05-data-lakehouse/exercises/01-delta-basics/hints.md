@@ -1,35 +1,35 @@
-# 💡 Hints - Ejercicio 01: Delta Basics
+# 💡 Hints - Exercise 01: Delta Basics
 
-Este archivo contiene pistas progresivas para ayudarte a completar el ejercicio. **Intenta resolver cada tarea sin mirar las pistas primero**. Si te atascas, revela las pistas gradualmente.
+this archivo contiene pistas progresivas for helprte to completar el exercise. **Intenta resolver cada tarea without mirar las pistas primero**. if te atascas, revela las pistas gradualmente.
 
 ---
 
 ## 🎯 Tarea 1: Crear table Delta
 
-### Hint 1: Configurar SparkSession con Delta
+### Hint 1: Configurar SparkSession with Delta
 
 <details>
-<summary>Click para revelar Hint 1</summary>
+<summary>Click for revelar Hint 1</summary>
 
-Para configurar Spark con Delta Lake, necesitas:
+for configurar Spark with Delta Lake, necesitas:
 ```python
-from delta import configure_spark_with_delta_pip
+from delta import configure_spark_with_delta_pIP
 
 builder = SparkSession.builder \
     .appName("Mi App") \
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
 
-spark = configure_spark_with_delta_pip(builder).getOrCreate()
+spark = configure_spark_with_delta_pIP(builder).getOrCreate()
 ```
 </details>
 
 ### Hint 2: Read JSON with limit
 
 <details>
-<summary>Click para revelar Hint 2</summary>
+<summary>Click for revelar Hint 2</summary>
 
-Para leer solo las primeras 10,000 rows:
+for leer only las primeras 10,000 rows:
 ```python
 df = spark.read.json("path/to/file.json").limit(10000)
 ```
@@ -38,9 +38,9 @@ df = spark.read.json("path/to/file.json").limit(10000)
 ### Hint 3: Convertir timestamp
 
 <details>
-<summary>Click para revelar Hint 3</summary>
+<summary>Click for revelar Hint 3</summary>
 
-The timestamp field comes as a string. Convert it:
+The timestamp field comes as to string. Convert it:
 ```python
 from pyspark.sql.functions import to_timestamp
 
@@ -56,9 +56,9 @@ df = df.withColumn("timestamp", to_timestamp(col("timestamp"), "yyyy-MM-dd HH:mm
 ### Hint 4: Add ingestion date
 
 <details>
-<summary>Click para revelar Hint 4</summary>
+<summary>Click for revelar Hint 4</summary>
 
-Usa `current_date()` para agregar la fecha actual:
+Usa `current_date()` for agregar la fecha actual:
 ```python
 from pyspark.sql.functions import current_date
 
@@ -69,9 +69,9 @@ df = df.withColumn("ingestion_date", current_date())
 ### Hint 5: Guardar como Delta particionado
 
 <details>
-<summary>Click para revelar Hint 5</summary>
+<summary>Click for revelar Hint 5</summary>
 
-Para guardar como Delta con particionamiento:
+for guardar como Delta with particionamiento:
 ```python
 df.write \
     .format("delta") \
@@ -82,23 +82,23 @@ df.write \
 
 Make sure to use:
 - `.format("delta")` - especifica formato Delta
-- `.mode("overwrite")` - sobrescribe si existe (primera vez)
+- `.mode("overwrite")` - sobrescribe if existe (primera vez)
 - `.partitionBy("country")`- create partitions by country
-- `.save()` - guarda en la ruta especificada
+- `.save()` - guarda in la ruta especificada
 </details>
 
 ---
 
-## 🎯 Tarea 2: Append Data
+## 🎯 Tarea 2: Append data
 
 ### Hint 1: Read specific rows
 
 <details>
-<summary>Click para revelar Hint 1</summary>
+<summary>Click for revelar Hint 1</summary>
 
-Puedes leer las siguientes 5,000 rows de dos formas:
+you can leer las siguientes 5,000 rows of dos formas:
 
-**Option A - Using SQL with OFFSET**:
+**Option to - Using SQL with OFFSET**:
 ```python
 df_all = spark.read.json("path/to/file.json")
 df_all.createOrReplaceTempView("all_tx")
@@ -112,8 +112,8 @@ from pyspark.sql.functions import row_number
 
 df_all = spark.read.json("path/to/file.json")
 window = Window.orderBy("transaction_id")
-df_numbered = df_all.withColumn("row_num", row_number().over(window))
-df_new = df_numbered.filter((col("row_num") > 10000) & (col("row_num") <= 15000)) \
+df_numbenetwork = df_all.withColumn("row_num", row_number().over(window))
+df_new = df_numbenetwork.filter((col("row_num") > 10000) & (col("row_num") <= 15000)) \
     .drop("row_num")
 ```
 
@@ -127,9 +127,9 @@ df_new = df_all.limit(15000).subtract(df_all.limit(10000))
 ### Hint 2: Modo append
 
 <details>
-<summary>Click para revelar Hint 2</summary>
+<summary>Click for revelar Hint 2</summary>
 
-Para agregar datos sin sobrescribir:
+for agregar datas without sobrescribir:
 ```python
 df.write \
     .format("delta") \
@@ -138,7 +138,7 @@ df.write \
     .save("s3a://bronze/transactions_delta")
 ```
 
-**Importante**: El esquema y particionamiento deben coincidir con la table existente.
+**Importante**: El esquema and particionamiento deben coincidir with la table existente.
 </details>
 
 ---
@@ -148,15 +148,15 @@ df.write \
 ### Hint 1: Modificar campo condicionalmente
 
 <details>
-<summary>Click para revelar Hint 1</summary>
+<summary>Click for revelar Hint 1</summary>
 
-Para cambiar valores condicionalmente, usa `when()`:
+for cambiar valores condicionalmente, usa `when()`:
 ```python
 from pyspark.sql.functions import when
 
 df_modified = df.withColumn(
     "status",
-    when(col("status") == "pending", "expired")
+    when(col("status") == "pending", "expinetwork")
     .otherwise(col("status"))
 )
 ```
@@ -165,9 +165,9 @@ df_modified = df.withColumn(
 ### Hint 2: replaceWhere option
 
 <details>
-<summary>Click para revelar Hint 2</summary>
+<summary>Click for revelar Hint 2</summary>
 
-To overwrite only a specific partition:
+To overwrite only to specific partition:
 ```python
 df.write \
     .format("delta") \
@@ -176,13 +176,13 @@ df.write \
     .save("s3a://bronze/transactions_delta")
 ```
 
-**Clave**: `replaceWhere`indicates which partitions to overwrite. This is VERY different than`.mode("overwrite")`only, that would overwrite the ENTIRE table.
+**Key**: `replaceWhere`indicates which partitions to overwrite. This is VERY different than`.mode("overwrite")`only, that would overwrite the ENTIRE table.
 </details>
 
-### Hint 3: Verificar cambios
+### Hint 3: Verificar changes
 
 <details>
-<summary>Click para revelar Hint 3</summary>
+<summary>Click for revelar Hint 3</summary>
 
 To verify that only USA changed:
 ```python
@@ -193,7 +193,7 @@ pending_before_usa = df_before.filter(
     (col("country") == "USA") & (col("status") == "pending")
 ).count()
 
-# ... tu código de overwrite ...
+# ... tu code of overwrite ...
 
 # Después
 df_after = spark.read.format("delta").load(path)
@@ -202,7 +202,7 @@ pending_after_usa = df_after.filter(
 ).count()
 
 # pending_after_usa debe ser 0
-# Pero otros países deben tener pending intacto
+# Pero otros países deben to have pending intacto
 ```
 </details>
 
@@ -213,14 +213,14 @@ pending_after_usa = df_after.filter(
 ### Hint 1: Registrar table temporal
 
 <details>
-<summary>Click para revelar Hint 1</summary>
+<summary>Click for revelar Hint 1</summary>
 
-Para poder usar SQL, registra la table:
+for can usar SQL, registra la table:
 ```python
 df = spark.read.format("delta").load("s3a://bronze/transactions_delta")
 df.createOrReplaceTempView("transactions_delta")
 
-# Ahora puedes usar SQL
+# Ahora you can usar SQL
 result = spark.sql("SELECT * FROM transactions_delta LIMIT 10")
 ```
 </details>
@@ -228,7 +228,7 @@ result = spark.sql("SELECT * FROM transactions_delta LIMIT 10")
 ### Hint 2: Query 1 - Count by country
 
 <details>
-<summary>Click para revelar Hint 2</summary>
+<summary>Click for revelar Hint 2</summary>
 
 ```sql
 SELECT 
@@ -243,7 +243,7 @@ ORDER BY total_transactions DESC
 ### Hint 3: Query 2 - Metrics by status
 
 <details>
-<summary>Click para revelar Hint 3</summary>
+<summary>Click for revelar Hint 3</summary>
 
 ```sql
 SELECT 
@@ -262,7 +262,7 @@ ORDER BY total_amount DESC
 ### Hint 4: Query 3 - Top 10 transactions
 
 <details>
-<summary>Click para revelar Hint 4</summary>
+<summary>Click for revelar Hint 4</summary>
 
 ```sql
 SELECT 
@@ -278,10 +278,10 @@ LIMIT 10
 ```
 </details>
 
-### Hint 5: Query 4 - transactions por mes
+### Hint 5: Query 4 - transactions by mes
 
 <details>
-<summary>Click para revelar Hint 5</summary>
+<summary>Click for revelar Hint 5</summary>
 
 ```sql
 SELECT 
@@ -294,7 +294,7 @@ GROUP BY DATE_TRUNC('month', timestamp)
 ORDER BY month DESC
 ```
 
-**Alternativa** si DATE_TRUNC no funciona:
+**AlterNATiva** if DATE_TRUNC not funciona:
 ```sql
 SELECT 
     YEAR(timestamp) as year,
@@ -323,7 +323,7 @@ ORDER BY year DESC, month DESC
 
 2. Verifica la ruta:
    ```python
-   # Debe ser s3a:// (no s3://)
+   # Debe ser s3a:// (not s3://)
    path = "s3a://bronze/transactions_delta"
    ```
 
@@ -335,12 +335,12 @@ ORDER BY year DESC, month DESC
 <details>
 <summary>Solution</summary>
 
-El archivo de datos no se encuentra. Verifica:
+The file of datas not se encuentra. Verifica:
 ```python
-# Ruta relativa correcta desde el ejercicio
+# Ruta relativa correcta desde el exercise
 path = "../../../data/raw/transactions.json"
 
-# O ruta absoluta
+# or ruta absoluta
 path = "/opt/spark/work-dir/data/raw/transactions.json"
 ```
 </details>
@@ -350,13 +350,13 @@ path = "/opt/spark/work-dir/data/raw/transactions.json"
 <details>
 <summary>Solution</summary>
 
-Make sure the column`country` existe en el DataFrame antes de particionar:
+Make sure the column`country` existe in el DataFrame antes of particionar:
 ```python
-# Verifica columnas
+# Verifica columns
 print(df.columns)
 
-# Verifica que 'country' está presente
-assert 'country' in df.columns, "Falta columna country"
+# Verifica que 'country' is presente
+assert 'country' in df.columns, "Falta column country"
 ```
 </details>
 
@@ -365,8 +365,8 @@ assert 'country' in df.columns, "Falta columna country"
 <details>
 <summary>Solution</summary>
 
-1. **Usa filtros en columns particionadas** (country) para aprovechar partition pruning
-2. **Cache** if you are going to query multiple times:
+1. **Usa filters in columns particionadas** (country) for aprovechar partition pruning
+2. **Cache** if you are going to query multIPle times:
    ```python
    df.cache()
    ```
@@ -375,11 +375,11 @@ assert 'country' in df.columns, "Falta columna country"
 
 ---
 
-## 📚 Referencias
+## 📚 References
 
-- [Delta Lake Python API](https://docs.delta.io/latest/api/python/index.html)
-- [PySpark SQL Functions](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/functions.html)
-- [Delta Lake Best Practices](https://docs.delta.io/latest/best-practices.html)
+- [Delta Lake Python API](HTTPs://docs.delta.io/latest/api/python/index.html)
+- [PySpark SQL Functions](HTTPs://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/functions.html)
+- [Delta Lake Best Practices](HTTPs://docs.delta.io/latest/best-practices.html)
 
 ---
 

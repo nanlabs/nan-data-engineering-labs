@@ -1,54 +1,54 @@
-# 📊 Datasets - Module 05: Data Lakehouse
+# 📊 Datasets - Module 05: data Lakehouse
 
-This directory contains **synthetic datasets** generated to practice Data Lakehouse concepts with **Apache Spark**, **Delta Lake** and **Iceberg**.
+This directory contains **synthetic datasets** generated to practice data Lakehouse concepts with **Apache Spark**, **Delta Lake** and **Iceberg**.
 
-## 📁 Estructura de Directorios
+## 📁 Structure of Directorios
 
 ```
 data/
-├── raw/                    # Datos brutos generados (Bronze layer)
-│   ├── transactions.json   # Transacciones e-commerce (300K registros)
-│   ├── events.json         # Eventos de usuarios (200K registros)
-│   └── logs.jsonl          # Logs de aplicaciones (100K registros)
-├── schemas/                # Esquemas JSON de los datos
-│   ├── transactions.json   # Schema para transacciones
-│   ├── events.json         # Schema para eventos
-│   └── logs.json           # Schema para logs
-├── scripts/                # Scripts de generación de datos
+├── raw/                    # Datas brutos generados (Bronze layer)
+│   ├── transactions.json   # Transacciones e-commerce (300K records)
+│   ├── events.json         # Events of users (200K records)
+│   └── logs.jsonl          # Logs of aplicaciones (100K records)
+├── schemas/                # Esquemas JSON of los datas
+│   ├── transactions.json   # Schema for transacciones
+│   ├── events.json         # Schema for events
+│   └── logs.json           # Schema for logs
+├── scrIPts/                # ScrIPts of generación of datas
 │   ├── generate_transactions.py
 │   ├── generate_events.py
 │   ├── generate_logs.py
-│   └── generate_all_datasets.py  # Script maestro
-└── README.md              # Este archivo
+│   └── generate_all_datasets.py  # ScrIPt maestro
+└── README.md              # this archivo
 ```
 
 ## 🎯 Datasets Disponibles
 
 ### 1. 💳 E-Commerce Transactions (`transactions.json`)
 
-**Description**: e-commerce transactions with product, user, payment and location information.
+**DescrIPtion**: e-commerce transactions with product, user, payment and location information.
 
 **Size**: ~300,000 records (~40 MB)
 
-**Campos Principales**:
+**Campos PrincIPales**:
 - `transaction_id`(UUID): Unique transaction identifier
-- `user_id` (U0000123456): Identificador de usuario
-- `product_id` (P00012345): Identificador de producto
-- `product_name`: Nombre del producto
+- `user_id` (U0000123456): Identificador of user
+- `product_id` (P00012345): Identificador of producto
+- `product_name`: Nombre of the producto
 - `category`: Product Category (Electronics, Clothing, etc.)
-- `price`: Precio unitario en USD
+- `price`: Precio unitario in USD
 - `quantity`: Cantidad comprada
 - `total_amount`: Monto total (price × quantity)
-- `payment_method`: Payment method (credit_card, paypal, etc.)
+- `payment_method`: Payment method (cnetworkit_card, paypal, etc.)
 - `status`: Estado (completed, pending, cancelled, refunded, failed)
-- `timestamp`: Fecha y hora de la transaction (ISO 8601)
+- `timestamp`: Fecha and hora of la transaction (ISO 8601)
 - `country`: Country code (ISO 3166-1 alpha-2)
 - `city`: Ciudad
-- `ip_address`: Client IP address
-- `device_type`: Tipo de dispositivo (desktop, mobile, tablet)
+- `IP_address`: Client IP address
+- `device_type`: TIPo of dispositivo (desktop, mobile, tablet)
 - `browser`: Navegador utilizado
 
-**Casos de Uso**:
+**Casos of Uso**:
 - Sales analysis by category
 - Fraud detection
 - Customer segmentation
@@ -59,31 +59,31 @@ data/
 
 ### 2. 🌐 User Events (`events.json`)
 
-**Description**: Clickstream events of users browsing an e-commerce platform.
+**DescrIPtion**: Clickstream events of users browsing an e-commerce platform.
 
 **Size**: ~200,000 records (~35 MB)
 
-**Campos Principales**:
+**Campos PrincIPales**:
 - `event_id`(UUID): Unique event identifier
-- `user_id` (U0000123456): Identificador de usuario
+- `user_id` (U0000123456): Identificador of user
 - `session_id`(UUID): Session identifier
-- `event_type`: Tipo de evento (page_view, click, search, add_to_cart, checkout, purchase, etc.)
-- `page_url`: URL of the page where the event occurred
-- `referrer_url`: URL de referencia (opcional)
-- `timestamp`: Fecha y hora del evento (ISO 8601 con microsegundos)
+- `event_type`: TIPo of event (page_view, click, search, add_to_cart, checkout, purchase, etc.)
+- `page_url`: URL of the page where the event occurnetwork
+- `referrer_url`: URL of reference (opcional)
+- `timestamp`: Fecha and hora of the event (ISO 8601 with microsegundos)
 - `user_agent`: User agent string completo
-- `ip_address`: Client IP address
+- `IP_address`: Client IP address
 - `country`: Country code
-- `device_type`: Tipo de dispositivo
-- `os`: Sistema operativo (Windows, macOS, Linux, iOS, Android)
+- `device_type`: TIPo of dispositivo
+- `os`: Sistopic operativo (Windows, macOS, Linux, iOS, Android)
 - `browser`: Navegador
 - `screen_width`, `screen_height`: Screen resolution
 - `event_data`: Additional event-specific data (JSON)
 
-**Casos de Uso**:
+**Casos of Uso**:
 - Conversion funnel analysis
 - User segmentation by behavior
-- A/B testing and UX optimization
+- to/B testing and UX optimization
 - Cart abandonment analysis
 - Navigation patterns
 
@@ -91,86 +91,86 @@ data/
 
 ### 3. 📝 Application Logs (`logs.jsonl`)
 
-**Description**: Microservices application logs with different levels of severity.
+**DescrIPtion**: Microservices application logs with different levels of severity.
 
 **Size**: ~100,000 records (~25 MB)
 
 **Format**: JSON Lines (one line per log entry)
 
-**Campos Principales**:
+**Campos PrincIPales**:
 - `log_id`(UUID): Unique log identifier
-- `timestamp`: Fecha y hora del log (ISO 8601 con microsegundos)
-- `level`: Nivel de severidad (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-- `service`: Nombre del service (api-gateway, auth-service, payment-service, etc.)
-- `host`: Hostname o IP del server
-- `process_id`: ID del proceso
-- `thread_id`: ID del thread
-- `message`: Mensaje del log
+- `timestamp`: Fecha and hora of the log (ISO 8601 with microsegundos)
+- `level`: Nivel of severidad (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+- `service`: Nombre of the service (api-gateway, auth-service, payment-service, etc.)
+- `host`: Hostname or IP of the server
+- `process_id`: ID of the process
+- `thread_id`: ID of the thread
+- `message`: Mensaje of the log
 - `error_code`: Error code (optional, format: ERR5001, WRN2003)
-- `stack_trace`: Stack trace completo (opcional, para errores)
-- `user_id`: ID de usuario asociado (opcional)
-- `request_id` (UUID): ID de request para tracing (opcional)
+- `stack_trace`: Stack trace completo (opcional, for errores)
+- `user_id`: ID of user asociado (opcional)
+- `request_id` (UUID): ID of request for tracing (opcional)
 - `duration_ms`: Duration of the operation in milliseconds (optional)
-- `http_status`: HTTP status code (optional)
+- `HTTP_status`: HTTP status code (optional)
 - `endpoint`: API endpoint (opcional)
 - `method`: HTTP method (GET, POST, etc.)
-- `ip_address`: IP del cliente (opcional)
+- `IP_address`: IP of the client (opcional)
 - `environment`: Entorno (development, staging, production)
 
-**Casos de Uso**:
-- Monitoreo de errores y alertas
+**Casos of Uso**:
+- Monitoring of errores and alerts
 - Performance analysis (duration of requests)
-- Troubleshooting y debugging
+- Troubleshooting and debugging
 - Analysis of API usage patterns
 - Anomaly detection
 
 ---
 
-## ⚠️ Problemas de Calidad de Datos (Intencionales)
+## ⚠️ Problems of Calidad of Datas (Intencionales)
 
 The datasets contain **~12% of records with quality problems** to practice cleaning techniques on the Medallion architecture (Bronze → Silver → Gold).
 
-### Problemas Comunes en Todos los Datasets:
+### Problems Comunes in Todos los Datasets:
 
-1. **Valores Nulos** (Missing Required Fields)
-   - Campos obligatorios con valores `null`
-   - Ejemplo: `user_id: null`, `timestamp: null`
+1. **Valores Nulos** (Missing Requinetwork Fields)
+   - Campos obligatorios with valores `null`
+   - Example: `user_id: null`, `timestamp: null`
 
 2. **Duplicados**
-   - IDs duplicados (2-3% de registros)
-   - Ejemplo: Mismo `transaction_id` aparece 2+ veces
+   - IDs duplicados (2-3% of records)
+   - Example: Mismo `transaction_id` aparece 2+ veces
 
 3. **Invalid Formats**
-   - IDs malformados: `"INVALID1234"` en lugar de `"U0000123456"`
+   - IDs malformados: `"INVALID1234"` in lugar of `"U0000123456"`
    - Invalid timestamps:`"2024-13-45T25:99:99Z"`
-   - URLs malformadas: `"not-a-valid-url"`
+   - URLs malformadas: `"not-to-valid-url"`
 
-4. **Valores Fuera de Rango**
+4. **Valores Fuera of Rango**
    - Fechas futuras (clock drift simulado)
    - Negative values ​​where they should not exist
    - Outliers extremos
 
 5. **Logical Inconsistencies**
    - `total_amount ≠ price × quantity`
-   - Sesiones inconsistentes (mismo user, evento logout con misma session_id)
-   - Service name no coincide con host
+   - Sesiones inconsistentes (mismo user, event logout with misma session_id)
+   - Service name not coincide with host
 
 6. **Empty Strings**
-   - Campos con `""`instead of valid values
-   - Mensajes truncados o incompletos
+   - Campos with `""`instead of valid values
+   - Mensajes truncados or incompletos
 
 ### Dataset Specific Problems:
 
 #### Transactions:
 - ✗ Precios negativos
 - ✗ Cantidades irrealistas (>1000)
-- ✗ Total amount inconsistente con price × quantity
-- ✗ IDs de producto/usuario malformados
+- ✗ Total amount inconsistente with price × quantity
+- ✗ IDs of producto/user malformados
 
 #### Events:
 - ✗ Invalid or empty event types
 - ✗ URLs malformadas
-- ✗ Resoluciones de pantalla irrealistas (>50000px)
+- ✗ Resoluciones of pantalla irrealistas (>50000px)
 - ✗ Dimensiones negativas
 
 #### Logs:
@@ -178,47 +178,47 @@ The datasets contain **~12% of records with quality problems** to practice clean
 - ✗ Invalid HTTP status codes (0, 999, -200)
 - ✗ Duraciones negativas
 - ✗ Empty messages
-- ✗ ERROR/CRITICAL sin stack trace
+- ✗ ERROR/CRITICAL without stack trace
 
 ---
 
-## 🚀 Data Generation
+## 🚀 data Generation
 
 ### Prerrequisitos
 
-Instala las dependencias de Python:
+Instala las dependencias of Python:
 
 ```bash
-pip install faker mimesis
+pIP install faker mimesis
 ```
 
 ### Generar Todos los Datasets
 
 ```bash
-cd data/scripts
+cd data/scrIPts
 python generate_all_datasets.py
 ```
 
-This master script will run all 3 generators in sequence.
+This master scrIPt will run all 3 generators in sequence.
 
 ### Generar Datasets Individuales
 
 ```bash
-# Solo transacciones (300K registros, ~2-3 minutos)
+# only transacciones (300K records, ~2-3 minutos)
 python generate_transactions.py
 
-# Solo eventos (200K registros, ~2 minutos)
+# only events (200K records, ~2 minutos)
 python generate_events.py
 
-# Solo logs (100K registros, ~1 minuto)
+# only logs (100K records, ~1 minuto)
 python generate_logs.py
 ```
 
 ---
 
-## 📖 Uso en Ejercicios
+## 📖 Uso in Exercises
 
-### 1️⃣ Bronze Layer (Raw Data Ingestion)
+### 1️⃣ Bronze Layer (Raw data Ingestion)
 
 Load the data as is, without transformations:
 
@@ -231,19 +231,19 @@ spark = SparkSession.builder \
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
     .getOrCreate()
 
-# Leer datos crudos
+# Leer datas crudos
 transactions_df = spark.read.json("data/raw/transactions.json")
 
-# Escribir a Bronze layer (Delta Lake)
+# Escribir to Bronze layer (Delta Lake)
 transactions_df.write \
     .format("delta") \
     .mode("append") \
     .save("s3a://bronze/transactions")
 ```
 
-### 2️⃣ Silver Layer (Data Cleaning & Validation)
+### 2️⃣ Silver Layer (data Cleaning & Validation)
 
-Limpia los datos y aplica validaciones:
+Limpia los datas and aplica validaciones:
 
 ```python
 from pyspark.sql import functions as F
@@ -251,7 +251,7 @@ from pyspark.sql import functions as F
 # Leer desde Bronze
 bronze_df = spark.read.format("delta").load("s3a://bronze/transactions")
 
-# Limpieza de datos
+# Limpieza of datas
 silver_df = bronze_df \
     .filter(F.col("transaction_id").isNotNull()) \
     .filter(F.col("user_id").rlike("^U[0-9]{10}$")) \
@@ -261,7 +261,7 @@ silver_df = bronze_df \
     .withColumn("total_amount", F.col("price") * F.col("quantity")) \
     .dropDuplicates(["transaction_id"])
 
-# Escribir a Silver layer
+# Escribir to Silver layer
 silver_df.write \
     .format("delta") \
     .mode("overwrite") \
@@ -276,7 +276,7 @@ Create aggregate metrics for analysis:
 # Leer desde Silver
 silver_df = spark.read.format("delta").load("s3a://silver/transactions")
 
-# Agregación diaria de ventas
+# Agregación diaria of ventas
 gold_df = silver_df \
     .withColumn("date", F.to_date(F.col("timestamp"))) \
     .groupBy("date", "category") \
@@ -287,7 +287,7 @@ gold_df = silver_df \
         F.countDistinct("user_id").alias("unique_customers")
     )
 
-# Escribir a Gold layer
+# Escribir to Gold layer
 gold_df.write \
     .format("delta") \
     .mode("overwrite") \
@@ -299,17 +299,17 @@ gold_df.write \
 
 ## 📊 Esquemas JSON
 
-Los esquemas JSON en `schemas/` definen la estructura esperada de cada dataset usando **JSON Schema Draft 7**:
+Los esquemas JSON in `schemas/` definen la structure esperada of cada dataset usando **JSON Schema Draft 7**:
 
-- **transactions.json**: Schema para transactions e-commerce
-- **events.json**: Schema para eventos de usuarios
-- **logs.json**: Schema para logs de aplicaciones
+- **transactions.json**: Schema for transactions e-commerce
+- **events.json**: Schema for events of users
+- **logs.json**: Schema for logs of aplicaciones
 
 These schemes are useful for:
-- Data validation with Great Expectations
+- data validation with Great Expectations
 - Documentation generation
 - Schema evolution
-- Testing de compatibilidad
+- Testing of compatibilidad
 
 ### Use of Schemas for Validation
 
@@ -321,49 +321,49 @@ from pyspark.sql import types as T
 with open("data/schemas/transactions.json") as f:
     schema_def = json.load(f)
 
-# Convertir a PySpark schema
+# Convertir to PySpark schema
 spark_schema = T.StructType([
     T.StructField("transaction_id", T.StringType(), False),
     T.StructField("user_id", T.StringType(), False),
     T.StructField("product_id", T.StringType(), False),
-    # ... más campos
+    # ... more campos
 ])
 
-# Leer con schema enforcement
+# Leer with schema enforcement
 df = spark.read.schema(spark_schema).json("data/raw/transactions.json")
 ```
 
 ---
 
-## 🎓 Ejercicios Recomendados
+## 🎓 Exercises Recomendados
 
-1. **Data Quality Assessment** (⭐)
-   - Identifica todos los tipos de problemas de calidad
-   - Calcula porcentajes de registros con cada tipo de problema
-   - Crea un reporte de calidad
+1. **data Quality Assessment** (⭐)
+   - Identifica todos los tIPos of problems of calidad
+   - Calcula porcentajes of records with cada tIPo of problem
+   - Crea un reporte of calidad
 
-2. **Bronze → Silver pipeline** (⭐⭐⭐)
-   - Implementa pipeline completo de limpieza
+2. **Bronze → Silver pIPeline** (⭐⭐⭐)
+   - Implementa pIPeline completo of limpieza
    - Aplica todas las validaciones
    - Documenta las transformaciones
 
 3. **Silver → Gold Aggregations** (⭐⭐⭐)
    - Create business metrics (daily sales, KPIs)
    - Implementa particionamiento inteligente
-   - Optimiza con Z-ordering
+   - Optimiza with Z-ordering
 
 4. **Time Travel & Audit** (⭐⭐⭐⭐)
    - Implement auditing with Delta Lake history
-   - Practica rollback de datos
-   - Compara versiones con time travel
+   - Practica rolelback of datas
+   - Compara versiones with time travel
 
 5. **Schema Evolution** (⭐⭐⭐⭐)
-   - Agrega nuevos campos sin romper pipelines
-   - Practica cambios de tipo de datos
-   - Implementa estrategias de compatibilidad
+   - Agrega nuevos campos without romper pIPelines
+   - Practica changes of tIPo of datas
+   - Implementa estrategias of compatibilidad
 
 6. **Iceberg Comparison** (⭐⭐⭐⭐⭐)
-   - Carga mismos datos en Iceberg
+   - Carga mismos datas in Iceberg
    - Compara performance Delta vs Iceberg
    - Practica hidden partitioning
 
@@ -382,64 +382,64 @@ df = spark.read.schema(spark_schema).json("data/raw/transactions.json")
 
 ## 🔧 Troubleshooting
 
-### Problem: Build script fails with "Module not found"
+### Problem: Build scrIPt fails with "Module not found"
 
 **Solution**: Install the dependencies:
 
 ```bash
-pip install -r ../requirements.txt
+pIP install -r ../requirements.txt
 ```
 
 ### Problem: Out of memory during generation
 
-**Solution**: Reduce the number of records in the constants of each script:
+**Solution**: Networkuce the number of records in the constants of each scrIPt:
 
 ```python
-# En generate_transactions.py
-NUM_RECORDS = 100000  # Reducir de 300K a 100K
+# in generate_transactions.py
+NUM_RECORDS = 100000  # Networkucir of 300K to 100K
 ```
 
-### Problema: Archivos JSON muy grandes para procesar
+### Problem: Archivos JSON muy grandes for procesar
 
 **Solution**:
-1. Usa PySpark en lugar de pandas/Python puro
-2. Procesa en chunks
-3. Usa formato Parquet en lugar de JSON
+1. Usa PySpark in lugar of pandas/Python puro
+2. Procesa in chunks
+3. Usa formato Parquet in lugar of JSON
 
-### Problema: Quiero regenerar datos con diferentes seeds
+### Problem: I want regenerar datas with diferentes seeds
 
-**Solution**: Change the seeds in each script:
+**Solution**: Change the seeds in each scrIPt:
 
 ```python
-Faker.seed(42)  # Cambia este número
-random.seed(42)  # Cambia este número
+Faker.seed(42)  # Cambia this número
+random.seed(42)  # Cambia this número
 ```
 
 ---
 
-## 📚 Referencias
+## 📚 References
 
-- [Faker Documentation](https://faker.readthedocs.io/)
-- [JSON Schema](https://json-schema.org/)
-- [Delta Lake - Data Quality](https://docs.delta.io/latest/delta-constraints.html)
-- [Great Expectations](https://docs.greatexpectations.io/)
+- [Faker Documentation](HTTPs://faker.readthedocs.io/)
+- [JSON Schema](HTTPs://json-schema.org/)
+- [Delta Lake - data Quality](HTTPs://docs.delta.io/latest/delta-constraints.html)
+- [Great Expectations](HTTPs://docs.greatexpectations.io/)
 
 ---
 
-## 💡 Tips
+## 💡 TIPs
 
-1. **Quick Data Inspection**:
+1. **Quick data Inspection**:
    ```bash
    # Primeras 5 líneas
    head -n 5 data/raw/transactions.json | jq .
    
-   # Contar registros
+   # Contar records
    wc -l data/raw/*.json
    ```
 
 2. **JSON Validation**:
    ```bash
-   # Verificar si el JSON es válido
+   # Verificar if el JSON is válido
    jq empty data/raw/transactions.json
    ```
 
@@ -452,14 +452,14 @@ random.seed(42)  # Cambia este número
    grep '"price": -' data/raw/transactions.json | head -n 10
    ```
 
-4. **Uso de Docker para procesamiento**:
+4. **Uso of Docker for procesamiento**:
    ```bash
-   # Levantar infraestructura
+   # Levantar infrastructure
    cd ../infrastructure
    docker-compose up -d
    
-   # Acceder a Jupyter Lab
-   open http://localhost:8888
+   # Acceder to Jupyter Lab
+   open HTTP://localhost:8888
    ```
 
 ---

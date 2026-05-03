@@ -1,8 +1,8 @@
-# Infraestructura - Data Lakehouse
+# Infrastructure - data Lakehouse
 
-## 📋 Description
+## 📋 DescrIPtion
 
-This directory contains the complete Docker infrastructure configuration for the Data Lakehouse module. It includes all the services necessary to work with Delta Lake, Apache Iceberg and Apache Spark.
+This directory contains the complete Docker infrastructure configuration for the data Lakehouse module. It includes all the services necessary to work with Delta Lake, Apache Iceberg and Apache Spark.
 
 ## 🏗️ Arquitectura
 
@@ -27,16 +27,16 @@ This directory contains the complete Docker infrastructure configuration for the
 ## 🐳 services
 
 ### 1. **MinIO** (S3-Compatible Storage)
-- **Puerto API**: 9000
-- **Puerto Console**: 9001
-- **Credenciales**: minioadmin/minioadmin
+- **Port API**: 9000
+- **Port Console**: 9001
+- **Cnetworkenciales**: minioadmin/minioadmin
 - **Buckets**:
-  - `lakehouse` - Datos generales
+  - `lakehouse` - Datas generales
   - `bronze` - Capa Bronze (raw data)
   - `silver` - Capa Silver (cleaned data)
   - `gold` - Capa Gold (aggregated data)
   - `warehouse` - Spark warehouse e Iceberg
-  - `checkpoints` - Checkpoints de streaming
+  - `checkpoints` - Checkpoints of streaming
   - `events` - Event logs
 
 ### 2. **Apache Spark**
@@ -51,19 +51,19 @@ This directory contains the complete Docker infrastructure configuration for the
   - Hive Metastore
 
 ### 3. **Hive Metastore**
-- **Puerto**: 9083
+- **Port**: 9083
 - **Backend**: PostgreSQL
 - **Purpose**: Metadata catalog for Delta Lake and Iceberg
 
 ### 4. **PostgreSQL**
-- **Puerto**: 5432
+- **Port**: 5432
 - **Database**: metastore
-- **Usuario**: hive/hive
+- **User**: hive/hive
 - **Purpose**: Backend for Hive Metastore
 
 ### 5. **Jupyter Lab**
-- **Puerto**: 8888
-- **No authentication** (local development)
+- **Port**: 8888
+- **not authentication** (local development)
 - **Pre-instalado**:
   - PySpark
   - Delta Lake
@@ -77,17 +77,17 @@ This directory contains the complete Docker infrastructure configuration for the
 - Docker Engine 20.10+
 - Docker Compose 2.0+
 - 8GB RAM minimum (16GB recommended)
-- 10GB espacio en disco
+- 10GB espacio in disk
 
 ### Paso 1: Descargar JARs necesarios
 
 ```bash
 cd infrastructure
-chmod +x init-scripts/download-jars.sh
-./init-scripts/download-jars.sh
+chmod +x init-scrIPts/download-jars.sh
+./init-scrIPts/download-jars.sh
 ```
 
-Este script descarga:
+this scrIPt descarga:
 - Delta Lake JARs (core, storage)
 - Apache Iceberg JAR
 - Hadoop AWS connector
@@ -99,10 +99,10 @@ Este script descarga:
 # Iniciar todos los servicios
 docker-compose up -d
 
-# Ver logs
+# to see logs
 docker-compose logs -f
 
-# Ver estado de servicios
+# to see estado of servicios
 docker-compose ps
 ```
 
@@ -110,74 +110,74 @@ docker-compose ps
 
 ```bash
 # Verificar Spark Master
-curl http://localhost:8080
+curl HTTP://localhost:8080
 
 # Verificar MinIO
-curl http://localhost:9000/minio/health/live
+curl HTTP://localhost:9000/minio/health/live
 
 # Verificar Jupyter
-curl http://localhost:8888
+curl HTTP://localhost:8888
 ```
 
-### Paso 4: Acceder a las interfaces
+### Paso 4: Acceder to las interfaces
 
-- **Spark Master UI**: http://localhost:8080
-- **Spark Worker UI**: http://localhost:8081
-- **MinIO Console**: http://localhost:9001 (minioadmin/minioadmin)
-- **Jupyter Lab**: http://localhost:8888
+- **Spark Master UI**: HTTP://localhost:8080
+- **Spark Worker UI**: HTTP://localhost:8081
+- **MinIO Console**: HTTP://localhost:9001 (minioadmin/minioadmin)
+- **Jupyter Lab**: HTTP://localhost:8888
 
-## 📁 Estructura de Archivos
+## 📁 Structure of Archivos
 
 ```
 infrastructure/
-├── docker-compose.yml           # Definición de servicios
-├── .env.example                 # Variables de entorno (template)
-├── README.md                    # Este archivo
+├── docker-compose.yml           # Definición of servicios
+├── .env.example                 # Variables of entorno (template)
+├── README.md                    # this archivo
 │
-├── spark/                       # Configuración Spark
-│   ├── spark-defaults.conf      # Configuración principal Spark
+├── spark/                       # Configuration Spark
+│   ├── spark-defaults.conf      # Configuration princIPal Spark
 │   ├── log4j.properties         # Logging configuration
 │   └── jars/                    # JARs adicionales (Delta, Iceberg)
 │
-├── minio/                       # Configuración MinIO
-│   └── init-buckets.sh          # Script para crear buckets
+├── minio/                       # Configuration MinIO
+│   └── init-buckets.sh          # ScrIPt for crear buckets
 │
-├── jupyter/                     # Configuración Jupyter
+├── jupyter/                     # Configuration Jupyter
 │   └── jupyter_notebook_config.py
 │
-└── init-scripts/                # Scripts de inicialización
+└── init-scrIPts/                # ScrIPts of inicialización
     └── download-jars.sh         # Descarga JARs necesarios
 ```
 
 ## 🔧 Settings
 
-### Variables de Entorno
+### Variables of Entorno
 
-Copia `.env.example` a `.env`and adjust as needed:
+Copia `.env.example` to `.env`and adjust as needed:
 
 ```bash
 cp .env.example .env
 ```
 
-Variables principales:
-- `MINIO_ROOT_USER/PASSWORD`: Credenciales MinIO
+Variables princIPales:
+- `MINIO_ROOT_USER/PASSWORD`: Cnetworkenciales MinIO
 - `SPARK_WORKER_CORES`: Cores per worker
-- `SPARK_WORKER_MEMORY`: Memoria por worker
-- `SPARK_DRIVER_MEMORY`: Memoria del driver
-- `SPARK_EXECUTOR_MEMORY`: Memoria del executor
+- `SPARK_WORKER_MEMORY`: Memory by worker
+- `SPARK_DRIVER_MEMORY`: Memory of the driver
+- `SPARK_EXECUTOR_MEMORY`: Memory of the executor
 
 ### scale Workers
 
 ```bash
-# Escalar a 3 workers
+# Escalar to 3 workers
 docker-compose up -d --scale spark-worker=3
 
-# Verificar en Spark Master UI (http://localhost:8080)
+# Verificar in Spark Master UI (HTTP://localhost:8080)
 ```
 
 ### resources Recomendados
 
-| Componente | CPU | RAM | Disco |
+| Componente | CPU | RAM | Disk |
 |------------|-----|-----|-------|
 | Spark Master | 1 core | 2GB | 1GB |
 | Spark Worker (each) | 2 cores | 4GB | 5GB |
@@ -189,12 +189,12 @@ docker-compose up -d --scale spark-worker=3
 
 ## 📝 Common Use
 
-### PySpark en Jupyter
+### PySpark in Jupyter
 
 ```python
 from pyspark.sql import SparkSession
 
-# Crear SparkSession con Delta Lake
+# Crear SparkSession with Delta Lake
 spark = SparkSession.builder \
     .appName("DataLakehouse") \
     .master("spark://spark-master:7077") \
@@ -202,22 +202,22 @@ spark = SparkSession.builder \
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
     .getOrCreate()
 
-# Escribir a Delta Lake
+# Escribir to Delta Lake
 df.write.format("delta").save("s3a://bronze/events")
 
 # Leer desde Delta Lake
 df = spark.read.format("delta").load("s3a://bronze/events")
 ```
 
-### Acceder a MinIO desde Python
+### Acceder to MinIO desde Python
 
 ```python
 import boto3
 
-# Configurar cliente S3 (MinIO)
+# Configurar client S3 (MinIO)
 s3 = boto3.client(
     's3',
-    endpoint_url='http://minio:9000',
+    endpoint_url='HTTP://minio:9000',
     aws_access_key_id='minioadmin',
     aws_secret_access_key='minioadmin'
 )
@@ -233,8 +233,8 @@ print(buckets)
 # Ejecutar desde host
 docker-compose exec spark-master pyspark
 
-# O usar el script (cuando esté disponible)
-../scripts/run_spark.sh
+# or usar el scrIPt (when am disponible)
+../scrIPts/run_spark.sh
 ```
 
 ## 🧪 Testing
@@ -244,7 +244,7 @@ docker-compose exec spark-master pyspark
 ```python
 from delta import DeltaTable
 
-# Crear tabla Delta
+# Crear table Delta
 df.write.format("delta").save("s3a://bronze/test_table")
 
 # Verificar metadata
@@ -255,7 +255,7 @@ print(deltaTable.history().show())
 ### Verificar Iceberg
 
 ```python
-# Crear tabla Iceberg
+# Crear table Iceberg
 spark.sql("""
     CREATE TABLE iceberg.default.test_table (
         id bigint,
@@ -264,7 +264,7 @@ spark.sql("""
     LOCATION 's3a://warehouse/iceberg/test_table'
 """)
 
-# Insertar datos
+# Insertar datas
 spark.sql("INSERT INTO iceberg.default.test_table VALUES (1, 'test')")
 
 # Query
@@ -273,7 +273,7 @@ spark.sql("SELECT * FROM iceberg.default.test_table").show()
 
 ## 🛠️ Mantenimiento
 
-### Ver Logs
+### to see Logs
 
 ```bash
 # Todos los servicios
@@ -295,13 +295,13 @@ docker-compose restart spark-master
 docker-compose restart
 ```
 
-### Limpiar y Reiniciar
+### Limpiar and Reiniciar
 
 ```bash
 # Detener servicios
 docker-compose down
 
-# Detener y eliminar volúmenes (⚠️ elimina datos)
+# Detener and eliminar volúmenes (⚠️ elimina datas)
 docker-compose down -v
 
 # Reiniciar desde cero
@@ -320,81 +320,81 @@ docker-compose up -d --force-recreate
 
 ## 🐛 Troubleshooting
 
-### Problema: services no inician
+### Problem: services not inician
 
 ```bash
-# Verificar recursos disponibles
+# Verificar resources disponibles
 docker system info
 
-# Verificar logs de error
+# Verificar logs of error
 docker-compose logs
 
-# Liberar recursos
-docker system prune -a
+# Liberar resources
+docker system prune -to
 ```
 
-### Problema: Spark no puede conectar a MinIO
+### Problem: Spark not he/she can conectar to MinIO
 
 ```bash
-# Verificar red
+# Verificar network
 docker network inspect lakehouse-network
 
-# Verificar que MinIO está corriendo
+# Verificar que MinIO is corriendo
 docker-compose ps minio
 
-# Test de conectividad
-docker-compose exec spark-master curl http://minio:9000/minio/health/live
+# Test of conectividad
+docker-compose exec spark-master curl HTTP://minio:9000/minio/health/live
 ```
 
-### Problema: JARs no encontrados
+### Problem: JARs not encontrados
 
 ```bash
 # Re-descargar JARs
-cd init-scripts
+cd init-scrIPts
 ./download-jars.sh
 
-# Verificar que están en el directorio correcto
+# Verificar que are in the directory correcto
 ls -la ../spark/jars/
 ```
 
-### Problema: Puerto en uso
+### Problem: Port in uso
 
 ```bash
-# Identificar proceso usando puerto
+# Identificar process usando port
 lsof -i :8080
 lsof -i :9000
 
-# Cambiar puerto en docker-compose.yml o .env
+# Cambiar port in docker-compose.yml or .env
 ```
 
 ## 📚 Additional Resources
 
-- [Spark Configuration](https://spark.apache.org/docs/latest/configuration.html)
-- [Delta Lake Quickstart](https://docs.delta.io/latest/quick-start.html)
-- [Iceberg Spark Configuration](https://iceberg.apache.org/docs/latest/spark-configuration/)
-- [MinIO Documentation](https://min.io/docs/minio/linux/index.html)
+- [Spark Configuration](HTTPs://spark.apache.org/docs/latest/configuration.html)
+- [Delta Lake Quickstart](HTTPs://docs.delta.io/latest/quick-start.html)
+- [Iceberg Spark Configuration](HTTPs://iceberg.apache.org/docs/latest/spark-configuration/)
+- [MinIO Documentation](HTTPs://min.io/docs/minio/linux/index.html)
 
-## ⚠️ Notas Importantes
+## ⚠️ Notes Importantes
 
 1. **security**: This configuration is for **local development** only
    - Authentication disabled in Jupyter
-   - Credenciales por defecto en MinIO
-   - Sin SSL/TLS
+   - Cnetworkenciales by defecto in MinIO
+   - without SSL/TLS
 
 2. **resources**: Adjust according to your machine
-   - Reduce workers si tienes menos de 16GB RAM
-   - Reduce memoria de executor/driver si es necesario
+   - Networkuce workers if you have less of 16GB RAM
+   - Networkuce memory of executor/driver if is necesario
 
-3. **Persistencia**: Los datos se almacenan en volumes
-   - `minio-data`: Datos de MinIO
-   - `postgres-data`: Metadata de Hive
+3. **Persistencia**: Los datas se almacenan in volumes
+   - `minio-data`: Datas of MinIO
+   - `postgres-data`: Metadata of Hive
    - `spark-warehouse`: Spark warehouse
-   - Usar `docker-compose down -v` elimina TODO
+   - Usar `docker-compose down -v` elimina everything
 
-4. **Performance**: Para mejor performance
-   - Aumenta `SPARK_WORKER_CORES` y `SPARK_WORKER_MEMORY`
+4. **Performance**: for mejor performance
+   - Aumenta `SPARK_WORKER_CORES` and `SPARK_WORKER_MEMORY`
    - Escala workers: `--scale spark-worker=3`
-   - Usa SSD para Docker volumes
+   - Usa SSD for Docker volumes
 
 ---
 

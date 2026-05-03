@@ -1,67 +1,67 @@
-# Ejercicio 02: Medallion Architecture (Bronze → Silver → Gold)
+# Exercise 02: Medallion Architecture (Bronze → Silver → Gold)
 
-## 🎯 Objetivo
+## 🎯 Objective
 
-Implement the full Medallion architecture, the fundamental Data Lakehouse pattern:
+Implement the full Medallion architecture, the fundamental data Lakehouse pattern:
 
 - **Bronze Layer** (Raw): Raw ingestion, append-only, data as it arrives
 - **Silver Layer** (Cleaned): Cleaning, validation, deduplication, correct types
 - **Gold Layer** (Aggregated): Business metrics, aggregations, reports
 
-**Dificultad**: ⭐⭐⭐ Intermedio  
-**Tiempo Estimado**: 90-120 minutos  
-**Prerequisitos**: Ejercicio 01 completado
+**Difficulty**: ⭐⭐⭐ Intermedio  
+**Estimated Time**: 90-120 minutos  
+**Prerequisitos**: Exercise 01 completado
 
 ---
 
-## 📋Exercise Description
+## 📋Exercise DescrIPtion
 
-Your team needs to build an end-to-end data pipeline to process e-commerce transactions. The objective is to transform raw data into business insights following the Medallion pattern.
+Your team needs to build an end-to-end data pIPeline to process e-commerce transactions. The objective is to transform raw data into business insights following the Medallion pattern.
 
-### Flujo de Datos
+### Flow of Datas
 
 ```
 RAW JSON FILES
      ↓
 🥉 BRONZE (s3a://bronze/transactions)
-  - Datos tal cual llegan
-  - Sin validaciones
+  - Datas tal cual llegan
+  - without validaciones
   - Append-only
-  - Incluye duplicados y errores
+  - Incluye duplicados and errores
      ↓
 🥈 SILVER (s3a://silver/transactions_clean)
   - Limpieza aplicada
   - Duplicados removidos
   - Nulls manejados
-  - Tipos correctos
+  - TIPos correctos
   - Schema enforcement
      ↓
 🥇 GOLD (s3a://gold/transactions_metrics)
-  - Agregaciones por país
+  - Agregaciones by país
   - Métricas diarias
-  - KPIs de negocio
-  - Listo para BI tools
+  - KPIs of negocio
+  - Listo for BI tools
 ```
 
 ---
 
-## 🗂️ Estructura del Ejercicio
+## 🗂️ Structure of the Exercise
 
 ```
 02-medallion-architecture/
-├── README.md (este archivo)
+├── README.md (this archivo)
 ├── hints.md
 ├── starter/
-│   ├── 01_bronze_ingestion.py       # Ingestar a Bronze
-│   ├── 02_silver_cleaning.py        # Limpiar para Silver
-│   ├── 03_gold_aggregation.py       # Agregar para Gold
-│   ├── 04_full_pipeline.py          # Pipeline completo
+│   ├── 01_bronze_ingestion.py       # Ingestar to Bronze
+│   ├── 02_silver_cleaning.py        # Limpiar for Silver
+│   ├── 03_gold_aggregation.py       # Agregar for Gold
+│   ├── 04_full_pIPeline.py          # PIPeline completo
 │   └── requirements.txt
 ├── solution/
 │   ├── 01_bronze_ingestion.py
 │   ├── 02_silver_cleaning.py
 │   ├── 03_gold_aggregation.py
-│   ├── 04_full_pipeline.py
+│   ├── 04_full_pIPeline.py
 │   └── README.md
 └── tests/
     └── test_medallion.py
@@ -72,19 +72,19 @@ RAW JSON FILES
 ## 🚀 Setup
 
 ```bash
-# 1. Asegúrate de que la infraestructura está corriendo
+# 1. Asegúrate of que la infrastructure is corriendo
 cd ../../infrastructure
 docker-compose up -d
 
-# 2. Ver logs de Spark
+# 2. to see logs of Spark
 docker-compose logs -f spark-master
 
-# 3. Acceder a Jupyter (opcional)
-# http://localhost:8888
+# 3. Acceder to Jupyter (opcional)
+# HTTP://localhost:8888
 
-# 4. UI de Spark para monitorear jobs
-# http://localhost:8080 (Spark Master)
-# http://localhost:4040 (Spark Application UI, cuando esté corriendo)
+# 4. UI of Spark for monitorear jobs
+# HTTP://localhost:8080 (Spark Master)
+# HTTP://localhost:4040 (Spark Application UI, when am corriendo)
 ```
 
 ---
@@ -95,28 +95,28 @@ docker-compose logs -f spark-master
 
 **Archivo**: `starter/01_bronze_ingestion.py`
 
-**Objetivo**: Ingestar datos crudos desde JSON a table Delta Bronze.
+**Objective**: Ingestar datas crudos desde JSON to table Delta Bronze.
 
 **Requisitos**:
-1. Leer `data/raw/transactions.json` (TODOS los registros)
+1. Leer `data/raw/transactions.json` (TODOS los records)
 2. Add ingestion metadata:
-   - `ingestion_timestamp` (timestamp de carga)
-   - `source_file` (nombre del archivo)
-3. NO aplicar limpieza ni validaciones
-4. Guardar en `s3a://bronze/transactions` como Delta
-5. Particionar por `ingestion_date` (derivado de ingestion_timestamp)
+   - `ingestion_timestamp` (timestamp of carga)
+   - `source_file` (nombre of the archivo)
+3. not aplicar limpieza ni validaciones
+4. Guardar in `s3a://bronze/transactions` como Delta
+5. Particionar by `ingestion_date` (derivado of ingestion_timestamp)
 
 **features Bronze**:
 - ✅ Append-only (nunca sobrescribir)
-- ✅ Inmutable (preservar datos tal cual)
-- ✅ Full lineage (metadata de origen)
-- ✅ Incluir TODOS los datos (incluso errores)
+- ✅ Inmutable (preservar datas tal cual)
+- ✅ Full lineage (metadata of origen)
+- ✅ Incluir TODOS los datas (incluso errores)
 
 **Expectativas**:
-- ~614K registros en Bronze
-- Todos los registros originales presentes
+- ~614K records in Bronze
+- Todos los records originales presentes
 - Aggregated ingestion metadata
-- No loss of information
+- not loss of information
 
 ---
 
@@ -124,23 +124,23 @@ docker-compose logs -f spark-master
 
 **Archivo**: `starter/02_silver_cleaning.py`
 
-**Objetivo**: Transformar datos Bronze en datos Silver limpios y confiables.
+**Objective**: Transformar datas Bronze in datas Silver limpios and confiables.
 
 **Requisitos**:
 1. Leer table Bronze
 2. Aplicar limpieza:
-   - Remover duplicados basados en `transaction_id`
-   - Filtrar registros con `amount` NULL o negativo
-   - Filtrar transactions con `timestamp` NULL
+   - Remover duplicados basados in `transaction_id`
+   - Filtrar records with `amount` NULL or negativo
+   - Filtrar transactions with `timestamp` NULL
    - Normalizar `status` (lowercase, trimmed)
    - Convertir `currency`to uppercase3. Add validation column:
    - `is_valid` (boolean)
-   - `validation_errors` (array de strings con errores encontrados)
-4. Convertir tipos:
+   - `validation_errors` (array of strings with errores encontrados)
+4. Convertir tIPos:
    - `amount` → DecimalType(10,2)
    - `timestamp` → TimestampType
-5. Guardar en `s3a://silver/transactions_clean`
-6. Particionar por `country` y `date` (del timestamp)
+5. Guardar in `s3a://silver/transactions_clean`
+6. Particionar by `country` and `date` (of the timestamp)
 
 **features Silver**:
 - ✅ Deduplicated
@@ -151,13 +151,13 @@ docker-compose logs -f spark-master
 
 **Expectativas**:
 - ~540K records in Silver (after filtering out ~12% with issues)
-- Sin duplicados
-- No nulls in critical fields
-- Tipos de datos correctos
+- without duplicados
+- not nulls in critical fields
+- TIPos of datas correctos
 
 ---
 
-### Tarea 3: Gold Layer - Agregaciones de Negocio
+### Tarea 3: Gold Layer - Agregaciones of Negocio
 
 **Archivo**: `starter/03_gold_aggregation.py`
 
@@ -183,35 +183,35 @@ docker-compose logs -f spark-master
    - `p50_amount` (mediana)
    - `p90_amount`
    - `p99_amount`
-4. Guardar en `s3a://gold/transactions_metrics`
-5. Particionar por `country`
+4. Guardar in `s3a://gold/transactions_metrics`
+5. Particionar by `country`
 
 **features Gold**:
-- ✅ Business-friendly (columns con nombres claros)
-- ✅ Denormalized (todo en una table)
+- ✅ Business-friendly (columns with nombres claros)
+- ✅ Denormalized (everything in una table)
 - ✅ Pre-aggregated (quick queries)
-- ✅ BI-ready (conectar directamente a Tableau, PowerBI, etc.)
+- ✅ BI-ready (conectar directamente to Tableau, PowerBI, etc.)
 
 **Expectativas**:
-- rows reduced to ~100-500 (per country-day)
+- rows networkuced to ~100-500 (per country-day)
 - Instant queries
 - Ready for viewing
 
 ---
 
-### Tarea 4: pipeline Completo
+### Tarea 4: pIPeline Completo
 
-**Archivo**: `starter/04_full_pipeline.py`
+**Archivo**: `starter/04_full_pIPeline.py`
 
-**Objetivo**: Orquestar el pipeline completo Bronze → Silver → Gold.
+**Objective**: Orquestar el pIPeline completo Bronze → Silver → Gold.
 
 **Requisitos**:
 1. Run Bronze ingestion
 2. Ejecutar limpieza Silver
 3. Run Gold Aggregation
 4. Implementar checkpoints entre stages
-5. Manejar errores y logging
-6. Generar reporte de resumen:
+5. Manejar errores and logging
+6. Generar reporte of resumen:
    ```
    📊 PIPELINE EXECUTION SUMMARY
    =============================
@@ -228,44 +228,44 @@ docker-compose logs -f spark-master
    Status: ✅ SUCCESS
    ```
 
-**features pipeline**:
-- ✅ Idempotent (can run multiple times)
-- ✅ Incremental (procesar solo nuevos datos)
-- ✅ Monitored (metrics and logs)
-- ✅ Error-tolerant (manejo de fallos)
+**features pIPeline**:
+- ✅ Idempotent (can run multIPle times)
+- ✅ Incremental (procesar only nuevos datas)
+- ✅ Monitonetwork (metrics and logs)
+- ✅ Error-tolerant (manejo of fallos)
 
 ---
 
 ## ✅ Success Criteria
 
 ### Bronze Layer
-- [ ] ~614K registros en `s3a://bronze/transactions`
+- [ ] ~614K records in `s3a://bronze/transactions`
 - [ ] Ingestion metadata (`ingestion_timestamp`, `source_file`)
-- [ ] Particionado por `ingestion_date`
-- [ ] Todos los datos originales preservados
+- [ ] Particionado by `ingestion_date`
+- [ ] Todos los datas originales preservados
 
 ### Silver Layer
-- [ ] ~540K registros en `s3a://silver/transactions_clean` (88% del original)
-- [ ] Sin duplicados
-- [ ] No nulls in critical fields
-- [ ] Tipos correctos (DecimalType, TimestampType)
+- [ ] ~540K records in `s3a://silver/transactions_clean` (88% of the original)
+- [ ] without duplicados
+- [ ] not nulls in critical fields
+- [ ] TIPos correctos (DecimalType, TimestampType)
 - [ ] validation columns (`is_valid`, `validation_errors`)
 
 ### Gold Layer
-- [ ] ~300-500 rows en `s3a://gold/transactions_metrics`
+- [ ] ~300-500 rows in `s3a://gold/transactions_metrics`
 - [ ] Metrics aggregated by country-day
 - [ ] Percentiles calculados
 - [ ] Conversion/completion rates
 
-### pipeline Completo
-- [ ] Ejecuta end-to-end sin errores
-- [ ] Genera reporte de resumen
+### pIPeline Completo
+- [ ] Ejecuta end-to-end without errores
+- [ ] Genera reporte of resumen
 - [ ] Execution time < 3 minutes
-- [ ] Logs informativos en cada stage
+- [ ] Logs informativos in cada stage
 
 ---
 
-## 🎓 Conceptos Clave
+## 🎓 Conceptos Key
 
 ### Medallion Architecture
 
@@ -276,7 +276,7 @@ docker-compose logs -f spark-master
 │ Purpose: Long-term audit trail, reprocessing capability     │
 │ Format: Raw, append-only, immutable                         │
 │ Retention: Years (cheap object storage)                     │
-│ Quality: As-is, no filtering                                  │
+│ Quality: As-is, not filtering                                  │
 └─────────────────────────────────────────────────────────────┘
                            ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -301,47 +301,47 @@ docker-compose logs -f spark-master
 ### When to Use Each Layer
 
 **Bronze**:
-- Data sources variadas (APIs, archivos, streams)
+- data sources variadas (APIs, archivos, streams)
 - Audit and compliance
 - Reprocessing after changes in logic
-- ML feature engineering sobre datos crudos
+- ML feature engineering sobre datas crudos
 
 **Silver**:
 - Analytics ad-hoc
 - ML training datasets
-- Join between multiple sources
+- Join between multIPle sources
 - Exploratory data analysis
 
 **Gold**:
-- Dashboards de C-level
+- Dashboards of C-level
 - Reportes operacionales
-- Alertas y monitoring
+- Alerts and monitoring
 - Product metrics
 
 ---
 
 ## 📚 resources
 
-- [Medallion Architecture - Databricks](https://www.databricks.com/glossary/medallion-architecture)
-- [Delta Lake Best Practices](https://docs.delta.io/latest/best-practices.html)
-- [PySpark Data Quality](https://spark.apache.org/docs/latest/sql-ref-functions.html)
+- [Medallion Architecture - Databricks](HTTPs://www.databricks.com/glossary/medallion-architecture)
+- [Delta Lake Best Practices](HTTPs://docs.delta.io/latest/best-practices.html)
+- [PySpark data Quality](HTTPs://spark.apache.org/docs/latest/sql-ref-functions.html)
 
 ---
 
 ## 🔍 Troubleshooting
 
-### "Table already exists" en Bronze
+### "Table already exists" in Bronze
 
-Bronze es append-only. Usa `.mode("append")` siempre:
+Bronze is append-only. Usa `.mode("append")` siempre:
 ```python
 df.write.format("delta").mode("append").save(path)
 ```
 
-### pipeline muy lento
+### pIPeline muy lento
 
-1. **Aumenta paralelismo**: `.repartition(200)` antes de escribir
-2. **Filtra temprano**: Aplica filtros antes de joins
-3. **Cachea**: Si reutilizas un DataFrame, usa `.cache()`
+1. **Aumenta paralelismo**: `.repartition(200)` antes of escribir
+2. **Filtra temprano**: Aplica filters antes of joins
+3. **Cachea**: if reutilizas un DataFrame, usa `.cache()`
 
 ### Incorrect metrics in Gold
 
@@ -356,9 +356,9 @@ silver_df.groupBy("is_valid").count().show()  # Debe ser 100% valid
 ## 🎯 Next Steps
 
 Una vez completado:
-1. ✅ Continuar con **Ejercicio 03: Time Travel**
-2. Explorar MERGE para updates incrementales
-3. Implementar SCD Type 2 para slowly changing dimensions
-4. Agregar Great Expectations para data quality
+1. ✅ Continuar with **Exercise 03: Time Travel**
+2. Explorar MERGE for updates incrementales
+3. Implementar SCD Type 2 for slowly changing dimensions
+4. Agregar Great Expectations for data quality
 
 Good luck! 🚀
