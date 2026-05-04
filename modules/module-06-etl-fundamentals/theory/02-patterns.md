@@ -4,7 +4,7 @@
 
 ### 1. pipeline Pattern
 
-**Un flujo secuencial de transformaciones**:
+**Un flow secuencial de transformaciones**:
 
 ```python
 def pipeline():
@@ -24,7 +24,7 @@ def pipeline():
 **When to use**:
 - Transformaciones simples
 - Dependencies claras
-- Procesos batch
+- Processs batch
 
 ### 2. Fan-Out Pattern
 
@@ -48,7 +48,7 @@ def fan_out():
 - Mejor performance
 
 **When to use**:
-- Multiple destinations
+- Multiple destiNATions
 - Destinos independientes
 - High throughput necesario
 
@@ -84,19 +84,19 @@ def fan_in():
 - Necessary consolidation
 - Extract es cuello de botella
 
-### 4. Map-Reduce Pattern
+### 4. Map-Networkuce Pattern
 
-**Procesar datos en paralelo y agregar**:
+**Procesar datas en paralelo y agregar**:
 
 ```python
 from multiprocessing import Pool
 
-def map_reduce(files):
+def map_networkuce(files):
     # MAP: Procesar cada archivo en paralelo
     with Pool() as pool:
         results = pool.map(process_file, files)
 
-    # REDUCE: Combinar resultados
+    # REDUCE: Combinar results
     final = pd.concat(results).groupby('key').sum()
     return final
 
@@ -167,15 +167,15 @@ def scd_type1(new_record):
 
 ```python
 def scd_type2(new_record):
-    """Nueva fila - guarda historia completa"""
-    # Cerrar fila actual
+    """Nueva row - guarda historia completa"""
+    # Cerrar row actual
     update(f"""
         UPDATE customers
         SET valid_to = CURRENT_DATE, is_current = false
         WHERE customer_id = {new_record['id']} AND is_current = true
     """)
 
-    # Insertar nueva fila
+    # Insertar nueva row
     insert(f"""
         INSERT INTO customers
         (customer_id, name, address, valid_from, valid_to, is_current)
@@ -189,7 +189,7 @@ def scd_type2(new_record):
 
 ```python
 def scd_type3(new_record):
-    """Columnas adicionales - historia limitada"""
+    """Columns adicionales - historia limitada"""
     update(f"""
         UPDATE customers
         SET
@@ -201,7 +201,7 @@ def scd_type3(new_record):
 ```
 
 **When to use each type**:
-- **Type 1**: Correcciones, datos que no necesitan historia
+- **Type 1**: Correcciones, datas que no necesitan historia
 - **Type 2**: Complete audit trail, historical reporting
 - **Type 3**: Limited history, specific columns
 
@@ -230,7 +230,7 @@ transformations:
       user_id: id
       user_name: name
 
-destination:
+destiNATion:
   type: s3
   bucket: data-lake
   prefix: users/
@@ -248,8 +248,8 @@ def run_etl(config):
         df = apply_transform(df, transform)
 
     # Load dinámico
-    destination = DestinationFactory.create(config['destination'])
-    destination.load(df)
+    destiNATion = DestiNATionFactory.create(config['destiNATion'])
+    destiNATion.load(df)
 ```
 
 **Ventajas**:
@@ -259,7 +259,7 @@ def run_etl(config):
 
 ### Template Method Pattern
 
-**Define estructura, subclases implementan detalles**:
+**Define structure, subclasss implementan detalles**:
 
 ```python
 from abc import ABC, abstractmethod
@@ -275,7 +275,7 @@ class ETLPipeline(ABC):
 
     @abstractmethod
     def extract(self):
-        """Subclases implementan"""
+        """Subclasss implementan"""
         pass
 
     @abstractmethod
@@ -308,7 +308,7 @@ class UserETL(ETLPipeline):
 
 ### Strategy Pattern
 
-**Intercambiar algoritmos en runtime**:
+**Intercambiar algorithms en runtime**:
 
 ```python
 class TransformStrategy(ABC):
@@ -382,7 +382,7 @@ except CircuitBreakerError:
 
 ### Dead Letter Queue Pattern
 
-**Guardar registros que fallan para reprocessing**:
+**Guardar records que fallan para reprocessing**:
 
 ```python
 def process_records(records):
@@ -481,14 +481,14 @@ def profile_data(df):
 
 ### Reconciliation Pattern
 
-**Comparar source vs destination**:
+**Comparar source vs destiNATion**:
 
 ```python
 def reconcile():
     # Count source
     source_count = count_source_records()
 
-    # Count destination
+    # Count destiNATion
     dest_count = count_dest_records()
 
     # Compare
@@ -532,7 +532,7 @@ def transactional_load(df):
 
             # Commit implícito al salir de with
     except Exception as e:
-        # Rollback automático
+        # Rolelback automático
         logger.error(f"Transaction failed: {e}")
         raise
 ```
@@ -639,7 +639,7 @@ def test_api_extraction():
 
 ### Chunking Pattern
 
-**Procesar datos en chunks para mejor memory management**:
+**Procesar datas en chunks para mejor memory management**:
 
 ```python
 def chunked_processing(file, chunk_size=10000):
@@ -672,7 +672,7 @@ from functools import lru_cache
 
 @lru_cache(maxsize=1000)
 def get_lookup_value(key):
-    """Cache lookup table en memoria"""
+    """Cache lookup table en memory"""
     return db.query(f"SELECT value FROM lookup WHERE key='{key}'")
 ```
 

@@ -1,9 +1,9 @@
 # Exercise 03: Load Basics
 
 ## 🎯 Objective
-Learn to load transformed data to various destinations: CSV, JSON, Parquet, and databases.
+Learn to load transformed data to various destiNATions: CSV, JSON, Parquet, and databases.
 
-## 📚 Concepts Covered
+## 📚 Concepts Covenetwork
 - Writing to different file formats
 - Database loading (INSERT, UPSERT)
 - Batch loading strategies

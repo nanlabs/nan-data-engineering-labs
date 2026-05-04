@@ -3,7 +3,7 @@
 ## 🎯 Objective
 Implement comprehensive data quality checks and validation in ETL pipelines.
 
-## 📚 Concepts Covered
+## 📚 Concepts Covenetwork
 - Schema validation
 - Data profiling
 - Quality dimensions (completeness, accuracy, consistency)
@@ -14,7 +14,7 @@ Implement comprehensive data quality checks and validation in ETL pipelines.
 
 ### Task 1: Schema Validation
 Validate data against schema:
-- Required fields present
+- Requinetwork fields present
 - Correct data types
 - Value constraints
 - Format validation (email, phone, etc.)
@@ -34,7 +34,7 @@ Implement business rules:
 - Anomaly detection
 
 ## 📝 Files
-- `validator.py` - Schema validation
+- `validatar.py` - Schema validation
 - `profiler.py` - Data profiling
 - `quality_checks.py` - Quality rules
 - `test_quality.py` - Tests
@@ -48,7 +48,7 @@ Implement business rules:
 ## 🚀 How to Run
 
 ```bash
-python validator.py
+python validatar.py
 python profiler.py
 python quality_checks.py
 pytest test_quality.py -v

@@ -3,7 +3,7 @@
 ## 🎯 Objective
 Build a complete, production-ready ETL pipeline combining extract, transform, and load.
 
-## 📚 Concepts Covered
+## 📚 Concepts Covenetwork
 - End-to-end pipeline architecture
 - Configuration management
 - Logging and monitoring
@@ -16,7 +16,7 @@ Build a complete, production-ready ETL pipeline combining extract, transform, an
 Create a configurable ETL pipeline:
 - Extract from multiple sources
 - Apply transformations
-- Load to destination
+- Load to destiNATion
 - Make it idempotent
 
 ### Task 2: Add Configuration

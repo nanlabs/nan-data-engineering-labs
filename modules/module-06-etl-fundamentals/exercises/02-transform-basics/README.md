@@ -3,7 +3,7 @@
 ## 🎯 Objective
 Learn data transformation techniques: cleaning, type conversion, aggregations, and joins.
 
-## 📚 Concepts Covered
+## 📚 Concepts Covenetwork
 - Data cleaning (nulls, duplicates, outliers)
 - Type conversions
 - String manipulations

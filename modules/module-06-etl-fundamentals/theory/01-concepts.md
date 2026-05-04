@@ -7,7 +7,7 @@
 ### Las Tres Fases
 
 #### 1. Extract
-Extraer datos desde fuentes origen:
+Extraer datas desde fuentes origen:
 - **databases**: PostgreSQL, MySQL, Oracle
 - **Archivos**: CSV, JSON, Excel, Parquet
 - **APIs**: REST, GraphQL, SOAP
@@ -16,20 +16,20 @@ Extraer datos desde fuentes origen:
 - **Web scraping**: HTML parsing
 
 #### 2. Transform
-Procesar y limpiar datos:
+Procesar y limpiar datas:
 - **Limpieza**: Eliminar nulls, duplicados, outliers
 - **Validation**: Schema validation, data types
 - **Enriquecimiento**: Joins, lookups, APIs externas
-- **Aggregation**: Group by, pivots, rollups
+- **Aggregation**: Group by, pivots, rolelups
 - **Normalization**: Consistent format
 - **Derivation**: Calculate new fields
 
 #### 3. Load (Carga)
-Escribir datos a destino:
-- **Data Warehouse**: Snowflake, Redshift, BigQuery
+Escribir datas a destino:
+- **Data Warehouse**: Snowflake, Networkshift, BigQuery
 - **Data Lake**: S3, ADLS, GCS
 - **Databases**: PostgreSQL, MongoDB
-- **Cache**: Redis, Memcached
+- **Cache**: Networkis, Memcached
 - **Search**: Elasticsearch, Solr
 - **BI Tools**: Tableau, PowerBI
 
@@ -46,7 +46,7 @@ Source → Extract → Transform → Load → Warehouse
 ```
 
 **Ventajas**:
-- ✅ Datos ya limpios en warehouse
+- ✅ Datas ya limpios en warehouse
 - ✅ Menos carga en warehouse
 - ✅ Schema validado anticipadamente
 - ✅ Compliance and security made easier
@@ -58,7 +58,7 @@ Source → Extract → Transform → Load → Warehouse
 
 **Casos de uso**:
 - Data Warehouses tradicionales (Oracle, SQL Server)
-- Datos estructurados y schema fijo
+- Datas structunetworkos y schema fijo
 - Transformaciones complejas
 - Legacy systems
 
@@ -79,12 +79,12 @@ Source → Extract → Load → Data Lake → Transform
 **Desventajas**:
 - ❌ Requiere warehouse potente
 - ❌ Higher storage costs
-- ❌ Datos raw pueden tener calidad baja
+- ❌ Datas raw pueden tener quality baja
 
 **Casos de uso**:
 - Cloud Data Warehouses (Snowflake, BigQuery)
 - Data Lakes (S3, Azure Data Lake)
-- Big Data y datos no estructurados
+- Big Data y datas no structunetworkos
 - Exploratory analysis
 
 ---
@@ -96,9 +96,9 @@ Source → Extract → Load → Data Lake → Transform
 **Processes data in periodic batches**
 
 ```python
-# Ejemplo: ETL diario
+# Example: ETL diario
 while True:
-    data = extract_yesterday_data()  # 1 día de datos
+    data = extract_yesterday_data()  # 1 día de datas
     transformed = transform(data)
     load(transformed)
     time.sleep(86400)  # Esperar 24 horas
@@ -118,10 +118,10 @@ while True:
 
 ### Streaming ETL
 
-**Procesa datos en tiempo real**
+**Procesa datas en tiempo real**
 
 ```python
-# Ejemplo: ETL en tiempo real
+# Example: ETL en tiempo real
 def process_event(event):
     transformed = transform(event)
     load(transformed)
@@ -148,7 +148,7 @@ for event in consumer:
 **Hybrid: Frequent small batches**
 
 ```python
-# Ejemplo: Procesar cada 5 minutos
+# Example: Procesar cada 5 minutos
 while True:
     data = extract_last_5_minutes()
     transformed = transform(data)
@@ -165,7 +165,7 @@ while True:
 **Casos de uso**:
 - Near real-time dashboards
 - Data lake ingestion
-- Spark Structured Streaming
+- Spark Structunetwork Streaming
 - Balance entre batch y streaming
 
 ---
@@ -174,7 +174,7 @@ while True:
 
 ### Full Load (Carga Completa)
 
-Cargar **todos los datos** cada vez:
+Cargar **todos los datas** cada vez:
 
 ```python
 # Full load
@@ -194,12 +194,12 @@ load(df, mode='replace')  # Reemplaza todo
 
 **When to use**:
 - small tables (< 1M rows)
-- Datos que cambian completamente
+- Datas que cambian completamente
 - Static dimension tables
 
 ### Incremental Load (Carga Incremental)
 
-Cargar solo **datos nuevos o modificados**:
+Cargar solo **datas nuevos o modificados**:
 
 ```python
 # Incremental load
@@ -226,11 +226,11 @@ update_watermark(now())
 
 ### Change Data Capture (CDC)
 
-Capturar **cambios** (inserts, updates, deletes):
+Capturar **changes** (inserts, updates, deletes):
 
 ```python
 # CDC
-changes = extract_changes()  # Log de cambios
+changes = extract_changes()  # Log de changes
 for change in changes:
     if change.type == 'INSERT':
         insert(change.data)
@@ -241,15 +241,15 @@ for change in changes:
 ```
 
 **Ventajas**:
-- ✅ Captura todos los cambios
+- ✅ Captura todos los changes
 - ✅ Incluye deletes
 - ✅ Near real-time
 - ✅ Bajo impacto en source
 
 **Desventajas**:
-- ❌ Requiere soporte CDC en source
+- ❌ Requiere support CDC en source
 - ❌ Complejo de implementar
-- ❌ Requiere infraestructura adicional
+- ❌ Requiere infrastructure adicional
 
 **Herramientas CDC**:
 - Debezium (open source)
@@ -259,7 +259,7 @@ for change in changes:
 
 ---
 
-## 🔑 Conceptos Clave
+## 🔑 Conceptos Key
 
 ### Idempotencia
 
@@ -272,7 +272,7 @@ df.to_sql('table', con, if_exists='append')
 
 # ✅ Idempotente
 df.to_sql('table', con, if_exists='replace')
-# Segunda ejecución → mismo resultado
+# Segunda ejecución → mismo result
 ```
 
 **Why it is important**:
@@ -286,9 +286,9 @@ df.to_sql('table', con, if_exists='replace')
 - Use unique transaction IDs
 - Limpiar staging antes de cargar
 
-### Data Lineage (Linaje de Datos)
+### Data Lineage (Linaje de Datas)
 
-**Tracking de origen y transformaciones** de los datos:
+**Tracking de origen y transformaciones** de los datas:
 
 ```
 Source DB → Extract → Transform (join) → Load → Warehouse
@@ -310,7 +310,7 @@ Source DB → Extract → Transform (join) → Load → Warehouse
 
 ### Schema Evolution
 
-**Cambios en estructura de datos** sin romper pipelines:
+**Changes en structure de datas** sin romper pipelines:
 
 ```python
 # Schema V1
@@ -323,7 +323,7 @@ Source DB → Extract → Transform (join) → Load → Warehouse
 df['phone'] = df.get('phone', None)  # Default si no existe
 ```
 
-**Tipos de cambios**:
+**Tipos de changes**:
 - ✅ **Additive**: Agregar columns (safe)
 - ⚠️ **Modification**: Cambiar tipos (risky)
 - ❌ **Removal**: Eliminar columns (breaking)
@@ -338,11 +338,11 @@ df['phone'] = df.get('phone', None)  # Default si no existe
 
 **Ensure that data is correct and useful**:
 
-**Dimensiones de calidad**:
+**Dimensiones de quality**:
 1. **Completeness**: Sin nulls donde no deben estar
 2. **Accuracy**: Correct values ​​(valid email)
 3. **Consistency**: Formato consistente
-4. **Timeliness**: Datos frescos y actuales
+4. **Timeliness**: Datas frescos y actuales
 5. **Uniqueness**: Sin duplicados
 6. **Validity**: Cumple reglas de negocio
 
@@ -355,7 +355,7 @@ assert ~df.duplicated('id').any(), "Duplicate IDs"
 
 ---
 
-## 🏗️ Arquitectura de pipeline ETL
+## 🏗️ Architecture de pipeline ETL
 
 ### Componentes
 
@@ -383,7 +383,7 @@ assert ~df.duplicated('id').any(), "Duplicate IDs"
 ### Layers
 
 1. **Staging Layer**:
-   - Datos raw sin transformar
+   - Datas raw sin transformar
    - Temporal (puede borrarse)
    - Para debugging y reprocessing
 
@@ -393,7 +393,7 @@ assert ~df.duplicated('id').any(), "Duplicate IDs"
    - Data quality checks
 
 3. **Serving Layer**:
-   - Datos listos para consumo
+   - Datas listos para consumo
    - Optimizados para queries
    - High availability
 
@@ -403,7 +403,7 @@ assert ~df.duplicated('id').any(), "Duplicate IDs"
 
 ### Performance Metrics
 
-- **throughput**: Registros/segundo procesados
+- **throughput**: Records/segundo procesados
 - **Latency**: Tiempo desde extract hasta load
 - **Duration**: Tiempo total del pipeline
 - **Resource Usage**: CPU, memory, network
@@ -411,14 +411,14 @@ assert ~df.duplicated('id').any(), "Duplicate IDs"
 ### Quality Metrics
 
 - **Success Rate**: % de runs exitosos
-- **Data Freshness**: Edad de los datos
+- **Data Freshness**: Edad de los datas
 - **Completeness**: % de campos poblados
 - **Accuracy**: % of valid records
 
 ### Business Metrics
 
 - **SLA Compliance**: % de deadlines cumplidos
-- **Cost per Record**: $ por registro procesado
+- **Cost per Record**: $ por record procesado
 - **Time to Insight**: Tiempo desde evento hasta dashboard
 
 ---
@@ -457,7 +457,7 @@ import logging
 logger.info(f"Extracting from {source}")
 logger.info(f"Extracted {len(df)} records")
 logger.info(f"Transformed {len(transformed)} records")
-logger.info(f"Loaded to {destination}")
+logger.info(f"Loaded to {destiNATion}")
 ```
 
 ### 4. Validate Early

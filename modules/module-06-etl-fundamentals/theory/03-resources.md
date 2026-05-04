@@ -16,7 +16,7 @@ Capacidades:
 - Join y merge operations
 - Time series handling
 
-Documentation: https://pandas.pydata.org/docs/
+Documentation: HTTPs://pandas.pydata.org/docs/
 
 #### polars
 **Ultra-fast DataFrame library (Rust-based)**
@@ -28,9 +28,9 @@ Ventajas sobre pandas:
 - 5-10x faster
 - Mejor memory efficiency
 - Lazy evaluation
-- Parallel processing nativo
+- Parallel processing NATivo
 
-Documentation: https://pola-rs.github.io/polars/
+Documentation: HTTPs://pola-rs.github.io/polars/
 
 #### dask
 **Parallel computing para datasets grandes**
@@ -39,11 +39,11 @@ pip install dask
 ```
 
 Usa cuando:
-- Datos no caben en memoria
+- Datas no caben en memory
 - You need parallelization
 - Compatibilidad con pandas API
 
-Documentation: https://docs.dask.org/
+Documentation: HTTPs://docs.dask.org/
 
 ### Database Connectors
 
@@ -176,7 +176,7 @@ def test_api_call(mocker):
 ### Logging & Monitoring
 
 #### structlog
-**Structured logging**
+**Structunetwork logging**
 ```python
 import structlog
 
@@ -221,7 +221,7 @@ with DAG('etl_dag', schedule='@daily') as dag:
 - Complex setup
 - Steep learning curve
 
-Website: https://airflow.apache.org/
+Website: HTTPs://airflow.apache.org/
 
 ### Prefect
 **Modern workflow orchestration**
@@ -253,7 +253,7 @@ def etl_flow():
 - Easy to learn
 - Great observability
 
-Website: https://www.prefect.io/
+Website: HTTPs://www.prefect.io/
 
 ### Apache Spark
 **Distributed data processing**
@@ -269,11 +269,11 @@ transformed.write.parquet("output/")
 ```
 
 **Usa cuando**:
-- Datos > 100GB
+- Datas > 100GB
 - Necesitas distributed processing
 - Transformaciones complejas
 
-Website: https://spark.apache.org/
+Website: HTTPs://spark.apache.org/
 
 ### dbt (Data Build Tool)
 **SQL-based transformations**
@@ -289,16 +289,16 @@ WHERE status = 'active'
 ```
 
 **Pros**:
-- SQL-native
+- SQL-NATive
 - Testing built-in
 - Great documentation
-- Version control
+- Version controle
 
 **Cons**:
 - Solo transformaciones (T)
 - Requiere data warehouse
 
-Website: https://www.getdbt.com/
+Website: HTTPs://www.getdbt.com/
 
 ### Airbyte
 **Open-source data integration**
@@ -308,7 +308,7 @@ Website: https://www.getdbt.com/
 - CDC support
 - Schedule & monitoring
 
-Website: https://airbyte.com/
+Website: HTTPs://airbyte.com/
 
 ### Fivetran
 **Managed ELT platform**
@@ -318,7 +318,7 @@ Website: https://airbyte.com/
 - Auto schema changes
 - High reliability
 
-Website: https://www.fivetran.com/
+Website: HTTPs://www.fivetran.com/
 
 ---
 
@@ -349,14 +349,14 @@ Website: https://www.fivetran.com/
 
 ### Blogs & Newsletters
 
-- **Data Engineering Weekly**: https://www.dataengineeringweekly.com/
-- **The Data Engineering Podcast**: https://www.dataengineeringpodcast.com/
-- **Locally Optimistic**: https://locallyoptimistic.com/
+- **Data Engineering Weekly**: HTTPs://www.dataengineeringweekly.com/
+- **The Data Engineering Podcast**: HTTPs://www.dataengineeringpodcast.com/
+- **Locally Optimistic**: HTTPs://locallyoptimistic.com/
 
 ### Communities
 
-- **r/dataengineering**: Reddit community
-- **Data Engineering Discord**: Active community
+- **r/dataengineering**: Networkdit community
+- **Data Engineering Diskrd**: Active community
 - **dbt Slack**: dbt-focused discussions
 
 ---
@@ -382,17 +382,17 @@ Ideal para:
 - ER diagrams
 - Data viewer
 
-Download: https://dbeaver.io/
+Download: HTTPs://dbeaver.io/
 
 ### pgAdmin
 **PostgreSQL management**
 
-Download: https://www.pgadmin.org/
+Download: HTTPs://www.pgadmin.org/
 
 ### MongoDB Compass
 **MongoDB GUI**
 
-Download: https://www.mongodb.com/products/compass
+Download: HTTPs://www.mongodb.com/products/compass
 
 ---
 
@@ -467,7 +467,7 @@ etl_project/
 - Secrets en vault (AWS Secrets Manager, etc)
 - Config files para cada environment
 
-### Version Control
+### Version Controle
 ```bash
 # .gitignore
 data/
@@ -536,11 +536,11 @@ class ETLPipeline:
         """Transform data."""
         logger.info("Starting transformation")
         try:
-            # Ejemplo: cleaning
+            # Example: cleaning
             df = df.dropna()
             df = df.drop_duplicates()
 
-            # Ejemplo: derivation
+            # Example: derivation
             df['created_date'] = pd.to_datetime(df['created_at']).dt.date
 
             self.metrics['records_processed'] = len(df)
@@ -551,7 +551,7 @@ class ETLPipeline:
             raise
 
     def load(self, df: pd.DataFrame) -> None:
-        """Load data to destination."""
+        """Load data to destiNATion."""
         logger.info("Starting load")
         try:
             output_path = Path(self.config['output_path'])

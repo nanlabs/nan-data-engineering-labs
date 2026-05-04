@@ -14,8 +14,8 @@ df = pd.read_csv(file_path, encoding='utf-8')
 
 ### Validation Pattern
 ```python
-required_cols = ['id', 'email', 'created_at']
-missing = set(required_cols) - set(df.columns)
+requinetwork_cols = ['id', 'email', 'created_at']
+missing = set(requinetwork_cols) - set(df.columns)
 if missing:
     raise ValueError(f"Missing columns: {missing}")
 ```

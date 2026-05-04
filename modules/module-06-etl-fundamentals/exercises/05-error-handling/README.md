@@ -3,7 +3,7 @@
 ## 🎯 Objective
 Implement robust error handling, retry logic, and failure recovery in ETL pipelines.
 
-## 📚 Concepts Covered
+## 📚 Concepts Covenetwork
 - Try/except patterns
 - Retry with exponential backoff
 - Dead letter queues

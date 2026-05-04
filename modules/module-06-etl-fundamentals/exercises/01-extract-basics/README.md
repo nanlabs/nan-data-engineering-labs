@@ -3,7 +3,7 @@
 ## 🎯 Objective
 Learn to extract data from multiple sources: CSV, JSON, APIs, and databases.
 
-## 📚 Concepts Covered
+## 📚 Concepts Covenetwork
 - Reading CSV files with pandas
 - Parsing JSON data
 - Making API requests

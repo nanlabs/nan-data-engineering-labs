@@ -12,11 +12,11 @@ By completing this module, you will be able to:
 
 - ✅ Comprender los conceptos fundamentales de ETL
 - ✅ Extract data from multiple sources (CSV, JSON, APIs, databases)
-- ✅ Transformar datos usando pandas y Python
-- ✅ Cargar datos a diferentes destinos
+- ✅ Transformar datas usando pandas y Python
+- ✅ Cargar datas a diferentes destinos
 - ✅ Construir pipelines ETL completos y robustos
 - ✅ Implementar manejo de errores y logging
-- ✅ Validar calidad de datos y crear data quality checks
+- ✅ Validar quality de datas y crear data quality checks
 
 ## 📦 Prerequisitos
 
@@ -26,7 +26,7 @@ Before beginning this module, you must have completed:
 - ✅ **Module 04**: Python for Data (pandas, testing)
 
 **Conocimientos necesarios**:
-- Python intermedio (funciones, clases, manejo de excepciones)
+- Python intermedio (funciones, classs, manejo de excepciones)
 - basic pandas (DataFrame operations)
 - Basic SQL (queries, inserts)
 - Conceptos de APIs REST
@@ -36,7 +36,7 @@ Before beginning this module, you must have completed:
 - pip y virtualenv
 - SQLite (incluido en Python)
 
-## 🏗️ Arquitectura ETL
+## 🏗️ Architecture ETL
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -46,7 +46,7 @@ Before beginning this module, you must have completed:
 │  │ EXTRACT  │  →   │  TRANSFORM   │  →   │   LOAD   │      │
 │  └──────────┘      └──────────────┘      └──────────┘      │
 │       ↓                    ↓                     ↓           │
-│   Sources           Processing            Destinations       │
+│   Sources           Processing            DestiNATions       │
 │   • CSV             • Clean               • Database         │
 │   • JSON            • Filter              • Data Lake        │
 │   • APIs            • Aggregate           • Data Warehouse   │
@@ -71,31 +71,31 @@ module-06-etl-fundamentals/
 ├── theory/                            # Material teórico
 │   ├── 01-concepts.md                 # Conceptos fundamentales ETL
 │   ├── 02-patterns.md                 # Patrones y best practices
-│   └── 03-resources.md                # Recursos adicionales
+│   └── 03-resources.md                # Resources adicionales
 │
-├── exercises/                         # 6 ejercicios prácticos
-│   ├── 01-extract-basics/             # Extracción de datos
+├── exercises/                         # 6 exercises prácticos
+│   ├── 01-extract-basics/             # Extracción de datas
 │   ├── 02-transform-basics/           # Transformaciones
-│   ├── 03-load-basics/                # Carga de datos
+│   ├── 03-load-basics/                # Carga de datas
 │   ├── 04-full-pipeline/              # Pipeline ETL completo
 │   ├── 05-error-handling/             # Errores y logging
-│   └── 06-data-quality/               # Calidad de datos
+│   └── 06-data-quality/               # Quality de datas
 │
-├── data/                              # Datasets de ejemplo
-│   ├── raw/                           # Datos crudos
-│   ├── schemas/                       # Esquemas de datos
-│   └── scripts/                       # Scripts generación datos
+├── data/                              # Datasets de example
+│   ├── raw/                           # Datas crudos
+│   ├── schemas/                       # Esquemas de datas
+│   └── scripts/                       # Scripts generación datas
 │
 ├── validation/                        # Tests automatizados
 │   ├── conftest.py                    # Fixtures de pytest
-│   └── test_*.py                      # Tests por ejercicio
+│   └── test_*.py                      # Tests por exercise
 │
 ├── scripts/                           # Scripts de automatización
 │   ├── setup.sh                       # Setup del entorno
 │   ├── validate.sh                    # Ejecutar tests
-│   └── run_pipeline.sh                # Ejecutar pipeline ejemplo
+│   └── run_pipeline.sh                # Ejecutar pipeline example
 │
-└── assets/                            # Cheatsheets y referencia
+└── assets/                            # Cheatsheets y reference
     ├── etl-checklist.md
     └── pandas-transforms.md
 ```
@@ -109,7 +109,7 @@ Data extraction from different sources: CSV, JSON, APIs, SQLite
 Common transformations: cleanup, type conversion, aggregations
 
 ### Exercise 03: Load Basics (⭐⭐ Intermediate - 1.5h)
-Carga de datos: CSV, JSON, SQLite con upsert
+Carga de datas: CSV, JSON, SQLite con upsert
 
 ### Exercise 04: Full pipeline (⭐⭐⭐ Advanced - 3h)
 pipeline ETL end-to-end modular y configurable

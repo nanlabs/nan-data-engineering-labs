@@ -22,11 +22,11 @@ Progreso: 8/8 pasos (100%)
 
 - [x] Comprender conceptos fundamentales de ETL
 - [x] Extract data from multiple sources
-- [x] Transformar datos con pandas
-- [x] Cargar datos a diferentes destinos
+- [x] Transformar datas con pandas
+- [x] Cargar datas a diferentes destinos
 - [x] Construir pipelines ETL completos
 - [x] Implementar error handling y logging
-- [x] Validar calidad de datos
+- [x] Validar quality de datas
 
 ---
 
@@ -46,12 +46,12 @@ Progreso: 8/8 pasos (100%)
 ### ✅ Paso 3/8: Data & Schemas (Completo)
 - [x] data/schemas/ (3 schemas JSON)
 - [x] data/scripts/generate_*.py (4 scripts)
-- [x] Datasets generados (~500K registros)
+- [x] Datasets generados (~500K records)
 
 ### ✅ Paso 4/8: Exercises 01-03 (Completo)
-- [x] 01-extract-basics/ (4 ejercicios)
-- [x] 02-transform-basics/ (4 ejercicios)
-- [x] 03-load-basics/ (3 ejercicios)
+- [x] 01-extract-basics/ (4 exercises)
+- [x] 02-transform-basics/ (4 exercises)
+- [x] 03-load-basics/ (3 exercises)
 
 ### ✅ Paso 5/8: Exercises 04-06 (Completo)
 - [x] 04-full-pipeline/ (pipeline completo)
@@ -82,7 +82,7 @@ Progreso: 8/8 pasos (100%)
 **Archivos**: 75+ archivos
 **Tests**: 30+ tests
 **Lines of code**: ~8,000+
-**Contenido**: ~20,000 palabras
+**Content**: ~20,000 palabras
 
 ---
 

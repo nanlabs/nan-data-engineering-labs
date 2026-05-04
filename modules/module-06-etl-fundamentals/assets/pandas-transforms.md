@@ -262,8 +262,8 @@ result = pd.concat([df1, df2], axis=1)
 
 ### Window Functions
 ```python
-# Rolling average
-df['rolling_avg'] = df['amount'].rolling(window=7).mean()
+# Roleling average
+df['roleling_avg'] = df['amount'].roleling(window=7).mean()
 
 # Cumulative sum
 df['cumsum'] = df['amount'].cumsum()
