@@ -6,7 +6,7 @@ Welcome to Module 05 of the data Engineering bootcamp. In this module we will de
 
 **🎉 Status: COMPLETED - 68 files, 6 exercises, 26 tests, 614,500 synthetic records**
 
-### 🎯 Objectives of Aprendizaje
+### 🎯 Learning Objectives
 
 By completing this module, you will be able to:
 
@@ -115,7 +115,7 @@ Sources → [Bronze] → [Silver] → [Gold] → Analytics/ML
 | **Governance** | ⚠️ Complejo | ✅ Robusto | ✅ Robusto |
 | **Time Travel** | ❌ not | ⚠️ Limitado | ✅ Yes |
 
-### 📦 Prerequisitos
+### 📦 Prerequisites
 
 Before beginning this module, you must have completed:
 
