@@ -1,43 +1,9 @@
-# Pre-commit hooks configuration for training-cloud-data
+# Pre-commit hooks configuration for nan-data-engineering-labs
+# Comprehensive validation for learning labs: structure, governance, and content quality
 # See https://pre-commit.com for more information
 
 repos:
-  # Local script hooks for module validation
-  - repo: local
-    hooks:
-      # Validate module structure, headings, exercise contracts
-      - id: validate-learning-labs
-        name: Validate Learning Labs Contract
-        entry: python scripts/validate_learning_labs.py --strict-core --strict-headings
-        language: python
-        types: [markdown]
-        stages: [commit]
-        fail_fast: false
-        pass_filenames: false
-        always_run: true
-        description: |
-          Validates module structure against MODULE-CONTRACT-MATRIX:
-          - Required paths (README.md, STATUS.md, etc.)
-          - Exercise assets (hints.md, starter/, solution/, my_solution/)
-          - Heading schema (Overview, Learning Objectives, Prerequisites, Validation)
-
-      # Validate English-only governance files
-      - id: validate-english-standards
-        name: Validate English-Only Governance
-        entry: python scripts/validate_english_content.py
-        language: python
-        types: [markdown]
-        stages: [commit]
-        fail_fast: false
-        pass_filenames: false
-        always_run: true
-        description: |
-          Validates that governance files are English-only:
-          - Files scoped: AGENTS.md, CONTRIBUTING.md, docs/, .github/
-          - Detects: Spanish keywords (69 markers) + accented characters
-          - Output: Findings with file locations and line numbers
-
-  # Standard pre-commit hooks
+  # Standard file hygiene hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
@@ -59,13 +25,68 @@ repos:
         files: ^(?!modules/).+\.json$
         stages: [commit]
 
+      - id: check-toml
+        name: Check TOML
+        stages: [commit]
+
       - id: check-merge-conflict
         name: Check for Merge Conflicts
         stages: [commit]
 
-      - id: check-toml
-        name: Check TOML
+      - id: detect-private-key
+        name: Detect Private Keys
         stages: [commit]
+
+      - id: check-added-large-files
+        name: Check for Large Files
+        stages: [commit]
+
+  # Markdown formatting and linting
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.22
+    hooks:
+      - id: mdformat
+        name: mdformat (Markdown Formatter)
+        additional_dependencies: [mdformat-gfm]
+        stages: [commit]
+
+  # Markdown linting with comprehensive rules
+  - repo: local
+    hooks:
+      - id: markdownlint-cli2-local
+        name: markdownlint-cli2 (Markdown Linting)
+        entry: npx --yes markdownlint-cli2 --fix
+        language: system
+        types: [markdown]
+        stages: [commit]
+
+      # Custom: Validate module structure, headings, exercise contracts
+      - id: validate-learning-labs
+        name: Validate Learning Labs Contract
+        entry: python scripts/validate_learning_labs.py --strict-core --strict-headings
+        language: python
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+        description: |
+          Validates module structure against MODULE-CONTRACT-MATRIX:
+          - Required paths (README.md, STATUS.md, etc.)
+          - Exercise assets (hints.md, starter/, solution/, my_solution/)
+          - Heading schema (Overview, Learning Objectives, Prerequisites, Validation)
+
+      # Custom: Validate English-only governance files
+      - id: validate-english-standards
+        name: Validate English-Only Governance
+        entry: python scripts/validate_english_content.py
+        language: python
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+        description: |
+          Validates that governance files are English-only:
+          - Files scoped: AGENTS.md, CONTRIBUTING.md, docs/, .github/
+          - Detects: Spanish keywords (69 markers) + accented characters
+          - Output: Findings with file locations and line numbers
 
 # Configuration
 default_stages: [commit]
