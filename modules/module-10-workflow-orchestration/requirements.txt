@@ -4,7 +4,7 @@ numpy>=1.24.0
 pyarrow>=13.0.0
 
 # Apache Airflow
-apache-airflow==2.8.1
+apache-airflow==3.2.1rc1
 apache-airflow-providers-amazon==8.16.0
 apache-airflow-providers-postgres==5.10.0
 apache-airflow-providers-docker==3.9.2
