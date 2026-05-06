@@ -38,6 +38,6 @@ bash validation/run-tests.sh
 Also validate module contracts from repository root:
 
 ```bash
-PYTHON=/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/.venv/bin/python
+PYTHON=python
 $PYTHON scripts/validate_learning_labs.py --module module-checkpoint-01-serverless-data-lake --strict-core --strict-headings
 ```

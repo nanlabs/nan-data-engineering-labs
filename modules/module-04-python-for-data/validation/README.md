@@ -152,7 +152,7 @@ jobs:
 **Solution**: Run from the root of the workspace:
 
 ```bash
-cd /home/nquiroga/Documents/personal/training-cloud-data
+cd training-cloud-data
 export PYTHONPATH=$PYTHONPATH:$PWD
 pytest modules/module-04-python-for-data/validation/ -v
 ```

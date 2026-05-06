@@ -273,7 +273,7 @@ Use this section as module success criteria:
 For repository contract checks, run from project root:
 
 ```bash
-PYTHON=/media/nquiroga/SSDedo/Documents/projects/NanLabs/labs/.venv/bin/python
+PYTHON=python
 $PYTHON scripts/validate_learning_labs.py --module module-bonus-02-snowflake-data-cloud
 ```
 - [Snowflake University](https://learn.snowflake.com/) (free courses)
