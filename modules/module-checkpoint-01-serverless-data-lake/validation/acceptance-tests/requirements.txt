@@ -15,7 +15,7 @@ numpy==1.26.3
 
 # Utilities
 python-dateutil==2.8.2
-requests==2.31.0
+requests==2.33.0
 
 # Mocking/Testing
 moto==4.2.12
