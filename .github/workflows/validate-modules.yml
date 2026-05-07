@@ -68,7 +68,9 @@ jobs:
             changed_files="$(git diff --name-only "$before" "${{ github.sha }}")"
           fi
 
-          modules="$(printf '%s\n' "$changed_files" | awk -F/ '/^modules\/module-[^\/]+\// {print $2}' | sort -u | tr '\n' ' ' | xargs)"
+          contract_changed_files="$(printf '%s\n' "$changed_files" | grep -E '^modules/module-[^/]+/(README\.md|STATUS\.md|theory/|exercises/|validation/|scripts/|data/|starter-template/|reference-solution/|docs/|architecture/|notebooks/)' || true)"
+
+          modules="$(printf '%s\n' "$contract_changed_files" | awk -F/ '/^modules\/module-[^\/]+\// {print $2}' | sort -u | tr '\n' ' ' | xargs)"
 
           if [ -n "$modules" ]; then
             echo "has_modules=true" >> "$GITHUB_OUTPUT"
