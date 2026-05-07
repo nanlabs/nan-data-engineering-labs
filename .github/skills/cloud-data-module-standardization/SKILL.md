@@ -31,10 +31,12 @@ PYTHON=python
 $PYTHON scripts/validate_learning_labs.py --strict-core --strict-headings
 $PYTHON scripts/progress.py
 ```
-6. Verify and report outcomes with evidence:
-  - `git status --short` for changed scope
-  - validator output summary for targeted modules
-  - explicit residual issues if any
+
+1. Verify and report outcomes with evidence:
+
+- `git status --short` for changed scope
+- validator output summary for targeted modules
+- explicit residual issues if any
 
 ## Validation Rules
 

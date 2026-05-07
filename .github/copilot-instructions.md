@@ -20,15 +20,15 @@ This file defines repository-specific Copilot guidance for `nan-data-engineering
 ## Execution Norms
 
 - Confirm outcomes before reporting them:
-	- Check `git status --short` and `git log --oneline -n 1` before claiming commit/merge completion.
-	- Report measured translation deltas only (counts from validator/search output).
+  - Check `git status --short` and `git log --oneline -n 1` before claiming commit/merge completion.
+  - Report measured translation deltas only (counts from validator/search output).
 - Translation workflow order:
-	- Ensure target module content exists before translating.
-	- Translate high-impact learning files first: `README.md`, `theory/*.md`, and `exercises/*/{README.md,starter/scenario.md,hints.md}`.
-	- If no translation API key is available, continue with local/manual pass and explicitly report remaining markers.
+  - Ensure target module content exists before translating.
+  - Translate high-impact learning files first: `README.md`, `theory/*.md`, and `exercises/*/{README.md,starter/scenario.md,hints.md}`.
+  - If no translation API key is available, continue with local/manual pass and explicitly report remaining markers.
 - "Done" criteria for a module translation task:
-	- Target module validation command executed.
-	- Zero findings for the target module scope, or explicit residual list if not complete.
+  - Target module validation command executed.
+  - Zero findings for the target module scope, or explicit residual list if not complete.
 
 ## Validation
 

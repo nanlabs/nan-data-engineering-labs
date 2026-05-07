@@ -34,7 +34,7 @@ PYTHON=python
 $PYTHON scripts/validate_learning_labs.py --strict-core --strict-headings
 $PYTHON scripts/validate_english_content.py
 $PYTHON scripts/progress.py
-```
+```text
 
 ## Execution and Reporting Norms
 
