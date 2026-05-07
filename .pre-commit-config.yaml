@@ -55,7 +55,7 @@ repos:
     hooks:
       - id: markdownlint-cli2-local
         name: markdownlint-cli2 (Markdown Linting)
-        entry: npx --yes markdownlint-cli2 --fix
+        entry: npx --yes markdownlint-cli2 --config .markdownlint-cli2.jsonc --fix
         language: system
         types: [markdown]
         stages: [commit]
