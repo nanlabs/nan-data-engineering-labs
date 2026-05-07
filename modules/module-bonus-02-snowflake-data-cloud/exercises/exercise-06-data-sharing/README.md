@@ -1,6 +1,7 @@
 # Exercise 06: Secure Data Sharing
 
 ## Overview
+
 Master Snowflake's Data Sharing capabilities to securely distribute data to partners and consumers without copying data, implementing row-level security, and exploring the Snowflake Data Marketplace.
 
 **Estimated Time**: 2 hours
@@ -10,7 +11,9 @@ Master Snowflake's Data Sharing capabilities to securely distribute data to part
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Create and manage Snowflake shares
 - Grant access to databases, schemas, tables, and views
 - Implement secure views with row-level security
@@ -22,7 +25,9 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 You're a SaaS analytics provider serving multiple client organizations. Each client should access their own analytics data without seeing other clients' data. Requirements:
+
 - **Secure multi-tenancy**: Each client sees only their data
 - **Zero data movement**: No copying data to client accounts
 - **Real-time access**: Clients always see latest data
@@ -36,9 +41,11 @@ Your goal is to implement a secure data sharing architecture using Snowflake sha
 ## Requirements
 
 ### Task 1: Provider Setup (20 min)
+
 Create a shared analytics database with sample customer metrics data.
 
 **Create Shared Database**:
+
 ```sql
 -- Use provider role
 USE ROLE ACCOUNTADMIN;
@@ -49,9 +56,10 @@ CREATE OR REPLACE DATABASE shared_analytics
 
 USE DATABASE shared_analytics;
 USE SCHEMA public;
-```
+```text
 
 **Create Customer Metrics Table**:
+
 ```sql
 CREATE OR REPLACE TABLE customer_metrics (
     metric_id INT AUTOINCREMENT PRIMARY KEY,
@@ -68,9 +76,10 @@ CREATE OR REPLACE TABLE customer_metrics (
 
     created_at TIMESTAMP DEFAULT current_timestamp()
 );
-```
+```text
 
 **Load Sample Data** (10,000 rows for 5 customers):
+
 ```sql
 INSERT INTO customer_metrics (customer_id, customer_name, metric_name, metric_value, metric_date, category, customer_email, revenue_usd)
 SELECT
@@ -100,9 +109,10 @@ SELECT
     'contact@' || LOWER(customer_name) || '.com' as customer_email,
     uniform(1000, 50000, random()) as revenue_usd
 FROM table(generator(rowcount => 10000));
-```
+```text
 
 **Verify Data Distribution**:
+
 ```sql
 -- Check data by customer
 SELECT
@@ -120,6 +130,7 @@ SELECT * FROM customer_metrics LIMIT 20;
 ```
 
 **Create Additional Supporting Objects**:
+
 ```sql
 -- Aggregated view for quick insights
 CREATE OR REPLACE VIEW customer_monthly_summary AS
@@ -140,9 +151,10 @@ SELECT * FROM customer_monthly_summary
 WHERE customer_id = 'CUST_001'
 ORDER BY month DESC, metric_name
 LIMIT 10;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ `shared_analytics` database created
 - ✅ `customer_metrics` table populated with 10,000+ rows
 - ✅ Data distributed across 5 customers
@@ -152,9 +164,11 @@ LIMIT 10;
 ---
 
 ### Task 2: Create Share (20 min)
+
 Create a Snowflake share object and grant access to database objects.
 
 **Create Share**:
+
 ```sql
 -- Create share (ACCOUNTADMIN required)
 USE ROLE ACCOUNTADMIN;
@@ -167,9 +181,10 @@ SHOW SHARES;
 
 -- Describe share
 DESC SHARE client_analytics;
-```
+```text
 
 **Grant Database Access**:
+
 ```sql
 -- Grant usage on database
 GRANT USAGE ON DATABASE shared_analytics
@@ -181,9 +196,10 @@ TO SHARE client_analytics;
 
 -- Show what's in share (should be empty - no tables/views yet)
 SHOW GRANTS TO SHARE client_analytics;
-```
+```text
 
 **Grant Table Access**:
+
 ```sql
 -- Option 1: Share raw table (NOT recommended - no security)
 -- GRANT SELECT ON TABLE shared_analytics.public.customer_metrics TO SHARE client_analytics;
@@ -200,6 +216,7 @@ SHOW GRANTS TO SHARE client_analytics;
 ```
 
 **Share Metadata**:
+
 ```sql
 -- View share details
 SELECT
@@ -212,9 +229,10 @@ SELECT
 FROM table(result_scan(last_query_id()))
 WHERE COMMAND = 'GRANT'
 ORDER BY DATABASE_NAME, SCHEMA_NAME, NAME;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Share `client_analytics` created
 - ✅ USAGE granted on database and schema
 - ✅ SELECT granted on monthly_summary view
@@ -224,9 +242,11 @@ ORDER BY DATABASE_NAME, SCHEMA_NAME, NAME;
 ---
 
 ### Task 3: Secure Views (30 min)
+
 Create secure views with row-level security and column masking.
 
 **Create Account Mapping Table** (maps consumer accounts to customer_ids):
+
 ```sql
 CREATE OR REPLACE TABLE customer_account_mapping (
     customer_id VARCHAR(50),
@@ -246,9 +266,10 @@ VALUES
     ('CUST_005', 'DataDriven Co', 'JKL33333', 'gh33333.ap-southeast-2');
 
 SELECT * FROM customer_account_mapping;
-```
+```text
 
 **Create Secure View with Row-Level Security**:
+
 ```sql
 CREATE OR REPLACE SECURE VIEW customer_metrics_filtered AS
 SELECT
@@ -286,9 +307,10 @@ WHERE customer_id IN (
 SELECT CURRENT_ACCOUNT() as my_account;
 SELECT COUNT(*) as total_records FROM customer_metrics_filtered;
 -- Should return 10,000 rows (provider sees all)
-```
+```text
 
 **Create Simpler Filtered View** (alternative for specific customer):
+
 ```sql
 -- Example: View for CUST_001 only
 CREATE OR REPLACE SECURE VIEW customer_001_metrics AS
@@ -308,6 +330,7 @@ SELECT COUNT(*) FROM customer_001_metrics;
 ```
 
 **Grant Secure View to Share**:
+
 ```sql
 -- Add secure view to share
 GRANT SELECT ON VIEW shared_analytics.public.customer_metrics_filtered
@@ -315,9 +338,10 @@ TO SHARE client_analytics;
 
 -- Verify share contents
 SHOW GRANTS TO SHARE client_analytics;
-```
+```text
 
 **Understanding SECURE Views**:
+
 ```sql
 -- Regular view: Query plan visible (shows WHERE clause)
 CREATE VIEW regular_view AS SELECT * FROM customer_metrics WHERE customer_id = 'CUST_001';
@@ -328,9 +352,10 @@ CREATE SECURE VIEW secure_view AS SELECT * FROM customer_metrics WHERE customer_
 -- Show view definition (secure view definition is hidden from consumers)
 SHOW VIEWS LIKE '%metrics%';
 GET_DDL('VIEW', 'customer_metrics_filtered');
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Account mapping table created with 5 customer-account mappings
 - ✅ Secure view `customer_metrics_filtered` implements row-level security
 - ✅ Email field masked using REGEXP_REPLACE
@@ -341,9 +366,11 @@ GET_DDL('VIEW', 'customer_metrics_filtered');
 ---
 
 ### Task 4: Add Consumers (20 min)
+
 Add consumer accounts to the share and document access setup.
 
 **Add Consumer Accounts**:
+
 ```sql
 -- Add consumer accounts to share
 ALTER SHARE client_analytics
@@ -359,10 +386,11 @@ ADD ACCOUNTS = DEF11111, GHI22222, JKL33333;
 -- View consumers
 SHOW SHARES LIKE 'client_analytics';
 DESC SHARE client_analytics;
-```
+```text
 
 **Document Consumer Setup Instructions**:
 Create `consumer-setup-guide.md`:
+
 ```markdown
 # Consumer Setup Guide
 
@@ -381,15 +409,17 @@ FROM SHARE <provider_account>.client_analytics;
 ```
 
 ### 2. Grant Access to Roles
+
 ```sql
 GRANT IMPORTED PRIVILEGES ON DATABASE client_analytics_db
 TO ROLE SYSADMIN;
 
 GRANT IMPORTED PRIVILEGES ON DATABASE client_analytics_db
 TO ROLE analyst_role;
-```
+```text
 
 ### 3. Query Shared Data
+
 ```sql
 USE DATABASE client_analytics_db;
 USE SCHEMA public;
@@ -405,9 +435,10 @@ LIMIT 10;
 -- Verify you only see your data
 SELECT DISTINCT customer_id, customer_name
 FROM customer_metrics_filtered;
-```
+```text
 
 ### 4. Create Warehouse for Queries
+
 ```sql
 -- Note: Consumers pay for compute (warehouse credits)
 CREATE WAREHOUSE consumer_wh
@@ -417,15 +448,18 @@ WITH
     AUTO_RESUME = TRUE;
 
 USE WAREHOUSE consumer_wh;
-```
+```text
 
 ## Cost Notes
+
 - **Provider**: No compute costs for shared data (zero-copy)
 - **Consumer**: Pays for warehouse compute to query shared data
 - **Storage**: Provider pays for storage, consumer doesn't
 
 ## Support
-Contact: data-sharing@provider.com
+
+Contact: <data-sharing@provider.com>
+
 ```
 
 **Verify Share Distribution**:
@@ -447,18 +481,20 @@ FROM (
     WHERE SHARE_NAME = 'client_analytics'
     GROUP BY DATABASE_NAME, NAME
 );
-```
+```text
 
 **Remove Consumer** (if needed):
+
 ```sql
 -- Remove access for specific account
 ALTER SHARE client_analytics
 REMOVE ACCOUNTS = ABC12345;
 
 -- Consumer's database becomes inaccessible but not deleted
-```
+```text
 
 **Success Criteria**:
+
 - ✅ 5 consumer accounts added to share
 - ✅ Consumer account IDs documented
 - ✅ Consumer setup guide created (consumer-setup-guide.md)
@@ -468,9 +504,11 @@ REMOVE ACCOUNTS = ABC12345;
 ---
 
 ### Task 5: Consumer Access (25 min)
+
 Simulate consumer experience by creating database from share (or document expected behavior).
 
 **Simulated Consumer Setup** (if you have access to consumer account):
+
 ```sql
 -- === IN CONSUMER ACCOUNT ===
 USE ROLE ACCOUNTADMIN;
@@ -507,9 +545,10 @@ GROUP BY customer_id, customer_name;
 SELECT * FROM customer_monthly_summary
 WHERE month >= DATEADD(month, -3, CURRENT_DATE())
 ORDER BY month DESC, metric_name;
-```
+```text
 
 **Consumer Limitations**:
+
 ```sql
 -- === CONSUMER CANNOT: ===
 
@@ -553,6 +592,7 @@ JOIN my_database.public.internal_data b
 
 **Document Consumer Experience**:
 Create `consumer-experience.md`:
+
 ```markdown
 # Consumer Experience Testing
 
@@ -585,9 +625,10 @@ Create `consumer-experience.md`:
 - ❌ Cannot see raw customer_metrics table (not shared)
 - ✅ Can create local views referencing shared data
 - ✅ Can join shared data with own data
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Consumer database created from share (or documented)
 - ✅ Verified consumer sees only their customer data (row-level security)
 - ✅ Verified email and revenue masking visible
@@ -598,9 +639,11 @@ Create `consumer-experience.md`:
 ---
 
 ### Task 6: Monitoring & Marketplace (25 min)
+
 Monitor data sharing usage and explore Snowflake Data Marketplace.
 
 **Monitor Data Transfer**:
+
 ```sql
 -- View data transferred to consumers
 SELECT
@@ -615,9 +658,10 @@ WHERE source_database = 'SHARED_ANALYTICS'
     AND start_time >= DATEADD(day, -30, current_timestamp())
 GROUP BY transfer_date, source_database, target_account_name, target_account_locator
 ORDER BY transfer_date DESC;
-```
+```text
 
 **Monitor Consumer Usage**:
+
 ```sql
 -- Track which consumers are querying shared data
 SELECT
@@ -634,9 +678,10 @@ WHERE database_name = 'SHARED_ANALYTICS'
     AND start_time >= DATEADD(day, -7, current_timestamp())
 GROUP BY query_date, user_name, warehouse_name, query_type, database_name
 ORDER BY query_date DESC, total_seconds DESC;
-```
+```text
 
 **Share Access Audit**:
+
 ```sql
 -- Audit share access history
 SELECT
@@ -664,6 +709,7 @@ WHERE name = 'CLIENT_ANALYTICS';
 ```
 
 **Usage Dashboard**:
+
 ```sql
 CREATE OR REPLACE VIEW v_share_usage_dashboard AS
 SELECT
@@ -699,9 +745,10 @@ SELECT
 
 -- Query dashboard
 SELECT * FROM v_share_usage_dashboard;
-```
+```text
 
 **Explore Snowflake Data Marketplace**:
+
 ```sql
 -- List available data marketplace listings (ACCOUNTADMIN)
 USE ROLE ACCOUNTADMIN;
@@ -710,9 +757,10 @@ USE ROLE ACCOUNTADMIN;
 -- Snowsight -> Data -> Marketplace
 
 -- Document findings in markdown
-```
+```text
 
 **Create `marketplace-research.md`**:
+
 ```markdown
 # Snowflake Data Marketplace Research
 
@@ -765,12 +813,14 @@ USE SCHEMA public;
 SHOW TABLES;
 
 SELECT * FROM <table_name> LIMIT 10;
-```
+```text
 
 ## Monetization Potential
+
 - Could create data marketplace listing for our aggregated analytics
 - Anonymized benchmark data (opt-in from customers)
 - Revenue share: 70% provider, 30% Snowflake
+
 ```
 
 **Success Criteria**:
@@ -810,7 +860,8 @@ ALTER SHARE my_share REMOVE ACCOUNTS = ABC12345;
 
 -- Drop share
 DROP SHARE my_share;
-```
+```text
+
 </details>
 
 <details>
@@ -840,7 +891,8 @@ SELECT CURRENT_ROLE();     -- Returns current role name
 
 -- View definitions
 GET_DDL('VIEW', 'secure_customer_view');  -- Hidden for SECURE views
-```
+```text
+
 </details>
 
 <details>
@@ -881,7 +933,8 @@ SELECT
         ELSE NULL
     END as revenue
 FROM customers;
-```
+```text
+
 </details>
 
 <details>
@@ -915,6 +968,7 @@ SELECT * FROM <view_name> LIMIT 10;
 -- - Create local views referencing shared data
 -- - Join shared data with own data
 ```
+
 </details>
 
 <details>
@@ -949,21 +1003,24 @@ SELECT *
 FROM snowflake.account_usage.grants_to_shares
 WHERE share_name = 'MY_SHARE'
 ORDER BY granted_on;
-```
+```text
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
 cd exercises/exercise-06-data-sharing
 bash validate.sh
-```
+```text
 
 **Expected Output**:
-```
+
+```text
 ✅ Task 1: shared_analytics database with 10K+ customer metrics
 ✅ Task 2: Share client_analytics created with grants
 ✅ Task 3: Secure view with row-level security and masking
@@ -977,7 +1034,9 @@ bash validate.sh
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.sql` - All share, view, and grant commands
 2. `consumer-setup-guide.md` - Complete consumer onboarding documentation
 3. `consumer-experience.md` - Document consumer access testing
@@ -988,6 +1047,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - Snowflake Documentation: [Data Sharing](https://docs.snowflake.com/en/user-guide/data-sharing-intro)
 - Snowflake Documentation: [Secure Views](https://docs.snowflake.com/en/user-guide/views-secure)
 - Snowflake Documentation: [Data Marketplace](https://docs.snowflake.com/en/user-guide/data-marketplace)
@@ -998,7 +1058,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - Explore Data Exchange (invite-only data sharing)
 - Implement listing in Snowflake Data Marketplace
 - Set up cross-cloud/cross-region sharing

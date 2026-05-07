@@ -26,7 +26,7 @@
 
 A relational database consists of several layers:
 
-```
+```text
 ┌──────────────────────────────────┐
 │     Client Application           │
 └────────────┬─────────────────────┘
@@ -54,11 +54,12 @@ A relational database consists of several layers:
 ┌────────────▼─────────────────────┐
 │     Disk Storage                 │  <- Persistent data
 └──────────────────────────────────┘
-```
+```text
 
 ### Storage Engine
 
 **Responsibilities**:
+
 - **Data storage**: Organize data on disk
 - **Buffer management**: Keep frequently used data in memory
 - **Transaction management**: ACID guarantees
@@ -66,6 +67,7 @@ A relational database consists of several layers:
 - **Crash recovery**: Restore consistent state after failures
 
 **Key Structures**:
+
 - **Heap files**: Unordered data pages
 - **Indexes**: Fast lookup structures
 - **WAL (Write-Ahead Log)**: Transaction durability
@@ -73,7 +75,7 @@ A relational database consists of several layers:
 
 ### Memory Architecture
 
-```
+```text
 PostgreSQL Memory Layout:
 
 ┌─────────────────────────────────────┐
@@ -108,9 +110,11 @@ PostgreSQL Memory Layout:
 When you execute a query, it goes through these phases:
 
 #### 1. **Connection & Authentication**
+
 Client connects to database server, authenticates.
 
 #### 2. **Query Parsing**
+
 SQL string → Parse tree (syntax validation).
 
 ```sql
@@ -128,9 +132,10 @@ SELECT_STMT
         ├── COLUMN: age
         ├── OPERATOR: >
         └── LITERAL: 25
-```
+```text
 
 #### 3. **Query Rewriting**
+
 - Expand views
 - Apply rules
 - Simplify expressions
@@ -143,18 +148,22 @@ SELECT * FROM active_users WHERE country = 'US';
 SELECT user_id, name, email
 FROM users
 WHERE status = 'active' AND country = 'US';
-```
+```text
 
 #### 4. **Query Planning**
+
 Generate optimal execution plan by:
+
 - Enumerating possible plans
 - Estimating cost of each plan
 - Selecting lowest-cost plan
 
 #### 5. **Query Execution**
+
 Execute the plan, fetching data from storage.
 
 #### 6. **Result Formatting**
+
 Convert result to wire protocol, send to client.
 
 ---
@@ -167,7 +176,7 @@ Break SQL into tokens:
 
 ```sql
 SELECT name FROM users WHERE age > 25
-```
+```text
 
 Tokens: `SELECT`, `name`, `FROM`, `users`, `WHERE`, `age`, `>`, `25`
 
@@ -176,6 +185,7 @@ Tokens: `SELECT`, `name`, `FROM`, `users`, `WHERE`, `age`, `>`, `25`
 Build parse tree according to SQL grammar.
 
 **Common Parse Errors**:
+
 ```sql
 -- Missing FROM
 SELECT name WHERE age > 25;
@@ -189,6 +199,7 @@ SELECT * FROM users WHERE (age > 25;
 ### Semantic Analysis
 
 Validate query makes sense:
+
 - Do referenced tables exist?
 - Do columns exist in those tables?
 - Are data types compatible?
@@ -201,7 +212,7 @@ SELECT name, salary FROM users WHERE department = 'Sales';
 -- Type mismatch
 SELECT * FROM users WHERE age = 'twenty-five';
 -- Error: operator does not exist: integer = character varying
-```
+```text
 
 ---
 
@@ -210,6 +221,7 @@ SELECT * FROM users WHERE age = 'twenty-five';
 ### The Planner's Job
 
 Given a query, generate the **execution plan** with:
+
 1. **Access methods**: How to read each table (scan, index)
 2. **Join order**: Which tables to join first
 3. **Join algorithms**: How to perform joins (nested loop, hash, merge)
@@ -221,9 +233,10 @@ For a simple 3-table join:
 
 ```sql
 SELECT * FROM A JOIN B ON A.id = B.a_id JOIN C ON B.id = C.b_id;
-```
+```text
 
 Possible join orders:
+
 - `(A JOIN B) JOIN C`
 - `(A JOIN C) JOIN B`
 - `(B JOIN C) JOIN A`
@@ -238,6 +251,7 @@ Possible join orders:
 ### Heuristics
 
 Planners use heuristics to prune search space:
+
 - Consider only left-deep trees initially
 - Use dynamic programming to avoid recomputing
 - Stop after finding "good enough" plan (genetic algorithms)
@@ -245,12 +259,14 @@ Planners use heuristics to prune search space:
 ### Cost Estimation
 
 For each plan, estimate:
+
 - **I/O cost**: Disk reads
 - **CPU cost**: Processing time
 - **Memory cost**: RAM usage
 
 **Example Cost Factors**:
-```
+
+```text
 Sequential Scan:   cost_per_page × num_pages + cost_per_row × num_rows
 Index Scan:        cost_per_index_page × index_pages + cost_per_tuple × tuples
 Hash Join:         cost_build_hash + cost_probe
@@ -296,10 +312,11 @@ class HashJoin:
         # Probe phase: match right side against hash table
         row = self.right.next()
         return self.hash_table.lookup(row.join_key)
-```
+```text
 
 **Flow**:
-```
+
+```text
 Result
   ↑ next()
 HashJoin
@@ -307,7 +324,7 @@ HashJoin
 Filter          SeqScan(B)
   ↑ next()
 SeqScan(A)
-```
+```text
 
 **Pros**: Simple, composable operators
 **Cons**: Function call overhead per row
@@ -337,7 +354,7 @@ SELECT name FROM users WHERE age > 25;
 
 -- Sort requires materialization (must see all rows before outputting sorted result)
 SELECT name FROM users ORDER BY age;
-```
+```text
 
 ---
 
@@ -348,9 +365,11 @@ SELECT name FROM users ORDER BY age;
 An **index** is a data structure that speeds up lookups, similar to a book's index.
 
 **Without index**:
-```
+
+```text
 SELECT * FROM users WHERE user_id = 12345;
-```
+```text
+
 → Sequential scan: read all rows until finding user_id = 12345
 
 **With index on user_id**:
@@ -366,15 +385,17 @@ Most common index type. Balanced tree structure.
          [25|37]  [75|87]  [120|150]
          /  |  \   /  |  \   /   |   \
     [Rows] ...    ...      ...  [Rows]
-```
+```text
 
 **Properties**:
+
 - Balanced: All leaf nodes at same depth
 - Sorted: Keys in order
 - Fast: O(log N) lookups
 - Supports: Range queries, sorting
 
 **When to Use**:
+
 - Equality: `WHERE id = 100`
 - Range: `WHERE age BETWEEN 25 AND 40`
 - Sorting: `ORDER BY name`
@@ -385,27 +406,32 @@ Most common index type. Balanced tree structure.
 Hash table: key → row location
 
 **Properties**:
+
 - Very fast equality lookups: O(1)
 - Cannot do range queries
 - Cannot sort
 
 **When to Use**:
+
 - Only equality: `WHERE id = 100`
 - High cardinality columns
 
 ### Other Index Types
 
 #### GiST (Generalized Search Tree)
+
 - Geometric data
 - Full-text search
 - Range types
 
 #### GIN (Generalized Inverted Index)
+
 - Array containment: `WHERE tags @> ARRAY['sql', 'postgres']`
 - JSONB: `WHERE data->>'status' = 'active'`
 - Full-text search
 
 #### BRIN (Block Range Index)
+
 - Large tables with natural clustering
 - Very small index size
 - Good for time-series data
@@ -416,20 +442,22 @@ Index on multiple columns:
 
 ```sql
 CREATE INDEX idx_users_country_city ON users(country, city);
-```
+```text
 
 **Can be used for**:
+
 ```sql
 WHERE country = 'US'                    -- Uses index
 WHERE country = 'US' AND city = 'NYC'  -- Uses index fully
 WHERE city = 'NYC'                      -- Cannot use index
-```
+```text
 
 **Rule**: Index is useful if query filters on **leftmost columns** of index.
 
 ### Index Maintenance
 
 **Trade-offs**:
+
 - **Pros**: Faster queries
 - **Cons**:
   - Slower writes (INSERT, UPDATE, DELETE must update index)
@@ -437,6 +465,7 @@ WHERE city = 'NYC'                      -- Cannot use index
   - Need to be maintained (VACUUM, REINDEX)
 
 **Best Practices**:
+
 - Index columns in WHERE, JOIN, ORDER BY
 - Don't over-index (diminishing returns)
 - Monitor index usage: `pg_stat_user_indexes`
@@ -455,12 +484,14 @@ EXPLAIN SELECT * FROM users WHERE email = 'john@example.com';
 ```
 
 **Output**:
-```
+
+```text
 Seq Scan on users  (cost=0.00..15.50 rows=1 width=124)
   Filter: (email = 'john@example.com'::text)
-```
+```text
 
 **Parts**:
+
 - **Operation**: `Seq Scan` (sequential scan)
 - **Table**: `users`
 - **Cost**: `0.00..15.50` (startup cost .. total cost)
@@ -473,9 +504,10 @@ Actually execute query and show real numbers:
 
 ```sql
 EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'john@example.com';
-```
+```text
 
 **Output**:
+
 ```
 Seq Scan on users  (cost=0.00..15.50 rows=1 width=124)
                    (actual time=0.015..0.234 rows=1 loops=1)
@@ -483,9 +515,10 @@ Seq Scan on users  (cost=0.00..15.50 rows=1 width=124)
   Rows Removed by Filter: 999
 Planning Time: 0.123 ms
 Execution Time: 0.267 ms
-```
+```text
 
 **Additional Info**:
+
 - **actual time**: Real time spent (ms)
 - **rows**: Actual rows returned
 - **loops**: How many times node executed
@@ -496,6 +529,7 @@ Execution Time: 0.267 ms
 **Cost Units**: Arbitrary units (not milliseconds)
 
 **Default costs** (PostgreSQL):
+
 - Sequential page read: 1.0
 - Random page read: 4.0
 - CPU processing per row: 0.01
@@ -503,9 +537,11 @@ Execution Time: 0.267 ms
 **Total cost** = I/O cost + CPU cost
 
 **Example**:
-```
+
+```text
 Seq Scan (cost=0.00..15.50 rows=100 width=50)
-```
+```text
+
 - 0.00: No startup cost
 - 15.50: Total cost to return all rows
 - 100: Estimated rows
@@ -514,47 +550,52 @@ Seq Scan (cost=0.00..15.50 rows=100 width=50)
 ### Common Plan Nodes
 
 #### Seq Scan
+
 Read entire table sequentially.
 
 ```
 Seq Scan on products  (cost=0.00..100.00 rows=1000 width=50)
-```
+```text
 
 **When used**: No suitable index, small tables.
 
 #### Index Scan
+
 Use index to find rows.
 
-```
+```text
 Index Scan using idx_users_email on users  (cost=0.29..8.30 rows=1 width=124)
   Index Cond: (email = 'john@example.com'::text)
-```
+```text
 
 **When used**: Selective condition with index.
 
 #### Index Only Scan
+
 All needed columns are in index (no table access).
 
 ```
 Index Only Scan using idx_users_email on users  (cost=0.29..4.31 rows=1 width=32)
   Index Cond: (email = 'john@example.com'::text)
-```
+```text
 
 **When used**: Query only needs indexed columns.
 
 #### Bitmap Heap Scan
+
 Two-phase: build bitmap of matching rows, then fetch in disk order.
 
-```
+```text
 Bitmap Heap Scan on products  (cost=5.04..100.00 rows=50 width=100)
   Recheck Cond: (category = 'Electronics'::text)
   ->  Bitmap Index Scan on idx_category  (cost=0.00..5.03 rows=50 width=0)
         Index Cond: (category = 'Electronics'::text)
-```
+```text
 
 **When used**: Many matching rows (index scan would be random I/O).
 
 #### Nested Loop Join
+
 For each row in outer table, scan inner table.
 
 ```
@@ -562,24 +603,26 @@ Nested Loop  (cost=0.29..50.00 rows=100 width=200)
   ->  Seq Scan on orders  (cost=0.00..10.00 rows=100 width=100)
   ->  Index Scan using users_pkey on users  (cost=0.29..0.39 rows=1 width=100)
         Index Cond: (user_id = orders.user_id)
-```
+```text
 
 **When used**: Small outer table, indexed inner table.
 
 #### Hash Join
+
 Build hash table from one side, probe with other side.
 
-```
+```text
 Hash Join  (cost=15.00..100.00 rows=1000 width=200)
   Hash Cond: (orders.user_id = users.user_id)
   ->  Seq Scan on orders  (cost=0.00..50.00 rows=1000 width=100)
   ->  Hash  (cost=10.00..10.00 rows=100 width=100)
         ->  Seq Scan on users  (cost=0.00..10.00 rows=100 width=100)
-```
+```text
 
 **When used**: No suitable indexes, equi-join.
 
 #### Merge Join
+
 Both inputs sorted, merge like merge sort.
 
 ```
@@ -591,7 +634,7 @@ Merge Join  (cost=50.00..100.00 rows=1000 width=200)
   ->  Sort  (cost=20.00..20.50 rows=100 width=100)
         Sort Key: users.user_id
         ->  Seq Scan on users  (cost=0.00..10.00 rows=100 width=100)
-```
+```text
 
 **When used**: Both sides already sorted, or sort cost is acceptable.
 
@@ -607,15 +650,17 @@ for row_outer in outer_table:
     for row_inner in inner_table:
         if row_outer.key == row_inner.key:
             yield (row_outer, row_inner)
-```
+```text
 
 **Cost**: O(N × M) where N = outer rows, M = inner rows
 
 **With index on inner**:
+
 - Cost: O(N × log M)
 - Much better!
 
 **Best for**:
+
 - Small outer table
 - Indexed inner table
 - Selective join
@@ -634,15 +679,17 @@ for row in build_side:
 for row in probe_side:
     for match in hash_table[row.key]:
         yield (row, match)
-```
+```text
 
 **Cost**: O(N + M)
 
 **Requirements**:
+
 - Equi-join (equality condition)
 - Enough memory for hash table
 
 **Best for**:
+
 - Large tables
 - No suitable indexes
 - Equi-join condition
@@ -670,6 +717,7 @@ while left_row and right_row:
 **Cost**: O(N log N + M log M) if sorting needed, O(N + M) if pre-sorted
 
 **Best for**:
+
 - Already sorted inputs (indexed columns)
 - Equality or inequality joins
 - Merge join can do `<`, `>`, not just `=`
@@ -697,9 +745,10 @@ ANALYZE users;
 
 -- View statistics
 SELECT * FROM pg_stats WHERE tablename = 'users';
-```
+```text
 
 **Collected Stats**:
+
 - **n_distinct**: Number of unique values
 - **most_common_vals**: Most frequent values
 - **most_common_freqs**: Their frequencies
@@ -711,17 +760,19 @@ SELECT * FROM pg_stats WHERE tablename = 'users';
 
 ```sql
 WHERE age > 25
-```
+```text
 
 **Estimation**:
+
 - If statistics say 40% of rows have age > 25
 - Selectivity = 0.4
 - Estimated rows = total_rows × 0.4
 
 **Join Selectivity**:
+
 ```sql
 FROM orders JOIN users ON orders.user_id = users.user_id
-```
+```text
 
 Estimated rows = (orders rows × users rows) / MAX(distinct_orders.user_id, distinct_users.user_id)
 
@@ -730,11 +781,13 @@ Estimated rows = (orders rows × users rows) / MAX(distinct_orders.user_id, dist
 **Cardinality**: Number of distinct values
 
 **Important for**:
+
 - Hash join sizing
 - Index selection
 - Join order decisions
 
 **Example**:
+
 - users table: 1M rows, user_id has 1M distinct values (unique)
 - orders table: 5M rows, user_id has 100K distinct values
 
@@ -758,6 +811,7 @@ ANALYZE;
 ```
 
 **When to run ANALYZE**:
+
 - After bulk loads
 - After significant data changes
 - Before important queries
@@ -772,9 +826,10 @@ ALTER TABLE users ALTER COLUMN age SET STATISTICS 1000;
 
 -- Then update stats
 ANALYZE users;
-```
+```text
 
 Higher statistics target:
+
 - More accurate estimates
 - Slower ANALYZE
 - Slightly more storage
@@ -789,7 +844,7 @@ CREATE STATISTICS city_state_stats (dependencies)
 ON city, state FROM addresses;
 
 ANALYZE addresses;
-```
+```text
 
 Without extended stats, planner assumes independence (wrong for correlated columns).
 
@@ -807,7 +862,7 @@ SELECT * FROM large_table WHERE id = 123;
 
 -- GOOD: Fetch only needed columns
 SELECT id, name, email FROM large_table WHERE id = 123;
-```
+```text
 
 #### 2. Implicit Type Casting
 
@@ -827,7 +882,7 @@ SELECT * FROM users WHERE LOWER(email) = 'john@example.com';
 
 -- GOOD: Store lowercase, or use functional index
 CREATE INDEX idx_lower_email ON users(LOWER(email));
-```
+```text
 
 #### 4. OR Conditions
 
@@ -839,7 +894,7 @@ SELECT * FROM products WHERE category = 'Books' OR price < 10;
 SELECT * FROM products WHERE category = 'Books'
 UNION
 SELECT * FROM products WHERE price < 10;
-```
+```text
 
 #### 5. Correlated Subqueries
 
@@ -857,7 +912,7 @@ SELECT
 FROM users u
 LEFT JOIN orders o ON u.user_id = o.user_id
 GROUP BY u.user_id;
-```
+```text
 
 ### Performance Best Practices
 
@@ -887,7 +942,7 @@ CREATE TABLE orders (
 
 CREATE TABLE orders_2024_q1 PARTITION OF orders
     FOR VALUES FROM ('2024-01-01') TO ('2024-04-01');
-```
+```text
 
 #### 3. Use Appropriate Data Types
 
@@ -900,14 +955,14 @@ created_at TIMESTAMP
 -- BAD: Oversized types waste space
 user_id BIGINT  -- if you'll never exceed 2B users
 price DECIMAL(20, 10)  -- unnecessary precision
-```
+```text
 
 #### 4. Limit Result Sets
 
 ```sql
 -- Add LIMIT for pagination
 SELECT * FROM products ORDER BY created_at DESC LIMIT 100;
-```
+```text
 
 #### 5. Use Connection Pooling
 
@@ -922,6 +977,7 @@ Don't create new connection for each query. Use pgbouncer, connection pools.
 Split large table into smaller **partitions** based on key.
 
 **Benefits**:
+
 - Query only relevant partitions
 - Easier maintenance (drop old partitions)
 - Parallel operations per partition
@@ -943,10 +999,11 @@ CREATE TABLE logs_2024_02 PARTITION OF logs
 ```
 
 **Query**:
+
 ```sql
 -- Only scans logs_2024_01 partition
 SELECT * FROM logs WHERE log_date = '2024-01-15';
-```
+```text
 
 ### List Partitioning
 
@@ -959,7 +1016,7 @@ CREATE TABLE sales (
 
 CREATE TABLE sales_us PARTITION OF sales FOR VALUES IN ('US');
 CREATE TABLE sales_eu PARTITION OF sales FOR VALUES IN ('GB', 'FR', 'DE');
-```
+```text
 
 ### Hash Partitioning
 
@@ -973,7 +1030,7 @@ CREATE TABLE users_p0 PARTITION OF users FOR VALUES WITH (MODULUS 4, REMAINDER 0
 CREATE TABLE users_p1 PARTITION OF users FOR VALUES WITH (MODULUS 4, REMAINDER 1);
 CREATE TABLE users_p2 PARTITION OF users FOR VALUES WITH (MODULUS 4, REMAINDER 2);
 CREATE TABLE users_p3 PARTITION OF users FOR VALUES WITH (MODULUS 4, REMAINDER 3);
-```
+```text
 
 **Use case**: Distribute load evenly.
 
@@ -986,10 +1043,11 @@ EXPLAIN SELECT * FROM logs WHERE log_date = '2024-01-15';
 ```
 
 **Output**:
-```
+
+```text
 Seq Scan on logs_2024_01  (cost=...)
   Filter: (log_date = '2024-01-15')
-```
+```text
 
 Only scans relevant partition!
 
@@ -1014,7 +1072,7 @@ GROUP BY order_date;
 
 -- Query it (fast, reads cached result)
 SELECT * FROM daily_sales WHERE order_date = '2024-01-15';
-```
+```text
 
 ### Refreshing
 
@@ -1027,9 +1085,10 @@ REFRESH MATERIALIZED VIEW CONCURRENTLY daily_sales;
 ```
 
 **For concurrent refresh**, need unique index:
+
 ```sql
 CREATE UNIQUE INDEX ON daily_sales(order_date);
-```
+```text
 
 ### Use Cases
 
@@ -1046,6 +1105,7 @@ CREATE UNIQUE INDEX ON daily_sales(order_date);
 ### Query Result Caching
 
 **Application-level caching** (Redis, Memcached):
+
 ```python
 # Pseudocode
 cache_key = "user_orders:123"
@@ -1054,20 +1114,21 @@ if result is None:
     result = db.query("SELECT * FROM orders WHERE user_id = 123")
     cache.set(cache_key, result, ttl=300)  # 5 minutes
 return result
-```
+```text
 
 ### Buffer Cache
 
 Database keeps frequently accessed pages in memory (shared_buffers).
 
 **Check cache hit rate**:
+
 ```sql
 SELECT
     sum(heap_blks_read) as heap_read,
     sum(heap_blks_hit) as heap_hit,
     sum(heap_blks_hit) / (sum(heap_blks_hit) + sum(heap_blks_read)) as cache_hit_ratio
 FROM pg_statio_user_tables;
-```
+```text
 
 **Goal**: > 99% cache hit ratio for hot tables.
 
@@ -1100,7 +1161,7 @@ WHERE user_id IN (SELECT user_id FROM orders);
 -- FASTER: EXISTS (stops at first match)
 SELECT * FROM users u
 WHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.user_id);
-```
+```text
 
 #### Push Down Filters
 
@@ -1115,19 +1176,21 @@ SELECT * FROM (
     SELECT * FROM orders WHERE order_date > '2024-01-01'
 ) o
 JOIN users u ON o.user_id = u.user_id;
-```
+```text
 
 ### 2. Denormalize When Appropriate
 
 **Normalized** (3NF):
+
 ```sql
 -- Requires JOIN
 SELECT u.name, o.order_date, o.total
 FROM orders o
 JOIN users u ON o.user_id = u.user_id;
-```
+```text
 
 **Denormalized** (add user_name to orders):
+
 ```sql
 -- No JOIN needed
 SELECT user_name, order_date, total FROM orders;
@@ -1145,7 +1208,7 @@ SELECT user_id, email FROM users WHERE country = 'US';
 
 -- Covering index (includes email)
 CREATE INDEX idx_users_country_email ON users(country, email);
-```
+```text
 
 Now query can use Index Only Scan (no table access).
 
@@ -1163,7 +1226,7 @@ INSERT INTO logs VALUES
     (2, 'msg2'),
     ...
     (1000, 'msg1000');
-```
+```text
 
 ### 5. Use Temp Tables for Complex Queries
 
@@ -1178,11 +1241,12 @@ HAVING SUM(total_amount) > 10000;
 SELECT u.name, u.email
 FROM users u
 JOIN high_value_users hvu ON u.user_id = hvu.user_id;
-```
+```text
 
 ### 6. Parallel Query Execution
 
 PostgreSQL can parallelize:
+
 - Sequential scans
 - Aggregations
 - Joins
@@ -1196,13 +1260,14 @@ SELECT COUNT(*) FROM large_table;
 ```
 
 Check with `EXPLAIN`:
-```
+
+```text
 Finalize Aggregate  (cost=... rows=1 width=8)
   ->  Gather  (cost=... rows=4 width=8)
         Workers Planned: 4
         ->  Partial Aggregate  (cost=... rows=1 width=8)
               ->  Parallel Seq Scan on large_table
-```
+```text
 
 ---
 
@@ -1220,6 +1285,7 @@ Understanding SQL architecture and optimization:
 8. **Caching**: Buffer pool, materialized views, application-level
 
 **Next Steps**:
+
 - Practice with EXPLAIN on your queries
 - Complete optimization exercises in module
 - Study real query plans from your databases

@@ -7,27 +7,31 @@
 #### ❌ "Docker daemon not running"
 
 **Yesntomas**:
-```
+
+```text
 Cannot connect to the Docker daemon at unix:///var/run/docker.sock
-```
+```text
 
 **Solution**:
+
 ```bash
 # Linux
 sudo systemctl start docker
 
 # macOS/Windows
 # Abre Docker Desktop
-```
+```text
 
 #### ❌ "Port already in use"
 
 **Yesntomas**:
+
 ```
 Error starting userland proxy: listen TCP4 0.0.0.0:9000: bind: address already in use
-```
+```text
 
 **Solution**:
+
 ```bash
 # to see what process usa el port
 lsof -i :9000
@@ -38,7 +42,7 @@ kill -9 <PID>
 # or cambiar port in docker-compose.yml
 ports:
   - "9001:9000"  # Cambiar 9000 by 9001
-```
+```text
 
 ---
 
@@ -47,11 +51,13 @@ ports:
 #### ❌ "AccessDenied: Access Denied"
 
 **Yesntomas**:
+
 ```python
 botocore.exceptions.ClientError: An error occurnetwork (AccessDenied)
-```
+```text
 
 **Solution**:
+
 ```python
 # Verificar cnetworkenciales in spark session
 spark = SparkSession.builder \
@@ -64,17 +70,19 @@ spark = SparkSession.builder \
 #### ❌ Bucket not existe
 
 **Yesntomas**:
-```
+
+```text
 NoSuchBucket: The specified bucket does not exist
-```
+```text
 
 **Solution**:
+
 ```bash
 # Crear bucket manualmente
 docker exec minio mc mb local/bronze
 docker exec minio mc mb local/silver
 docker exec minio mc mb local/gold
-```
+```text
 
 ---
 
@@ -83,20 +91,23 @@ docker exec minio mc mb local/gold
 #### ❌ "Py4JJavaError: An error occurnetwork while calling"
 
 **Yesntomas**:
+
 ```python
 py4j.protocol.Py4JJavaError: An error occurnetwork while calling o123.save
 ```
 
 **Solution 1** - Check Delta Lake:
+
 ```python
 # Verificar que delta-spark is instalado
 pIP show delta-spark
 
 # Reinstalar if necesario
 pIP install delta-spark==3.0.0
-```
+```text
 
 **Solution 2** - Add configuration:
+
 ```python
 from delta import configure_spark_with_delta_pIP
 
@@ -105,26 +116,29 @@ builder = SparkSession.builder.appName("App") \
     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
 
 spark = configure_spark_with_delta_pIP(builder).getOrCreate()
-```
+```text
 
 #### ❌ "OutOfMemoryError: Java heap space"
 
 **Yesntomas**:
-```
+
+```text
 java.lang.OutOfMemoryError: Java heap space
 ```
 
 **Solution**:
+
 ```python
 spark = SparkSession.builder \
     .config("spark.driver.memory", "4g") \
     .config("spark.executor.memory", "4g") \
     .getOrCreate()
-```
+```text
 
 #### ❌ Spark muy lento
 
 **Solution**:
+
 ```python
 # Aumentar particiones
 df.repartition(100).write.format("delta").save(path)
@@ -135,7 +149,7 @@ large_df.join(broadcast(small_df), "id")
 
 # Usar cache for datas pequeños
 df.cache()
-```
+```text
 
 ---
 
@@ -144,12 +158,14 @@ df.cache()
 #### ❌ "ConcurrentModificationException"
 
 **Yesntomas**:
-```
+
+```text
 delta.exceptions.ConcurrentModificationException: 
 to concurrent transaction have written new data
 ```
 
 **Solution**:
+
 ```python
 # Retry automático
 from delta.tables import DeltaTable
@@ -165,17 +181,19 @@ for attempt in range(max_retries):
             time.sleep(2 ** attempt)  # Exponential backoff
         else:
             raise
-```
+```text
 
 #### ❌ "ProtocolChangedException"
 
 **Yesntomas**:
-```
+
+```text
 delta.exceptions.ProtocolChangedException: 
 The protocol version of the Delta table have been changed
-```
+```text
 
 **Solution**:
+
 ```python
 # Re-leer la table
 delta_table = DeltaTable.forPath(spark, path)
@@ -186,11 +204,13 @@ delta_table = DeltaTable.forPath(spark, path)
 #### ❌ "not transaction log found"
 
 **Yesntomas**:
-```
+
+```text
 AnalysisException: not transaction log found
-```
+```text
 
 **Solution**:
+
 ```bash
 # Verificar que _delta_log/ existe
 ls -la /path/to/table/_delta_log/
@@ -199,7 +219,7 @@ ls -la /path/to/table/_delta_log/
 # Convertir Parquet to Delta:
 from delta.tables import DeltaTable
 DeltaTable.convertToDelta(spark, "parquet.`/path/to/table`")
-```
+```text
 
 ---
 
@@ -208,11 +228,13 @@ DeltaTable.convertToDelta(spark, "parquet.`/path/to/table`")
 #### ❌ "AnalysisException: to schema mismatch detected"
 
 **Yesntomas**:
+
 ```
 AnalysisException: to schema mismatch detected when writing to the Delta table
-```
+```text
 
 **Solution**:
+
 ```python
 # Opción 1: Merge schema
 df.write.format("delta") \
@@ -225,22 +247,24 @@ df.write.format("delta") \
     .mode("overwrite") \
     .option("overwriteSchema", "true") \
     .save(path)
-```
+```text
 
 #### ❌ Type mismatch
 
 **Yesntomas**:
-```
+
+```text
 Cannot safely cast 'amount': DoubleType to DecimalType(10,2)
 ```
 
 **Solution**:
+
 ```python
 from pyspark.sql.functions import col
 from pyspark.sql.types import DecimalType
 
 df = df.withColumn("amount", col("amount").cast(DecimalType(10, 2)))
-```
+```text
 
 ---
 
@@ -249,6 +273,7 @@ df = df.withColumn("amount", col("amount").cast(DecimalType(10, 2)))
 #### ❌ Queries muy lentos
 
 **Diagnosis**:
+
 ```python
 # to see execution plan
 df.explain(mode="formatted")
@@ -258,44 +283,49 @@ delta_table.detail().select("numFiles", "sizeInBytes").show()
 
 # to see history
 delta_table.history().show()
-```
+```text
 
 **Soluciones**:
 
 1. **OPTIMIZE** for small files:
+
 ```python
 delta_table.optimize().executeCompaction()
-```
+```text
 
-2. **Z-ORDER** for data skIPping:
+1. **Z-ORDER** for data skIPping:
+
 ```python
 delta_table.optimize().executeZOrderBy("country", "date")
 ```
 
-3. **Partition pruning**:
+1. **Partition pruning**:
+
 ```python
 # ✅ Bueno
 df.filter("date = '2024-01-15'")
 
 # ❌ Malo
 df.filter(col("date") == lit("2024-01-15"))
-```
+```text
 
-4. **Cache small tables**:
+1. **Cache small tables**:
+
 ```python
 small_df.cache()
-```
+```text
 
 #### ❌ Writes muy lentos
 
 **Solution**:
+
 ```python
 # Repartition antes of escribir
 df.repartition(100).write.format("delta").save(path)
 
 # Ajustar tamaño of archivo
 spark.conf.set("spark.sql.files.maxRecordsPerFile", 100000)
-```
+```text
 
 ---
 
@@ -304,11 +334,13 @@ spark.conf.set("spark.sql.files.maxRecordsPerFile", 100000)
 #### ❌ "Path does not exist"
 
 **Yesntomas**:
+
 ```
 AnalysisException: Path does not exist: s3a://bronze/table
-```
+```text
 
 **Solution**:
+
 ```bash
 # Verificar bucket existe
 docker exec minio mc ls local/
@@ -324,21 +356,23 @@ s3 = boto3.client('s3',
     aws_secret_access_key='password123'
 )
 print(s3.list_buckets())
-```
+```text
 
 #### ❌ "URI scheme not recognized"
 
 **Yesntomas**:
-```
+
+```text
 IllegalArgumentException: URI scheme is not 's3a'
 ```
 
 **Solution**:
+
 ```python
 # Usar s3a:// (not s3://)
 path = "s3a://bronze/table"  # ✅ Correcto
 # path = "s3://bronze/table"  # ❌ Incorrecto
-```
+```text
 
 ---
 
@@ -347,20 +381,23 @@ path = "s3a://bronze/table"  # ✅ Correcto
 #### ❌ "pytest: command not found"
 
 **Solution**:
+
 ```bash
 pIP install pytest pytest-cov
-```
+```text
 
 #### ❌ Tests fail with "not module named 'delta'"
 
 **Solution**:
+
 ```bash
 pIP install delta-spark==3.0.0 pyspark==3.5.0
-```
+```text
 
 #### ❌ Tests timeout
 
 **Solution**:
+
 ```bash
 # Aumentar timeout
 pytest --timeout=300 validation/
@@ -373,12 +410,14 @@ pytest --timeout=300 validation/
 #### ❌ "Unable to VACUUM due to retention"
 
 **Yesntomas**:
-```
+
+```text
 IllegalArgumentException: requirement failed: 
 Retention period must be at least 7 days
-```
+```text
 
 **Solution**:
+
 ```python
 # Deshabilitar check (only in desarrolelo)
 spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
@@ -387,7 +426,7 @@ spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
 delta_table.vacuum(0)  # Borra everything
 
 # ⚠️ ADVERTENCIA: Esto elimina Time Travel
-```
+```text
 
 ---
 
@@ -396,12 +435,14 @@ delta_table.vacuum(0)  # Borra everything
 #### ❌ Duplicados in Silver
 
 **Diagnosis**:
+
 ```python
 # Verificar duplicados
 df.groupBy("transaction_id").count().filter("count > 1").show()
 ```
 
 **Solution**:
+
 ```python
 # Deduplicar by key primaria
 from pyspark.sql.window import Window
@@ -411,11 +452,12 @@ window = Window.partitionBy("transaction_id").orderBy(col("timestamp").desc())
 df_deduped = df.withColumn("rn", row_number().over(window)) \
     .filter("rn = 1") \
     .drop("rn")
-```
+```text
 
 #### ❌ Valores null inesperados
 
 **Diagnosis**:
+
 ```python
 # Contar nulls by column
 from pyspark.sql.functions import col, sum, when
@@ -423,9 +465,10 @@ df.select([
     sum(when(col(c).isNull(), 1).otherwise(0)).alias(c) 
     for c in df.columns
 ]).show()
-```
+```text
 
 **Solution**:
+
 ```python
 # Filtrar nulls críticos
 df = df.filter("amount IS NOT NULL AND timestamp IS NOT NULL")
@@ -433,7 +476,7 @@ df = df.filter("amount IS NOT NULL AND timestamp IS NOT NULL")
 # or rellenar with defaults
 from pyspark.sql.functions import coalesce, lit
 df = df.withColumn("status", coalesce(col("status"), lit("unknown")))
-```
+```text
 
 ---
 
@@ -442,6 +485,7 @@ df = df.withColumn("status", coalesce(col("status"), lit("unknown")))
 If neither solution works:
 
 1. **to see logs detallados**:
+
 ```bash
 # Spark logs
 docker logs spark-master
@@ -453,7 +497,8 @@ docker logs minio
 docker-compose logs -f
 ```
 
-2. **Reset completo**:
+1. **Reset completo**:
+
 ```bash
 # Parar everything
 docker-compose down -v
@@ -463,17 +508,18 @@ rm -rf data/*
 
 # Re-setup
 ./scrIPts/setup.sh
-```
+```text
 
-3. **Verificar versiones**:
+1. **Verificar versiones**:
+
 ```bash
 python --version  # Should be 3.9+
 pIP show pyspark  # Should be 3.5.0
 pIP show delta-spark  # Should be 3.0.0
 docker --version  # Should be 20.10+
-```
+```text
 
-4. **Abrir issue in GitHub** with:
+1. **Abrir issue in GitHub** with:
    - Problem descrIPtion
    - Logs relevantes
    - Versiones of software

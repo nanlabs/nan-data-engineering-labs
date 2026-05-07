@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 logger.info("Procesando data")
 logger.error("Error al leer file", exc_info=True)
-```
+```text
 
 ### Try/Except
 
@@ -33,7 +33,7 @@ except FileNotFoundError:
 except Exception as e:
     logger.error(f"Error inesperado: {e}")
     raise
-```
+```text
 
 ### Retry Logic
 
@@ -44,7 +44,7 @@ from tenacity import retry, stop_after_attempt
 def funcion_con_retry():
     # code that may fail
     pass
-```
+```text
 
 ## Exercises
 

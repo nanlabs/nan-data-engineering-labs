@@ -22,7 +22,7 @@
 
 Snowflake's unique architecture separates compute, storage, and services into independent, scalable layers:
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │          CLOUD SERVICES LAYER                       │
 │  (Query Optimization, Security, Metadata)           │
@@ -38,11 +38,12 @@ Snowflake's unique architecture separates compute, storage, and services into in
            ↑                    ↑
            │                    │
       AWS S3 / Azure Blob / Google Cloud Storage
-```
+```text
 
 ### 1. Storage Layer
 
 **Characteristics**:
+
 - **Fully Managed**: Snowflake handles all storage infrastructure
 - **Columnar Format**: Data stored in compressed columnar micro-partitions
 - **Micro-Partitions**: Immutable 50-500MB compressed blocks
@@ -73,7 +74,7 @@ Micro-Partition 1: 2024-01-01 to 2024-01-15
 Micro-Partition 2: 2024-01-16 to 2024-01-31
   └─ ...
 */
-```
+```text
 
 **Automatic Pruning**:
 
@@ -92,15 +93,17 @@ WHERE sale_date = '2024-01-10'      -- Only scans Micro-Partition 1
 ```
 
 **Cost Implications**:
-```
+
+```text
 Storage Pricing: $23-40/TB/month (compressed)
 Compression Ratio: Typically 10:1
 Example: 1TB raw data → ~100GB stored → $2.30-4.00/month
-```
+```text
 
 ### 2. Compute Layer (Virtual Warehouses)
 
 **Characteristics**:
+
 - **Elastic**: Scale up/down instantly
 - **Concurrent**: Multiple warehouses access same data
 - **Isolated**: No resource contention between warehouses
@@ -108,7 +111,7 @@ Example: 1TB raw data → ~100GB stored → $2.30-4.00/month
 
 **Warehouse Components**:
 
-```
+```text
 Virtual Warehouse = Cluster of Compute Nodes
 
 Single Cluster Warehouse:
@@ -152,11 +155,12 @@ CREATE WAREHOUSE ds_wh WITH
 
 -- All warehouses read from same tables concurrently
 -- No locking, no contention, independent scaling
-```
+```text
 
 ### 3. Cloud Services Layer
 
 **Responsibilities**:
+
 - **Query Optimization**: Parse, optimize, generate execution plans
 - **Security & Authentication**: SSO, MFA, RBAC, encryption
 - **Metadata Management**: Table definitions, statistics, constraints
@@ -164,7 +168,8 @@ CREATE WAREHOUSE ds_wh WITH
 - **Transaction Management**: ACID compliance, concurrency control
 
 **Cost Model**:
-```
+
+```text
 Cloud Services Cost:
 - Free if usage < 10% of daily compute spend
 - Typical workloads: 2-5% (always free)
@@ -174,7 +179,7 @@ Example:
 - Compute spend: $100/day
 - Cloud services: $4 (4% of compute)
 - Billed: $0 (below 10% threshold)
-```
+```text
 
 **Metadata Operations (Cloud Services)**:
 
@@ -203,7 +208,8 @@ SHOW ROLES;
 ### Multi-Cluster Shared Data Architecture
 
 **Traditional Shared-Nothing Architecture**:
-```
+
+```text
 Problem: Data divided across nodes
           Scale compute = reshuffle data
           High concurrency = resource contention
@@ -212,10 +218,11 @@ Problem: Data divided across nodes
 │ Node 1  │  │ Node 2  │  │ Node 3  │
 │ Data A  │  │ Data B  │  │ Data C  │  ← Data partitioned
 └─────────┘  └─────────┘  └─────────┘
-```
+```text
 
 **Snowflake's Shared Data Architecture**:
-```
+
+```text
 Solution: Compute and storage fully separated
           Scale compute independently
           No data movement, instant elasticity
@@ -245,6 +252,7 @@ Solution: Compute and storage fully separated
 ### Warehouse Fundamentals
 
 **What is a Virtual Warehouse?**
+
 - Cluster of compute resources (CPU, memory, temporary storage)
 - Executes SQL queries and DML operations
 - Independent, on-demand, elastic
@@ -264,7 +272,8 @@ Solution: Compute and storage fully separated
 | 4X-Large  | 128          | 128x           | 128   | Extreme processing (rare)         |
 
 **Performance vs. Size**:
-```
+
+```text
 Linear scaling: 2x size ≈ 2x performance (for parallelizable queries)
 
 Example: Complex aggregation on 1TB table
@@ -272,7 +281,7 @@ Example: Complex aggregation on 1TB table
 - Small:   ~30 minutes
 - Medium:  ~15 minutes
 - Large:   ~7.5 minutes
-```
+```text
 
 ### Creating Warehouses
 
@@ -304,7 +313,7 @@ CREATE WAREHOUSE bi_wh WITH
     MAX_CLUSTER_COUNT = 10           -- Support many concurrent users
     SCALING_POLICY = 'ECONOMY'       -- Favor cost over speed
     STATEMENT_QUEUED_TIMEOUT_IN_SECONDS = 120;  -- Queue limit
-```
+```text
 
 ### Multi-Cluster Warehouses
 
@@ -380,11 +389,12 @@ ALTER WAREHOUSE old_wh RENAME TO new_wh;
 
 -- Drop warehouse
 DROP WAREHOUSE IF EXISTS temp_wh;
-```
+```text
 
 ### Warehouse Use Cases & Best Practices
 
 **1. ETL/ELT Workloads**:
+
 ```sql
 -- Size: Medium to X-Large (data volume dependent)
 -- Auto-suspend: 10-30 minutes (batch job intervals)
@@ -420,9 +430,10 @@ WHEN MATCHED THEN UPDATE SET ...
 WHEN NOT MATCHED THEN INSERT ...;
 
 -- Warehouse auto-suspends 10 minutes after completion
-```
+```text
 
 **2. BI Dashboards**:
+
 ```sql
 -- Size: X-Small to Small (queries pre-aggregated)
 -- Auto-suspend: 2-5 minutes (frequent user activity)
@@ -448,9 +459,10 @@ GROUP BY 1, 2;
 -- Dashboard queries are fast and cheap
 SELECT * FROM dashboard_daily_sales
 WHERE day >= DATEADD('month', -3, CURRENT_DATE());
-```
+```text
 
 **3. Data Science & ML**:
+
 ```sql
 -- Size: Large to 2X-Large (complex computations)
 -- Auto-suspend: 5-10 minutes (iterative analysis)
@@ -481,6 +493,7 @@ GROUP BY customer_id;
 ```
 
 **4. Development & Testing**:
+
 ```sql
 -- Size: X-Small (minimal cost)
 -- Auto-suspend: 60 seconds (intermittent use)
@@ -500,7 +513,7 @@ USE DATABASE dev_db;
 
 -- Test queries on cloned data (safe)
 SELECT COUNT(*) FROM customers;
-```
+```text
 
 ---
 
@@ -509,23 +522,26 @@ SELECT COUNT(*) FROM customers;
 ### What is Zero-Copy Cloning?
 
 **Traditional Copy**:
-```
+
+```text
 Source Data (1TB) → Full Copy (1TB) → Destination
 Time: Hours
 Cost: Storage for 2TB
-```
+```text
 
 **Snowflake Zero-Copy Clone**:
+
 ```
 Source Data (1TB) → Metadata Pointer → Destination
 Time: Seconds
 Cost: Storage for 1TB (until divergence)
-```
+```text
 
 ### How Cloning Works
 
 **Metadata-Based Cloning**:
-```
+
+```text
 Original Table:
 ┌────────────────────────────────────┐
 │  Table Metadata                    │
@@ -550,11 +566,12 @@ After modifications to clone:
 │  └→ Micro-Partition 3 (shared)     │
 │  └→ Micro-Partition 4 (new) ←─ divergence
 └────────────────────────────────────┘
-```
+```text
 
 ### Cloning Syntax
 
 **Clone Database**:
+
 ```sql
 -- Clone entire database (all schemas, tables, views)
 CREATE DATABASE dev_database CLONE prod_database;
@@ -568,15 +585,17 @@ CREATE DATABASE backup_before_migration CLONE prod_database;
 ```
 
 **Clone Schema**:
+
 ```sql
 -- Clone schema within same database
 CREATE SCHEMA test_schema CLONE prod_schema;
 
 -- Clone schema to different database
 CREATE SCHEMA dev_db.prod_copy CLONE prod_db.public_schema;
-```
+```text
 
 **Clone Table**:
+
 ```sql
 -- Clone table for testing
 CREATE TABLE staging.customers_test CLONE prod.customers;
@@ -587,17 +606,19 @@ CREATE TABLE analytics.sales_march_1st CLONE prod.sales
 
 -- Clone before update/delete operation
 CREATE TABLE backup.customers_before_merge CLONE prod.customers;
-```
+```text
 
 **Clone View** (just metadata):
+
 ```sql
 -- Cloning a view copies definition, not data
 CREATE VIEW analytics.sales_summary_clone CLONE analytics.sales_summary;
-```
+```text
 
 ### Use Cases
 
 **1. Development & Testing**:
+
 ```sql
 -- Production data for development (safe, instant)
 CREATE DATABASE dev_maria CLONE prod_database;
@@ -612,6 +633,7 @@ DELETE FROM orders WHERE order_date < '2020-01-01';
 ```
 
 **2. QA & Staging Environments**:
+
 ```sql
 -- Refresh staging with latest production data (instant)
 DROP DATABASE IF EXISTS staging_database;
@@ -623,9 +645,10 @@ USE DATABASE staging_database;
 
 -- Discard after testing (no impact on prod)
 DROP DATABASE staging_database;
-```
+```text
 
 **3. Data Backup & Recovery**:
+
 ```sql
 -- Pre-migration backup
 CREATE DATABASE backup_pre_migration CLONE prod_database;
@@ -637,9 +660,10 @@ USE DATABASE prod_database;
 -- If migration fails, restore is instant
 DROP DATABASE prod_database;
 CREATE DATABASE prod_database CLONE backup_pre_migration;
-```
+```text
 
 **4. Experimentation**:
+
 ```sql
 -- Clone for data science experiment
 CREATE TABLE ds_experiment.customer_features
@@ -653,9 +677,10 @@ UPDATE ds_experiment.customer_features
 SET lifetime_value = (SELECT SUM(amount) FROM orders ...);
 
 -- Validate results, then apply to production
-```
+```text
 
 **5. Reporting & Analytics**:
+
 ```sql
 -- Clone at specific point for consistent reporting
 CREATE DATABASE monthly_report_feb CLONE prod_database
@@ -671,6 +696,7 @@ SELECT SUM(revenue) FROM sales WHERE month = 'February';
 ### Cloning Performance & Costs
 
 **Performance**:
+
 ```sql
 -- Cloning is O(1) time - instant regardless of size
 
@@ -679,9 +705,10 @@ CREATE DATABASE small_clone CLONE small_db;
 
 -- Clone 10TB database: ~5 seconds (same metadata operation)
 CREATE DATABASE huge_clone CLONE huge_db;
-```
+```text
 
 **Storage Costs**:
+
 ```sql
 -- Initial clone: 0 additional storage
 CREATE TABLE backup.orders_clone CLONE prod.orders;  -- 0 bytes initially
@@ -698,7 +725,7 @@ UPDATE backup.orders_clone SET status = 'X';   -- Modified micro-partitions
 -- Modified 10% in clone → 100GB new/modified micro-partitions
 -- Total Storage: 1TB (original) + 100GB (divergence) = 1.1TB
 -- Cost: 1.1TB × $23/month = $25.30/month
-```
+```text
 
 ---
 
@@ -707,13 +734,15 @@ UPDATE backup.orders_clone SET status = 'X';   -- Modified micro-partitions
 ### Time Travel Overview
 
 **What is Time Travel?**
+
 - Query historical data as it existed at any point in the past
 - Retention period: 0-90 days (depends on edition)
 - Restore dropped tables/schemas/databases
 - Clone data from past state
 
 **Retention Periods**:
-```
+
+```text
 Standard Edition: 1 day (configurable to 0)
 Enterprise Edition: 90 days (configurable 0-90)
 Business Critical: 90 days (configurable 0-90)
@@ -722,6 +751,7 @@ Business Critical: 90 days (configurable 0-90)
 ### Time Travel Queries
 
 **Query Historical Data**:
+
 ```sql
 -- Query table as of specific timestamp
 SELECT *
@@ -735,9 +765,10 @@ FROM orders AT (OFFSET => -60*5);  -- 5 minutes ago
 -- Query before specific statement (by query ID)
 SELECT *
 FROM customers BEFORE (STATEMENT => '019b9ee5-0502-7312-0043-4d83001b916a');
-```
+```text
 
 **Compare Historical vs. Current**:
+
 ```sql
 -- Find deleted records
 SELECT *
@@ -753,11 +784,12 @@ FROM customers current
 JOIN customers AT (TIMESTAMP => '2024-03-07 00:00:00'::timestamp) historical
     ON current.customer_id = historical.customer_id
 WHERE current.email != historical.email;
-```
+```text
 
 ### Restoring Dropped Objects
 
 **Undrop Table**:
+
 ```sql
 -- Accidentally drop table
 DROP TABLE IF EXISTS customers;
@@ -767,9 +799,10 @@ UNDROP TABLE customers;
 
 -- Verify restoration
 SELECT COUNT(*) FROM customers;
-```
+```text
 
 **Undrop Schema**:
+
 ```sql
 -- Drop schema
 DROP SCHEMA IF EXISTS analytics;
@@ -779,6 +812,7 @@ UNDROP SCHEMA analytics;
 ```
 
 **Undrop Database**:
+
 ```sql
 -- Drop entire database
 DROP DATABASE IF EXISTS prod_database;
@@ -787,9 +821,10 @@ DROP DATABASE IF EXISTS prod_database;
 UNDROP DATABASE prod_database;
 
 -- All schemas, tables, views restored
-```
+```text
 
 **Handle Name Conflicts**:
+
 ```sql
 -- Scenario: Dropped table, created new one with same name
 DROP TABLE customers;
@@ -801,7 +836,7 @@ ALTER TABLE customers RENAME TO customers_new;
 UNDROP TABLE customers;
 ALTER TABLE customers RENAME TO customers_restored;
 ALTER TABLE customers_new RENAME TO customers;
-```
+```text
 
 ### Cloning from Historical Point
 
@@ -820,7 +855,7 @@ CREATE DATABASE prod_before_migration
 CREATE TABLE investigation.orders_snapshot
     CLONE prod.orders
     AT (OFFSET => -60*60);  -- 1 hour ago
-```
+```text
 
 ### Configuring Time Travel
 
@@ -851,13 +886,15 @@ ALTER TABLE temp_staging_table
 ### Fail-safe Period
 
 **What is Fail-safe?**
+
 - Additional 7-day recovery period after Time Travel expires
 - Non-queryable (Snowflake Support only)
 - Disaster recovery for catastrophic failures
 - Automatic, cannot be disabled
 
 **Timeline**:
-```
+
+```text
 Day 0: Current data
   ↓
 Day 1-90: Time Travel period (user-accessible)
@@ -869,9 +906,10 @@ Day 91-97: Fail-safe period (Snowflake Support only)
   └─ Contact support for recovery (rare, emergency)
   ↓
 Day 98+: Data permanently deleted
-```
+```text
 
 **Example Scenario**:
+
 ```sql
 -- Day 0: Create table
 CREATE TABLE critical_data (id INT) DATA_RETENTION_TIME_IN_DAYS = 90;
@@ -888,7 +926,7 @@ UNDROP TABLE critical_data;  -- ❌ Error: outside Time Travel
 
 -- Day 128: Fail-safe expired
 -- ❌ Data permanently deleted, no recovery possible
-```
+```text
 
 ### Time Travel Storage Costs
 
@@ -920,7 +958,8 @@ ORDER BY time_travel_gb DESC;
 ### Data Sharing Architecture
 
 **Traditional Data Sharing**:
-```
+
+```text
 Provider                    Consumer
    │                            │
    └──> Export to S3/FTP ───────┘
@@ -928,10 +967,11 @@ Provider                    Consumer
         ├─ Data becomes stale immediately
         ├─ Security risks during transfer
         └─ Complex access control
-```
+```text
 
 **Snowflake Secure Sharing**:
-```
+
+```text
 Provider Database          Consumer Account
    │                            │
    └──> Share (metadata) ───────┘
@@ -944,6 +984,7 @@ Provider Database          Consumer Account
 ### Creating Data Shares
 
 **Provider Side**:
+
 ```sql
 -- Step 1: Create share
 CREATE SHARE sales_data_share;
@@ -968,9 +1009,10 @@ ALTER SHARE sales_data_share
 -- View share details
 SHOW GRANTS TO SHARE sales_data_share;
 DESC SHARE sales_data_share;
-```
+```text
 
 **Secure Views for Selective Sharing**:
+
 ```sql
 -- Share only aggregated data (not raw records)
 CREATE SECURE VIEW analytics.sales_summary AS
@@ -987,9 +1029,10 @@ GROUP BY 1, 2, 3;
 GRANT SELECT ON VIEW analytics.sales_summary TO SHARE sales_data_share;
 
 -- Consumer sees only aggregated data
-```
+```text
 
 **Row Access Policies for Sharing**:
+
 ```sql
 -- Create row access policy
 CREATE ROW ACCESS POLICY regional_access AS (region VARCHAR) RETURNS BOOLEAN ->
@@ -1005,11 +1048,12 @@ ALTER TABLE analytics.sales
 
 -- Share table (each consumer sees only their region)
 GRANT SELECT ON TABLE analytics.sales TO SHARE sales_data_share;
-```
+```text
 
 ### Consumer Side
 
 **Access Shared Data**:
+
 ```sql
 -- Step 1: View available shares (from provider)
 SHOW SHARES;
@@ -1026,7 +1070,8 @@ SELECT * FROM external_sales_data.analytics.sales;
 ```
 
 **Consumer Isolation**:
-```
+
+```text
 Provider Account:
   └─ Database: prod_database
       └─ Table: sales (1TB)
@@ -1046,11 +1091,12 @@ Isolation:
 - Separate compute (consumers pay for own warehouses)
 - No data duplication
 - Real-time updates both see
-```
+```text
 
 ### Snowflake Data Marketplace
 
 **Listing Data Products**:
+
 ```sql
 -- Providers can list data in Marketplace
 -- 1. Create share with sample data
@@ -1062,9 +1108,10 @@ GRANT SELECT ON TABLE weather_db.public.forecasts
 -- 2. Submit to Snowflake Marketplace
 -- (via Web UI: Shares → Publish to Marketplace)
 -- 3. Set pricing (free, paid, usage-based)
-```
+```text
 
 **Consuming Marketplace Data**:
+
 ```sql
 -- Browse Marketplace (Web UI: Data → Marketplace)
 -- Install free or paid datasets
@@ -1084,6 +1131,7 @@ LIMIT 10;
 ### Use Cases for Data Sharing
 
 **1. Multi-Tenant SaaS Applications**:
+
 ```sql
 -- Provider (SaaS vendor) shares tenant-specific data
 
@@ -1103,9 +1151,10 @@ SELECT * FROM saas_data.customers WHERE tenant_id = 'TENANT_B';
 
 GRANT SELECT ON VIEW tenant_b_view TO SHARE tenant_b_share;
 ALTER SHARE tenant_b_share ADD ACCOUNTS = TENANT_B_ACCOUNT;
-```
+```text
 
 **2. Partner/Vendor Collaboration**:
+
 ```sql
 -- Share inventory data with suppliers
 CREATE SHARE supplier_inventory_share;
@@ -1113,9 +1162,10 @@ GRANT SELECT ON TABLE inventory.stock_levels TO SHARE supplier_inventory_share;
 ALTER SHARE supplier_inventory_share ADD ACCOUNTS = SUPPLIER_ACCOUNT;
 
 -- Supplier can check inventory in real-time (no API needed)
-```
+```text
 
 **3. Data Monetization**:
+
 ```sql
 -- Sell financial data to subscribers
 CREATE SHARE premium_financial_data;
@@ -1126,7 +1176,7 @@ GRANT SELECT ON TABLE market_data.fundamentals TO SHARE premium_financial_data;
 ALTER SHARE premium_financial_data ADD ACCOUNTS = SUBSCRIBER_1, SUBSCRIBER_2;
 
 -- Charge based on usage via Snowflake Marketplace
-```
+```text
 
 ---
 
@@ -1135,17 +1185,20 @@ ALTER SHARE premium_financial_data ADD ACCOUNTS = SUBSCRIBER_1, SUBSCRIBER_2;
 ### Streams (Change Data Capture)
 
 **What are Streams?**
+
 - Track DML changes (INSERT, UPDATE, DELETE) on tables
 - Enable incremental processing (CDC pattern)
 - Consume changes without re-processing entire table
 - Automatically managed change tracking
 
 **Stream Types**:
+
 1. **Standard Stream**: Tracks inserts, updates, deletes (w/ before/after)
 2. **Append-Only Stream**: Tracks inserts only (simplest, cheapest)
 3. **Insert-Only Stream**: Alias for append-only
 
 **Creating Streams**:
+
 ```sql
 -- Standard stream (full CDC)
 CREATE STREAM orders_stream ON TABLE prod.orders;
@@ -1162,6 +1215,7 @@ CREATE STREAM s3_data_stream ON EXTERNAL TABLE external.s3_orders;
 ```
 
 **Reading Stream Data**:
+
 ```sql
 -- Query stream (shows changes since last consumption)
 SELECT
@@ -1179,9 +1233,10 @@ order_id | customer_id | amount | dml_action | is_update
 102      | 51          | 149.50 | INSERT     | FALSE
 100      | 49          | 75.00  | DELETE     | FALSE
 */
-```
+```text
 
 **Consuming (Processing) Stream**:
+
 ```sql
 -- Incremental processing
 BEGIN TRANSACTION;
@@ -1197,9 +1252,10 @@ COMMIT;
 
 -- Stream is now empty (until new changes occur)
 SELECT COUNT(*) FROM orders_stream;  -- Returns 0
-```
+```text
 
 **Advanced CDC Pattern**:
+
 ```sql
 -- Handle inserts, updates, deletes
 MERGE INTO analytics.orders_summary target
@@ -1223,17 +1279,19 @@ WHEN MATCHED AND source.action = 'INSERT' AND source.is_update = TRUE THEN
 WHEN NOT MATCHED AND source.action = 'INSERT' THEN
     INSERT (order_id, customer_id, amount, created_at)
     VALUES (source.order_id, source.customer_id, source.amount, CURRENT_TIMESTAMP());
-```
+```text
 
 ### Tasks (Scheduling & Orchestration)
 
 **What are Tasks?**
+
 - Scheduled SQL statements or stored procedures
 - Can trigger on schedule (cron) or when stream has data
 - Build DAGs of dependent tasks
 - Serverless compute option (no warehouse needed)
 
 **Creating Tasks**:
+
 ```sql
 -- Simple scheduled task (every hour)
 CREATE TASK hourly_summary_task
@@ -1253,6 +1311,7 @@ ALTER TASK hourly_summary_task RESUME;
 ```
 
 **Cron-Based Schedule**:
+
 ```sql
 -- Daily at 3 AM UTC
 CREATE TASK daily_cleanup_task
@@ -1268,9 +1327,10 @@ CREATE TASK frequent_sync_task
     SCHEDULE = 'USING CRON */15 * * * * UTC'
 AS
     CALL sync_external_data_proc();
-```
+```text
 
 **Stream-Triggered Task**:
+
 ```sql
 -- Trigger only when stream has new data
 CREATE TASK process_orders_task
@@ -1285,9 +1345,10 @@ AS
     WHEN NOT MATCHED THEN INSERT ...;
 
 ALTER TASK process_orders_task RESUME;
-```
+```text
 
 **Task DAGs (Dependencies)**:
+
 ```sql
 -- Root task (runs first)
 CREATE TASK extract_task
@@ -1319,9 +1380,10 @@ AS
 ALTER TASK load_task RESUME;
 ALTER TASK transform_task RESUME;
 ALTER TASK extract_task RESUME;  -- Root task last
-```
+```text
 
 **Serverless Tasks** (no warehouse needed):
+
 ```sql
 -- Task runs on Snowflake-managed compute
 CREATE TASK serverless_task
@@ -1339,6 +1401,7 @@ AS
 ```
 
 **Task Management**:
+
 ```sql
 -- View tasks
 SHOW TASKS;
@@ -1363,7 +1426,7 @@ ALTER TASK hourly_summary_task SET SCHEDULE = '30 MINUTE';
 
 -- Drop task
 DROP TASK IF EXISTS old_task;
-```
+```text
 
 ---
 
@@ -1374,6 +1437,7 @@ DROP TASK IF EXISTS old_task;
 **Snowpipe** = Serverless, event-driven data ingestion service
 
 **Characteristics**:
+
 - Continuous, micro-batch loading (not batch ETL)
 - Event-driven (S3/Azure/GCS file notifications)
 - Serverless compute (no warehouse needed)
@@ -1382,7 +1446,7 @@ DROP TASK IF EXISTS old_task;
 
 ### Snowpipe Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  Cloud Storage (S3/Azure Blob/GCS)                      │
 │  ├─ folder/file_001.csv    (landed)                     │
@@ -1403,11 +1467,12 @@ DROP TASK IF EXISTS old_task;
           │  Snowflake Table                         │
           │  (Data loaded continuously)              │
           └──────────────────────────────────────────┘
-```
+```text
 
 ### Creating Snowpipe
 
 **Step 1: Create Stage** (if not exists):
+
 ```sql
 -- External stage pointing to S3
 CREATE OR REPLACE STAGE s3_incoming_stage
@@ -1417,6 +1482,7 @@ CREATE OR REPLACE STAGE s3_incoming_stage
 ```
 
 **Step 2: Create Pipe**:
+
 ```sql
 -- Pipe definition (COPY INTO command inside)
 CREATE OR REPLACE PIPE orders_pipe
@@ -1440,11 +1506,12 @@ DESC PIPE orders_pipe;
 notification_channel: arn:aws:sqs:us-east-1:123456789012:snowpipe-xxx
 Use this SQS queue ARN to configure S3 event notifications
 */
-```
+```text
 
 **Step 3: Configure Cloud Event Notifications**:
 
 For AWS S3:
+
 ```json
 // S3 Bucket → Properties → Event Notifications
 {
@@ -1454,17 +1521,19 @@ For AWS S3:
     "SQS": "arn:aws:sqs:us-east-1:123456789012:snowpipe-xxx"
   }
 }
-```
+```text
 
 For Azure Blob:
+
 ```sql
 -- Use Azure Event Grid subscription
 -- Point to Snowpipe notification URL from DESC PIPE
-```
+```text
 
 ### Using Snowpipe
 
 **Manual Trigger** (for testing or REST API):
+
 ```sql
 -- Manually trigger pipe to load specific files
 ALTER PIPE orders_pipe REFRESH;
@@ -1474,6 +1543,7 @@ ALTER PIPE orders_pipe REFRESH PREFIX 'incoming-data/2024/03/';
 ```
 
 **REST API Trigger** (for custom integrations):
+
 ```bash
 # Insert files via REST API
 curl -X POST \
@@ -1486,11 +1556,12 @@ curl -X POST \
       {"path": "incoming-data/file_002.csv"}
     ]
   }'
-```
+```text
 
 ### Monitoring Snowpipe
 
 **Pipe Status**:
+
 ```sql
 -- View pipe details
 SHOW PIPES;
@@ -1498,9 +1569,10 @@ DESC PIPE orders_pipe;
 
 -- Check if pipe is running
 SELECT SYSTEM$PIPE_STATUS('orders_pipe');
-```
+```text
 
 **Load History**:
+
 ```sql
 -- Recent loads
 SELECT *
@@ -1517,9 +1589,10 @@ FROM TABLE(INFORMATION_SCHEMA.PIPE_USAGE_HISTORY(
     DATE_RANGE_START => DATEADD('day', -7, CURRENT_TIMESTAMP())
 ))
 ORDER BY start_time DESC;
-```
+```text
 
 **Errors & Validation**:
+
 ```sql
 -- Rows with errors
 SELECT *
@@ -1533,16 +1606,18 @@ WHERE ERROR_COUNT > 0;
 ### Snowpipe Cost & Optimization
 
 **Pricing**:
-```
+
+```text
 Base Cost: $0.06 per 1,000 files processed
 Compute: Serverless (included in base cost)
 
 Example:
 - 100,000 files/month → 100 × $0.06 = $6/month
 - 1,000,000 files/month → 1,000 × $0.06 = $60/month
-```
+```text
 
 **Cost Optimization**:
+
 ```sql
 -- 1. Batch small files before uploading
 --    Single 100MB file < 100 × 1MB files (cost: $0.00006 vs $0.006)
@@ -1557,7 +1632,7 @@ FROM (
     SELECT * FROM @s3_stage
     WHERE METADATA$FILENAME LIKE '%orders%'  -- Only load relevant files
 );
-```
+```text
 
 ---
 
@@ -1568,11 +1643,13 @@ FROM (
 **External Table** = Query data in S3/Azure/GCS without loading into Snowflake
 
 **Use Cases**:
+
 - Large historical archives (rarely queried)
 - Data shared with other systems (avoid duplication)
 - Cost optimization (query-only when needed)
 
 **Trade-offs**:
+
 ```
 Benefits:
 ✅ No storage cost in Snowflake
@@ -1584,19 +1661,21 @@ Limitations:
 ❌ No Time Travel or cloning
 ❌ No clustering or optimization
 ❌ Limited DML (read-only unless materialized)
-```
+```text
 
 ### Creating External Tables
 
 **Step 1: Create External Stage**:
+
 ```sql
 -- S3 external stage
 CREATE OR REPLACE EXTERNAL STAGE s3_archive_stage
     URL = 's3://my-data-lake/archive/'
     CREDENTIALS = (AWS_KEY_ID = 'xxx' AWS_SECRET_KEY = 'yyy');
-```
+```text
 
 **Step 2: Create External Table**:
+
 ```sql
 -- External table (Parquet files)
 CREATE OR REPLACE EXTERNAL TABLE external_sales
@@ -1616,9 +1695,10 @@ CREATE OR REPLACE EXTERNAL TABLE external_customers (
     WITH LOCATION = @s3_archive_stage/customers/
     FILE_FORMAT = (TYPE = 'CSV')
     AUTO_REFRESH = FALSE;
-```
+```text
 
 **Step 3: Refresh Metadata** (if AUTO_REFRESH = FALSE):
+
 ```sql
 -- Manually refresh to detect new files
 ALTER EXTERNAL TABLE external_sales REFRESH;
@@ -1652,11 +1732,12 @@ SELECT
     METADATA$FILE_ROW_NUMBER    -- Row number within file
 FROM external_sales
 LIMIT 10;
-```
+```text
 
 ### Materialized Views on External Tables
 
 **Speed up queries by caching results**:
+
 ```sql
 -- Create materialized view (data loaded into Snowflake)
 CREATE MATERIALIZED VIEW external_sales_monthly AS
@@ -1673,7 +1754,7 @@ SELECT * FROM external_sales_monthly
 WHERE month >= '2024-01-01';
 
 -- Storage cost: Only for materialized view data (aggregated, smaller)
-```
+```text
 
 ---
 
@@ -1690,11 +1771,12 @@ CREATE DATABASE prod_replica AS REPLICA OF source_account.prod_database;
 
 -- Failover to replica (manual)
 ALTER DATABASE prod_replica PRIMARY;
-```
+```text
 
 ### Result Caching
 
 **Automatic Result Caching**:
+
 ```sql
 -- Enable (default)
 ALTER SESSION SET USE_CACHED_RESULT = TRUE;
@@ -1717,7 +1799,7 @@ ALTER WAREHOUSE bi_wh SET ENABLE_QUERY_ACCELERATION = TRUE;
 
 -- Automatically speeds up eligible queries (additional cost)
 -- Best for: Dashboards with unpredictable scan patterns
-```
+```text
 
 ### Search Optimization Service
 
@@ -1728,7 +1810,7 @@ ALTER TABLE large_customers ADD SEARCH OPTIMIZATION;
 -- Significantly faster for:
 SELECT * FROM large_customers WHERE email = 'user@example.com';  -- Point lookup
 SELECT * FROM large_customers WHERE name LIKE '%Smith%';         -- Substring search
-```
+```text
 
 ---
 
@@ -1747,6 +1829,7 @@ SELECT * FROM large_customers WHERE name LIKE '%Smith%';         -- Substring se
 ---
 
 **Next Steps**:
+
 1. Review [setup-guide.md](setup-guide.md) for hands-on environment setup
 2. Follow exercises to practice each concept
 3. Explore [best-practices.md](best-practices.md) for production guidance

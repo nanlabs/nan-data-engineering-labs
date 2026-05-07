@@ -9,6 +9,7 @@
 ## 🎯 Objectives
 
 Learn AWS managed streaming:
+
 - **Kinesis Data Streams**: Real-time data ingestion
 - **Producers**: Send records to streams
 - **Consumers**: Process records with KCL
@@ -21,12 +22,12 @@ Learn AWS managed streaming:
 
 ### Kinesis Architecture
 
-```
+```text
 Producers → Kinesis Stream → Consumers
             ├─ Shard 1
             ├─ Shard 2
             └─ Shard 3
-```
+```text
 
 ### Key Concepts
 
@@ -53,11 +54,13 @@ Producers → Kinesis Stream → Consumers
 ### Part 1: Create Kinesis Stream (30 min)
 
 **AWS Console**:
+
 1. Go to Kinesis → Data Streams
 2. Create stream: `user-events-stream`
 3. On-demand or provisioned (2 shards)
 
 **AWS CLI**:
+
 ```bash
 # Create stream
 aws kinesis create-stream \
@@ -71,9 +74,10 @@ aws kinesis describe-stream \
 
 # List streams
 aws kinesis list-streams
-```
+```text
 
 **Python (boto3)**:
+
 ```python
 import boto3
 
@@ -144,9 +148,10 @@ class KinesisProducer:
         except Exception as e:
             print(f"Batch error: {e}")
             return None
-```
+```text
 
 **Test**:
+
 ```python
 producer = KinesisProducer('user-events-stream')
 
@@ -168,7 +173,7 @@ records = [
     for i in range(100)
 ]
 producer.send_batch(records)
-```
+```text
 
 ### Part 3: Kinesis Consumer (60 min)
 
@@ -241,7 +246,7 @@ class KinesisConsumer:
         # Wait for threads
         for thread in threads:
             thread.join()
-```
+```text
 
 ### Part 4: KCL Consumer (60 min)
 
@@ -314,9 +319,10 @@ regionName = us-east-1
 initialPositionInStream = TRIM_HORIZON
 processingLanguage = python3
 executorType = MultiLangDaemon
-```
+```text
 
 **Run KCL**:
+
 ```bash
 # Install KCL
 pip install amazon_kclpy
@@ -325,7 +331,7 @@ pip install amazon_kclpy
 amazon_kclpy_helper.py --print_command \
   --properties kcl.properties \
   --python kcl_consumer.py
-```
+```text
 
 ### Part 5: Monitoring (30 min)
 
@@ -356,7 +362,7 @@ def get_stream_metrics(stream_name: str):
     print(f"Incoming records: {response['Datapoints']}")
 
     # Get other metrics: IncomingBytes, GetRecords.Latency, etc.
-```
+```text
 
 ### Part 6: Scaling (30 min)
 
@@ -395,11 +401,13 @@ def auto_scale(stream_name: str, threshold_mb_per_sec: float = 0.8):
 ## ✅ Validation
 
 **Run tests**:
+
 ```bash
 pytest test_kinesis.py -v
-```
+```text
 
 **Tests cover**:
+
 - ✅ Stream creation
 - ✅ Producer sends records
 - ✅ Consumer receives records

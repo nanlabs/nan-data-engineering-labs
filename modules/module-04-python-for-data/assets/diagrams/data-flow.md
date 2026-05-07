@@ -29,7 +29,7 @@ flowchart TD
     style K fill:#e8f5e9
     style E fill:#ffebee
     style L fill:#fff3e0
-```
+```text
 
 ## 🎯 Module pipeline (Exercises 01-06)
 
@@ -59,7 +59,7 @@ flowchart LR
     style H fill:#fff3e0
     style I fill:#e8f5e9
     style J fill:#c8e6c9
-```
+```text
 
 ## 📁 Flujo de Files
 
@@ -122,7 +122,7 @@ flowchart TD
     style X fill:#c8e6c9
     style Y fill:#c8e6c9
     style Z fill:#c8e6c9
-```
+```text
 
 ## 🔄 Detailed Transformation pipeline
 
@@ -242,7 +242,7 @@ flowchart TD
     style I fill:#f3e5f5
     style J fill:#c8e6c9
     style K fill:#ffcdd2
-```
+```text
 
 ## 🎭 Procesamiento con Checkpoints
 
@@ -267,7 +267,7 @@ flowchart LR
     style I fill:#e8f5e9
     style L fill:#c8e6c9
     style J fill:#ffcdd2
-```
+```text
 
 ## 🔁 pipeline con Error Handling
 
@@ -314,7 +314,7 @@ flowchart TD
     style E3 fill:#ffcdd2
     style E4 fill:#ffcdd2
     style G2 fill:#ffe0b2
-```
+```text
 
 ## 📈 Aggregation Flow
 
@@ -358,6 +358,7 @@ flowchart TD
 ## 💡 Best Practices
 
 ### 1. Separation of Responsibilities
+
 ```python
 def extract(source):
     """Solo extraccion"""
@@ -377,9 +378,10 @@ def load(df, destination):
 df = extract('input.csv')
 df = transform(df)
 load(df, 'output.parquet')
-```
+```text
 
 ### 2. Checkpoints
+
 ```python
 def pipeline_with_checkpoints(input_file):
     # Checkpoint 1: Raw
@@ -395,9 +397,10 @@ def pipeline_with_checkpoints(input_file):
     df.to_parquet('checkpoints/03_transformed.parquet')
     
     return df
-```
+```text
 
 ### 3. Logging
+
 ```python
 import logging
 
@@ -412,9 +415,10 @@ def process_data(df):
     logger.info(f"Removed {initial_count - len(df)} null rows")
     
     return df
-```
+```text
 
 ### 4. Validation at Every Step
+
 ```python
 def validate_and_transform(df):
     # Validate antes

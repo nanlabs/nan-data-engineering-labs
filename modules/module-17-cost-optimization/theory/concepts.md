@@ -15,7 +15,7 @@
 
 ### The FinOps Lifecycle
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │               FinOps Lifecycle                  │
 │                                                 │
@@ -28,21 +28,24 @@
 │         └───────────────┴───────────────┘     │
 │              Continuous Improvement            │
 └─────────────────────────────────────────────────┘
-```
+```text
 
 **Inform Phase**: Establish visibility
+
 - Enable Cost Explorer
 - Set up cost allocation tags
 - Create dashboards
 - Educate teams on cost awareness
 
 **Optimize Phase**: Take action
+
 - Purchase RIs/Savings Plans
 - Right-size resources
 - Implement lifecycle policies
 - Delete unused resources
 
 **Operate Phase**: Continuous improvement
+
 - Automate cost controls
 - Establish governance policies
 - Track KPIs
@@ -53,6 +56,7 @@
 ### 1. Cloud Pricing Models
 
 #### On-Demand (Pay-as-you-go)
+
 - **How it works**: Pay for compute/storage by the hour or second
 - **Pros**: No commitment, full flexibility
 - **Cons**: Highest per-unit cost
@@ -60,6 +64,7 @@
 - **Example**: EC2 m5.large at $0.096/hour = $70/month
 
 #### Reserved Capacity
+
 - **How it works**: Commit to usage (1 or 3 years) for discount
 - **Types**: Reserved Instances, Reserved Capacity (Redshift, RDS)
 - **Discounts**: 30-75% vs On-Demand
@@ -69,6 +74,7 @@
 - **Example**: EC2 RI 3Y All Upfront = $25/month (64% savings)
 
 #### Savings Plans
+
 - **How it works**: Commit to spend ($/hour) for discount
 - **Types**: Compute SP (EC2, Fargate, Lambda), EC2 Instance SP
 - **Discounts**: 33-72% vs On-Demand
@@ -78,6 +84,7 @@
 - **Example**: $0.05/hour commitment = $36/month, covers any compute mix
 
 #### Spot/Preemptible
+
 - **How it works**: Bid on unused capacity, can be interrupted
 - **Discounts**: 70-90% vs On-Demand
 - **Pros**: Massive savings
@@ -86,6 +93,7 @@
 - **Example**: EC2 Spot m5.large = $0.029/hour (70% off) = $21/month
 
 #### Serverless (Pay-per-use)
+
 - **How it works**: Pay only for actual execution time
 - **Pricing**: Per request + per compute time (Lambda, Fargate)
 - **Pros**: No idle cost, automatic scaling, zero ops
@@ -98,6 +106,7 @@
 Cloud TCO includes both **direct** and **indirect** costs:
 
 #### Direct Costs (Visible in Bill)
+
 - **Compute**: EC2, Lambda, Fargate, ECS
 - **Storage**: S3, EBS, EFS, Glacier
 - **Database**: RDS, DynamoDB, Redshift, Aurora
@@ -105,6 +114,7 @@ Cloud TCO includes both **direct** and **indirect** costs:
 - **Services**: Glue, EMR, Athena, Kinesis, Step Functions
 
 #### Indirect Costs (Hidden but Real)
+
 - **Operations**: Engineering time managing infrastructure
 - **Downtime**: Revenue loss from outages
 - **Overprovisioning**: Idle resources (60% of costs waste)
@@ -113,7 +123,7 @@ Cloud TCO includes both **direct** and **indirect** costs:
 
 #### TCO Calculation Framework
 
-```
+```text
 Total Cost of Ownership =
     Infrastructure Costs (EC2, S3, RDS) +
     Service Costs (Glue, Athena, Kinesis) +
@@ -147,6 +157,7 @@ Total Cost of Ownership =
 **Cost Allocation**: Attributing cloud costs to teams, projects, or business units.
 
 #### Cost Allocation Tags
+
 ```python
 ALLOCATION_STRATEGY = {
     'required_tags': [
@@ -179,17 +190,19 @@ def check_tag_compliance(resource_tags):
         'missing_tags': missing_tags,
         'coverage': (len(ALLOCATION_STRATEGY['required_tags']) - len(missing_tags)) / len(ALLOCATION_STRATEGY['required_tags']) * 100
     }
-```
+```text
 
 #### Showback vs Chargeback
 
 **Showback** (Awareness):
+
 - Teams see their costs but don't pay directly
 - Goal: Cost awareness and optimization motivation
 - Implementation: Weekly/monthly cost reports per team
 - Example: "Team A consumed $5K last month (20% increase)"
 
 **Chargeback** (Accountability):
+
 - Teams billed internally for their cloud usage
 - Goal: True cost accountability, budget enforcement
 - Implementation: Finance allocates costs to team P&L
@@ -227,9 +240,10 @@ print(f"  Cost per User: ${unit_costs['cost_per_user']:.2f}")
 print(f"  Cost per Transaction: ${unit_costs['cost_per_transaction']:.4f}")
 print(f"  Cost per GB Processed: ${unit_costs['cost_per_gb_processed']:.2f}")
 print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
-```
+```text
 
 **Why Unit Economics Matter**:
+
 - Track efficiency over time (goal: reduce cost per unit)
 - Compare to revenue per unit (profitability)
 - Benchmark against industry standards
@@ -240,6 +254,7 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
 ### Compute Pricing
 
 #### EC2 Pricing Components
+
 1. **Instance cost**: Based on instance type, family, generation
    - Compute-optimized (C): CPU-heavy workloads
    - Memory-optimized (R): RAM-intensive applications
@@ -257,11 +272,13 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
    - Between AZs: $0.01/GB each direction
 
 #### Lambda Pricing Components
+
 1. **Requests**: $0.20 per 1M requests
 2. **Duration**: $0.0000166667 per GB-second
 3. **Free tier**: 1M requests + 400K GB-seconds/month
 
 **Optimization**:
+
 - More memory = more CPU = faster execution = lower duration cost
 - ARM/Graviton2: 20% cheaper, 19% faster
 - Reserved Concurrency: $0.015/hour per provisioned (for critical low-latency)
@@ -269,6 +286,7 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
 ### Storage Pricing
 
 #### S3 Storage Classes
+
 | Class | Price/GB-month | Retrieval | Use Case |
 |-------|----------------|-----------|----------|
 | Standard | $0.023 | Free | Frequently accessed |
@@ -280,6 +298,7 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
 | Deep Archive | $0.00099 | $0.02/GB | Long-term (12 hours) |
 
 #### S3 Request Pricing
+
 - PUT/COPY/POST: $0.005 per 1,000 requests
 - GET/SELECT: $0.0004 per 1,000 requests
 - Lifecycle transitions: $0.01 per 1,000 objects
@@ -287,6 +306,7 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
 ### Database Pricing
 
 #### RDS Pricing
+
 - **Instance cost**: Similar to EC2 (db.m5.large = ~$140/month)
 - **Storage**: gp3 SSD $0.115/GB-month
 - **Backup storage**: $0.095/GB-month (beyond free tier = DB size)
@@ -294,6 +314,7 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
 - **Multi-AZ**: 2x instance cost (standby replica)
 
 #### DynamoDB Pricing
+
 - **Provisioned**:
   - Write: $0.00065 per WCU-hour
   - Read: $0.00013 per RCU-hour
@@ -309,17 +330,20 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
 ### Data Processing Pricing
 
 #### AWS Glue
+
 - **ETL jobs**: $0.44 per DPU-hour (Data Processing Unit)
 - **Crawler**: $0.44 per DPU-hour
 - **Data Catalog**: $1 per 100K objects stored, $1 per 1M API calls
 - **DPU**: 4 vCPU + 16 GB memory
 
 #### Amazon Athena
+
 - **Query cost**: $5 per TB of data scanned
 - **No provisioning**: Pay only for queries you run
 - **Optimization**: Partition + Parquet = 90% cost reduction
 
 #### Amazon EMR
+
 - **EC2 cost**: Standard instance pricing
 - **EMR cost**: +50% of EC2 cost
 - **Example**: m5.xlarge = $0.192/hour EC2 + $0.048/hour EMR = $0.24/hour total
@@ -332,11 +356,13 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
 **Definition**: Matching resource size to actual workload requirements.
 
 **Common Patterns**:
+
 - **Over-provisioning**: "Future-proofing" with 2-4x larger instances
 - **Cargo-cult sizing**: "AWS recommends m5.xlarge" without analysis
 - **Dev = Prod sizing**: Development using production-sized resources
 
 **Right-Sizing Process**:
+
 1. Monitor utilization (30+ days)
 2. Identify over-provisioned (CPU < 40%, Memory < 50%)
 3. Downsize incrementally (2xl → xl → large)
@@ -348,6 +374,7 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
 ### 2. Commitment-Based Discounts
 
 **Reserved Instances**:
+
 - **1-Year**: 30-40% savings
 - **3-Year**: 50-75% savings
 - **Payment options**:
@@ -356,12 +383,14 @@ print(f"  Cost per API Call: ${unit_costs['cost_per_api_call']:.6f}")
   - All Upfront: Highest discount, full capital required
 
 **Savings Plans**:
+
 - **Compute SP**: Apply to EC2, Fargate, Lambda (most flexible)
 - **EC2 Instance SP**: Apply to EC2 only (slightly higher discount)
 - **Flexibility**: Change instance types, sizes, OS, regions
 
 **Decision Matrix**:
-```
+
+```text
 High usage predictability + Same instance type → RI
 High usage predictability + Variable instance types → Savings Plan
 Medium usage + Flexibility needed → 1Y Savings Plan
@@ -371,16 +400,19 @@ Low usage or spiky → On-Demand + Spot
 ### 3. Storage Optimization
 
 **Lifecycle Management**:
+
 - Automate transitions: Standard → IA → Glacier → Deep Archive
 - Delete temp data after N days
 - Transition old logs to archives
 
 **Data Format Optimization**:
+
 - CSV → Parquet: 80% size reduction + 10x faster queries
 - Compression: Snappy (fast), Gzip (max compression)
 - Columnar format: Only read columns needed (Athena cost reduction)
 
 **Deduplication**:
+
 - Remove duplicate S3 objects
 - Use S3 Storage Lens to identify duplicates
 
@@ -389,22 +421,26 @@ Low usage or spiky → On-Demand + Spot
 ### 4. Autoscaling Strategies
 
 **Horizontal Scaling** (Add/remove instances):
+
 - EC2 Auto Scaling Groups
 - ECS/Fargate task count
 - Lambda concurrency
 - DynamoDB capacity units
 
 **Vertical Scaling** (Change instance size):
+
 - Schedule-based: Large during business hours, small at night
 - Metric-based: Resize based on CloudWatch metrics
 
 **Cost Impact**:
+
 - Without autoscaling: Pay for peak capacity 24/7
 - With autoscaling: Pay only for demand (~40% savings)
 
 ### 5. Spot Instance Strategies
 
 **Spot Best Practices**:
+
 1. **Diversification**: Use multiple instance types (m5, m5a, m4)
 2. **Capacity-optimized**: AWS selects types with lowest interruption
 3. **Checkpointing**: Save state to S3 every 5-10 minutes
@@ -412,6 +448,7 @@ Low usage or spiky → On-Demand + Spot
 5. **Mixed capacity**: Core nodes On-Demand, task nodes Spot
 
 **Spot Allocation Strategies**:
+
 - `lowest-price`: Cheapest spot price (higher interruption)
 - `capacity-optimized`: Most available capacity (recommended)
 - `diversified`: Spread across instance types
@@ -451,15 +488,18 @@ Low usage or spiky → On-Demand + Spot
 ### Cost Efficiency Metrics
 
 **Compute Efficiency**:
+
 - Average CPU utilization: Target 60-80%
 - Memory utilization: Target 70-85%
 - Storage utilization: Target 70-90%
 
 **Cost Variance**:
+
 - Actual vs Budget: Target ±10%
 - Forecast accuracy: Target ±15%
 
 **Optimization Velocity**:
+
 - Recommendations implemented: Target >70% within 30 days
 - Time to detect anomalies: Target <24 hours
 - Time to remediate waste: Target <7 days
@@ -467,6 +507,7 @@ Low usage or spiky → On-Demand + Spot
 ## Cost Optimization Maturity Levels
 
 ### Level 0: **Unaware** (Cost Chaos)
+
 - No visibility into costs
 - No tagging strategy
 - Engineers don't see bills
@@ -474,6 +515,7 @@ Low usage or spiky → On-Demand + Spot
 - **Waste**: 40-60% of spend
 
 ### Level 1: **Reactive** (Basic Visibility)
+
 - Cost Explorer enabled
 - Monthly cost reviews
 - Basic tagging (>30% coverage)
@@ -481,6 +523,7 @@ Low usage or spiky → On-Demand + Spot
 - **Waste**: 30-40% of spend
 
 ### Level 2: **Proactive** (Active Management)
+
 - Cost allocation tags (>70% coverage)
 - Budget alerts configured
 - Some RIs/SPs purchased
@@ -488,6 +531,7 @@ Low usage or spiky → On-Demand + Spot
 - **Waste**: 20-30% of spend
 
 ### Level 3: **Predictive** (Advanced FinOps)
+
 - Forecasting with ML
 - Anomaly detection enabled
 - High RI/SP coverage (>70%)
@@ -495,6 +539,7 @@ Low usage or spiky → On-Demand + Spot
 - **Waste**: 10-20% of spend
 
 ### Level 4: **Optimized** (FinOps Culture)
+
 - Real-time cost dashboards
 - Automated optimization (cleanup, right-sizing)
 - Unit economics tracked
@@ -507,28 +552,33 @@ Low usage or spiky → On-Demand + Spot
 ## Common Cost Waste Patterns
 
 ### 1. Idle Resources (40% of waste)
+
 - **Dev/test** instances running 24/7
 - **Stopped instances** with attached EBS volumes
 - **Elastic IPs** not attached to running instances ($3.60/month each)
 - **Load balancers** with no targets ($22.50/month each)
 
 ### 2. Over-Provisioning (30% of waste)
+
 - **CPU < 20%** average utilization
 - **Memory < 40%** average utilization
 - **Storage** with <50% used space
 
 ### 3. Unoptimized Storage (15% of waste)
+
 - **S3 Standard** for infrequently accessed data
 - **No lifecycle** policies
 - **CSV** instead of Parquet (10x more expensive queries)
 - **Uncompressed** data
 
 ### 4. Missed Discounts (10% of waste)
+
 - **No RIs/SPs** for steady workloads
 - **No Spot** for batch processing
 - **Low commitment utilization** (<80%)
 
 ### 5. Data Transfer (5% of waste)
+
 - **Cross-region** replication when single region sufficient
 - **Internet egress** instead of VPC endpoints
 - **No CloudFront** for static assets
@@ -536,6 +586,7 @@ Low usage or spiky → On-Demand + Spot
 ## Cost Optimization Patterns by Service
 
 ### EC2 Optimization
+
 - [ ] Right-size based on CloudWatch metrics
 - [ ] Purchase RIs/SPs for >50% baseline usage
 - [ ] Use Spot for batch/CI/CD (70-90% savings)
@@ -545,6 +596,7 @@ Low usage or spiky → On-Demand + Spot
 - [ ] Graviton2 instances (20% better price/performance)
 
 ### S3 Optimization
+
 - [ ] Lifecycle policies (Standard → IA → Glacier)
 - [ ] Intelligent-Tiering for unknown patterns
 - [ ] Compress data (Gzip, Snappy)
@@ -554,6 +606,7 @@ Low usage or spiky → On-Demand + Spot
 - [ ] Requester Pays for customer data transfer
 
 ### RDS Optimization
+
 - [ ] Right-size based on CloudWatch (CPU, IOPS, connections)
 - [ ] Purchase RIs for production databases (40-60% savings)
 - [ ] Use Aurora Serverless for variable workloads
@@ -562,6 +615,7 @@ Low usage or spiky → On-Demand + Spot
 - [ ] Stop dev/test databases nightly
 
 ### Lambda Optimization
+
 - [ ] Right-size memory (test 128MB to 3008MB)
 - [ ] Reduce cold starts (Provisioned Concurrency sparingly)
 - [ ] ARM/Graviton2 runtime (20% cheaper)
@@ -569,6 +623,7 @@ Low usage or spiky → On-Demand + Spot
 - [ ] VPC only when necessary (adds latency)
 
 ### Redshift Optimization
+
 - [ ] Pause clusters when not in use
 - [ ] Use RA3 nodes with managed storage
 - [ ] Elastic resize to reduce node count
@@ -607,11 +662,12 @@ forecast = forecast_costs(historical, forecast_months=3, growth_rate=0.05)
 print("\n📈 Cost Forecast (5% monthly growth):")
 for i, cost in enumerate(forecast, 1):
     print(f"  Month +{i}: ${cost:,.2f}")
-```
+```text
 
 ### Forecast Accuracy
 
 **Measure**: MAPE (Mean Absolute Percentage Error)
+
 ```python
 def calculate_forecast_accuracy(actual, forecasted):
     """Calculate forecast accuracy using MAPE"""
@@ -622,7 +678,7 @@ def calculate_forecast_accuracy(actual, forecasted):
     return accuracy
 
 # Target: >85% accuracy for financial planning
-```
+```text
 
 ## Key Takeaways
 
@@ -637,23 +693,27 @@ def calculate_forecast_accuracy(actual, forecasted):
 ## FinOps Roles
 
 ### FinOps Practitioner
+
 - Manage budgets and forecasts
 - Analyze cost trends and anomalies
 - Recommend optimization opportunities
 - Drive cross-functional collaboration
 
 ### Engineering Teams
+
 - Implement cost-efficient architectures
 - Tag resources properly
 - Review team cost reports monthly
 - Act on right-sizing recommendations
 
 ### Finance/Procurement
+
 - Set budgets and allocate costs
 - Negotiate EAs and EDPs (Enterprise Discount Programs)
 - ROI analysis for optimization initiatives
 
 ### Leadership
+
 - Set cost optimization goals (e.g., "Reduce cost by 20% YoY")
 - Incentivize cost-aware engineering
 - Fund optimization projects
@@ -661,11 +721,13 @@ def calculate_forecast_accuracy(actual, forecasted):
 ## Industry Benchmarks
 
 ### SaaS Cost Benchmarks
+
 - **Infrastructure as % of Revenue**: 15-30% (target: <20%)
 - **Gross Margin**: >70% (requires cost control)
 - **Cost per Customer**: Decreasing YoY (scale efficiency)
 
 ### Cloud Spend Breakdown (Typical)
+
 - Compute (EC2, Lambda): 40-50%
 - Storage (S3, EBS): 15-20%
 - Database (RDS, DynamoDB): 15-25%
@@ -673,6 +735,7 @@ def calculate_forecast_accuracy(actual, forecasted):
 - Services (Glue, Athena, etc): 5-10%
 
 ### Optimization Potential by Category
+
 - Compute: 30-50% (right-sizing, RIs, Spot)
 - Storage: 50-80% (lifecycle, Parquet)
 - Database: 20-40% (RIs, right-sizing)
@@ -681,6 +744,7 @@ def calculate_forecast_accuracy(actual, forecasted):
 ## Summary
 
 This module covered:
+
 - FinOps principles and lifecycle (Inform → Optimize → Operate)
 - Cloud pricing models (On-Demand, RI, SP, Spot, Serverless)
 - Total Cost of Ownership (direct + indirect costs)

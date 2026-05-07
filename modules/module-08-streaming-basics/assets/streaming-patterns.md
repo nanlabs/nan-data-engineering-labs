@@ -9,6 +9,7 @@ Common patterns for stream processing applications.
 **Use Case**: Remove unwanted events
 
 **Pattern**:
+
 ```python
 for message in consumer:
     event = message.value
@@ -16,7 +17,7 @@ for message in consumer:
     # Filter condition
     if event['amount'] > 100:
         process_high_value_event(event)
-```
+```text
 
 **Example**: Filter high-value transactions
 
@@ -27,6 +28,7 @@ for message in consumer:
 **Use Case**: Transform or enrich events
 
 **Pattern**:
+
 ```python
 user_profiles = load_profiles()  # Lookup table
 
@@ -41,7 +43,7 @@ for message in consumer:
     }
 
     producer.send('enriched-events', enriched)
-```
+```text
 
 **Example**: Enrich user events with profile data
 
@@ -52,6 +54,7 @@ for message in consumer:
 **Use Case**: Running totals per key
 
 **Pattern**:
+
 ```python
 state = {}  # user_id -> {'count': int, 'total': float}
 
@@ -74,7 +77,7 @@ for message in consumer:
     }
 
     producer.send('user-aggregates', aggregate)
-```
+```text
 
 **Example**: User purchase totals
 
@@ -85,6 +88,7 @@ for message in consumer:
 **Use Case**: Aggregates over time windows
 
 **Pattern** (Tumbling Window):
+
 ```python
 from collections import defaultdict
 
@@ -119,6 +123,7 @@ for message in consumer:
 **Use Case**: Combine two streams
 
 **Pattern** (Stream-Table Join):
+
 ```python
 # Load dimension table
 products = load_products()  # product_id -> product data
@@ -136,9 +141,10 @@ for message in consumer:
     }
 
     producer.send('joined-events', joined)
-```
+```text
 
 **Pattern** (Stream-Stream Join with Window):
+
 ```python
 from collections import deque
 import time
@@ -168,7 +174,7 @@ for message in consumer_a:
         producer.send('joined-stream', joined)
     else:
         stream_a_buffer.append(event_a)
-```
+```text
 
 **Example**: Join clicks with impressions
 
@@ -179,6 +185,7 @@ for message in consumer_a:
 **Use Case**: Group events by session
 
 **Pattern**:
+
 ```python
 from collections import defaultdict
 
@@ -205,7 +212,7 @@ for message in consumer:
 
         # Start new session
         sessions[session_id] = [event]
-```
+```text
 
 **Example**: User browsing sessions
 
@@ -216,6 +223,7 @@ for message in consumer:
 **Use Case**: Remove duplicate events
 
 **Pattern** (Time-based):
+
 ```python
 from collections import deque
 
@@ -249,6 +257,7 @@ for message in consumer:
 **Use Case**: Handle failed events
 
 **Pattern**:
+
 ```python
 dlq_producer = KafkaProducer(...)
 
@@ -271,7 +280,7 @@ for message in consumer:
         }
         dlq_producer.send('failed-events-dlq', dlq_event)
         consumer.commit()  # Don't reprocess
-```
+```text
 
 **Example**: Failed payment processing
 
@@ -282,6 +291,7 @@ for message in consumer:
 **Use Case**: Send event to multiple destinations
 
 **Pattern**:
+
 ```python
 for message in consumer:
     event = message.value
@@ -291,7 +301,7 @@ for message in consumer:
         producer.send('analytics-events', event)
         producer.send('revenue-events', event)
         producer.send('inventory-events', event)
-```
+```text
 
 **Example**: Purchase event distribution
 
@@ -302,6 +312,7 @@ for message in consumer:
 **Use Case**: Limit processing rate
 
 **Pattern**:
+
 ```python
 import time
 
@@ -313,7 +324,7 @@ for message in consumer:
 
     process(event)
     time.sleep(sleep_time)
-```
+```text
 
 **Example**: API rate limiting
 
@@ -324,6 +335,7 @@ for message in consumer:
 **Use Case**: Stream database changes
 
 **Pattern**:
+
 ```python
 # Kafka Connect with Debezium captures DB changes
 # Consumer processes change events
@@ -352,6 +364,7 @@ for message in consumer:
 **Use Case**: Separate read and write models
 
 **Pattern**:
+
 ```python
 # Write side: Commands to Kafka
 producer.send('commands', {
@@ -369,7 +382,7 @@ for message in consumer:
     if command['type'] == 'UpdateUser':
         user_id = command['user_id']
         materialized_view[user_id] = command
-```
+```text
 
 **Example**: High-read user profiles
 
@@ -380,6 +393,7 @@ for message in consumer:
 **Use Case**: Distributed transactions
 
 **Pattern**:
+
 ```python
 # Choreography-based saga
 for message in consumer:
@@ -407,7 +421,7 @@ for message in consumer:
             'type': 'ReleaseInventory',
             'order_id': event['order_id']
         })
-```
+```text
 
 **Example**: Order processing workflow
 

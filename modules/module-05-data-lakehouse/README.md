@@ -29,7 +29,7 @@ El **data Lakehouse** is un paradigma moderno que combina:
 - **optimized performance**: Indexing, caching, query optimization
 - **Governance**: Auditing, data lineage, access controle
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    data LAKEHOUSE                            │
 │  ┌────────────┐  ┌──────────────┐  ┌──────────────────┐    │
@@ -42,31 +42,34 @@ El **data Lakehouse** is un paradigma moderno que combina:
 │  ✓ Schema Evolution     ✓ data Versioning                   │
 │  ✓ Unified Batch+Stream ✓ BI + ML Workloads                 │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### 🌊 Arquitectura Medallion
 
 We will implement **Medallion architecture**, to design pattern that organizes data into three layers:
 
 #### 🥉 Bronze Layer (Raw data)
+
 - Datas crudos tal como llegan of las fuentes
 - Minimal transformation (ingestion only)
 - Append-only, inmutable
 - Preserva el linaje completo
 
 #### 🥈 Silver Layer (Refined data)
+
 - Datas limpios and validados
 - Deduplication and normalization
 - TIPos of datas correctos
 - Business rules aplicadas
 
 #### 🥇 Gold Layer (Business-Level Aggregates)
+
 - Datas optimizados for consumo
 - Aggregations and business metrics
 - Modelos dimensionales or of features
 - Listos for BI/Analytics/ML
 
-```
+```text
 Sources → [Bronze] → [Silver] → [Gold] → Analytics/ML
           (Raw)      (Cleaned)  (Aggregated)
 ```
@@ -124,12 +127,14 @@ Before beginning this module, you must have completed:
 - ⚠️ **Module 04**: Python for data (pandas, testing, pIPelines) - Recommended
 
 **Conocimientos necesarios**:
+
 - Basic Linux/Bash Commands
 - Conceptos of databases relacionales
 - Python intermedio (funciones, classs, manejo of errores)
 - Basic PySpark (we will learn in the module)
 
 **Software requerido**:
+
 - Docker and Docker Compose
 - Python 3.8+
 - 8GB RAM minimum (16GB recommended)
@@ -137,7 +142,7 @@ Before beginning this module, you must have completed:
 
 ### 📂 Module Structure
 
-```
+```text
 module-05-data-lakehouse/
 ├── README.md                          # this archivo
 ├── requirements.txt                   # Dependencias Python
@@ -194,7 +199,7 @@ module-05-data-lakehouse/
 └── docs/                              # Documentación adicional
     ├── troubleshooting-spark.md       # Solution of problems
     └── lakehouse-guide.md             # Guide of mejores prácticas
-```
+```text
 
 ### 🚀 Quick Start
 
@@ -212,7 +217,7 @@ docker-compose up -d
 
 # Verificar que everything is corriendo
 docker-compose ps
-```
+```text
 
 #### 2. Explore Theoretical Material
 
@@ -236,7 +241,7 @@ pytest test_solution.py -v
 
 # Jupyter Lab for desarrolelo interactivo
 ./scrIPts/run_jupyter.sh
-```
+```text
 
 #### 4. Validate the Complete Module
 
@@ -246,7 +251,7 @@ pytest test_solution.py -v
 
 # with reporte of cobertura
 ./scrIPts/validate.sh --coverage
-```
+```text
 
 ### 📊 Exercises and Difficulty
 
@@ -263,7 +268,7 @@ pytest test_solution.py -v
 
 ### 🎓 Learning Path
 
-```
+```text
 1. Theory (3-4h)
    └─ Concepts → Architecture → Resources
 
@@ -320,7 +325,7 @@ Once you complete this module, you will be prepanetwork to:
 
 ---
 
-## 🚀 Let's get started!
+## 🚀 Let's get started
 
 El data Lakehouse representa el futuro of the storage and procesamiento of datas. Combina la flexibilidad of los data Lakes with la reliability of los data Warehouses, permitiendo workloads of BI and ML sobre la misma plataforma.
 

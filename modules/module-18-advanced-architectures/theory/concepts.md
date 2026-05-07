@@ -49,9 +49,9 @@ Proposed by Nathan Marz (2011), Lambda Architecture addresses the challenge: *"H
 
 #### 1. **Batch Layer** (Accuracy)
 
-```
+```text
 Raw Data (S3) → Spark Job (EMR) → Batch Views (Parquet/Delta Lake)
-```
+```text
 
 - **Purpose**: Process ALL data for complete, accurate results
 - **Technology**: Apache Spark, AWS Glue, EMR
@@ -63,7 +63,7 @@ Raw Data (S3) → Spark Job (EMR) → Batch Views (Parquet/Delta Lake)
 
 #### 2. **Speed Layer** (Low Latency)
 
-```
+```text
 Live Events → Kinesis → Lambda → Real-time Views (DynamoDB)
 ```
 
@@ -77,9 +77,9 @@ Live Events → Kinesis → Lambda → Real-time Views (DynamoDB)
 
 #### 3. **Serving Layer** (Query)
 
-```
+```text
 Query → Merge Batch Views + Real-time Views → Combined Result
-```
+```text
 
 - **Purpose**: Provide unified interface to consume data
 - **Technology**: Redshift, Athena, DynamoDB
@@ -88,7 +88,7 @@ Query → Merge Batch Views + Real-time Views → Combined Result
 
 ### Diagram
 
-```
+```text
                     Raw Data (S3)
                           ↓
         ┌─────────────────┴─────────────────┐
@@ -123,12 +123,14 @@ Query → Merge Batch Views + Real-time Views → Combined Result
 ### When to Use
 
 **Use Lambda When**:
+
 - Need guaranteed accuracy (banking, healthcare)
 - Complex batch analytics (ML training, aggregations)
 - Reprocessing is frequent (fix bugs, add features)
 - Team has expertise in both batch and streaming
 
 **Example Use Cases**:
+
 - **E-commerce**: Product recommendations (batch collaborative filtering + real-time session)
 - **Banking**: Fraud detection (batch risk models + real-time transaction scoring)
 - **IoT**: Predictive maintenance (batch trend analysis + real-time alerts)
@@ -145,12 +147,12 @@ Proposed by Jay Kreps (2014, LinkedIn), Kappa simplifies Lambda by asking: *"Wha
 
 ### Single Processing Layer
 
-```
+```text
 Event Log (Kafka/Kinesis) → Stream Processor → Materialized Views
                 ↓
          Retention: 7-365 days
          Replay: Reprocess from timestamp
-```
+```text
 
 ### Key Concepts
 
@@ -170,11 +172,12 @@ stream.get_records(
         timestamp=now() - timedelta(days=30)
     )
 )
-```
+```text
 
 #### 2. **Reprocessing Strategy**
 
 Instead of batch jobs, reprocess by:
+
 1. Create new version of stream processor
 2. Replay events from offset/timestamp
 3. Output to new materialized view (v2)
@@ -182,6 +185,7 @@ Instead of batch jobs, reprocess by:
 5. Delete v1 after validation
 
 **Benefits**:
+
 - No separate batch layer
 - Single code base (one processing logic)
 - Testing = replay with sample data
@@ -193,16 +197,17 @@ Precomputed aggregations stored in databases:
 ```
 Stream → Window (1 min) → Aggregate → DynamoDB (count by user_id)
 Stream → Window (1 hour) → Aggregate → Redshift (daily totals)
-```
+```text
 
 **View Types**:
+
 - **Real-time**: Updated every second (DynamoDB, ElastiCache)
 - **Near-real-time**: Updated every minute (RDS, OpenSearch)
 - **Batch**: Updated daily (Redshift, S3)
 
 ### Diagram
 
-```
+```text
                 Event Producers
                        ↓
               ┌────────────────┐
@@ -219,7 +224,7 @@ Stream → Window (1 hour) → Aggregate → Redshift (daily totals)
          Materialized      Materialized
          View A            View B
          (DynamoDB)        (OpenSearch)
-```
+```text
 
 **Reprocessing**:
 
@@ -227,7 +232,7 @@ Stream → Window (1 hour) → Aggregate → Redshift (daily totals)
 Event Log → Stream Processor v2 → Materialized View v2
                 ↓
           (Blue-Green Deploy)
-```
+```text
 
 ### Advantages
 
@@ -246,12 +251,14 @@ Event Log → Stream Processor v2 → Materialized View v2
 ### When to Use
 
 **Use Kappa When**:
+
 - Data naturally arrives as streams (clickstreams, logs, IoT)
 - Reprocessing windows are short (<30 days)
 - Team strong in stream processing
 - Operational simplicity > performance
 
 **Example Use Cases**:
+
 - **Real-time Monitoring**: System metrics, application logs
 - **Fraud Detection**: Credit card transactions (process once, near-real-time)
 - **IoT Platforms**: Sensor data aggregation and alerting
@@ -273,13 +280,14 @@ Proposed by Zhamak Dehghani (2019, ThoughtWorks), Data Mesh addresses: *"How do 
 
 Each business domain owns their data:
 
-```
+```text
 Product Domain → Product Data (sales, inventory, catalog)
 Customer Domain → Customer Data (profiles, preferences, interactions)
 Marketing Domain → Marketing Data (campaigns, attribution)
-```
+```text
 
 **Ownership Includes**:
+
 - Data pipelines (ETL/ELT)
 - Data quality
 - Schema evolution
@@ -309,7 +317,7 @@ Product Domain Data Product:
 - SLA: 99.9% uptime, <5min freshness
 - Quality: 99.5% completeness, 0 duplicates
 - Docs: API reference, examples, changelog
-```
+```text
 
 #### 3. **Self-Serve Data Platform**
 
@@ -334,6 +342,7 @@ Global policies enforced across all domains:
 - **Interoperability**: Standard formats (Parquet, Avro, JSON)
 
 **Governance Tools**:
+
 - Glue Data Catalog (central metadata)
 - Lake Formation (access control)
 - Schema Registry (compatibility rules)
@@ -341,7 +350,7 @@ Global policies enforced across all domains:
 
 ### Diagram
 
-```
+```text
                  ┌───────────────────────┐
                  │ Central Platform Team │
                  │ (Infrastructure)      │
@@ -362,7 +371,7 @@ Global policies enforced across all domains:
                  │ Federated Governance  │
                  │ (Schema, Security)    │
                  └───────────────────────┘
-```
+```text
 
 ### Advantages
 
@@ -381,12 +390,14 @@ Global policies enforced across all domains:
 ### When to Use
 
 **Use Data Mesh When**:
+
 - Organization >50 data engineers
 - Clear domain boundaries (Product, Sales, Customer)
 - Domains have specialized knowledge
 - Central data team is bottleneck
 
 **Example Organizations**:
+
 - **Uber**: 1000+ data engineers, 20+ domains (Rides, Eats, Freight)
 - **Netflix**: 200+ engineers, domains by content type
 - **Airbnb**: Domains by business unit (Homes, Experiences, Trust & Safety)
@@ -404,6 +415,7 @@ Global policies enforced across all domains:
 #### 1. **Events vs Commands**
 
 **Event** (past tense, immutable):
+
 ```json
 {
   "eventType": "OrderPlaced",
@@ -415,15 +427,17 @@ Global policies enforced across all domains:
 ```
 
 **Command** (imperative, mutable):
+
 ```json
 {
   "commandType": "PlaceOrder",
   "userId": "user_456",
   "items": ["item_1", "item_2"]
 }
-```
+```text
 
 **Difference**:
+
 - Events: "Something happened" (notification)
 - Commands: "Do something" (instruction)
 
@@ -431,9 +445,9 @@ Global policies enforced across all domains:
 
 Central event bus routes events to consumers:
 
-```
+```text
 Producer → EventBridge → Rules → Targets (Lambda, SQS, Kinesis)
-```
+```text
 
 **AWS EventBridge Example**:
 
@@ -455,14 +469,16 @@ eventbridge.put_events(
 #### 3. **Event Choreography vs Orchestration**
 
 **Choreography** (decentralized):
-```
+
+```text
 OrderPlaced → InventoryService (listens) → InventoryUpdated
            → PaymentService (listens) → PaymentProcessed
            → NotificationService (listens) → EmailSent
-```
+```text
 
 **Orchestration** (centralized with Step Functions):
-```
+
+```text
 Workflow:
 1. Validate Order
 2. Process Payment
@@ -471,6 +487,7 @@ Workflow:
 ```
 
 **Trade-offs**:
+
 - Choreography: Loose coupling, harder to debug
 - Orchestration: Centralized control, single point of failure
 
@@ -499,12 +516,14 @@ Workflow:
 #### Example: Banking Account
 
 **Traditional (CRUD)**:
-```
+
+```text
 Account Table: { id: 123, balance: $1,500 }
-```
+```text
 
 **Event Sourcing**:
-```
+
+```text
 Event Log:
 1. AccountOpened { accountId: 123, initialBalance: $1,000 }
 2. MoneyDeposited { accountId: 123, amount: $500 }
@@ -546,7 +565,7 @@ for event in events['Items']:
         balance += event['amount']
     elif event['eventType'] == 'MoneyWithdrawn':
         balance -= event['amount']
-```
+```text
 
 ### CQRS (Command Query Responsibility Segregation)
 
@@ -554,7 +573,7 @@ for event in events['Items']:
 
 #### Architecture
 
-```
+```text
 Write Side:                         Read Side:
 Commands → Event Store         Events → Projections → Read Models
 (Normalize, Validate)          (Denormalize, Optimize)
@@ -562,11 +581,12 @@ Commands → Event Store         Events → Projections → Read Models
 DynamoDB (events)                    ElastiCache (views)
                                      Redshift (analytics)
                                      OpenSearch (search)
-```
+```text
 
 #### Example: E-commerce Order
 
 **Command Model** (Write):
+
 ```python
 def place_order(order):
     # Validate inventory, payment
@@ -576,13 +596,15 @@ def place_order(order):
 ```
 
 **Query Model** (Read):
+
 ```python
 def get_order_summary(user_id):
     # Read from optimized view (ElastiCache)
     return cache.get(f"order_summary:{user_id}")
-```
+```text
 
 **Projections** (Event Handlers):
+
 ```python
 # Update read model when event received
 def on_order_placed(event):
@@ -592,7 +614,7 @@ def on_order_placed(event):
         "total_spent": get_total_spent(event["userId"]) + event["amount"]
     }
     cache.set(f"order_summary:{event['userId']}", summary)
-```
+```text
 
 ### Advantages
 
@@ -611,12 +633,14 @@ def on_order_placed(event):
 ### When to Use
 
 **Use Event Sourcing + CQRS When**:
+
 - Audit requirements (financial, healthcare)
 - Complex business logic with many state changes
 - Need temporal queries ("show me state 3 months ago")
 - High read:write ratio (10:1 or higher)
 
 **Example Use Cases**:
+
 - **Banking**: Every transaction must be auditable
 - **Order Management**: Track order lifecycle (placed → paid → shipped → delivered)
 - **Collaboration Tools**: Version history (Google Docs-like change tracking)
@@ -638,7 +662,7 @@ Deploy data platform across multiple AWS regions for:
 
 #### 1. **Active-Passive** (Backup Region)
 
-```
+```text
 Primary (us-east-1) → Writes + Reads
           ↓
 Replication (async)
@@ -652,12 +676,12 @@ Secondary (us-west-2) → Read-only
 
 #### 2. **Active-Active** (Multi-Master)
 
-```
+```text
 US Region (us-east-1) ← → EU Region (eu-west-1)
      ↓                          ↓
   US Users                   EU Users
   (Write + Read)            (Write + Read)
-```
+```text
 
 **Replication**: Bidirectional, near-real-time (<1 second)
 **Conflicts**: Possible when same item written in both regions
@@ -668,7 +692,7 @@ US Region (us-east-1) ← → EU Region (eu-west-1)
 
 Global deployment across 3+ regions:
 
-```
+```text
 US (us-east-1) ←→ EU (eu-west-1) ←→ APAC (ap-southeast-1)
 ```
 
@@ -693,7 +717,7 @@ dynamodb.create_global_table(
 dynamodb_us.put_item(TableName='orders', Item=order)
 
 # Automatically replicated to eu-west-1 and ap-southeast-1 (<1 sec)
-```
+```text
 
 **Consistency**: Strong consistency within region, eventual across regions
 **Conflict Resolution**: Last-Write-Wins (LWW) by timestamp
@@ -716,7 +740,7 @@ rds.create_db_cluster(
     GlobalClusterIdentifier='ecommerce-global',
     ...
 )
-```
+```text
 
 **Replication**: <1 second lag
 **Reads**: Local reads from each region (low latency)
@@ -746,7 +770,7 @@ s3.put_bucket_replication(
         }]
     }
 )
-```
+```text
 
 ### Conflict Resolution
 
@@ -777,7 +801,7 @@ item = dynamodb.get_item(TableName='users', Key={'id': 1})
 
 # Application must resolve
 resolved_name = resolve_conflict(item)
-```
+```text
 
 #### **Custom Resolution**
 
@@ -790,17 +814,19 @@ def resolve_conflict(versions):
         if version:
             return version
     return versions[0]  # Fallback to first
-```
+```text
 
 ### When to Use
 
 **Use Multi-Region When**:
+
 - Global user base (users in US, EU, APAC)
 - Latency SLA <100ms (single region insufficient)
 - High availability required (99.99%+)
 - Compliance (data residency in EU)
 
 **Cost-Benefit Analysis**:
+
 - Single Region: $10K/month, 150ms latency (EU users)
 - Multi-Region (2): $25K/month, <50ms latency (all users)
 - **Break-even**: If >40% users are EU and latency matters, worth it
@@ -830,7 +856,7 @@ def resolve_conflict(versions):
 
 **Problem**: Using PostgreSQL for all workloads
 
-```
+```text
 PostgreSQL:
 - Transactions (orders) → ✅ Good (ACID)
 - Analytics (aggregations) → ❌ Slow (row-based)
@@ -843,7 +869,7 @@ PostgreSQL:
 
 ### Polyglot Example: E-commerce
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │            Application Layer            │
 └─────────────────┬───────────────────────┘
@@ -857,7 +883,7 @@ ACID          Low latency   Sub-ms reads
 Redshift     OpenSearch    Neptune
 (Analytics)  (Search)      (Recommendations)
 Aggregations Full-text     Graph queries
-```
+```text
 
 **Data Flow**:
 
@@ -871,12 +897,13 @@ Aggregations Full-text     Graph queries
 
 Sync data from operational (OLTP) to analytical (OLAP) databases:
 
-```
+```text
 Aurora PostgreSQL → DMS (CDC) → S3 → Glue → Redshift
 (Source: Transactions)                  (Target: Analytics)
 ```
 
 **CDC Tools**:
+
 - **AWS DMS**: Database Migration Service (real-time replication)
 - **Debezium**: Open-source CDC (Kafka-based)
 - **DynamoDB Streams**: Native change streams
@@ -890,7 +917,7 @@ def handle_stream_record(record):
         new_item = record['dynamodb']['NewImage']
         # Sync to Redshift
         redshift.insert(table='orders', data=new_item)
-```
+```text
 
 ### Advantages
 
@@ -929,12 +956,13 @@ Proven by Eric Brewer (2000): Distributed systems can provide AT MOST 2 of 3:
 
 Read always returns latest write:
 
-```
+```text
 Write(x=1) → Success
 Read(x) → 1 (guaranteed)
-```
+```text
 
 **AWS Examples**:
+
 - DynamoDB: `ConsistentRead=True`
 - Aurora: Within single region
 - S3: After PUT succeeds
@@ -949,9 +977,10 @@ Read may return stale data, but eventually consistent:
 Write(x=1) → Success
 Read(x) → 0 (stale, immediately after write)
 Read(x) → 1 (after propagation, ~100ms)
-```
+```text
 
 **AWS Examples**:
+
 - DynamoDB: Default (`ConsistentRead=False`)
 - DynamoDB Global Tables
 - S3 (eventually consistent for overwrite PUT)
@@ -962,10 +991,10 @@ Read(x) → 1 (after propagation, ~100ms)
 
 Reads respect causality:
 
-```
+```text
 Write(x=1) → Write(y=2, depends on x)
 Read(y=2) → Must also see x=1 (causally related)
-```
+```text
 
 **Use Case**: Chat applications (see replies after message).
 
@@ -976,19 +1005,19 @@ Guarantee order of events per entity:
 ```
 User 123: Update Name → Update Email → Update Phone
 Any read sees updates in order (never phone before name)
-```
+```text
 
 **Implementation**: Version vector per entity.
 
 ### Consistency Spectrum
 
-```
+```text
 Strong                  Causal              Eventual
   │                       │                    │
   ↓                       ↓                    ↓
 Slow, Available     Balance               Fast, May-Be-Stale
 (Aurora, RDS)      (Custom)               (DynamoDB, Global)
-```
+```text
 
 ---
 
@@ -1006,6 +1035,7 @@ Slow, Available     Balance               Fast, May-Be-Stale
 | **Reprocessing** | ✅ Fast batch | ⚠️ Slower stream replay | Lambda |
 
 **Decision**:
+
 - **Lambda**: Banking, healthcare, complex analytics (accuracy critical)
 - **Kappa**: IoT, monitoring, fraud detection (simplicity + speed)
 
@@ -1020,6 +1050,7 @@ Slow, Available     Balance               Fast, May-Be-Stale
 | **Governance** | ✅ Easy enforcement | ❌ Federated complexity | Central |
 
 **Decision**:
+
 - **Centralized**: Startups, <50 engineers, simple domains
 - **Data Mesh**: Enterprises, >50 engineers, clear domain boundaries (Uber, Netflix)
 
@@ -1035,6 +1066,7 @@ Slow, Available     Balance               Fast, May-Be-Stale
 | **Debugging** | ❌ Lost history | ✅ Full trace | Event |
 
 **Decision**:
+
 - **CRUD**: Most applications (e.g., blog, social media)
 - **Event Sourcing**: High compliance (banking, healthcare), need audit trail
 
@@ -1076,10 +1108,10 @@ revenue_gain = monthly_revenue * users_affected * conversion_lift
 
 Components interact via well-defined interfaces:
 
-```
+```text
 Service A → Event Bus → Service B
 (No direct dependency)
-```
+```text
 
 **Benefits**: Change Service B without modifying Service A.
 
@@ -1087,7 +1119,7 @@ Service A → Event Bus → Service B
 
 Related functionality grouped together:
 
-```
+```text
 Order Service:
 - place_order()
 - cancel_order()
@@ -1102,11 +1134,11 @@ NOT:
 
 Data written once, never modified:
 
-```
+```text
 ❌ UPDATE orders SET status='shipped' WHERE id=123
 ✅ INSERT INTO order_events (event_type, order_id, timestamp)
    VALUES ('OrderShipped', 123, NOW())
-```
+```text
 
 **Benefits**: Audit trail, time travel queries, easy replication.
 
@@ -1126,7 +1158,7 @@ def create_order(order_id, data):
 def create_order(data):
     order_id = generate_id()  # Different each time!
     return insert_order(order_id, data)
-```
+```text
 
 **Critical For**: Retries, exactly-once processing, disaster recovery.
 

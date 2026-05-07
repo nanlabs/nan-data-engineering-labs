@@ -47,7 +47,7 @@ graph LR
     style Bronze fill:#CD7F32
     style Silver fill:#C0C0C0
     style Gold fill:#FFD700
-```
+```text
 
 ## 2. Multi-Account Data Mesh Architecture
 
@@ -124,7 +124,7 @@ graph TD
     style MarketingLF fill:#2196F3
     style FinanceLF fill:#9C27B0
     style ConsumerLF fill:#FF5722
-```
+```text
 
 ## 3. Compliance and Audit Pattern
 
@@ -202,7 +202,7 @@ graph TB
     style CloudTrail fill:#FF9900
     style Reports fill:#4CAF50
     style SOC fill:#F44336
-```
+```text
 
 ## 4. PII Detection and Masking Pattern
 
@@ -313,7 +313,7 @@ graph TB
     style PR_S3 fill:#4CAF50
     style DR_S3 fill:#2196F3
     style Failover fill:#FF5722
-```
+```text
 
 ## 6. Data Retention and Archival Pattern
 
@@ -378,7 +378,7 @@ stateDiagram-v2
         - Audit required
         - Court order only
     end note
-```
+```text
 
 ## 7. Schema Evolution Pattern
 
@@ -423,7 +423,7 @@ sequenceDiagram
     Monitor->>Monitor: Track:<br/>- Version history<br/>- Downstream impact<br/>- Query compatibility
 
     Note over Dev,Monitor: Rollback available:<br/>Can revert to v2 if issues detected
-```
+```text
 
 ## 8. Federated Query Pattern
 
@@ -523,7 +523,7 @@ sequenceDiagram
         EventBridge->>Lambda: Immediate trigger
         Lambda->>Glue: Quick partition add
     end
-```
+```text
 
 ## 10. Cost Allocation and Chargeback Pattern
 
@@ -592,7 +592,7 @@ graph TD
 
     style CostExplorer fill:#FF9900
     style Savings fill:#4CAF50
-```
+```text
 
 ## Usage
 

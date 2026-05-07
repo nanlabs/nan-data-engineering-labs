@@ -1,6 +1,7 @@
 # Exercise 02: Production ETL Pipelines
 
 ## Overview
+
 Build a production-grade ETL pipeline implementing the Medallion Architecture (Bronze → Silver → Gold) with data quality checks, incremental processing, and comprehensive monitoring.
 
 **Estimated Time**: 2.5 hours
@@ -10,7 +11,9 @@ Build a production-grade ETL pipeline implementing the Medallion Architecture (B
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Implement Medallion Architecture (Bronze, Silver, Gold layers)
 - Build data quality frameworks with validation rules
 - Process data incrementally using watermarks
@@ -22,7 +25,9 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 You're building an e-commerce analytics platform. Raw event data arrives continuously from web and mobile apps. You need to:
+
 1. Ingest raw events into a Bronze layer (append-only)
 2. Clean and validate data in a Silver layer with quality checks
 3. Create business aggregations in a Gold layer
@@ -37,9 +42,11 @@ You're building an e-commerce analytics platform. Raw event data arrives continu
 ## Requirements
 
 ### Task 1: Bronze Layer - Raw Ingestion (20 min)
+
 Ingest raw event data into the Bronze layer with audit columns.
 
 **Requirements**:
+
 - Create `bronze_events` Delta table
 - Append-only (no updates or deletes)
 - Add metadata columns:
@@ -48,7 +55,8 @@ Ingest raw event data into the Bronze layer with audit columns.
   - `load_id` (STRING) - Batch identifier for tracking
 
 **Schema**:
-```
+
+```text
 event_id: STRING
 user_id: STRING
 timestamp: STRING (raw, not parsed yet)
@@ -56,9 +64,10 @@ event_type: STRING
 device: STRING
 country: STRING
 revenue: STRING (raw, may have invalid values)
-```
+```text
 
 **Data Generation**:
+
 - Generate 10,000 initial events
 - Include some problematic data:
   - 5% with NULL user_id
@@ -67,6 +76,7 @@ revenue: STRING (raw, may have invalid values)
   - 4% with unknown countries
 
 **Success Criteria**:
+
 - ✅ Bronze table contains exactly 10,000 rows
 - ✅ All audit columns populated
 - ✅ No data transformation (raw format preserved)
@@ -75,9 +85,11 @@ revenue: STRING (raw, may have invalid values)
 ---
 
 ### Task 2: Silver Layer - Data Cleaning (30 min)
+
 Transform Bronze data into clean, typed Silver layer with validation.
 
 **Requirements**:
+
 - Create `silver_events` Delta table
 - Parse and cast data types correctly:
   - `timestamp` → TIMESTAMP
@@ -88,17 +100,20 @@ Transform Bronze data into clean, typed Silver layer with validation.
 - Deduplicate by (event_id, timestamp)
 
 **Data Quality Rules** (implement 4 checks):
+
 1. `user_id` must not be NULL
 2. `timestamp` must be valid and within last 365 days
 3. `revenue` must be >= 0
 4. `country` must be in known list (US, UK, CA, DE, FR, AU, JP, etc.)
 
 **Quarantine Handling**:
+
 - Create `silver_events_quarantine` table
 - Store rejected records with rejection reason
 - Add `quality_check_failed` column indicating which rule failed
 
 **Success Criteria**:
+
 - ✅ Silver table has ~9,000 clean records (90% pass rate)
 - ✅ ~1,000 records in quarantine table
 - ✅ All Silver records pass quality checks
@@ -108,15 +123,18 @@ Transform Bronze data into clean, typed Silver layer with validation.
 ---
 
 ### Task 3: Gold Layer - Business Aggregations (30 min)
+
 Create three Gold tables with business metrics.
 
 **Gold Table 1: Daily Active Users**
+
 - Table: `gold_daily_active_users`
 - Dimensions: date, country, device
 - Metrics: unique_users, total_events
 - Grain: One row per date/country/device
 
 **Gold Table 2: Event Funnel**
+
 - Table: `gold_event_funnel`
 - Dimensions: date, device
 - Metrics:
@@ -128,6 +146,7 @@ Create three Gold tables with business metrics.
 - Grain: One row per date/device
 
 **Gold Table 3: Revenue by Region**
+
 - Table: `gold_revenue_summary`
 - Dimensions: date, country, device
 - Metrics:
@@ -138,6 +157,7 @@ Create three Gold tables with business metrics.
 - Grain: One row per date/country/device
 
 **Success Criteria**:
+
 - ✅ All 3 Gold tables created
 - ✅ Aggregations mathematically correct
 - ✅ Conversion rates between 0 and 1
@@ -147,9 +167,11 @@ Create three Gold tables with business metrics.
 ---
 
 ### Task 4: Incremental Processing (25 min)
+
 Implement incremental processing to handle new data efficiently.
 
 **Requirements**:
+
 - Use watermark-based processing (track last processed timestamp)
 - Create `pipeline_watermarks` table:
   - `layer` (bronze/silver/gold)
@@ -158,15 +180,18 @@ Implement incremental processing to handle new data efficiently.
   - `updated_at`
 
 **Incremental Logic**:
+
 1. Bronze → Silver: Process only events after last Silver watermark
 2. Silver → Gold: Process only events after last Gold watermark
 3. Use MERGE (not overwrite) to update Gold tables
 
 **Idempotency**:
+
 - Running pipeline twice with same data should not create duplicates
 - Use MERGE with proper key matching
 
 **Testing**:
+
 1. Load initial 10,000 events (full load)
 2. Load 2,000 new events (incremental)
 3. Verify only 2,000 new records processed
@@ -174,6 +199,7 @@ Implement incremental processing to handle new data efficiently.
 5. Verify no duplicates created
 
 **Success Criteria**:
+
 - ✅ Watermark table tracks processing state
 - ✅ Only new data processed (not full scan)
 - ✅ Idempotent (safe to re-run)
@@ -183,9 +209,11 @@ Implement incremental processing to handle new data efficiently.
 ---
 
 ### Task 5: Data Lineage (15 min)
+
 Track data lineage across the Medallion Architecture.
 
 **Requirements**:
+
 - Create `data_lineage` table:
   - `lineage_id` (STRING)
   - `source_table` (STRING)
@@ -197,15 +225,18 @@ Track data lineage across the Medallion Architecture.
   - `execution_timestamp` (TIMESTAMP)
 
 **Lineage Tracking**:
+
 1. Source → Bronze: Track ingestion (10,000 in, 10,000 out, 0 rejected)
 2. Bronze → Silver: Track cleaning (10,000 in, ~9,000 out, ~1,000 rejected)
 3. Silver → Gold: Track aggregations for each Gold table
 
 **Visualization**:
+
 - Query lineage to show full Bronze → Silver → Gold path
 - Calculate data quality score: (records_out / records_in) * 100
 
 **Success Criteria**:
+
 - ✅ Lineage recorded for all transformations
 - ✅ Can trace event from Bronze to Gold
 - ✅ Records counts accurate
@@ -214,9 +245,11 @@ Track data lineage across the Medallion Architecture.
 ---
 
 ### Task 6: Pipeline Monitoring (20 min)
+
 Implement comprehensive monitoring and alerting.
 
 **Requirements**:
+
 - Create `pipeline_metrics` table:
   - `metric_timestamp` (TIMESTAMP)
   - `layer` (bronze/silver/gold)
@@ -225,6 +258,7 @@ Implement comprehensive monitoring and alerting.
   - `metric_value` (DOUBLE)
 
 **Metrics to Track**:
+
 1. **Volume Metrics**:
    - Records processed per run
    - Records rejected per run
@@ -245,6 +279,7 @@ Implement comprehensive monitoring and alerting.
    - Pipeline lag (ingestion time - event time)
 
 **Alerting**:
+
 - Define SLA thresholds:
   - Quality pass rate < 85% → Alert
   - Processing time > 5 minutes → Alert
@@ -253,6 +288,7 @@ Implement comprehensive monitoring and alerting.
 
 **Dashboard Queries**:
 Write 5 SQL queries for monitoring dashboard:
+
 1. Last 7 days processing volume
 2. Data quality trends (daily pass rate)
 3. Performance trends (processing time)
@@ -260,6 +296,7 @@ Write 5 SQL queries for monitoring dashboard:
 5. Top rejection reasons
 
 **Success Criteria**:
+
 - ✅ All metrics tracked for each run
 - ✅ SLA alerts triggered correctly
 - ✅ Dashboard queries return data
@@ -288,7 +325,8 @@ bronze_df = raw_df.select(
 bronze_df.write.format("delta") \
     .mode("append") \
     .saveAsTable("bronze_events")
-```
+```text
+
 </details>
 
 <details>
@@ -315,6 +353,7 @@ quarantine_df = quality_df.filter(col("quality_check") != "passed")
 passed_df.write.format("delta").mode("overwrite").saveAsTable("silver_events")
 quarantine_df.write.format("delta").mode("append").saveAsTable("silver_events_quarantine")
 ```
+
 </details>
 
 <details>
@@ -344,7 +383,8 @@ spark.sql(f"""
     ON target.layer = 'silver' AND target.table_name = 'silver_events'
     WHEN MATCHED THEN UPDATE SET last_processed_timestamp = source.ts
 """)
-```
+```text
+
 </details>
 
 <details>
@@ -367,20 +407,23 @@ gold_table.alias("target").merge(
     "unique_users": "source.unique_users",
     "total_events": "source.total_events"
 }).whenNotMatchedInsertAll().execute()
-```
+```text
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
 cd exercises/exercise-02-etl-pipeline
 python validate.py
-```
+```text
 
 **Expected Output**:
+
 ```
 ✅ Task 1: Bronze layer created (10,000 raw events with audit columns)
 ✅ Task 2: Silver layer cleaned (9,046 records, 954 quarantined)
@@ -397,12 +440,14 @@ python validate.py
 ✅ Task 6: Monitoring active (24 metrics tracked, 0 SLA violations)
 
 🎉 Exercise 02 Complete! Total Score: 100/100
-```
+```text
 
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.py` - Complete medallion pipeline implementation
 2. Data quality report (quarantine summary by rejection reason)
 3. Lineage diagram (Bronze → Silver → Gold flow)
@@ -411,6 +456,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - [Medallion Architecture Guide](https://www.databricks.com/glossary/medallion-architecture)
 - [Delta Lake MERGE](https://docs.delta.io/latest/delta-update.html#upsert-into-a-table-using-merge)
 - Notebook: `notebooks/02-medallion-architecture.py`
@@ -420,7 +466,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Exercise 03: Unity Catalog Governance (requires Enterprise edition)
 - ✅ Exercise 04: Real-Time Streaming
 - Review Module 06: ETL Fundamentals for batch processing patterns

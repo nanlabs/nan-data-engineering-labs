@@ -19,20 +19,21 @@ lifecycle_config = {
         }
     ]
 }
-```
+```text
 
 ### Hint 1.2: Replication Requirements
 
 **3 Requirements for Replication:**
+
 1. Versioning enabled on BOTH source and destination buckets
 2. IAM role with `s3:ReplicateObject` permission
 3. Replication configuration with destination bucket ARN
 
 ### Hint 1.3: Event Notification Flow
 
-```
+```text
 S3 Upload → Event Generated → SQS Queue → Lambda/App Processes
-```
+```text
 
 **Key:** SQS queue policy must allow S3 to send messages!
 
@@ -82,7 +83,7 @@ def create_lifecycle_policy(bucket_name: str) -> bool:
     except Exception as e:
         print_error(str(e))
         return False
-```
+```text
 
 ### Hint 2.3: Create SQS Queue
 
@@ -103,7 +104,7 @@ def create_sqs_queue(queue_name: str) -> tuple:
         return (queue_url, queue_arn)
     except Exception as e:
         return (None, None)
-```
+```text
 
 ### Hint 2.4: Configure Queue Policy
 
@@ -127,7 +128,7 @@ sqs.set_queue_attributes(
     QueueUrl=queue_url,
     Attributes={'Policy': json.dumps(policy)}
 )
-```
+```text
 
 ---
 
@@ -220,7 +221,7 @@ def configure_bucket_notification(bucket_name: str, queue_arn: str) -> bool:
     except Exception as e:
         print_error(str(e))
         return False
-```
+```text
 
 ### Hint 3.3: Test Notifications
 
@@ -256,7 +257,7 @@ def test_notifications(bucket_name: str, queue_url: str) -> bool:
                 return True
 
     return False
-```
+```text
 
 ---
 
@@ -273,11 +274,12 @@ aws --endpoint-url=http://localhost:4566 s3api put-bucket-versioning \
 aws --endpoint-url=http://localhost:4566 s3api put-bucket-versioning \
   --bucket DESTINATION_BUCKET \
   --versioning-configuration Status=Enabled
-```
+```text
 
 ### Error: "Access Denied" on SQS
 
 The queue policy is missing or inrunct. Make sure:
+
 - Principal is `s3.amazonaws.com`
 - Action is `sqs:SendMessage`
 - Condition includes source bucket ARN

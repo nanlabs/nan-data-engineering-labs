@@ -14,7 +14,7 @@
 
 ## Right-Sizing Process
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │                 Right-Sizing Workflow                    │
 │                                                          │
@@ -27,7 +27,7 @@
 │   CPU 20%        Over-sized     m5.2xl→m5.xl   -50%    │
 │   Mem 40%        by 2x          $0.384→$0.192  cost    │
 └──────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Tasks
 
@@ -55,9 +55,9 @@ try:
     print("  Recommendations available after analysis period")
 except Exception as e:
     print(f"Already enrolled or error: {e}")
-```
+```text
 
-2. **Get EC2 recommendations**:
+1. **Get EC2 recommendations**:
 
 ```python
 # Get right-sizing recommendations for EC2
@@ -197,9 +197,9 @@ for reservation in instances['Reservations']:
         else:
             print(f"    ✓ Well-sized")
         print()
-```
+```text
 
-2. **Create utilization dashboard**:
+1. **Create utilization dashboard**:
 
 ```python
 import matplotlib.pyplot as plt
@@ -247,7 +247,7 @@ def plot_utilization_dashboard(instance_id, metrics_data):
     plt.tight_layout()
     plt.savefig(f'utilization-{instance_id}.png', dpi=300)
     print(f"✓ Dashboard saved: utilization-{instance_id}.png")
-```
+```text
 
 ### Task 3: Right-Size RDS Instances
 
@@ -359,7 +359,7 @@ for db in db_instances['DBInstances']:
     else:
         print(f"    ✓ Well-sized")
     print()
-```
+```text
 
 ### Task 2: Implement EC2 Right-Sizing
 
@@ -443,7 +443,7 @@ def right_size_instance(instance_id, new_instance_type, dry_run=True):
 right_size_instance('i-0123456789abcdef', 'm5.large', dry_run=True)
 ```
 
-2. **Bulk right-sizing with approval**:
+1. **Bulk right-sizing with approval**:
 
 ```python
 def bulk_right_size_instances(recommendations, auto_approve=False):
@@ -484,7 +484,7 @@ def bulk_right_size_instances(recommendations, auto_approve=False):
 
 # Apply recommendations (DRY RUN by default)
 # bulk_right_size_instances(recommendations_list[:3], auto_approve=False)
-```
+```text
 
 ### Task 3: Right-Size Redshift Clusters
 
@@ -580,7 +580,7 @@ def elastic_resize_redshift(cluster_id, new_node_count):
     print(f"  Cluster will be read-only during resize")
 
     return response
-```
+```text
 
 ### Task 4: Implement Auto Scaling
 
@@ -653,7 +653,7 @@ def setup_dynamodb_autoscaling(table_name):
     print(f"    Without auto-scaling: 100 RCU * $0.00013/hour = $9.36/month")
     print(f"    With auto-scaling (avg 30 RCU): $2.81/month")
     print(f"    Savings: $6.55/month (70%)")
-```
+```text
 
 ### Task 5: Generate Savings Report
 
@@ -771,21 +771,25 @@ generate_right_sizing_report(before, after)
 ## Troubleshooting
 
 **Issue**: Compute Optimizer shows no recommendations
+
 - **Solution**: Need 30 days of CloudWatch metrics
 - Enable CloudWatch detailed monitoring
 - Ensure instances are running consistently
 
 **Issue**: Memory metrics not available
+
 - **Solution**: Install CloudWatch Agent on EC2 instances
 - Configure agent to collect memory, disk metrics
 - Wait 24 hours for data collection
 
 **Issue**: Instance resize failed (InsufficientInstanceCapacity)
+
 - **Solution**: Try different AZ
 - Use different instance type in the same family
 - Schedule resize during low-traffic period
 
 **Issue**: Redshift elastic resize not available
+
 - **Solution**: Some node type changes require classic resize
 - Check supported resize paths in documentation
 - Consider snapshot → restore with new cluster
@@ -811,6 +815,7 @@ generate_right_sizing_report(before, after)
 ## Real-World Impact
 
 **Case Study**: SaaS company with 50 EC2 instances
+
 - **Before**: $15,000/month (mix of m5.2xlarge, m5.xlarge)
 - **Analysis**: Avg CPU 25%, P95 CPU 45%
 - **Action**: Downsized 30 instances (2xlarge → xlarge), 15 instances (xlarge → large)

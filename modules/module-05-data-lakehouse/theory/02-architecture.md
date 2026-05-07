@@ -31,7 +31,7 @@ In this document we will explore:
 
 The Medallion architecture is to design pattern that organizes data into three progressively refined layers:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    MEDALLION ARCHITECTURE                    │
 │                                                              │
@@ -44,13 +44,14 @@ The Medallion architecture is to design pattern that organizes data into three p
 │  • Immutable       • Validated     • Business metrics       │
 │  • Full history    • Deduplicated  • Optimized for BI/ML   │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### 🥉 Bronze Layer (Raw data)
 
 **Purpose**: Preserve data as it arrives from sources, without loss of information.
 
 **features**:
+
 - ✅ **Append-only**: only se agregan datas, nunca se eliminan
 - ✅ **Immutable**: Datas originales nunca se modifican
 - ✅ **Full lineage**: Rastreo completo of the origen
@@ -79,7 +80,7 @@ bronze_df.write \
     .mode("append") \
     .partitionBy("date") \
     .save("s3://lakehouse/bronze/events/")
-```
+```text
 
 **Typical Bronze Scheme**:
 
@@ -93,15 +94,17 @@ events_bronze
 ├── ingestion_timestamp: timestamp    # Metadata
 ├── source_file: string               # Metadata
 └── date: date (partition)            # Partición
-```
+```text
 
 **Ventajas**:
+
 - 🔄 **Reprocessing**: if there is bug, reprocesas desde Bronze
 - 📊 **Audit trail**: You know exactly what data arrived and when
 - 🔒 **Compliance**: Datas originales preservados
 - 🐛 **Debugging**: you can investigar issues in datas crudos
 
 **What NOT to do in Bronze?**:
+
 - ❌ not filtrar datas (incluso if parecen malos)
 - ❌ not transformar tIPos of datas agresivamente
 - ❌ not descartar columns
@@ -112,6 +115,7 @@ events_bronze
 **Purpose**: Clean, validated and analytics-ready data.
 
 **features**:
+
 - ✅ **Cleaned**: Nulls manejados, formatos correctos
 - ✅ **Validated**: Business rules aplicadas
 - ✅ **Deduplicated**: without records duplicados
@@ -155,11 +159,11 @@ silver_df.write \
     .partitionBy("date") \
     .option("mergeSchema", "true") \
     .save("s3://lakehouse/silver/events/")
-```
+```text
 
 **Typical Silver Schema**:
 
-```
+```text
 events_silver
 ├── event_id: string (NOT NULL)
 ├── user_id: string (NOT NULL, validated format)
@@ -173,13 +177,15 @@ events_silver
 **Validaciones comunes in Silver**:
 
 1. **Nulls**:
+
 ```python
 # Eliminar or llenar nulls según business rules
 df.filter(col("user_id").isNotNull())
 df.fillna({"country": "UNKNOWN"})
-```
+```text
 
-2. **Duplicados**:
+1. **Duplicados**:
+
 ```python
 # Deduplicar by key NATural
 df.dropDuplicates(["event_id"])
@@ -192,16 +198,18 @@ window = Window.partitionBy("event_id").orderBy(col("timestamp").desc())
 df.withColumn("rn", row_number().over(window)) \
   .filter(col("rn") == 1) \
   .drop("rn")
-```
+```text
 
-3. **Outliers**:
+1. **Outliers**:
+
 ```python
 # Filtrar valores fuera of rango válido
 df.filter((col("age") >= 0) & (col("age") <= 120))
 df.filter((col("amount") >= 0) & (col("amount") <= 1000000))
-```
+```text
 
-4. **Format standardization**:
+1. **Format standardization**:
+
 ```python
 # Estandarizar emails, phone numbers, etc.
 df.withColumn("email", lower(trim(col("email"))))
@@ -209,6 +217,7 @@ df.withColumn("phone", regexp_replace(col("phone"), "[^0-9]", ""))
 ```
 
 **What NOT to do in Silver?**:
+
 - ❌ not agregar (SUM, AVG, etc.) - that is Gold
 - ❌ DO NOT create complex business metrics
 - ❌ DO NOT do heavy joins (only basic enrichment)
@@ -218,6 +227,7 @@ df.withColumn("phone", regexp_replace(col("phone"), "[^0-9]", ""))
 **Purpose**: data optimized for consumption in BI, dashboards and ML.
 
 **features**:
+
 - ✅ **Aggregated**: SUMs, AVGs, COUNTs by dimensiones
 - ✅ **Denormalized**: Optimized for specific queries
 - ✅ **Business metrics**: KPIs, ratios, conversions
@@ -247,11 +257,12 @@ gold_df.write \
     .mode("overwrite") \
     .partitionBy("date") \
     .save("s3://lakehouse/gold/daily_events_summary/")
-```
+```text
 
 **Examples of tables Gold**:
 
 1. **Daily Sales Summary** (BI):
+
 ```python
 sales_gold = silver_sales \
     .groupBy("date", "product_category", "region") \
@@ -261,9 +272,10 @@ sales_gold = silver_sales \
         countDistinct("customer_id").alias("unique_customers"),
         (sum("amount") / count("order_id")).alias("avg_order_value")
     )
-```
+```text
 
-2. **User Behavior Features** (ML):
+1. **User Behavior Features** (ML):
+
 ```python
 user_features_gold = silver_events \
     .groupBy("user_id") \
@@ -274,9 +286,10 @@ user_features_gold = silver_events \
          count(when(col("event_type") == "click", 1))).alias("conversion_rate"),
         datediff(max("timestamp"), min("timestamp")).alias("days_active")
     )
-```
+```text
 
-3. **Executive Dashboard** (Denormalized):
+1. **Executive Dashboard** (Denormalized):
+
 ```python
 exec_dashboard_gold = silver_sales \
     .join(dim_products, "product_id") \
@@ -298,7 +311,7 @@ from delta.tables import DeltaTable
 
 deltaTable = DeltaTable.forPath(spark, "s3://lakehouse/gold/sales_summary/")
 deltaTable.optimize().executeZOrderBy("product_category", "region")
-```
+```text
 
 ### Flow Completo Bronze → Silver → Gold
 
@@ -356,7 +369,7 @@ def medallion_pIPeline():
 
 # Ejecutar pIPeline
 medallion_pIPeline()
-```
+```text
 
 ---
 
@@ -366,7 +379,7 @@ medallion_pIPeline()
 
 **Time Travel** is the ability to access **historical versions** of to table. Each write creates to new version.
 
-```
+```text
 Version 0 ───→ Version 1 ───→ Version 2 ───→ Version 3 (current)
 2024-02-01    2024-02-05     2024-02-10     2024-02-12
 ```
@@ -375,15 +388,16 @@ Version 0 ───→ Version 1 ───→ Version 2 ───→ Version 3 (
 
 Delta Lake mantiene un **transaction log** que registra cada change:
 
-```
+```text
 s3://bucket/table/_delta_log/
 ├── 00000000000000000000.json  # Version 0
 ├── 00000000000000000001.json  # Version 1
 ├── 00000000000000000002.json  # Version 2
 └── 00000000000000000003.json  # Version 3 (actual)
-```
+```text
 
 Cada archivo JSON contiene:
+
 - Archivos aggregates/removidos
 - Operation metadata
 - Timestamp
@@ -407,7 +421,7 @@ df = spark.read \
     .format("delta") \
     .option("timestampAsOf", yesterday) \
     .load("s3://lakehouse/silver/events/")
-```
+```text
 
 #### 2. Query by Version
 
@@ -439,7 +453,7 @@ history_df.select("version", "timestamp", "operation", "operationMetrics").show(
 # |1      |2024-02-10 10:00:00|DELETE   |{numDeleted: 500}          |
 # |0      |2024-02-09 10:00:00|WRITE    |{numFiles: 8, rows: 45000} |
 # +-------+-------------------+---------+---------------------------+
-```
+```text
 
 ### Rolelback to Previous Version
 
@@ -452,11 +466,11 @@ deltaTable.restoreToVersion(5)  # to return to version 5
 
 # Opción 2: Restore to timestamp
 deltaTable.restoreToTimestamp("2024-02-10 10:00:00")
-```
+```text
 
 **⚠️ Caution**: Restore creates to new version, it does not delete subsequent ones.
 
-```
+```text
 Versiones: 0 → 1 → 2 → 3 → 4 → 5 → 6 (current)
 Después of restoreToVersion(3):
 Versiones: 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 (copia of 3)
@@ -477,7 +491,7 @@ df_audit = spark.read \
 df_audit.write \
     .format("parquet") \
     .save("s3://audit-reports/2024-01-15/financial_summary/")
-```
+```text
 
 #### 2. Rolelback after Error
 
@@ -493,7 +507,7 @@ deltaTable.history().filter(col("operation") == "MERGE").show()
 
 # Rolelback to version antes of the bug
 deltaTable.restoreToVersion(45)  # Version buena conocida
-```
+```text
 
 #### 3. Reproducibilidad in ML
 
@@ -513,7 +527,7 @@ model_metadata = {
     "training_data_version": 10,
     "training_timestamp": "2024-02-10 10:00:00"
 }
-```
+```text
 
 #### 4. Comparar Versiones (Drift Detection)
 
@@ -540,6 +554,7 @@ last_week_stats = last_week_data.describe()
 ### What is Schema Evolution?
 
 **Schema Evolution** is la capacidad of **modificar el schema** of una table without:
+
 - Reescribir todos los datas
 - Romper pIPelines existentes
 - Downtime
@@ -566,7 +581,7 @@ new_df.write \
 # Result:
 # Records antiguos: phone = NULL
 # Records nuevos: phone = valor real
-```
+```text
 
 **⚠️ Importante**: `mergeSchema` debe to be habilitado.
 
@@ -576,18 +591,20 @@ spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true")
 
 # or by operación
 .option("mergeSchema", "true")
-```
+```text
 
 #### 2. Change Column Type (Cuidado)
 
 Delta Lake permite **ampliar** tIPos pero not **networkucir**:
 
 ✅ **Permitido** (widening):
+
 - `int` → `long`
 - `float` → `double`
 - `byte` → `int`
 
 ❌ **not permitido** (narrowing):
+
 - `long` → `int`
 - `double` → `float`
 - `string` → `int`
@@ -599,9 +616,10 @@ from delta.tables import DeltaTable
 deltaTable = DeltaTable.forPath(spark, "s3://lakehouse/silver/events/")
 
 deltaTable.alterColumn("user_id", "LONG")  # if era INT
-```
+```text
 
 for narrowing, necesitas:
+
 1. Agregar nueva column with tIPo deseado
 2. Copiar and transformar datas
 3. Eliminar column anterior
@@ -632,7 +650,7 @@ df_without_col.write \
 
 # Opción 2: Usar DELETE VECTORS (Delta Lake 2.0+)
 # not requiere reescribir, marca column como "deleted"
-```
+```text
 
 ### Schema Enforcement
 
@@ -651,7 +669,7 @@ try:
 except Exception as e:
     print(f"❌ Schema mismatch: {e}")
     # Error: Cannot write data with schema incompatible with table schema
-```
+```text
 
 ### Manejo of Breaking Changes
 
@@ -670,7 +688,7 @@ users_df.write.format("delta").mode("append").save("s3://lakehouse/silver/users_
 # Paso 3: Migrar consumers to users_v2
 
 # Paso 4: Deprecar users (antigua)
-```
+```text
 
 **Estrategia 2: Shadow Column**
 
@@ -692,7 +710,7 @@ s3://lakehouse/silver/events_v2/
 s3://lakehouse/silver/events_v3/
 
 # Consumers especifican version que usan
-```
+```text
 
 ---
 
@@ -701,6 +719,7 @@ s3://lakehouse/silver/events_v3/
 ### Why Partition?
 
 Partitioning physically divides data to:
+
 - ✅ **Mejor performance**: only leer particiones necesarias
 - ✅ **Better organization**: data logically grouped
 - ✅ **Better maintenance**: Delete old partitions easily
@@ -725,7 +744,7 @@ s3://lakehouse/silver/events/
 │   │   └── day=03/
 │   └── month=02/
 └── year=2023/
-```
+```text
 
 **Ventaja**: Queries with filter of fecha only leen particiones necesarias
 
@@ -737,7 +756,7 @@ df = spark.read \
     .filter((col("year") == 2024) & (col("month") == 2))
 
 # Pruning: Evita escanear 365 días completos
-```
+```text
 
 ### Category Partitioning
 
@@ -760,16 +779,18 @@ s3://lakehouse/silver/sales/
 **Cuidado**: not particionar by columns with alta cardinalidad
 
 ❌ **Malo** (demasiadas particiones):
+
 ```python
 # user_id he/she has millones of valores únicos
 df.partitionBy("user_id")  # ❌ Crea millones of directorios
-```
+```text
 
 ✅ **Bueno** (cardinalidad moderada):
+
 ```python
 # country he/she has ~200 valores
 df.partitionBy("country")  # ✅ 200 directorios manejables
-```
+```text
 
 ### Reglas of Particionamiento
 
@@ -778,6 +799,7 @@ df.partitionBy("country")  # ✅ 200 directorios manejables
    - More than 10,000: Metadata Overhead
 
 2. **Partition size**: 1GB per partition ideal
+
    ```python
    # Muy pequeño ❌
    # 10,000 partitions × 10MB = 100GB total
@@ -788,13 +810,14 @@ df.partitionBy("country")  # ✅ 200 directorios manejables
    ```
 
 3. **Query patterns**: Particionar by columns filtradas frecuentemente
+
    ```python
    # if queries siempre filtran by fecha and región
    SELECT * FROM events WHERE date = '2024-02-12' AND region = 'US'
    
    # Particionar by esas columns
    df.partitionBy("date", "region")
-   ```
+   ```text
 
 4. **Evolution**: You cannot change partitioning without rewriting
    - Delta Lake: not soporta partition evolution
@@ -814,7 +837,7 @@ result = df.filter(col("date") == "2024-02-12")
 # Spark only lee:
 # s3://lakehouse/silver/events/date=2024-02-12/
 # ✅ not escanea otras 364 fechas
-```
+```text
 
 **See pruning in action**:
 
@@ -844,11 +867,11 @@ deltaTable = DeltaTable.forPath(spark, "s3://lakehouse/silver/events/")
 
 # Optimizar by columns frecuentemente filtradas
 deltaTable.optimize().executeZOrderBy("user_id", "event_type")
-```
+```text
 
 **How ​​it works**:
 
-```
+```text
 without Z-ordering:
 File 1: [user=to,type=click], [user=Z,type=view], [user=B,type=purchase]
 File 2: [user=to,type=view], [user=and,type=click], [user=C,type=purchase]
@@ -858,9 +881,10 @@ with Z-ordering:
 File 1: [user=to,type=click], [user=to,type=view], [user=B,type=click]
 File 2: [user=and,type=view], [user=Z,type=view], [user=C,type=purchase]
 → Query "user=to" only lee File 1 ✅
-```
+```text
 
 **When to use**:
+
 - columns filtradas frecuentemente
 - Alta cardinalidad (user_id, product_id)
 - not usar for particiones (networkundante)
@@ -876,7 +900,7 @@ s3://lakehouse/silver/events/date=2024-02-12/
 ├── part-00003.parquet (15MB)
 ...
 ├── part-01000.parquet (5MB)
-```
+```text
 
 **Problem**: Reading 1000 small files is **much slower** than reading 10 large files.
 
@@ -893,7 +917,7 @@ deltaTable.optimize().executeCompaction()
 # Result:
 # part-00001.parquet (10MB) + part-00002.parquet (8MB) + ...
 # → combined-00001.parquet (1GB)
-```
+```text
 
 **Configuration**:
 
@@ -906,7 +930,7 @@ df.write \
     .format("delta") \
     .option("optimizeWrite", "true") \
     .save("s3://lakehouse/silver/events/")
-```
+```text
 
 ### 3. data SkIPping
 
@@ -936,13 +960,13 @@ df = spark.read.format("delta").load("s3://lakehouse/silver/events/") \
 # - File 1: min=A001, max=K999 → SKIP ✅
 # - File 2: min=L000, max=P999 → READ (contiene M500)
 # - File 3: min=Q000, max=Z999 → SKIP ✅
-```
+```text
 
 **Habilitar data skIPping stats**:
 
 ```python
 spark.conf.set("spark.databricks.delta.properties.defaults.dataSkIPpingNumIndexedCols", "32")
-```
+```text
 
 ### 4. Caching
 
@@ -959,7 +983,7 @@ result2 = df.filter(col("event_type") == "view").count()   # Lee cache ⚡
 
 # Liberar cache when not se necesite more
 df.unpersist()
-```
+```text
 
 **Automatic cache with OPTIMIZE**:
 
@@ -993,7 +1017,7 @@ deltaTable.vacuum(retentionHours=168)  # 7 días × 24 horas
 
 # Output:
 # Deleted 1250 files (15.3 GB) from s3://lakehouse/silver/events/
-```
+```text
 
 **⚠️ Important**: You cannot do time travel beyond retentionHours
 
@@ -1004,7 +1028,7 @@ df = spark.read \
     .option("timestampAsOf", "2024-02-01") \  # he/she makes 15 días
     .load("s3://lakehouse/silver/events/")
 # ❌ Error: Files not longer exist
-```
+```text
 
 **Safety check** (minimum retention 7 days):
 
@@ -1015,7 +1039,7 @@ deltaTable.vacuum(24)  # ❌ Error
 # Override (úsalo only if you know lo que you make)
 spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
 deltaTable.vacuum(0)  # Elimina everything inmediatamente
-```
+```text
 
 ### Retention Policies
 
@@ -1064,7 +1088,7 @@ df_today.write \
     .format("delta") \
     .mode("append") \
     .save("s3://lakehouse/bronze/events/")
-```
+```text
 
 **Pros**: Simple, fast, does not duplicate
 **Cons**: not maneja updates/deletes
@@ -1087,7 +1111,7 @@ deltaTable.alias("target").merge(
 ).whenMatchedUpdateAll() \
  .whenNotMatchedInsertAll() \
  .execute()
-```
+```text
 
 **Pros**: Maneja updates and inserts  
 **Cons**: Slower than append
@@ -1121,7 +1145,7 @@ new_data_with_metadata.write \
     .format("delta") \
     .mode("append") \
     .save("s3://lakehouse/silver/users/")
-```
+```text
 
 ---
 

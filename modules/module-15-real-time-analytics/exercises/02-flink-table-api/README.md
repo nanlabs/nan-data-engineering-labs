@@ -1,6 +1,7 @@
 # Exercise 02: Flink Table API with Python
 
 ## Overview
+
 Build advanced streaming analytics using Flink's Table API in Python, implementing sliding windows, stream joins, top-N queries, and late data handling.
 
 **Difficulty**: ⭐⭐⭐ Advanced
@@ -26,7 +27,7 @@ Build advanced streaming analytics using Flink's Table API in Python, implementi
 
 ## Architecture
 
-```
+```text
 ┌──────────────┐      ┌─────────────────────────┐      ┌──────────────┐
 │  Kinesis     │      │   PyFlink Application   │      │   Kinesis    │
 │  events      │─────>│                         │─────>│   results    │
@@ -41,7 +42,7 @@ Build advanced streaming analytics using Flink's Table API in Python, implementi
                       ┌─────────────────┐
                       │  S3 Checkpoints │
                       └─────────────────┘
-```
+```text
 
 ## Setup
 
@@ -56,7 +57,7 @@ pip install apache-flink==1.18.0 apache-flink-libraries
 
 # Verify Python version
 python3 --version  # Should be 3.8+
-```
+```text
 
 ### Create Exercise Directory
 
@@ -198,7 +199,7 @@ def register_dynamodb_sink(t_env, table_name='realtime-aggregates'):
 
     t_env.execute_sql(ddl)
     logger.info(f"✓ Registered DynamoDB sink: {table_name}")
-```
+```text
 
 ## Task 2: Implement Sliding Windows (20 minutes)
 
@@ -306,7 +307,7 @@ def run_sliding_windows_job(t_env: TableEnvironment):
     logger.info("✓ Sliding window job submitted")
 
     return table_result
-```
+```text
 
 ## Task 3: Implement Stream Joins (25 minutes)
 
@@ -484,7 +485,7 @@ def run_join_analytics_job(t_env: TableEnvironment):
     logger.info("✓ Join analytics job submitted")
 
     return table_result
-```
+```text
 
 ## Task 4: Implement Top-N Queries (20 minutes)
 
@@ -805,7 +806,7 @@ def run_late_data_job(t_env: TableEnvironment):
     logger.info("✓ Late data handling job submitted")
 
     return table_result
-```
+```text
 
 ## Task 6: Main Application (15 minutes)
 
@@ -902,7 +903,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(args.job)
-```
+```text
 
 ## Task 7: Deploy and Test (20 minutes)
 
@@ -920,7 +921,7 @@ python src/main.py --job all
 
 # Submit to Flink cluster
 flink run -py src/main.py
-```
+```text
 
 ### Generate Test Data
 
@@ -951,7 +952,7 @@ awslocal kinesis get-records \
         --query 'ShardIterator' \
         --output text) \
     --region us-east-1 | jq '.Records[].Data' | base64 -d | jq
-```
+```text
 
 ## Validation Checklist
 
@@ -968,6 +969,7 @@ awslocal kinesis get-records \
 ## Expected Results
 
 **Sliding Window Output**:
+
 ```json
 {
   "window_start": "2024-03-08T10:15:00.000Z",
@@ -976,9 +978,10 @@ awslocal kinesis get-records \
   "metric_value": 899.99,
   "dimensions": "country:US,count:45"
 }
-```
+```text
 
 **Top-N Output**:
+
 ```json
 {
   "window_start": "2024-03-08T10:15:00.000Z",
@@ -987,7 +990,7 @@ awslocal kinesis get-records \
   "metric_value": 58499.50,
   "dimensions": "product:prod_1001,name:Laptop Pro"
 }
-```
+```text
 
 ## Troubleshooting
 

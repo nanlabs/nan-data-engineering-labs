@@ -49,7 +49,7 @@ task1 = PythonOperator(
     python_callable=extract,
     dag=dag,
 )
-```
+```text
 
 ### Context Manager Pattern
 
@@ -73,7 +73,7 @@ with DAG(
     )
 
     task1 >> task2
-```
+```text
 
 ### Decorator Pattern (TaskFlow API)
 
@@ -111,7 +111,7 @@ def data_pipeline_taskflow():
 
 # Instantiate DAG
 dag = data_pipeline_taskflow()
-```
+```text
 
 ### DAG Parameters
 
@@ -188,7 +188,7 @@ task2.set_upstream(task1)
 
 # Method 3: set_upstream/downstream with list
 task1.set_downstream([task2, task3, task4])
-```
+```text
 
 ### Linear Dependencies
 
@@ -200,7 +200,7 @@ task1 >> task2 >> task3 >> task4
 task1.set_downstream(task2)
 task2.set_downstream(task3)
 task3.set_downstream(task4)
-```
+```text
 
 ### Fan-Out / Fan-In
 
@@ -212,7 +212,7 @@ start >> [task1, task2, task3] >> end
 start >> task1 >> end
 start >> task2 >> end
 start >> task3 >> end
-```
+```text
 
 ### Complex Dependencies
 
@@ -240,7 +240,7 @@ start >> [task1, task2, task3] >> join >> end
 task1 >> task2 >> task3
 task1 >> task4
 task3 >> task4
-```
+```text
 
 ### Trigger Rules
 
@@ -254,7 +254,7 @@ task = PythonOperator(
     python_callable=my_function,
     trigger_rule=TriggerRule.ALL_SUCCESS,  # Default
 )
-```
+```text
 
 **Available Rules:**
 
@@ -280,7 +280,7 @@ cleanup = PythonOperator(
 )
 
 [extract, transform, load] >> cleanup
-```
+```text
 
 ---
 
@@ -325,7 +325,7 @@ task = PythonOperator(
     python_callable=my_function_with_context,
     provide_context=True,  # Not needed in Airflow 2.0+
 )
-```
+```text
 
 **Context Variables:**
 
@@ -375,7 +375,7 @@ task = BashOperator(
     task_id='templated',
     bash_command='echo "Execution date: {{ ds }}"',
 )
-```
+```text
 
 ### PythonVirtualenvOperator
 
@@ -395,7 +395,7 @@ task = PythonVirtualenvOperator(
     requirements=['pandas==2.0.0', 'numpy==1.24.0'],
     system_site_packages=False,  # Isolate from system packages
 )
-```
+```text
 
 ### EmailOperator
 
@@ -433,7 +433,7 @@ task = SimpleHttpOperator(
     response_check=lambda response: response.status_code == 200,
     log_response=True,
 )
-```
+```text
 
 ### PostgresOperator
 
@@ -471,7 +471,7 @@ task = PostgresOperator(
     """,
     parameters={'name': 'John Doe'},
 )
-```
+```text
 
 ### S3Operators
 
@@ -488,7 +488,7 @@ task = S3CreateObjectOperator(
     replace=True,
     aws_conn_id='aws_default',
 )
-```
+```text
 
 **S3ListOperator:**
 
@@ -530,7 +530,7 @@ task = DockerOperator(
         {'source': '/local/path', 'target': '/scripts', 'type': 'bind'},
     ],
 )
-```
+```text
 
 ### KubernetesPodOperator
 
@@ -555,7 +555,7 @@ task = KubernetesPodOperator(
         'limit_cpu': '2000m',
     },
 )
-```
+```text
 
 ---
 
@@ -577,9 +577,10 @@ sensor = FileSensor(
     timeout=600,       # Fail after 10 minutes
     mode='poke',       # poke or reschedule
 )
-```
+```text
 
 **Modes:**
+
 - **poke**: Holds worker slot while waiting
 - **reschedule**: Releases slot, reschedules sensor
 
@@ -624,7 +625,7 @@ sensor = HttpSensor(
     poke_interval=30,
     timeout=600,
 )
-```
+```text
 
 ### SqlSensor
 
@@ -641,7 +642,7 @@ sensor = SqlSensor(
     poke_interval=60,
     timeout=3600,
 )
-```
+```text
 
 ### ExternalTaskSensor
 
@@ -658,7 +659,7 @@ sensor = ExternalTaskSensor(
     poke_interval=60,
     timeout=3600,
 )
-```
+```text
 
 ### TimeDeltaSensor
 
@@ -698,7 +699,7 @@ sensor = MyCustomSensor(
     poke_interval=30,
     timeout=600,
 )
-```
+```text
 
 ---
 
@@ -731,7 +732,7 @@ task2 = PythonOperator(
 )
 
 task1 >> task2
-```
+```text
 
 ### Return Value (Automatic Push)
 
@@ -750,7 +751,7 @@ extract_task = PythonOperator(task_id='extract', python_callable=extract)
 transform_task = PythonOperator(task_id='transform', python_callable=transform)
 
 extract_task >> transform_task
-```
+```text
 
 ### Multiple Values
 
@@ -782,7 +783,7 @@ def aggregate(**context):
 
     total = sum(results)
     print(f"Total: {total}")
-```
+```text
 
 ### XCom Limitations
 
@@ -791,6 +792,7 @@ def aggregate(**context):
 ⚠️ **Performance**: Large XComs slow down DAG
 
 **Alternative for Large Data:**
+
 ```python
 # Don't pass large data in XCom
 def extract():
@@ -809,7 +811,7 @@ def transform(**context):
     path = ti.xcom_pull(task_ids='extract')
     data = pd.read_parquet(path)
     # Process data...
-```
+```text
 
 ---
 
@@ -820,14 +822,16 @@ def transform(**context):
 **Variables** son key-value store para configuration.
 
 **Set via UI:**
+
 - Admin → Variables → Add
 
 **Set via CLI:**
+
 ```bash
 airflow variables set my_variable my_value
 airflow variables get my_variable
 airflow variables delete my_variable
-```
+```text
 
 **In DAG:**
 
@@ -860,16 +864,18 @@ import os
 
 # Priority: Env var > Airflow variable
 api_key = os.getenv('API_KEY') or Variable.get('api_key')
-```
+```text
 
 ### Connections
 
 **Connections** almacenan credenciales para sistemas externos.
 
 **Set via UI:**
+
 - Admin → Connections → Add
 
 Fields:
+
 - **Conn Id**: Unique identifier
 - **Conn Type**: postgres, mysql, http, s3, etc.
 - **Host**: Server address
@@ -882,7 +888,8 @@ Fields:
 **Example: PostgreSQL Connection**
 
 UI fields:
-```
+
+```text
 Conn Id: postgres_prod
 Conn Type: Postgres
 Host: db.example.com
@@ -891,7 +898,7 @@ Login: airflow_user
 Password: ************
 Port: 5432
 Extra: {"sslmode": "require"}
-```
+```text
 
 **Use in Operator:**
 
@@ -913,7 +920,7 @@ print(conn.host)      # db.example.com
 print(conn.schema)    # analytics
 print(conn.login)     # airflow_user
 print(conn.password)  # ************
-```
+```text
 
 ---
 
@@ -944,7 +951,7 @@ weekend_task = PythonOperator(task_id='weekend_task', python_callable=process_we
 join = PythonOperator(task_id='join', python_callable=final_task, trigger_rule='none_failed')
 
 branch >> [weekday_task, weekend_task] >> join
-```
+```text
 
 ### Multiple Branches
 
@@ -970,7 +977,7 @@ medium = PythonOperator(task_id='medium_processing', ...)
 large = PythonOperator(task_id='large_processing', ...)
 
 branch >> [small, medium, large]
-```
+```text
 
 ### Return Multiple Tasks
 
@@ -1006,7 +1013,7 @@ short_circuit = ShortCircuitOperator(
 
 # If check_condition returns False, downstream tasks are skipped
 short_circuit >> task1 >> task2 >> task3
-```
+```text
 
 ---
 
@@ -1028,7 +1035,7 @@ for i in range(10):
         op_kwargs={'item_id': i},
         dag=dag,
     )
-```
+```text
 
 ### Generate from Configuration
 
@@ -1057,7 +1064,7 @@ for dataset in config['datasets']:
         op_kwargs={'dataset': dataset},
         dag=dag,
     )
-```
+```text
 
 ### Generate DAGs Dynamically
 
@@ -1143,7 +1150,7 @@ def etl_pipeline():
 
 # Instantiate DAG
 dag = etl_pipeline()
-```
+```text
 
 ### Multiple Inputs/Outputs
 
@@ -1180,7 +1187,7 @@ def multi_input_output():
     calculate_total(joined)
 
 dag = multi_input_output()
-```
+```text
 
 ### TaskFlow with Traditional Operators
 
@@ -1209,7 +1216,7 @@ def mixed_operators():
     transform_bash >> load(data)  # Traditional to TaskFlow
 
 dag = mixed_operators()
-```
+```text
 
 ### TaskFlow Benefits
 
@@ -1278,7 +1285,7 @@ task = BashOperator(
         'RUN_ID': '{{ run_id }}',
     },
 )
-```
+```text
 
 ### Macros
 
@@ -1292,7 +1299,7 @@ task = BashOperator(
         echo "Format: {{ macros.datetime.strptime(ds, '%Y-%m-%d').strftime('%d/%m/%Y') }}"
     ''',
 )
-```
+```text
 
 ### User-Defined Macros
 
@@ -1312,7 +1319,7 @@ task = BashOperator(
     bash_command='echo "{{ my_macro("hello") }}"',  # HELLO
     dag=dag,
 )
-```
+```text
 
 ---
 

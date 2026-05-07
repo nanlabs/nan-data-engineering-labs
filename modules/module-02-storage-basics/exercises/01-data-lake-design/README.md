@@ -5,6 +5,7 @@
 ## Learning Objectives
 
 After completing this exercise, you will be able to:
+
 - Design a production-grade medallion architecture (Bronze/Silver/Gold)
 - Configure S3 buckets with proper naming conventions and structure
 - Implement lifecycle policies for cost optimization
@@ -17,12 +18,14 @@ After completing this exercise, you will be able to:
 **Challenge:** Currently storing 50TB of data in a single S3 bucket with no organization. Data scientists can't find what they need, costs are high, and compliance is a nightmare.
 
 **Your Task:** Design and implement a medallion data lake architecture that:
+
 1. Separates raw, cleaned, and curated data
 2. Reduces storage costs by 40% using lifecycle policies
 3. Enables data discovery with proper structure
 4. Meets compliance requirements (GDPR, SOC2)
 
 **Data Sources:**
+
 - Transactional data: 1M records/day, 5GB/day
 - User events: 10M events/day, 20GB/day
 - Product catalog: 50K products, updated hourly
@@ -31,24 +34,28 @@ After completing this exercise, you will be able to:
 ## Requirements
 
 ### Bronze Layer (Raw Zone)
+
 - Store all raw data as-is
 - Partition by ingestion date (year/month/day)
 - Retain for 2 years, then move to Glacier
 - Support both batch and streaming ingestion
 
 ### Silver Layer (Cleaned Zone)
+
 - Validated and deduplicated data
 - Convert to Parquet format
 - Partition by business date
 - Retain for 1 year in Standard, then IA
 
 ### Gold Layer (Curated Zone)
+
 - Pre-aggregated analytics tables
 - Highly optimized for query performance
 - Partition by entity type
 - Retain for 3 years in Standard
 
 ### Additional Requirements
+
 - Enable versioning on all buckets
 - Encrypt all data at rest (SSE-S3)
 - Block public access
@@ -57,7 +64,7 @@ After completing this exercise, you will be able to:
 
 ## Project Structure
 
-```
+```text
 01-data-lake-design/
 ├── README.md                          # This file
 ├── starter/
@@ -68,23 +75,26 @@ After completing this exercise, you will be able to:
     ├── data-lake-stack.yaml          # Complete CloudFormation
     ├── deploy.sh                      # Deployment script
     └── verify.py                      # Verification script
-```
+```text
 
 ## Getting Started
 
 1. **Read the scenario:**
+
    ```bash
    cat starter/scenario.md
    ```
 
 2. **Review the starter template:**
+
    ```bash
    cat starter/data-lake-stack.yaml
-   ```
+   ```text
 
 3. **Complete the TODOs** in the CloudFormation template
 
 4. **Deploy your solution:**
+
    ```bash
    aws cloudformation create-stack \
      --stack-name globalmart-data-lake \
@@ -94,13 +104,15 @@ After completing this exercise, you will be able to:
    ```
 
 5. **Verify your design:**
+
    ```bash
    python solution/verify.py
-   ```
+   ```text
 
 ## Success Criteria
 
 Your solution should:
+
 - ✅ Create 3 S3 buckets (bronze, silver, gold)
 - ✅ Implement Hive-style partitioning structure
 - ✅ Configure lifecycle rules (Bronze: 30d→IA, 90d→Glacier; Silver: 90d→IA)
@@ -114,6 +126,7 @@ Your solution should:
 ## Hints Available
 
 If you get stuck, check `hints.md` for progressive guidance:
+
 - **Level 1:** Conceptual guidance on medallion architecture
 - **Level 2:** S3 bucket configuration best practices
 - **Level 3:** Complete CloudFormation resource examples
@@ -121,10 +134,11 @@ If you get stuck, check `hints.md` for progressive guidance:
 ## Validation
 
 Run the test suite:
+
 ```bash
 cd ../../validation
 pytest test_exercise_01.py -v
-```
+```text
 
 Expected: 10/10 tests passing
 

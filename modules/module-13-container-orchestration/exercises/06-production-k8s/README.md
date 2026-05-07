@@ -26,7 +26,7 @@
 
 Construirás una **plataforma completa de data engineering** production-ready:
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────┐
 │                         EKS Cluster                                │
 ├────────────────────────────────────────────────────────────────────┤
@@ -74,7 +74,7 @@ Construirás una **plataforma completa de data engineering** production-ready:
 │  └───────────────────────────────────────────────────────────┘    │
 │                                                                    │
 └────────────────────────────────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -126,7 +126,7 @@ metadata:
   name: staging
   labels:
     environment: staging
-```
+```text
 
 Apply:
 
@@ -258,7 +258,7 @@ helm install airflow apache-airflow/airflow \
 
 # Wait for deployment
 kubectl wait --for=condition=ready pod -l component=webserver -n airflow --timeout=600s
-```
+```text
 
 ### Step 2.2: Sample Airflow DAG
 
@@ -350,14 +350,14 @@ with DAG(
 
     # Define dependencies
     check_raw_data >> spark_etl >> validate_data >> load_to_warehouse >> update_metadata >> notify_success
-```
+```text
 
 Upload DAG:
 
 ```bash
 # Copy DAG to Airflow DAGs volume
 kubectl cp dags/data_pipeline.py airflow/airflow-scheduler-0:/opt/airflow/dags/
-```
+```text
 
 ### Step 2.3: Access Airflow UI
 
@@ -382,7 +382,7 @@ kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka'
 
 # Wait for operator
 kubectl wait --for=condition=ready pod -l name=strimzi-cluster-operator -n kafka --timeout=300s
-```
+```text
 
 ### Step 3.2: Create Kafka Cluster
 
@@ -444,7 +444,7 @@ spec:
   entityOperator:
     topicOperator: {}
     userOperator: {}
-```
+```text
 
 Apply:
 
@@ -453,7 +453,7 @@ kubectl apply -f k8s/kafka-cluster.yaml
 
 # Wait for Kafka cluster
 kubectl wait kafka/data-kafka --for=condition=Ready --timeout=600s -n kafka
-```
+```text
 
 ### Step 3.3: Create Kafka Topics
 
@@ -506,7 +506,7 @@ Apply:
 
 ```bash
 kubectl apply -f k8s/kafka-topics.yaml
-```
+```text
 
 ---
 
@@ -532,7 +532,7 @@ helm install kube-prometheus prometheus-community/kube-prometheus-stack \
 
 # Wait for deployment
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=prometheus -n monitoring --timeout=300s
-```
+```text
 
 ### Step 4.2: Access Grafana
 
@@ -544,7 +544,7 @@ kubectl port-forward svc/kube-prometheus-grafana 3000:80 -n monitoring
 # http://localhost:3000
 # Username: admin
 # Password: admin123
-```
+```text
 
 ### Step 4.3: Custom Grafana Dashboard
 
@@ -606,7 +606,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 # Port forward ArgoCD UI
 kubectl port-forward svc/argocd-server -n argocd 8080:443
-```
+```text
 
 ### Step 5.2: Create ArgoCD Application
 
@@ -642,7 +642,7 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
-```
+```text
 
 ---
 
@@ -734,7 +734,7 @@ spec:
     - podSelector:
         matchLabels:
           strimzi.io/cluster: data-kafka
-```
+```text
 
 ### Step 6.2: Pod Security Standards
 
@@ -783,7 +783,7 @@ spec:
       cpu: "100m"
       memory: "128Mi"
     type: Container
-```
+```text
 
 ---
 
@@ -793,14 +793,14 @@ spec:
 
 ```bash
 kubectl get pods --all-namespaces
-```
+```text
 
 ### 2. Airflow Webserver
 
 ```bash
 kubectl get svc airflow-webserver -n airflow
 # Access LoadBalancer URL
-```
+```text
 
 ### 3. Kafka Cluster
 
@@ -820,14 +820,14 @@ kubectl run kafka-consumer -ti --image=quay.io/strimzi/kafka:0.37.0-kafka-3.6.0 
 ```bash
 kubectl port-forward svc/kube-prometheus-prometheus 9090:9090 -n monitoring
 # Open http://localhost:9090
-```
+```text
 
 ### 5. Grafana Dashboards
 
 ```bash
 kubectl port-forward svc/kube-prometheus-grafana 3000:80 -n monitoring
 # Open http://localhost:3000
-```
+```text
 
 ---
 

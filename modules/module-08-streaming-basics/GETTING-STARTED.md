@@ -14,9 +14,10 @@ cd modules/module-08-streaming-basics
 
 # Run setup script
 ./scripts/setup.sh
-```
+```text
 
 This will:
+
 - ✅ Start Kafka, Zookeeper, Schema Registry (Docker)
 - ✅ Create topics
 - ✅ Generate sample data
@@ -27,11 +28,11 @@ This will:
 ```bash
 # Run validation
 ./scripts/validate.sh
-```
+```text
 
 ### 3. Explore Kafka UI
 
-Open in browser: **http://localhost:8080**
+Open in browser: **<http://localhost:8080>**
 
 - View topics
 - Browse messages
@@ -44,10 +45,12 @@ Open in browser: **http://localhost:8080**
 ### Week 1: Kafka Fundamentals
 
 **Theory** (2-3 hours):
+
 1. Read [01-concepts.md](theory/01-concepts.md) - Stream processing basics
 2. Review [02-architecture.md](theory/02-architecture.md) - Kafka architecture
 
 **Practice** (4-5 hours):
+
 1. [Exercise 01: Kafka Basics](exercises/01-kafka-basics/)
    - Producers & consumers
    - Topics & partitions
@@ -61,10 +64,12 @@ Open in browser: **http://localhost:8080**
 ### Week 2: Schema Management
 
 **Theory** (1-2 hours):
+
 - [Schema Registry](theory/02-architecture.md#schema-registry)
 - Avro serialization
 
 **Practice** (3-4 hours):
+
 - [Exercise 03: Avro Schemas](exercises/03-avro-schemas/)
   - Schema registration
   - Avro producer/consumer
@@ -73,10 +78,12 @@ Open in browser: **http://localhost:8080**
 ### Week 3: Cloud Streaming
 
 **Theory** (1-2 hours):
+
 - AWS Kinesis vs Kafka comparison
 - Managed streaming services
 
 **Practice** (3-4 hours):
+
 - [Exercise 04: Kinesis Streams](exercises/04-kinesis-streams/)
   - Kinesis Data Streams
   - KCL consumers
@@ -85,11 +92,13 @@ Open in browser: **http://localhost:8080**
 ### Week 4: Advanced Processing
 
 **Theory** (2-3 hours):
+
 - Apache Flink architecture
 - Event time vs processing time
 - Exactly-once semantics
 
 **Practice** (6-8 hours):
+
 - [Exercise 05: Flink Processing](exercises/05-flink-processing/)
   - DataStream API
   - Windows & watermarks
@@ -109,12 +118,14 @@ Open in browser: **http://localhost:8080**
 By the end of this module, you will:
 
 ### Core Concepts
+
 - ✅ Understand stream vs batch processing
 - ✅ Explain event-driven architecture
 - ✅ Master Kafka fundamentals (topics, partitions, consumer groups)
 - ✅ Implement stream transformations
 
 ### Technical Skills
+
 - ✅ Produce/consume Kafka events with Python
 - ✅ Use Avro for schema management
 - ✅ Build stateful stream processors
@@ -123,6 +134,7 @@ By the end of this module, you will:
 - ✅ Monitor streaming applications
 
 ### Production Readiness
+
 - ✅ Implement error handling (DLQ)
 - ✅  Set up monitoring & alerting
 - ✅ Handle late events with watermarks
@@ -134,18 +146,21 @@ By the end of this module, you will:
 ## 🛠️ Tools & Technologies
 
 ### Core Stack
+
 - **Apache Kafka** (2.13): Distributed streaming platform
 - **Apache Flink** (1.18): Stream processing framework
 - **Schema Registry** (7.5): Centralized schema management
 - **Avro**: Binary serialization format
 
 ### Python Libraries
+
 - `kafka-python`: Kafka client
 - `confluent-kafka`: High-performance Kafka client with Avro
 - `pyflink`: Flink Python API
 - `boto3`: AWS SDK (for Kinesis)
 
 ### Infrastructure
+
 - **Docker**: Local development environment
 - **Kafka UI**: Web interface for Kafka
 - **Prometheus + Grafana**: Monitoring (optional)
@@ -154,7 +169,7 @@ By the end of this module, you will:
 
 ## 📁 Module Structure
 
-```
+```text
 module-08-streaming-basics/
 ├── theory/                    # Conceptual documentation
 │   ├── 01-concepts.md        # 8K words: fundamentals
@@ -209,7 +224,7 @@ docker-compose logs -f    # Follow logs
 
 # Restart service
 docker-compose restart kafka
-```
+```text
 
 ### Kafka CLI
 
@@ -235,7 +250,7 @@ docker exec kafka kafka-consumer-groups --bootstrap-server localhost:9092 --list
 # Describe consumer group
 docker exec kafka kafka-consumer-groups --bootstrap-server localhost:9092 \
   --describe --group my-group
-```
+```text
 
 ### Event Generation
 
@@ -253,7 +268,7 @@ python data/scripts/stream_generator.py \
   --mode batch \
   --count 1000 \
   --output data/samples/transactions.json
-```
+```text
 
 ### Testing
 
@@ -279,6 +294,7 @@ pytest validation/test_module.py::TestKafkaBasics::test_producer_sends_events -v
 **Symptoms**: `docker-compose up` fails, Kafka container exits
 
 **Solutions**:
+
 ```bash
 # Check logs
 docker-compose logs kafka
@@ -289,13 +305,14 @@ docker-compose up -d
 
 # Check ports
 netstat -an | grep 9092  # Should not be in use
-```
+```text
 
 ### Issue: Cannot connect to Kafka
 
 **Symptoms**: Connection refused errors
 
 **Solutions**:
+
 ```bash
 # Verify Kafka is running
 docker ps | grep kafka
@@ -305,13 +322,14 @@ docker exec kafka kafka-topics --bootstrap-server localhost:9092 --list
 
 # Check broker logs
 docker exec kafka cat /var/log/kafka/server.log
-```
+```text
 
 ### Issue: Consumer not receiving messages
 
 **Symptoms**: Producer sends, consumer receives nothing
 
 **Solutions**:
+
 ```bash
 # Check topic exists
 docker exec kafka kafka-topics --bootstrap-server localhost:9092 --list
@@ -327,13 +345,14 @@ docker exec kafka kafka-console-consumer \
 docker exec kafka kafka-consumer-groups \
   --bootstrap-server localhost:9092 \
   --describe --group my-group
-```
+```text
 
 ### Issue: Schema Registry connection failed
 
 **Symptoms**: Cannot register schemas
 
 **Solutions**:
+
 ```bash
 # Check Schema Registry
 curl http://localhost:8081/subjects
@@ -350,17 +369,20 @@ docker-compose logs schema-registry
 ## 📖 Additional Resources
 
 ### Official Documentation
+
 - [Apache Kafka Docs](https://kafka.apache.org/documentation/)
 - [Apache Flink Docs](https://flink.apache.org/docs/)
 - [Confluent Schema Registry](https://docs.confluent.io/platform/current/schema-registry/)
 
 ### Internal Resources
+
 - [Kafka Quick Reference](assets/kafka-quick-reference.md)
 - [Streaming Patterns Guide](assets/streaming-patterns.md)
 - [Theory: Concepts](theory/01-concepts.md)
 - [Theory: Architecture](theory/02-architecture.md)
 
 ### Community
+
 - [Confluent Community](https://forum.confluent.io/)
 - [Apache Kafka Users](https://kafka.apache.org/contact)
 - Stack Overflow: [apache-kafka](https://stackoverflow.com/questions/tagged/apache-kafka)

@@ -19,7 +19,8 @@
 ### 1. Clustering Keys
 
 **When to Use Clustering**:
-```
+
+```text
 ✅ Use clustering when:
   - Table is large (>100GB, ideally >1TB)
   - Frequent queries filter on specific columns
@@ -30,9 +31,10 @@
   - Table is small (<100GB)
   - No consistent query patterns
   - Low cardinality columns (boolean, status with few values)
-```
+```text
 
 **Choosing Clustering Keys**:
+
 ```sql
 -- Analyze query patterns first
 SELECT
@@ -49,9 +51,10 @@ LIMIT 10;
 
 -- Most queries filter on sale_date and region?
 -- Choose those as clustering keys
-```
+```text
 
 **Implementing Clustering**:
+
 ```sql
 -- Add clustering key to existing table
 ALTER TABLE fact_sales
@@ -87,6 +90,7 @@ Needs reclustering: average_depth > 20
 ```
 
 **Clustering Trade-offs**:
+
 ```sql
 -- Benefits:
 -- - 50-90% reduction in data scanned for filtered queries
@@ -107,11 +111,12 @@ WHERE table_name = 'FACT_SALES'
     AND start_time >= DATEADD('day', -30, CURRENT_TIMESTAMP())
 GROUP BY day
 ORDER BY day DESC;
-```
+```text
 
 ### 2. Materialized Views
 
 **Use Cases**:
+
 ```sql
 -- Slow aggregation query (runs frequently)
 SELECT
@@ -143,9 +148,10 @@ SELECT SUM(total_sales)
 FROM mv_daily_sales
 WHERE day >= '2024-01-01';
 -- Execution time: 0.8 seconds, 5MB scanned (99% faster)
-```
+```text
 
 **Automatic Query Rewriting**:
+
 ```sql
 -- Original query still works (Snowflake uses MV automatically)
 SELECT
@@ -158,9 +164,10 @@ GROUP BY 1;
 -- Snowflake query optimizer recognizes pattern
 -- Automatically uses mv_daily_sales instead
 -- Result: Same output, 95%+ faster
-```
+```text
 
 **Materialized View Maintenance**:
+
 ```sql
 -- Check MV status
 SHOW MATERIALIZED VIEWS;
@@ -181,6 +188,7 @@ DROP MATERIALIZED VIEW IF EXISTS mv_daily_sales;
 ### 3. Query Result Caching
 
 **Leveraging Result Cache**:
+
 ```sql
 -- Enable result caching (default)
 ALTER SESSION SET USE_CACHED_RESULT = TRUE;
@@ -193,9 +201,10 @@ SELECT COUNT(*) FROM large_table;  -- Cached: <1 second, 0 credits
 -- 1. Base table data changes
 -- 2. 24-hour expiration
 -- 3. Manual session setting
-```
+```text
 
 **Cache Invalidation Strategies**:
+
 ```sql
 -- Bypass cache for fresh data
 ALTER SESSION SET USE_CACHED_RESULT = FALSE;
@@ -213,11 +222,12 @@ SELECT
 FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
 WHERE query_id = '<query-id-here>';
 -- percentage_scanned_from_cache = 100 → fully cached
-```
+```text
 
 ### 4. Search Optimization Service
 
 **Enable for Point Lookups**:
+
 ```sql
 -- Optimize table for equality and substring searches
 ALTER TABLE large_customers ADD SEARCH OPTIMIZATION;
@@ -231,9 +241,10 @@ SELECT * FROM large_customers WHERE customer_id IN (123, 456, 789);
 -- - Aggregations (SUM, AVG, COUNT)
 -- - Range scans (BETWEEN, >, <)
 -- - Small tables (<1M rows)
-```
+```text
 
 **Cost Considerations**:
+
 ```sql
 -- Search optimization incurs:
 -- 1. Initial build cost (one-time)
@@ -256,6 +267,7 @@ ALTER TABLE large_customers DROP SEARCH OPTIMIZATION;
 ### 5. Partition Pruning
 
 **Leverage Micro-Partition Metadata**:
+
 ```sql
 -- Snowflake automatically prunes partitions based on filters
 
@@ -279,10 +291,11 @@ SELECT *
 FROM fact_sales
 WHERE sale_date >= '2024-01-01' AND sale_date < '2025-01-01';
 -- Partitions scanned: 365 out of 5,432 (93% pruned)
-```
+```text
 
 **Pruning Best Practices**:
-```
+
+```text
 ✅ DO:
   - Filter on actual column: WHERE date_col >= '2024-01-01'
   - Use equality: WHERE region_id = 5
@@ -292,7 +305,7 @@ WHERE sale_date >= '2024-01-01' AND sale_date < '2025-01-01';
   - Apply functions: WHERE YEAR(date_col) = 2024
   - Use OR across columns: WHERE col1 = X OR col2 = Y
   - Use complex expressions: WHERE col1 + col2 > 100
-```
+```text
 
 ---
 
@@ -301,6 +314,7 @@ WHERE sale_date >= '2024-01-01' AND sale_date < '2025-01-01';
 ### 1. Right-Sizing Warehouses
 
 **Start Small, Scale Up**:
+
 ```sql
 -- Default approach: Start with X-Small
 CREATE WAREHOUSE analysis_wh WITH
@@ -327,7 +341,8 @@ GROUP BY warehouse_name;
 ```
 
 **Warehouse Sizing Decision Tree**:
-```
+
+```text
 Query performance acceptable? ─┬─ YES ── Keep current size (save costs)
                                │
                                └─ NO ──┐
@@ -339,11 +354,12 @@ Spilling to remote storage? ───┬─ YES ─┴─ Scale UP (2x size)
 Query timeout/very slow? ──────┬─ YES ─┴─ Scale UP (2x size)
                                │
                                └─ NO ── Optimize query (not warehouse)
-```
+```text
 
 ### 2. Auto-Suspend Optimization
 
 **Aggressive Auto-Suspend**:
+
 ```sql
 -- Development/sandbox (minimal idle time)
 CREATE WAREHOUSE dev_wh WITH
@@ -368,9 +384,10 @@ CREATE WAREHOUSE ds_wh WITH
     WAREHOUSE_SIZE = 'X-LARGE'
     AUTO_SUSPEND = 180       -- 3 minutes (balance warmth and cost)
     AUTO_RESUME = TRUE;
-```
+```text
 
 **Cost Impact Analysis**:
+
 ```sql
 -- Calculate idle time waste
 SELECT
@@ -389,7 +406,8 @@ ORDER BY idle_credits DESC;
 ### 3. Multi-Cluster Warehouse Strategy
 
 **When to Use Multi-Cluster**:
-```
+
+```text
 ✅ Use multi-cluster when:
   - High concurrent user count (>20 users)
   - BI dashboards with variable load
@@ -399,9 +417,10 @@ ORDER BY idle_credits DESC;
   - Sequential batch jobs (no concurrency)
   - Low user count (<10 concurrent queries)
   - Development workloads
-```
+```text
 
 **Multi-Cluster Configuration**:
+
 ```sql
 -- BI dashboard warehouse (auto-scale for users)
 CREATE WAREHOUSE bi_dashboard_wh WITH
@@ -418,9 +437,10 @@ CREATE WAREHOUSE bi_dashboard_wh WITH
 --
 -- ECONOMY: Waits to maximize cluster utilization before scaling
 --          Cost: Lower | Performance: Adequate | Use: BI dashboards
-```
+```text
 
 **Multi-Cluster Cost Monitoring**:
+
 ```sql
 -- Track cluster usage patterns
 SELECT
@@ -442,6 +462,7 @@ ORDER BY hour DESC;
 ### 4. Query Result Cache Strategy
 
 **Maximize Cache Hits**:
+
 ```sql
 -- Encourage dashboard queries to reuse cache
 -- 1. Standardize query patterns (avoid slight variations)
@@ -464,11 +485,12 @@ SELECT * FROM sales WHERE region = 'US-WEST' ORDER BY sale_date;
 
 -- Users query view (consistent SQL)
 SELECT * FROM vw_us_west_sales WHERE sale_date >= '2024-03-01';
-```
+```text
 
 ### 5. Monitoring & Alerting
 
 **Daily Cost Monitoring Query**:
+
 ```sql
 -- Daily credit consumption summary
 CREATE OR REPLACE VIEW cost_monitoring.daily_credit_summary AS
@@ -490,9 +512,10 @@ ORDER BY day DESC, total_credits DESC;
 -- Query daily
 SELECT * FROM cost_monitoring.daily_credit_summary
 WHERE day >= CURRENT_DATE() - 7;
-```
+```text
 
 **Cost Anomaly Detection**:
+
 ```sql
 -- Alert when daily cost exceeds baseline by 50%
 WITH daily_costs AS (
@@ -521,7 +544,7 @@ WHERE dc.day = CURRENT_DATE()
 ORDER BY dc.day DESC;
 
 -- Schedule this query as a task, send alert if returns rows
-```
+```text
 
 ---
 
@@ -530,6 +553,7 @@ ORDER BY dc.day DESC;
 ### 1. Role-Based Access Control (RBAC)
 
 **Hierarchical Role Design**:
+
 ```sql
 -- Role hierarchy (least privilege principle)
 /*
@@ -567,6 +591,7 @@ GRANT ROLE read_only TO USER external.vendor@partner.com;
 ```
 
 **Granular Permissions**:
+
 ```sql
 -- Data Engineer role (full ETL access)
 GRANT USAGE ON DATABASE prod_database TO ROLE data_engineer;
@@ -587,11 +612,12 @@ GRANT USAGE ON DATABASE shared_database TO ROLE read_only;
 GRANT USAGE ON SCHEMA shared_database.public_views TO ROLE read_only;
 GRANT SELECT ON ALL VIEWS IN SCHEMA shared_database.public_views TO ROLE read_only;
 GRANT USAGE ON WAREHOUSE partner_wh TO ROLE read_only;
-```
+```text
 
 ### 2. Network Policies
 
 **IP Whitelisting**:
+
 ```sql
 USE ROLE SECURITYADMIN;
 
@@ -610,11 +636,12 @@ ALTER USER external.vendor@partner.com SET NETWORK_POLICY = office_only;
 -- View network policies
 SHOW NETWORK POLICIES;
 DESC NETWORK POLICY office_only;
-```
+```text
 
 ### 3. Multi-Factor Authentication (MFA)
 
 **Enforce MFA for Admins**:
+
 ```sql
 -- Require MFA for privileged roles (via UI or SCIM)
 -- Account → Users → [Select User] → Security → Enforce MFA
@@ -632,11 +659,12 @@ ORDER BY name;
 -- - ACCOUNTADMIN
 -- - SECURITYADMIN
 -- - Users with write access to production
-```
+```text
 
 ### 4. Column-Level Security (Masking Policies)
 
 **Dynamic Data Masking**:
+
 ```sql
 -- Create masking policy for PII (email addresses)
 CREATE MASKING POLICY email_mask AS (val STRING) RETURNS STRING ->
@@ -662,6 +690,7 @@ SELECT email FROM customers LIMIT 1;  -- ***MASKED*** (hidden)
 ```
 
 **Masking Policy for SSN/Credit Cards**:
+
 ```sql
 -- Full masking except for authorized roles
 CREATE MASKING POLICY ssn_mask AS (val STRING) RETURNS STRING ->
@@ -672,11 +701,12 @@ CREATE MASKING POLICY ssn_mask AS (val STRING) RETURNS STRING ->
 
 ALTER TABLE customers MODIFY COLUMN ssn
     SET MASKING POLICY ssn_mask;
-```
+```text
 
 ### 5. Row Access Policies
 
 **Row-Level Security**:
+
 ```sql
 -- Create row access policy (region-based access)
 CREATE ROW ACCESS POLICY regional_access AS (region VARCHAR) RETURNS BOOLEAN ->
@@ -697,7 +727,7 @@ SELECT COUNT(*) FROM sales;  -- Only sees US rows
 
 USE ROLE ANALYST_EU;
 SELECT COUNT(*) FROM sales;  -- Only sees EU rows
-```
+```text
 
 ---
 
@@ -706,7 +736,8 @@ SELECT COUNT(*) FROM sales;  -- Only sees EU rows
 ### 1. File Format Optimization
 
 **Preferred Formats**:
-```
+
+```text
 Best:    Parquet, ORC     (columnar, compressed, splittable)
 Good:    Avro, JSON       (structured, nested data support)
 OK:      CSV, TSV         (simple, human-readable)
@@ -714,6 +745,7 @@ Avoid:   XML, large JSON  (verbose, slow parsing)
 ```
 
 **File Format Examples**:
+
 ```sql
 -- Parquet (best for analytics)
 CREATE FILE FORMAT parquet_format
@@ -739,19 +771,21 @@ COPY INTO staging.raw_data
 FROM @s3_stage/data/
 FILE_FORMAT = csv_optimized
 ON_ERROR = 'CONTINUE';
-```
+```text
 
 ### 2. Optimal File Sizing
 
 **File Size Guidelines**:
-```
+
+```text
 Ideal:   100-250 MB per file (compressed)
 OK:      50-500 MB
 Avoid:   <10 MB (too many small files, slow)
 Avoid:   >5 GB (hard to parallelize)
-```
+```text
 
 **Why File Size Matters**:
+
 ```
 Many small files (10,000 × 1MB):
   - 10,000 file operations (slow)
@@ -763,11 +797,12 @@ Fewer large files (50 × 200MB):
   - Better parallelization
   - Lower Snowpipe costs
   - Optimal throughput
-```
+```text
 
 ### 3. Bulk Loading (COPY INTO)
 
 **Basic COPY INTO**:
+
 ```sql
 -- Load from S3 stage
 COPY INTO staging.orders
@@ -788,9 +823,10 @@ FROM (
     FROM @s3_stage/customers/
 )
 FILE_FORMAT = (TYPE = 'CSV' SKIP_HEADER = 1);
-```
+```text
 
 **Incremental Loading (Pattern Matching)**:
+
 ```sql
 -- Load only new files (date-partitioned)
 COPY INTO staging.sales
@@ -798,11 +834,12 @@ FROM @s3_stage/sales/
 PATTERN = '.*/year=2024/month=03/.*[.]parquet'
 FILE_FORMAT = (TYPE = 'PARQUET')
 ON_ERROR = 'SKIP_FILE';  -- Skip entire file on first error
-```
+```text
 
 ### 4. Streaming (Snowpipe)
 
 **When to Use Snowpipe**:
+
 ```
 ✅ Use Snowpipe for:
   - Continuous data ingestion (IoT, logs, events)
@@ -814,9 +851,10 @@ ON_ERROR = 'SKIP_FILE';  -- Skip entire file on first error
   - Batch ETL (hourly, daily)
   - Large bulk loads
   - One-time data migration
-```
+```text
 
 **Snowpipe Setup**:
+
 ```sql
 -- Create pipe
 CREATE PIPE order_events_pipe
@@ -840,11 +878,12 @@ FROM TABLE(INFORMATION_SCHEMA.PIPE_USAGE_HISTORY(
     DATE_RANGE_START => DATEADD('hour', -24, CURRENT_TIMESTAMP())
 ))
 ORDER BY start_time DESC;
-```
+```text
 
 ### 5. Incremental Loading (Streams & Merge)
 
 **CDC Pattern with Streams**:
+
 ```sql
 -- Create stream on source table
 CREATE STREAM customer_changes_stream ON TABLE staging.customers_raw;
@@ -872,7 +911,7 @@ WHEN NOT MATCHED AND source.action = 'INSERT' THEN
     VALUES (source.customer_id, source.name, source.email, CURRENT_TIMESTAMP());
 
 -- Stream automatically consumed after successful commit
-```
+```text
 
 ---
 
@@ -911,7 +950,7 @@ LIMIT 10;
 -- - Bytes scanned (cost indicator)
 -- - Execution time breakdown (identify bottleneck)
 -- - Spilling to disk (memory issue)
-```
+```text
 
 ### 3. Filter Early, Aggregate Late
 
@@ -931,14 +970,15 @@ FROM sales
 WHERE amount > 10  -- Early filter reduces aggregation work
 GROUP BY customer_id
 HAVING total > 1000;
-```
+```text
 
 ---
 
 ## 📚 Summary Checklist
 
 ### Performance
-```
+
+```text
 ✅ Cluster keys on large tables (>100GB, high-cardinality columns)
 ✅ Materialized views for repeated aggregations
 ✅ Enable result caching (default)
@@ -947,16 +987,18 @@ HAVING total > 1000;
 ```
 
 ### Cost
-```
+
+```text
 ✅ Start with X-Small warehouses, scale up if needed
 ✅ Auto-suspend 60-300 seconds
 ✅ Multi-cluster only for high concurrency (>20 users)
 ✅ Monitor daily usage, set resource monitors
 ✅ Leverage zero-copy cloning for dev/test
-```
+```text
 
 ### Security
-```
+
+```text
 ✅ RBAC with functional roles (least privilege)
 ✅ Network policies (IP whitelist)
 ✅ MFA for admins and write access
@@ -965,13 +1007,14 @@ HAVING total > 1000;
 ```
 
 ### Data Loading
-```
+
+```text
 ✅ Parquet/ORC format (columnar, compressed)
 ✅ 100-250MB file sizes
 ✅ COPY INTO for batch, Snowpipe for streaming
 ✅ Streams + Tasks for CDC
 ✅ ON_ERROR strategies (CONTINUE, SKIP_FILE)
-```
+```text
 
 ---
 

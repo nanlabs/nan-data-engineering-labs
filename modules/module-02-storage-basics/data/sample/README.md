@@ -5,9 +5,11 @@ This directory contains small sample data files for quick testing and demonstrat
 ## Files
 
 ### transactions_sample.csv
+
 Small sample of transaction data (100 rows) for quick testing.
 
 **Columns**:
+
 - `transaction_id` (int): Unique transaction identifier
 - `user_id` (int): User who made the transaction
 - `product_id` (int): Product purchased
@@ -17,23 +19,27 @@ Small sample of transaction data (100 rows) for quick testing.
 - `status` (string): Transaction status
 
 **Usage**:
+
 ```bash
 # Use for quick testing of Exercise 02
 python exercises/02-file-formats/solution/convert_formats.py \
     data/sample/transactions_sample.csv \
     output/
-```
+```text
 
 ### users_sample.parquet
+
 Small sample of user data (50 rows) in Parquet format.
 
 **⚠️ Note**: This file needs to be generated first:
+
 ```bash
 cd data/sample
 bash generate_users.sh
-```
+```text
 
 **Columns**:
+
 - `user_id` (int64): Unique user identifier
 - `first_name` (string): First name
 - `last_name` (string): Last name
@@ -44,16 +50,19 @@ bash generate_users.sh
 - `is_active` (bool): Account status
 
 **Usage**:
+
 ```python
 import pandas as pd
 df = pd.read_parquet('data/sample/users_sample.parquet')
 print(df.head())
-```
+```text
 
 ### products_sample.json
+
 Small sample of product catalog (25 products) in JSON format.
 
 **Structure**:
+
 ```json
 {
   "product_id": 1,
@@ -66,10 +75,11 @@ Small sample of product catalog (25 products) in JSON format.
 ```
 
 **Usage**:
+
 ```python
 import pandas as pd
 df = pd.read_json('data/sample/products_sample.json', lines=True)
-```
+```text
 
 ## Generating Sample Data
 
@@ -86,7 +96,7 @@ python data/generate_sample_data.py
 
 # Create smaller custom samples
 python data/generate_sample_data.py --transactions 100 --users 50 --products 25
-```
+```text
 
 **Note**: The `users_sample.parquet` file is not included in git and must be generated locally by running `generate_users.sh`.
 

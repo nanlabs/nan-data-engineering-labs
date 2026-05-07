@@ -1,6 +1,7 @@
 # Exercise 03: Real-Time Dashboards
 
 ## Overview
+
 Build interactive real-time dashboards using Amazon QuickSight, CloudWatch, and Grafana to visualize streaming analytics with sub-second updates.
 
 **Difficulty**: ⭐⭐ Intermediate
@@ -25,7 +26,7 @@ Build interactive real-time dashboards using Amazon QuickSight, CloudWatch, and 
 
 ## Architecture
 
-```
+```text
 ┌──────────────┐      ┌──────────────────┐      ┌─────────────────┐
 │   Flink      │      │    DynamoDB      │      │   QuickSight    │
 │ Analytics    │─────>│  realtime-       │<────>│   Dashboard     │
@@ -44,7 +45,7 @@ Build interactive real-time dashboards using Amazon QuickSight, CloudWatch, and 
                       │     Grafana      │
                       │  (Multi-source)  │
                       └──────────────────┘
-```
+```text
 
 ## Setup
 
@@ -61,7 +62,7 @@ awslocal dynamodb describe-table \
 
 # Verify Grafana is running
 curl http://localhost:3000/api/health
-```
+```text
 
 ## Task 1: Prepare Dashboard Data (15 minutes)
 
@@ -204,7 +205,7 @@ python populate_dashboard_data.py --duration 3600 &
 
 # Or run in background with Makefile
 make generate-dashboard-data
-```
+```text
 
 ## Task 2: Create CloudWatch Dashboard (20 minutes)
 
@@ -499,7 +500,7 @@ if __name__ == '__main__':
     # Optionally publish test data
     if args.publish:
         publish_custom_metrics()
-```
+```text
 
 **Deploy dashboard**:
 
@@ -509,7 +510,7 @@ python create_cloudwatch_dashboard.py
 
 # Create dashboard and publish test metrics
 python create_cloudwatch_dashboard.py --publish
-```
+```text
 
 ## Task 3: Configure Grafana Dashboards (25 minutes)
 
@@ -669,7 +670,7 @@ datasources:
     url: http://dynamodb-proxy:3000
     jsonData:
       endpoint: http://localstack:4566
-```
+```text
 
 **Setup script**:
 
@@ -692,7 +693,7 @@ docker restart module15-grafana
 
 echo "✓ Grafana configured"
 echo "  Access: http://localhost:3000 (admin/admin123)"
-```
+```text
 
 ## Task 4: Create Alerts (15 minutes)
 
@@ -822,7 +823,7 @@ if __name__ == '__main__':
 
     print("\n✓ All alarms configured")
     print(f"  Topic ARN: {topic_arn}")
-```
+```text
 
 ## Task 5: Test Dashboard Updates (10 minutes)
 
@@ -879,6 +880,7 @@ awslocal dynamodb scan \
 ## Expected Results
 
 **Dashboard Metrics**:
+
 - Events per second: 50-200
 - Revenue per minute: $1K-$5K
 - Unique users: 100-500
@@ -898,7 +900,7 @@ curl http://localhost:4566/_localstack/health
 docker logs module15-grafana | tail -50
 
 # Test datasource manually in Grafana UI
-```
+```text
 
 ### Problem: No data in dashboards
 
@@ -910,7 +912,7 @@ awslocal dynamodb scan --table-name realtime-aggregates --limit 5
 awslocal cloudwatch list-metrics --namespace Analytics
 
 # Verify time range is correct (use "Last 15 minutes")
-```
+```text
 
 ## Key Learnings
 

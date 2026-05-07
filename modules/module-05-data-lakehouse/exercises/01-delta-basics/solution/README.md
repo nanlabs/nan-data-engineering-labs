@@ -13,7 +13,7 @@ this carpeta contiene las soluciones completas for el Exercise 01.
 
 ### Option 1: From Jupyter
 
-1. Abre Jupyter Lab: HTTP://localhost:8888
+1. Abre Jupyter Lab: <HTTP://localhost:8888>
 2. Navega to `exercises/01-delta-basics/solution/`
 3. Abre cada archivo `.py`
 4. Run the code
@@ -32,7 +32,7 @@ spark-submit --master local[2] 01_create_table.py
 spark-submit --master local[2] 02_append_data.py
 spark-submit --master local[2] 03_overwrite_partition.py
 spark-submit --master local[2] 04_query_table.py
-```
+```text
 
 ### Option 3: Everything in Sequence
 
@@ -47,36 +47,40 @@ docker exec -it module-05-spark-master bash -c "
     echo
   done
 "
-```
+```text
 
 ## 📚 Conceptos Key Implementados
 
 ### ScrIPt 01: Create Table
 
 **Conceptos**:
+
 - Delta Lake setup with Spark
 - Reading of JSON with PySpark
 - Basic transformations (to_timestamp, currentdate)
 - Escritura Delta with particionamiento
 
 **Key code**:
+
 ```python
 df.write \
     .format("delta") \
     .mode("overwrite") \
     .partitionBy("country") \
     .save("s3a://bronze/transactions_delta")
-```
+```text
 
 ### ScrIPt 02: Append data
 
 **Conceptos**:
+
 - Modo append vs overwrite
 - Window functions for row selection
 - Escritura incremental
 - History Check with DeltaTable
 
 **Key code**:
+
 ```python
 df.write \
     .format("delta") \
@@ -87,37 +91,41 @@ df.write \
 ### ScrIPt 03: Overwrite Partition
 
 **Conceptos**:
+
 - replaceWhere for sobrescritura selectiva
 - Transformaciones condicionales with when()
 - data integrity verification
 - Partition pruning
 
 **Key code**:
+
 ```python
 df.write \
     .format("delta") \
     .mode("overwrite") \
     .option("replaceWhere", "country = 'USA'") \
     .save(path)
-```
+```text
 
 ### ScrIPt 04: Query Table
 
 **Conceptos**:
+
 - Record of tables Delta como SQL tables
 - Spark SQL queries (GROUP BY, agregaciones, window functions)
 - Performance analysis with partitioning
 - DESCRIBE and metadata
 
 **Key code**:
+
 ```python
 df.createOrReplaceTempView("transactions_delta")
 result = spark.sql("SELECT country, COUNT(*) FROM transactions_delta GROUP BY country")
-```
+```text
 
 ## 🎯 Results Esperados
 
-### After running all the scrIPts:
+### After running all the scrIPts
 
 1. **table Delta creada** in `s3a://bronze/transactions_delta`
    - 15,000 records totales
@@ -125,6 +133,7 @@ result = spark.sql("SELECT country, COUNT(*) FROM transactions_delta GROUP BY co
    - 3+ versiones in transaction log
 
 2. **Structure of archivos**:
+
    ```
    bronze/transactions_delta/
    ├── _delta_log/
@@ -136,7 +145,7 @@ result = spark.sql("SELECT country, COUNT(*) FROM transactions_delta GROUP BY co
    ├── country=GBR/
    │   └── part-*.parquet
    └── ...
-   ```
+   ```text
 
 3. **Verificaciones exitosas**:
    - Total of records: 15,000
@@ -166,7 +175,7 @@ print(f"Countries: {df.select('country').distinct().count()}")
 # Historial
 delta_table = DeltaTable.forPath(spark, "s3a://bronze/transactions_delta")
 delta_table.history().show(truncate=False)
-```
+```text
 
 ## 📊 Performance Metrics
 
@@ -193,6 +202,7 @@ In production with millions of records, the speedup can be **10-100x**.
 Congratulations! You have completed the first exercise.
 
 Ahora you can:
+
 1. Experimentar with tus propias queries
 2. Try different partition sizes
 3. Continuar with **Exercise 02: Medallion Architecture**

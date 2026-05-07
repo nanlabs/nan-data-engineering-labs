@@ -51,21 +51,27 @@ By completing this module, you will be able to:
 ## Exercises
 
 ### Exercise 01: IAM & Access Control (3 hours) - ⭐⭐⭐ Advanced
+
 Implement least-privilege IAM policies for different personas, cross-account access, and permission boundaries.
 
 ### Exercise 02: Data Encryption (3 hours) - ⭐⭐⭐ Advanced
+
 Configure KMS, encrypt data at rest/transit across S3, RDS, Redshift.
 
 ### Exercise 03: Data Masking & Anonymization (3 hours) - ⭐⭐⭐⭐ Expert
+
 Detect PII with Macie/Comprehend, implement masking and tokenization.
 
 ### Exercise 04: Audit & Compliance (2.5 hours) - ⭐⭐⭐ Advanced
+
 Configure CloudTrail, AWS Config rules, compliance reports.
 
 ### Exercise 05: Data Governance (3 hours) - ⭐⭐⭐⭐ Expert
+
 Implement Lake Formation permissions, data lineage, tag-based access.
 
 ### Exercise 06: Security Monitoring (2.5 hours) - ⭐⭐⭐⭐ Expert
+
 Deploy GuardDuty, Security Hub, build SIEM, incident response automation.
 
 ## Setup
@@ -79,7 +85,7 @@ make setup
 
 # Validate
 make validate
-```
+```text
 
 ## Compliance Frameworks
 
@@ -92,6 +98,7 @@ make validate
 ## Resources
 
 See `theory/resources.md` for:
+
 - Official AWS documentation
 - Video tutorials and workshops
 - Community resources
@@ -100,14 +107,16 @@ See `theory/resources.md` for:
 ## Validation
 
 Run all validations:
+
 ```bash
 bash scripts/validate.sh
-```
+```text
 
 Or use the global validation:
+
 ```bash
 make validate MODULE=module-{module_id}-{module["name"]}
-```
+```text
 
 ## Progress Checklist
 

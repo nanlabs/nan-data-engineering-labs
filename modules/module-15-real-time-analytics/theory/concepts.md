@@ -20,6 +20,7 @@
 Real-time analytics refers to the discipline of analyzing streaming data **as it arrives** to generate insights, detect patterns, and trigger actions with **minimal latency** (seconds to minutes).
 
 **Key Characteristics**:
+
 - **Low Latency**: Results available in seconds, not hours
 - **Continuous Processing**: Always-on data processing
 - **Incremental Computation**: Update results as new data arrives
@@ -27,7 +28,7 @@ Real-time analytics refers to the discipline of analyzing streaming data **as it
 
 ### Real-Time vs Near-Real-Time vs Batch
 
-```
+```text
 ┌────────────────────────────────────────────────────────────┐
 │                    Processing Paradigms                     │
 ├────────────────┬──────────────┬───────────────┬────────────┤
@@ -38,17 +39,19 @@ Real-time analytics refers to the discipline of analyzing streaming data **as it
 │ Micro-Batch    │ 1-5 minutes  │ Monitoring    │ Medium     │
 │ Batch          │ Hours/Days   │ Reporting     │ Low        │
 └────────────────┴──────────────┴───────────────┴────────────┘
-```
+```text
 
 ### Benefits of Real-Time Analytics
 
 **Business Value**:
+
 1. **Immediate Insights**: Make data-driven decisions faster
 2. **Proactive Actions**: Detect and respond to issues before they escalate
 3. **Personalization**: Tailor experiences based on current behavior
 4. **Competitive Advantage**: React faster than competitors
 
 **Technical Benefits**:
+
 1. **Always Fresh Data**: No stale reports
 2. **Reduced Infrastructure Cost**: Process smaller volumes continuously
 3. **Event-Driven Architecture**: Decouple systems
@@ -57,57 +60,67 @@ Real-time analytics refers to the discipline of analyzing streaming data **as it
 ### Common Use Cases
 
 **1. Real-Time Dashboards**
-```
+
+```text
 Web/Mobile Traffic → Kinesis Data Streams → Flink Analytics
                                               ↓
                                     QuickSight Dashboard
                                     (Updated every second)
 ```
+
 - Website traffic monitoring
 - E-commerce sales metrics
 - System health dashboards
 - Social media trending topics
 
 **2. Fraud Detection**
-```
+
+```text
 Transactions → Kinesis → Flink (ML Model) → Alert if fraud_score > 0.8
                                            ↓
                                     Block Transaction
                                     Send Alert (SNS)
-```
+```text
+
 - Credit card fraud
 - Account takeover detection
 - Bot detection
 - Identity theft prevention
 
 **3. Anomaly Detection**
-```
+
+```text
 IoT Sensors → Kinesis → Flink (Threshold Check) → CloudWatch Alarm
                                                  ↓
                                           Lambda → Auto-remediation
 ```
+
 - Server performance issues
 - Manufacturing defects
 - Network intrusions
 - Supply chain disruptions
 
 **4. Real-Time Recommendations**
-```
+
+```text
 User Clicks → Kinesis → Flink (Collaborative Filtering) → DynamoDB
                                                          ↓
                                                    API → Recommendations
-```
+```text
+
 - Product recommendations
 - Content suggestions
 - "Customers also bought" features
 - Personalized marketing
 
 **5. Live Leaderboards**
-```
+
+```text
 Game Events → Kinesis → Flink (Aggregation) → ElastiCache
                                              ↓
                                         WebSocket → Real-time UI
 ```
+
 - Gaming leaderboards
 - Sports scores
 - Social media engagement metrics
@@ -122,12 +135,13 @@ Game Events → Kinesis → Flink (Aggregation) → ElastiCache
 **AWS Kinesis Data Analytics** is a fully managed service for processing and analyzing streaming data using **SQL** or **Apache Flink**.
 
 **Two Flavors**:
+
 1. **Kinesis Data Analytics for SQL**: Simple SQL queries on streams
 2. **Kinesis Data Analytics for Apache Flink**: Full Flink applications (Java/Scala/Python)
 
 ### Architecture
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │                   Kinesis Data Analytics                      │
 │                                                               │
@@ -149,11 +163,12 @@ Game Events → Kinesis → Flink (Aggregation) → ElastiCache
 │  - Fault tolerance                                           │
 │  - Monitoring                                                │
 └──────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### Kinesis Analytics for SQL
 
 **Capabilities**:
+
 - Standard SQL syntax (ANSI SQL)
 - Streaming extensions (tumbling/sliding windows)
 - Built-in functions (aggregations, string manipulation)
@@ -161,6 +176,7 @@ Game Events → Kinesis → Flink (Aggregation) → ElastiCache
 - Anomaly detection functions
 
 **Example: Real-Time Aggregation**
+
 ```sql
 CREATE OR REPLACE STREAM "DESTINATION_STREAM" (
     stock_symbol VARCHAR(10),
@@ -189,9 +205,10 @@ WHERE stock_symbol IS NOT NULL
 GROUP BY
     stock_symbol,
     STEP(ROWTIME BY INTERVAL '1' MINUTE);
-```
+```text
 
 **When to Use SQL**:
+
 - ✅ Simple aggregations and filtering
 - ✅ Quick prototyping
 - ✅ Business analysts comfort with SQL
@@ -203,6 +220,7 @@ GROUP BY
 ### Kinesis Analytics for Apache Flink
 
 **Capabilities**:
+
 - Full Flink DataStream API
 - Flink SQL / Table API
 - Stateful processing
@@ -212,6 +230,7 @@ GROUP BY
 - Machine learning integration
 
 **Example: Flink DataStream API**
+
 ```python
 from pyflink.datastream import StreamExecutionEnvironment
 from pyflink.common import WatermarkStrategy, Types
@@ -248,6 +267,7 @@ env.execute("Stock Analysis")
 ```
 
 **When to Use Flink**:
+
 - ✅ Complex stateful processing
 - ✅ Custom business logic
 - ✅ High throughput (millions of events/sec)
@@ -258,7 +278,8 @@ env.execute("Stock Analysis")
 ### Key Features
 
 **1. Exactly-Once Semantics**
-```
+
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                  Fault Tolerance                         │
 │                                                          │
@@ -272,10 +293,11 @@ env.execute("Stock Analysis")
 │  ↓                                                       │
 │  No data loss, no duplicates!                           │
 └─────────────────────────────────────────────────────────┘
-```
+```text
 
 **2. Auto-Scaling**
-```
+
+```text
 Events/sec:
 │
 │     ┌───┐                              ← Scale out to 4 KPUs
@@ -291,6 +313,7 @@ KPU = Kinesis Processing Unit (1 vCPU + 4 GB memory)
 ```
 
 **3. Application Snapshots**
+
 - Point-in-time application state backup
 - Deploy new code without data loss
 - Rollback to previous version
@@ -305,7 +328,8 @@ KPU = Kinesis Processing Unit (1 vCPU + 4 GB memory)
 **Flink SQL** provides a declarative way to build stream processing applications using standard SQL.
 
 **Architecture**:
-```
+
+```text
 ┌──────────────────────────────────────────┐
 │           Flink SQL Engine                │
 │                                           │
@@ -319,11 +343,12 @@ KPU = Kinesis Processing Unit (1 vCPU + 4 GB memory)
 │    ↓                                      │
 │  DataStream API Execution                 │
 └──────────────────────────────────────────┘
-```
+```text
 
 ### Creating Tables from Streams
 
 **1. Define Source Table**
+
 ```sql
 CREATE TABLE stock_trades (
     stock_symbol STRING,
@@ -338,9 +363,10 @@ CREATE TABLE stock_trades (
     'scan.stream.initpos' = 'LATEST',
     'format' = 'json'
 );
-```
+```text
 
 **2. Define Sink Table**
+
 ```sql
 CREATE TABLE aggregated_trades (
     stock_symbol STRING,
@@ -359,6 +385,7 @@ CREATE TABLE aggregated_trades (
 ```
 
 **3. Query with Windows**
+
 ```sql
 INSERT INTO aggregated_trades
 SELECT
@@ -372,11 +399,12 @@ FROM stock_trades
 GROUP BY
     stock_symbol,
     TUMBLE(trade_time, INTERVAL '1' MINUTE);
-```
+```text
 
 ### Window Types in Flink SQL
 
 **1. Tumbling Windows**
+
 ```sql
 -- Non-overlapping, fixed-size windows
 SELECT
@@ -387,15 +415,16 @@ FROM TABLE(
     TUMBLE(TABLE events, DESCRIPTOR(event_time), INTERVAL '10' MINUTES)
 )
 GROUP BY window_start, window_end;
-```
+```text
 
-```
+```text
 Timeline: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━▶
          [─────W1────][─────W2────][─────W3────]
          00:00-00:10  00:10-00:20  00:20-00:30
 ```
 
 **2. Sliding (Hop) Windows**
+
 ```sql
 -- Overlapping windows with fixed size and slide interval
 SELECT
@@ -406,17 +435,18 @@ FROM TABLE(
     HOP(TABLE events, DESCRIPTOR(event_time), INTERVAL '5' MINUTES, INTERVAL '10' MINUTES)
 )
 GROUP BY window_start, window_end;
-```
+```text
 
-```
+```text
 Timeline: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━▶
          [──────────W1──────────]
                [──────────W2──────────]
                      [──────────W3──────────]
          00:00               00:10               00:20
-```
+```text
 
 **3. Session Windows**
+
 ```sql
 -- Dynamic windows based on inactivity gap
 SELECT
@@ -430,32 +460,36 @@ GROUP BY
     SESSION(event_time, INTERVAL '15' MINUTES);
 ```
 
-```
+```text
 User Activity:
 Events:  ●  ●    ●  ●  ●      (15 min gap)      ●  ●  ●
          │Session 1   │                         │Session 2│
          └─────────────┘                        └─────────┘
-```
+```text
 
 ### Time Semantics
 
 **1. Event Time**
+
 - Time when the event actually occurred
 - Embedded in the event payload
 - Correct for out-of-order events
 - Requires watermarks
 
 **2. Processing Time**
+
 - Time when the event is processed by Flink
 - Simple, low latency
 - Not deterministic (reprocessing gives different results)
 
 **3. Ingestion Time**
+
 - Time when the event enters Flink
 - Middle ground between event and processing time
 
 **Choosing the Right Time**:
-```
+
+```text
 Use Case              | Time Semantic | Why?
 ──────────────────────┼───────────────┼──────────────────────────
 Financial analytics   | Event Time    | Need accuracy
@@ -469,34 +503,42 @@ Simple counting       | Processing    | Simplicity
 **Watermarks** tell Flink "all events with timestamp < watermark have arrived".
 
 **Types**:
+
 1. **Bounded Out-of-Orderness**
+
 ```python
 WatermarkStrategy \
     .for_bounded_out_of_orderness(Duration.of_seconds(5)) \
     .with_timestamp_assigner(lambda event, ts: event['timestamp'])
-```
+```text
+
 - Watermark = max_timestamp - 5 seconds
 - Allows events up to 5 seconds late
 
-2. **Monotonous Timestamps**
+1. **Monotonous Timestamps**
+
 ```python
 WatermarkStrategy \
     .for_monotonous_timestamps() \
     .with_timestamp_assigner(lambda event, ts: event['timestamp'])
-```
+```text
+
 - Watermark = max_timestamp
 - Assumes events arrive in order (e.g., Kinesis single shard)
 
-3. **With Idleness**
+1. **With Idleness**
+
 ```python
 WatermarkStrategy \
     .for_bounded_out_of_orderness(Duration.of_seconds(5)) \
     .with_idleness(Duration.of_minutes(1))
-```
+```text
+
 - Mark source as idle if no events for 1 minute
 - Prevents blocking watermark progress
 
 **Late Events Handling**:
+
 ```sql
 CREATE TABLE events (
     event_id STRING,
@@ -520,22 +562,25 @@ CREATE TABLE events (
 **Use Case**: Remove unwanted events to reduce processing cost.
 
 **SQL**:
+
 ```sql
 SELECT *
 FROM stock_trades
 WHERE price > 100 AND volume > 1000;
-```
+```text
 
 **Flink DataStream**:
+
 ```python
 filtered = stream.filter(lambda x: x['price'] > 100 and x['volume'] > 1000)
-```
+```text
 
 ### 2. Transformation
 
 **Use Case**: Enrich or derive fields.
 
 **SQL**:
+
 ```sql
 SELECT
     stock_symbol,
@@ -548,9 +593,10 @@ SELECT
         ELSE 'LOW'
     END AS price_category
 FROM stock_trades;
-```
+```text
 
 **Flink DataStream**:
+
 ```python
 enriched = stream.map(lambda x: {
     **x,
@@ -564,6 +610,7 @@ enriched = stream.map(lambda x: {
 **Use Case**: Calculate metrics over windows.
 
 **SQL**:
+
 ```sql
 SELECT
     stock_symbol,
@@ -577,9 +624,10 @@ FROM stock_trades
 GROUP BY
     stock_symbol,
     TUMBLE(trade_time, INTERVAL '1' MINUTE);
-```
+```text
 
 **Flink DataStream**:
+
 ```python
 aggregated = stream \
     .key_by(lambda x: x['stock_symbol']) \
@@ -590,13 +638,14 @@ aggregated = stream \
         max_price=MaxAggregator('price'),
         total_volume=SumAggregator('volume')
     )
-```
+```text
 
 ### 4. Joining Streams
 
 **Use Case**: Correlate events from multiple streams.
 
 **SQL**:
+
 ```sql
 -- Join trades with company info
 SELECT
@@ -608,9 +657,10 @@ SELECT
 FROM stock_trades t
 JOIN company_info c
     ON t.stock_symbol = c.stock_symbol;
-```
+```text
 
 **Interval Join** (time-bounded):
+
 ```sql
 -- Join trades within 5 minutes of orders
 SELECT
@@ -631,6 +681,7 @@ JOIN stock_trades t
 **Use Case**: Remove duplicate events.
 
 **SQL**:
+
 ```sql
 SELECT
     stock_symbol,
@@ -646,13 +697,14 @@ FROM (
     FROM stock_trades
 )
 WHERE row_num = 1;
-```
+```text
 
 ### 6. Top-N
 
 **Use Case**: Get top/bottom N records per group.
 
 **SQL**:
+
 ```sql
 -- Top 5 most traded stocks per minute
 SELECT *
@@ -674,13 +726,14 @@ FROM (
     )
 )
 WHERE rank <= 5;
-```
+```text
 
 ### 7. Pattern Detection (CEP)
 
 **Use Case**: Detect sequences of events.
 
 **SQL with MATCH_RECOGNIZE**:
+
 ```sql
 -- Detect flash crash: price drops >10% in 3 consecutive trades
 SELECT *
@@ -700,9 +753,10 @@ MATCH_RECOGNIZE (
         C AS C.price < PREV(C.price, 1)
              AND C.price < FIRST(A.price) * 0.9
 );
-```
+```text
 
 **Flink CEP**:
+
 ```python
 from pyflink.cep import Pattern
 
@@ -734,6 +788,7 @@ alerts = cep_stream.select(FlashCrashDetector())
 **Use Case**: Continuously update aggregates as new data arrives.
 
 **Example: Running Total**
+
 ```sql
 SELECT
     stock_symbol,
@@ -746,9 +801,10 @@ SELECT
         ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
     ) AS cumulative_volume
 FROM stock_trades;
-```
+```text
 
 **Example: Moving Average**
+
 ```sql
 SELECT
     stock_symbol,
@@ -760,13 +816,14 @@ SELECT
         ROWS BETWEEN 9 PRECEDING AND CURRENT ROW
     ) AS ma_10
 FROM stock_trades;
-```
+```text
 
 ### Stateful Aggregations
 
 **Use Case**: Maintain state across events for complex calculations.
 
 **Flink Rich Function**:
+
 ```python
 from pyflink.datastream import RuntimeContext
 from pyflink.datastream.functions import KeyedProcessFunction, ProcessFunction
@@ -809,13 +866,14 @@ class RunningAverageFunction(KeyedProcessFunction):
             'running_avg': avg,
             'count': new_count
         }
-```
+```text
 
 ### Approximate Aggregations
 
 **Use Case**: Trade accuracy for performance on large datasets.
 
 **1. HyperLogLog (Distinct Count)**
+
 ```sql
 -- Approximate distinct count with 0.5% error
 SELECT
@@ -825,15 +883,17 @@ FROM stock_trades;
 ```
 
 **2. T-Digest (Percentiles)**
+
 ```sql
 -- Approximate median and 95th percentile
 SELECT
     PERCENTILE_APPROX(price, 0.5) AS median_price,
     PERCENTILE_APPROX(price, 0.95) AS p95_price
 FROM stock_trades;
-```
+```text
 
 **3. Count-Min Sketch (Frequency)**
+
 - Estimate frequency of items in stream
 - Memory-efficient for high-cardinality data
 
@@ -844,23 +904,27 @@ FROM stock_trades;
 ### Types of Windows
 
 **1. Tumbling Windows**
+
 - Fixed size, non-overlapping
 - Every event belongs to exactly one window
 
 **Use Case**: Hourly/daily aggregations
+
 ```sql
 SELECT
     TUMBLE_START(trade_time, INTERVAL '1' HOUR) AS hour,
     COUNT(*) AS trades_per_hour
 FROM stock_trades
 GROUP BY TUMBLE(trade_time, INTERVAL '1' HOUR);
-```
+```text
 
 **2. Sliding (Hopping) Windows**
+
 - Fixed size, overlapping
 - Every event belongs to multiple windows
 
 **Use Case**: Moving averages, trend detection
+
 ```sql
 -- 10-minute windows, sliding every 1 minute
 SELECT
@@ -870,13 +934,15 @@ FROM stock_trades
 GROUP BY
     stock_symbol,
     HOP(trade_time, INTERVAL '1' MINUTE, INTERVAL '10' MINUTE);
-```
+```text
 
 **3. Session Windows**
+
 - Dynamic size based on inactivity gap
 - Each event starts or extends a session
 
 **Use Case**: User sessions, activity bursts
+
 ```sql
 -- Session ends after 30 minutes of inactivity
 SELECT
@@ -895,23 +961,26 @@ GROUP BY
 **When does a window emit results?**
 
 **1. Time-Based Triggers**
+
 ```python
 # Fire when watermark passes window end
 stream \
     .key_by(lambda x: x['key']) \
     .window(TumblingEventTimeWindows.of(Time.minutes(1))) \
     .trigger(EventTimeTrigger.create())
-```
+```text
 
 **2. Count-Based Triggers**
+
 ```python
 # Fire every 100 events
 stream \
     .window(...) \
     .trigger(CountTrigger.of(100))
-```
+```text
 
 **3. Custom Triggers**
+
 ```python
 class EarlyTrigger(Trigger):
     def on_element(self, element, timestamp, window, ctx):
@@ -919,11 +988,12 @@ class EarlyTrigger(Trigger):
         if element['urgent']:
             return TriggerResult.FIRE
         return TriggerResult.CONTINUE
-```
+```text
 
 ### Allowed Lateness
 
 **Handle late events gracefully**:
+
 ```python
 stream \
     .key_by(lambda x: x['key']) \
@@ -934,12 +1004,13 @@ stream \
 ```
 
 **Timeline**:
-```
+
+```text
 Window: [10:00 - 10:01)
 Watermark reaches 10:01 → Window fires (results emitted)
 Late event arrives at 10:01:30 → Still accepted, update results
 Late event arrives at 10:06:30 → Sent to side output (too late)
-```
+```text
 
 ---
 
@@ -950,6 +1021,7 @@ Late event arrives at 10:06:30 → Sent to side output (too late)
 **Complex Event Processing (CEP)** detects patterns and relationships across multiple events over time.
 
 **Capabilities**:
+
 - Sequence detection
 - Temporal constraints
 - Negation (absence of events)
@@ -959,6 +1031,7 @@ Late event arrives at 10:06:30 → Sent to side output (too late)
 ### Pattern Definition
 
 **Flink CEP Syntax**:
+
 ```python
 from pyflink.cep import Pattern, AfterMatchSkipStrategy
 
@@ -970,11 +1043,12 @@ pattern = Pattern.begin("start", AfterMatchSkipStrategy.skip_to_last("start")) \
     .followed_by("end") \
     .where(SimpleCondition(lambda x: x['type'] == 'logout')) \
     .within(Time.hours(1))
-```
+```text
 
 ### Common CEP Patterns
 
 **1. Fraud Detection Pattern**
+
 ```python
 # Detect: Login → Multiple failed payments → Successful payment
 fraud_pattern = Pattern.begin("login") \
@@ -988,6 +1062,7 @@ fraud_pattern = Pattern.begin("login") \
 ```
 
 **2. User Abandonment Pattern**
+
 ```python
 # Detect: Add to cart → No purchase within 1 hour
 abandonment_pattern = Pattern.begin("cart") \
@@ -1002,9 +1077,10 @@ def pattern_select(matches):
     if 'purchase' not in matches:
         # Send retargeting campaign
         return {'user_id': matches['cart']['user_id'], 'action': 'retarget'}
-```
+```text
 
 **3. Anomaly Detection Pattern**
+
 ```python
 # Detect: Temperature spike (3 consecutive readings > threshold)
 anomaly_pattern = Pattern.begin("first") \
@@ -1014,7 +1090,7 @@ anomaly_pattern = Pattern.begin("first") \
     .next("third") \
     .where(SimpleCondition(lambda x: x['temperature'] > 100)) \
     .within(Time.minutes(5))
-```
+```text
 
 ### SQL Pattern Matching (MATCH_RECOGNIZE)
 
@@ -1042,7 +1118,7 @@ MATCH_RECOGNIZE (
         C AS C.price < PREV(C.price)
              AND LAST(C.price, 1) < MAX(B.price) * 0.8
 );
-```
+```text
 
 ---
 
@@ -1051,6 +1127,7 @@ MATCH_RECOGNIZE (
 ### Model Serving Architectures
 
 **1. Embedded Model (In-Process)**
+
 ```python
 from pyflink.datastream.functions import MapFunction
 import joblib
@@ -1078,6 +1155,7 @@ stream.map(ModelScorer('fraud_model.pkl'))
 ```
 
 **2. External Model Server (Async I/O)**
+
 ```python
 from pyflink.datastream.functions import AsyncFunction
 import aiohttp
@@ -1112,9 +1190,10 @@ scored_stream = AsyncDataStream.unordered_wait(
     timeout=1000,  # 1 second timeout
     capacity=100   # Max 100 concurrent requests
 )
-```
+```text
 
 **3. AWS SageMaker Integration**
+
 ```python
 import boto3
 
@@ -1143,11 +1222,12 @@ class SageMakerScorer(MapFunction):
             'fraud_score': score,
             'is_fraud': score > 0.8
         }
-```
+```text
 
 ### Feature Engineering in Streams
 
 **Real-Time Feature Computation**:
+
 ```python
 class FeatureEngineer(KeyedProcessFunction):
     def open(self, runtime_context):
@@ -1206,11 +1286,12 @@ class FeatureEngineer(KeyedProcessFunction):
                 'time_since_last_ms': time_since_last
             }
         }
-```
+```text
 
 ### Online Learning
 
 **Incremental Model Updates**:
+
 ```python
 from river import linear_model, metrics, preprocessing
 
@@ -1253,26 +1334,31 @@ class OnlineLearner(KeyedProcessFunction):
 ### Key Takeaways
 
 **1. Real-Time Analytics**
+
 - Process streaming data with sub-second latency
 - Use SQL or Flink for different complexity levels
 - Choose time semantics carefully (event vs processing time)
 
 **2. AWS Kinesis Analytics**
+
 - Fully managed Apache Flink
 - Auto-scaling and fault tolerance
 - Exactly-once processing guarantees
 
 **3. Windows**
+
 - Tumbling: Non-overlapping, fixed-size
 - Sliding: Overlapping, fixed-size with slide interval
 - Session: Dynamic, based on inactivity gaps
 
 **4. Complex Event Processing**
+
 - Detect patterns across multiple events
 - Temporal constraints and quantifiers
 - Essential for fraud detection, anomaly detection
 
 **5. Real-Time ML**
+
 - Embed models or use external servers
 - Async I/O for low latency
 - Online learning for model adaptation

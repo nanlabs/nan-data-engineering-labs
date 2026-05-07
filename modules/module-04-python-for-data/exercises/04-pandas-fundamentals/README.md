@@ -24,7 +24,7 @@ df.iloc[0]  # Por posicion
 # Filtrado
 df[df['edad'] > 25]
 df[(df['edad'] > 25) & (df['pais'] == 'USA')]
-```
+```text
 
 ### Cleaning
 
@@ -37,14 +37,14 @@ df.fillna(0)
 # Duplicados
 df.duplicated().sum()
 df.drop_duplicates()
-```
+```text
 
 ### Groupby
 
 ```python
 df.groupby('categoria')['precio'].mean()
 df.groupby(['pais', 'ciudad']).size()
-```
+```text
 
 ## Exercises
 

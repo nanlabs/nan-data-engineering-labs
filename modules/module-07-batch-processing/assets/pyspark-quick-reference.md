@@ -20,7 +20,7 @@ spark = SparkSession.builder \
     .config("spark.executor.cores", "4") \
     .config("spark.executor.instances", "10") \
     .getOrCreate()
-```
+```text
 
 ## 📖 Reading Data
 
@@ -46,7 +46,7 @@ df = spark.read.schema(schema).parquet("data/")
 
 # Partitioned data
 df = spark.read.parquet("data/year=2024/month=03/")
-```
+```text
 
 ## 🔍 DataFrame Operations
 
@@ -67,7 +67,7 @@ df.where(col("status") == "active")
 # Multiple conditions
 df.filter((col("age") > 30) & (col("status") == "active"))
 df.filter((col("age") < 18) | (col("age") > 65))
-```
+```text
 
 ### Transformations
 
@@ -109,7 +109,7 @@ df.agg(
     sum("amount").alias("total"),
     count("*").alias("count")
 )
-```
+```text
 
 ### Joins
 
@@ -133,7 +133,7 @@ df1.join(df2, ["user_id", "date"])
 # Broadcast join (for small tables)
 from pyspark.sql.functions import broadcast
 df1.join(broadcast(df2), "id")
-```
+```text
 
 ### Window Functions
 
@@ -163,7 +163,7 @@ df.withColumn("moving_avg", avg("amount").over(window_moving))
 # Lag/Lead
 df.withColumn("prev_amount", lag("amount", 1).over(window))
 df.withColumn("next_amount", lead("amount", 1).over(window))
-```
+```text
 
 ## 💾 Writing Data
 
@@ -199,7 +199,7 @@ df.persist(StorageLevel.MEMORY_AND_DISK)
 
 # Unpersist
 df.unpersist()
-```
+```text
 
 ### Repartitioning
 
@@ -212,7 +212,7 @@ df.repartition("category")
 
 # Decrease partitions (no shuffle)
 df.coalesce(10)
-```
+```text
 
 ### Broadcast
 
@@ -224,7 +224,7 @@ df_large.join(broadcast(df_small), "id")
 
 # Set broadcast threshold (default 10MB)
 spark.conf.set("spark.sql.autoBroadcastJoinThreshold", 10485760)
-```
+```text
 
 ## 🔍 Inspecting Data
 
@@ -278,7 +278,7 @@ df.withColumn("cleaned", regexp_replace("text", "[^a-zA-Z]", ""))
 
 # Split
 df.withColumn("parts", split("text", ","))
-```
+```text
 
 ### Date/Time Operations
 
@@ -306,7 +306,7 @@ df.withColumn("yesterday", date_sub("date", 1))
 
 # Date diff
 df.withColumn("days_ago", datediff(current_date(), "date"))
-```
+```text
 
 ### Null Handling
 
@@ -328,7 +328,7 @@ df.filter(col("age").isNotNull())
 
 # Coalesce (first non-null)
 df.withColumn("value", coalesce("col1", "col2", lit(0)))
-```
+```text
 
 ### Conditional Logic
 
@@ -368,7 +368,7 @@ result = spark.sql("""
     GROUP BY category
     ORDER BY total DESC
 """)
-```
+```text
 
 ## 🐛 Debugging
 
@@ -382,7 +382,7 @@ df.rdd.toDebugString()
 
 # Check partitions
 df.rdd.getNumPartitions()
-```
+```text
 
 ## ⚙️ Configuration
 
@@ -396,7 +396,7 @@ spark.conf.set("spark.sql.shuffle.partitions", "200")
 # Important configs
 spark.conf.set("spark.sql.adaptive.enabled", "true")
 spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")
-```
+```text
 
 ## 🎯 Best Practices
 

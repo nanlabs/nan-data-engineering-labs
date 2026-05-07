@@ -9,31 +9,34 @@ Validate que la infraestructura AWS (buckets, roles, políticas, funciones Lambd
 ## 🎯 Tipos de Tests a Agregar
 
 ### Resource Existence
+
 ```python
 def test_s3_bucket_exists():
     """Verify que el bucket S3 existe"""
 
 def test_iam_role_exists():
     """Verify que el rol IAM existe"""
-```
+```text
 
 ### Configuration Validation
+
 ```python
 def test_bucket_has_encryption():
     """Verify que el bucket tiene encriptación habilitada"""
 
 def test_bucket_versioning_enabled():
     """Verify que el versionado está habilitado"""
-```
+```text
 
 ### Policy Validation
+
 ```python
 def test_bucket_policy_runct():
     """Verify que la política del bucket es runcta"""
 
 def test_iam_policy_least_privilege():
     """Verify principio de privilegio mínimo"""
-```
+```text
 
 ## 📝 Ejemplo de Test
 
@@ -64,7 +67,7 @@ def test_data_lake_bucket_configuration():
 
 ```bash
 pytest validation/infrastructure/ -v
-```
+```text
 
 ## 📚 Herramientas Recomendadas
 

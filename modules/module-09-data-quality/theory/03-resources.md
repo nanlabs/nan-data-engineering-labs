@@ -12,11 +12,12 @@ El ecosistema de data quality ha evolucionado significativamente. En este docume
 
 ### 1. Great Expectations ⭐ (Recommended)
 
-**Website:** https://greatexpectations.io/
-**GitHub:** https://github.com/great-expectations/great_expectations
+**Website:** <https://greatexpectations.io/>
+**GitHub:** <https://github.com/great-expectations/great_expectations>
 **Stars:** ~9k | **License:** Apache 2.0
 
 **Pros:**
+
 - ✅ API intuitiva y bien documentada
 - ✅ Data Docs auto-generados (HTML)
 - ✅ Integration with Airflow, dbt, Spark
@@ -24,16 +25,19 @@ El ecosistema de data quality ha evolucionado significativamente. En este docume
 - ✅ Comunidad activa
 
 **Cons:**
+
 - ⚠️ Puede ser lento en datasets grandes (usar Spark backend)
 - ⚠️ Curva de aprendizaje inicial
 - ⚠️ Extensive initial setup
 
 **Cuando Usar:**
+
 - Equipos que necesitan data docs para stakeholders
 - Complex validations with multiple expectations
 - Integration with existing pipelines (Airflow, dbt)
 
 **Alternativas:**
+
 - For small datasets: Pandera (lighter)
 - Para big data en Spark: PyDeequ
 
@@ -41,22 +45,25 @@ El ecosistema de data quality ha evolucionado significativamente. En este docume
 
 ### 2. Pandera
 
-**Website:** https://pandera.readthedocs.io/
-**GitHub:** https://github.com/unionai-oss/pandera
+**Website:** <https://pandera.readthedocs.io/>
+**GitHub:** <https://github.com/unionai-oss/pandera>
 **Stars:** ~3k | **License:** MIT
 
 **Pros:**
+
 - ✅ Syntax compacta (menos verbose que GE)
 - ✅ Integration with mypy (static type checking)
 - ✅ Hypothesis testing built-in
 - ✅ Quick setup
 
 **Cons:**
+
 - ⚠️ Sin Data Docs (solo errores)
 - ⚠️ Menos features que Great Expectations
 - ⚠️ Smaller community
 
 **Basic Example:**
+
 ```python
 import pandera as pa
 from pandera import Column, DataFrameSchema
@@ -67,9 +74,10 @@ schema = DataFrameSchema({
 })
 
 validated_df = schema.validate(df)
-```
+```text
 
 **Cuando Usar:**
+
 - Proyectos Python puro (sin Spark)
 - Small teams that value simplicity
 - Integration with mypy/static typing
@@ -78,22 +86,25 @@ validated_df = schema.validate(df)
 
 ### 3. PyDeequ (Amazon)
 
-**Website:** https://github.com/awslabs/python-deequ
-**GitHub:** https://github.com/awslabs/python-deequ
+**Website:** <https://github.com/awslabs/python-deequ>
+**GitHub:** <https://github.com/awslabs/python-deequ>
 **Stars:** ~700 | **License:** Apache 2.0
 
 **Pros:**
+
 - ✅ Designed for big data (PySpark)
 - ✅ Advanced Anomaly detection
 - ✅ Metrics repository (historical trends)
 - ✅ Used in production on Amazon
 
 **Cons:**
+
 - ⚠️ Requiere Spark (overhead)
 - ⚠️ Limited documentation
 - ⚠️ More complex setup
 
 **Basic Example:**
+
 ```python
 from pydeequ.checks import Check, CheckLevel
 from pydeequ.verification import VerificationSuite
@@ -107,9 +118,10 @@ verification = (VerificationSuite(spark)
     )
     .run()
 )
-```
+```text
 
 **Cuando Usar:**
+
 - Ya tienes infraestructura Spark
 - Datasets grandes (GB-TB-PB)
 - Necesitas anomaly detection empresarial
@@ -118,12 +130,13 @@ verification = (VerificationSuite(spark)
 
 ### 4. DuckDB for Data Quality
 
-**Website:** https://duckdb.org/
-**GitHub:** https://github.com/duckdb/duckdb
+**Website:** <https://duckdb.org/>
+**GitHub:** <https://github.com/duckdb/duckdb>
 
 **Feature:** SQL sobre Parquet sin cargar en memoria.
 
 **Uso para Quality Checks:**
+
 ```python
 import duckdb
 
@@ -150,14 +163,16 @@ violations = duckdb.sql("""
     FROM 'transactions.parquet'
     WHERE amount < 0 OR amount > 1000000
 """).df()
-```
+```text
 
 **Pros:**
+
 - ✅ Extremely fast
 - ✅ Does not require loading data into memory
 - ✅ Standard SQL
 
 **Cuando Usar:**
+
 - Quality checks ad-hoc
 - Exploratory data analysis
 - Como complemento a otros frameworks
@@ -166,8 +181,8 @@ violations = duckdb.sql("""
 
 ### 5. ydata-profiling (formerly pandas-profiling)
 
-**Website:** https://docs.profiling.ydata.ai/
-**GitHub:** https://github.com/ydataai/ydata-profiling
+**Website:** <https://docs.profiling.ydata.ai/>
+**GitHub:** <https://github.com/ydataai/ydata-profiling>
 **Stars:** ~11k | **License:** MIT
 
 **Feature:** Auto-generation of profiling reports.
@@ -185,6 +200,7 @@ profile.to_file("report.html")
 ```
 
 **El reporte incluye:**
+
 - Overview (tipos, missing, duplicates)
 - Variables (distribution, stats, extreme values)
 - Correlations (Pearson, Spearman, Cramer's V)
@@ -192,15 +208,18 @@ profile.to_file("report.html")
 - Sample data
 
 **Pros:**
+
 - ✅ Genera reportes HTML hermosos
 - ✅ Automatically identifies problems
 - ✅ Minimal code
 
 **Cons:**
+
 - ⚠️ Lento en datasets grandes (>1M rows)
 - ⚠️ Only for exploration, not for production
 
 **Cuando Usar:**
+
 - Exploratory analysis inicial
 - Entender nuevo dataset
 - Generate reports for non-technical stakeholders
@@ -209,8 +228,8 @@ profile.to_file("report.html")
 
 ### 6. Soda Core
 
-**Website:** https://www.soda.io/
-**GitHub:** https://github.com/sodadata/soda-core
+**Website:** <https://www.soda.io/>
+**GitHub:** <https://github.com/sodadata/soda-core>
 **Stars:** ~1.5k | **License:** Apache 2.0
 
 **Feature:** YAML-based data quality checks.
@@ -225,19 +244,21 @@ checks for transactions:
   - duplicate_count(transaction_id) = 0
   - min(amount) >= 0
   - max(amount) <= 1000000
-```
+```text
 
 ```bash
 # Run checks
 soda scan -d postgres -c config.yml checks.yml
-```
+```text
 
 **Pros:**
+
 - ✅ Syntax declarativa (YAML)
 - ✅ Easy for non-programmers
 - ✅ Integration with dbt, Airflow
 
 **Cons:**
+
 - ⚠️ Less flexible than Python code
 - ⚠️ Cloud version is paid
 
@@ -245,22 +266,25 @@ soda scan -d postgres -c config.yml checks.yml
 
 ### 7. Apache Griffin
 
-**Website:** https://griffin.apache.org/
-**GitHub:** https://github.com/apache/griffin
+**Website:** <https://griffin.apache.org/>
+**GitHub:** <https://github.com/apache/griffin>
 
 **Feature:** Data quality platform empresarial.
 
 **Componentes:**
+
 - Measure: Define quality metrics
 - Service: Orchestration
 - UI: Dashboards and visualization
 
 **Pros:**
+
 - ✅ Complete solution (not just library)
 - ✅ Dashboard built-in
 - ✅ Designed for big data
 
 **Cons:**
+
 - ⚠️ Setup complejo
 - ⚠️ Limited documentation
 - ⚠️ Small community
@@ -269,15 +293,17 @@ soda scan -d postgres -c config.yml checks.yml
 
 ### 8. Talend Data Quality
 
-**Website:** https://www.talend.com/
+**Website:** <https://www.talend.com/>
 **License:** Comercial (Open Studio es open-source)
 
 **Pros:**
+
 - ✅ GUI para definir reglas
 - ✅ Advanced Profiling
 - ✅ Business integration
 
 **Cons:**
+
 - ⚠️ Costoso
 - ⚠️ Vendor lock-in
 
@@ -300,7 +326,7 @@ soda scan -d postgres -c config.yml checks.yml
 
 ### Decision Tree
 
-```
+```text
 ¿Tienes Spark?
 ├─ SÍ → PyDeequ
 └─ NO
@@ -329,6 +355,7 @@ soda scan -d postgres -c config.yml checks.yml
 ### AWS
 
 **AWS Glue Data Quality**
+
 - Built-in en AWS Glue ETL
 - Ruleset-based (DQDL language)
 - Integrated con Data Catalog
@@ -349,9 +376,10 @@ glueContext.evaluate_data_quality(
     rulesets,
     DynamicFrame.fromDF(df, glueContext, "df")
 )
-```
+```text
 
 **Amazon Deequ**
+
 - Open-source (PyDeequ)
 - Usado internamente en Amazon
 
@@ -360,6 +388,7 @@ glueContext.evaluate_data_quality(
 ### GCP
 
 **Dataplex Data Quality**
+
 - Managed service en GCP
 - YAML-based rules
 - Integration con BigQuery
@@ -377,9 +406,10 @@ rules:
     params:
       min_value: 0
       max_value: 1000000
-```
+```text
 
 **Great Expectations on Dataproc**
+
 - Run GE en Spark clusters
 - Best practice para big data en GCP
 
@@ -388,11 +418,13 @@ rules:
 ### Azure
 
 **Azure Purview Data Quality**
+
 - Part of Microsoft Purview
 - Scan and profile data
 - Lineage tracking
 
 **Synapse Data Quality**
+
 - Built-in en Synapse Pipelines
 - Validation activities
 
@@ -401,6 +433,7 @@ rules:
 ### Databricks
 
 **Delta Live Tables (DLT) Expectations**
+
 ```python
 import dlt
 from pyspark.sql.functions import col
@@ -411,9 +444,10 @@ from pyspark.sql.functions import col
 @dlt.expect_or_fail("unique_ids", "COUNT(DISTINCT transaction_id) = COUNT(*)")
 def transactions_clean():
     return spark.read.table("transactions_bronze")
-```
+```text
 
 **Pros:**
+
 - ✅ Declarativo
 - ✅ Auto-quarantine (expect_or_drop)
 - ✅ Lineage tracking
@@ -473,7 +507,7 @@ from sklearn.ensemble import IsolationForest
 
 iso = IsolationForest(contamination=0.05)
 predictions = iso.fit_predict(df[numeric_columns])
-```
+```text
 
 ### Statistical Testing
 
@@ -492,7 +526,7 @@ chi2, p_value, dof, expected = stats.chi2_contingency(contingency_table)
 group_a = df[df['group'] == 'A']['amount']
 group_b = df[df['group'] == 'B']['amount']
 t_stat, p_value = stats.ttest_ind(group_a, group_b)
-```
+```text
 
 ---
 
@@ -501,11 +535,13 @@ t_stat, p_value = stats.ttest_ind(group_a, group_b)
 ### IDE Extensions
 
 **VS Code:**
+
 - Python extension (Microsoft)
 - Jupyter notebooks
 - Great Expectations snippets
 
 **PyCharm:**
+
 - Data View para DataFrames
 - Pytest integration
 - Database tools
@@ -518,7 +554,7 @@ pip install jupyterlab
 pip install jupyterlab-execute-time          # Show execution time
 pip install jupyterlab-spreadsheet-editor    # Edit CSVs
 pip install jupyterlab_code_formatter        # Auto-format code
-```
+```text
 
 ### CLI Tools
 
@@ -544,17 +580,20 @@ xsv select customer_id,amount transactions.csv | xsv frequency
 ### Documentation
 
 **Great Expectations:**
-- Docs: https://docs.greatexpectations.io/
-- Getting Started: https://docs.greatexpectations.io/docs/tutorials/getting_started/
-- Expectations Gallery: https://greatexpectations.io/expectations/
+
+- Docs: <https://docs.greatexpectations.io/>
+- Getting Started: <https://docs.greatexpectations.io/docs/tutorials/getting_started/>
+- Expectations Gallery: <https://greatexpectations.io/expectations/>
 
 **Pandera:**
-- Docs: https://pandera.readthedocs.io/
-- Examples: https://github.com/unionai-oss/pandera/tree/main/examples
+
+- Docs: <https://pandera.readthedocs.io/>
+- Examples: <https://github.com/unionai-oss/pandera/tree/main/examples>
 
 **PyDeequ:**
-- Docs: https://github.com/awslabs/python-deequ
-- Deequ (Scala): https://github.com/awslabs/deequ
+
+- Docs: <https://github.com/awslabs/python-deequ>
+- Deequ (Scala): <https://github.com/awslabs/deequ>
 
 ---
 
@@ -563,13 +602,13 @@ xsv select customer_id,amount transactions.csv | xsv frequency
 **Free:**
 
 1. **DataCamp: Data Quality in Python**
-   - https://www.datacamp.com/
+   - <https://www.datacamp.com/>
 
 2. **Great Expectations University**
-   - https://greatexpectations.io/blog/ge-university/
+   - <https://greatexpectations.io/blog/ge-university/>
 
 3. **Google Cloud Skills Boost: Data Quality**
-   - https://www.cloudskillsboost.google/
+   - <https://www.cloudskillsboost.google/>
 
 **Paid:**
 
@@ -602,16 +641,16 @@ xsv select customer_id,amount transactions.csv | xsv frequency
 **Must-Read:**
 
 1. **Great Expectations Blog**
-   - https://greatexpectations.io/blog/
+   - <https://greatexpectations.io/blog/>
 
 2. **Netflix Tech Blog - Data Quality**
-   - https://netflixtechblog.com/
+   - <https://netflixtechblog.com/>
 
 3. **Uber Engineering - Data Quality**
-   - https://eng.uber.com/
+   - <https://eng.uber.com/>
 
 4. **Airbnb Engineering - Data Quality**
-   - https://medium.com/airbnb-engineering
+   - <https://medium.com/airbnb-engineering>
 
 **Key Articles:**
 
@@ -626,21 +665,22 @@ xsv select customer_id,amount transactions.csv | xsv frequency
 
 **Conferences:**
 
-- **Data Council** - https://www.datacouncil.ai/
+- **Data Council** - <https://www.datacouncil.ai/>
 - **Spark+AI Summit** - Tiene track de data quality
 - **dbt Coalesce** - Focus en analytics engineering
 
 **Communities:**
 
-- **Great Expectations Slack** - https://greatexpectations.io/slack
-- **dbt Community** - https://www.getdbt.com/community/
+- **Great Expectations Slack** - <https://greatexpectations.io/slack>
+- **dbt Community** - <https://www.getdbt.com/community/>
 - **r/dataengineering** (Reddit)
 - **Data Engineering Discord**
 
 **Meetups:**
 
 Busca "Data Quality" o "Data Engineering" en:
-- https://www.meetup.com/
+
+- <https://www.meetup.com/>
 - LinkedIn Events
 
 ---
@@ -650,31 +690,37 @@ Busca "Data Quality" o "Data Engineering" en:
 ### AWS
 
 **AWS Certified Data Analytics - Specialty**
+
 - Incluye data quality en Glue y Lake Formation
-- https://aws.amazon.com/certification/certified-data-analytics-specialty/
+- <https://aws.amazon.com/certification/certified-data-analytics-specialty/>
 
 **AWS Certified Database - Specialty**
+
 - Data integrity y quality checks
 
 ### GCP
 
 **Professional Data Engineer**
+
 - Incluye Dataplex Data Quality
-- https://cloud.google.com/certification/data-engineer
+- <https://cloud.google.com/certification/data-engineer>
 
 ### Microsoft
 
 **Azure Data Engineer Associate (DP-203)**
+
 - Purview y data quality
 
 ### Databricks
 
 **Databricks Certified Data Engineer Professional**
+
 - Delta Live Tables expectations
 
 ### Vendor-Neutral
 
 **CDMP (Certified Data Management Professional)**
+
 - DAMA International
 - Comprehensive data quality curriculum
 
@@ -731,7 +777,7 @@ class StagedValidator:
                       'uniqueness', 'business_rules']
         }
     }
-```
+```text
 
 ### Pattern 2: Progressive Rollout
 
@@ -744,7 +790,7 @@ validate(df, mode='fail', threshold=0.80)  # 80% must pass
 
 # Día 30: Fail estricto
 validate(df, mode='fail', threshold=0.99)  # 99% must pass
-```
+```text
 
 ### Pattern 3: Data Quality Scoring
 
@@ -778,7 +824,7 @@ def calculate_dq_score(df: pd.DataFrame) -> Dict:
         'grade': get_letter_grade(overall),
         'passed': overall >= 80.0
     }
-```
+```text
 
 ---
 
@@ -787,6 +833,7 @@ def calculate_dq_score(df: pd.DataFrame) -> Dict:
 ### From Manual Checks to Great Expectations
 
 **Before (Manual):**
+
 ```python
 # Scattered checks
 assert df['id'].notna().all()
@@ -796,6 +843,7 @@ if df.duplicated().any():
 ```
 
 **After (Great Expectations):**
+
 ```python
 validator = context.get_validator(...)
 
@@ -804,9 +852,10 @@ validator.expect_column_values_to_be_between("amount", min_value=0)
 validator.expect_compound_columns_to_be_unique(["id", "timestamp"])
 
 results = validator.validate()
-```
+```text
 
 **Benefits:**
+
 - ✅ Reusable suites
 - ✅ Auto-documentation
 - ✅ Version control
@@ -821,29 +870,34 @@ results = validator.validate()
 **Problem:** Great Expectations lento en large datasets
 
 **Solutions:**
+
 1. Use Spark backend:
+
    ```python
    datasource = context.sources.add_spark("my_spark_datasource")
-   ```
+   ```text
 
 2. Sample data para profiling:
+
    ```python
    sample_df = df.sample(n=10000)
    profiler.build_suite(sample_df)
    ```
 
 3. Disable expensive expectations:
+
    ```python
    # Evitar en datasets grandes:
    # - expect_column_values_to_be_in_set (si set es grande)
    # - expect_compound_columns_to_be_unique (costoso)
-   ```
+   ```text
 
 ### False Positives
 
 **Problem:** Validations fail for legitimate edge cases
 
 **Solution:** Use `mostly` parameter:
+
 ```python
 validator.expect_column_values_to_not_be_null(
     "phone",
@@ -856,6 +910,7 @@ validator.expect_column_values_to_not_be_null(
 **Problem:** Schema changes rompen expectations
 
 **Solution:** Version control + automated updates:
+
 ```python
 # Detectar schema drift
 old_schema = load_schema('v1.0')
@@ -864,7 +919,7 @@ new_schema = infer_schema(df)
 if old_schema != new_schema:
     alert_data_steward()
     create_new_suite_version()
-```
+```text
 
 ---
 
@@ -899,12 +954,14 @@ if old_schema != new_schema:
 ## Conclusion
 
 The data quality ecosystem is maturing rapidly. **Great Expectations** is the most complete framework for most use cases. Complement it with:
+
 - **Pandera** para schemas simples
 - **PyDeequ** si ya tienes Spark
 - **ydata-profiling** for exploration
 - **DuckDB** para checks ad-hoc
 
 **Next steps:**
+
 1. Complete practical exercises in`exercises/`
 2. Implementar quality gates en tu pipeline real
 3. Compartir aprendizajes con tu equipo
@@ -933,14 +990,14 @@ duckdb -c "SELECT * FROM 'data.parquet' WHERE col IS NULL"
 
 # ydata-profiling
 # (Ver theory/02-architecture.md o pypi.org/project/ydata-profiling)
-```
+```text
 
 ### Useful Links
 
-- Great Expectations Docs: https://docs.greatexpectations.io/
-- Pandera Docs: https://pandera.readthedocs.io/
-- PyDeequ GitHub: https://github.com/awslabs/python-deequ
-- DuckDB Docs: https://duckdb.org/docs/
+- Great Expectations Docs: <https://docs.greatexpectations.io/>
+- Pandera Docs: <https://pandera.readthedocs.io/>
+- PyDeequ GitHub: <https://github.com/awslabs/python-deequ>
+- DuckDB Docs: <https://duckdb.org/docs/>
 
 ---
 

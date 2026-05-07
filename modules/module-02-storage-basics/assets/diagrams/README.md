@@ -5,6 +5,7 @@ This directory contains visual diagrams to help understand storage concepts.
 ## Available Diagrams
 
 All diagrams are defined in Mermaid format and can be viewed in:
+
 - GitHub (renders Mermaid automatically)
 - VS Code (with Mermaid extension)
 - [Mermaid Live Editor](https://mermaid.live/)
@@ -12,9 +13,11 @@ All diagrams are defined in Mermaid format and can be viewed in:
 ## Diagram Files
 
 ### 1. medallion-architecture.mmd
+
 Visual representation of Bronze → Silver → Gold data lake architecture.
 
 **Shows**:
+
 - Data flow through layers
 - Storage formats per layer
 - Data quality progression
@@ -25,9 +28,11 @@ Visual representation of Bronze → Silver → Gold data lake architecture.
 ---
 
 ### 2. file-format-decision-tree.mmd
+
 Decision tree for choosing the right file format.
 
 **Helps answer**:
+
 - Which format for my use case?
 - CSV vs JSON vs Parquet vs Avro?
 - When to use each format?
@@ -37,9 +42,11 @@ Decision tree for choosing the right file format.
 ---
 
 ### 3. partitioning-strategies.mmd
+
 Comparison of different partitioning approaches.
 
 **Compares**:
+
 - No partitioning
 - Date-based (year/month/day)
 - Geography-based (country/region)
@@ -50,9 +57,11 @@ Comparison of different partitioning approaches.
 ---
 
 ### 4. compression-comparison.mmd
+
 Visual comparison of compression algorithms.
 
 **Compares**:
+
 - Snappy (fast, moderate compression)
 - Gzip (slow, high compression)
 - LZ4 (very fast, lower compression)
@@ -63,9 +72,11 @@ Visual comparison of compression algorithms.
 ---
 
 ### 5. schema-evolution-flow.mmd
+
 Workflow for handling schema changes.
 
 **Shows**:
+
 - Adding new columns
 - Changing data types
 - Backward compatibility
@@ -76,9 +87,11 @@ Workflow for handling schema changes.
 ---
 
 ### 6. glue-catalog-architecture.mmd
+
 AWS Glue Data Catalog architecture.
 
 **Shows**:
+
 - S3 → Glue Crawler → Glue Catalog → Athena
 - Table registration
 - Partition discovery
@@ -89,9 +102,11 @@ AWS Glue Data Catalog architecture.
 ---
 
 ### 7. s3-lifecycle-policy.mmd
+
 S3 storage class transitions over time.
 
 **Shows**:
+
 - Standard → Standard-IA → Glacier → Deep Archive
 - Cost per GB over time
 - Retrieval time comparison
@@ -101,9 +116,11 @@ S3 storage class transitions over time.
 ---
 
 ### 8. data-lake-cost-optimization.mmd
+
 Cost optimization strategies visual.
 
 **Shows**:
+
 - Format compression savings
 - Lifecycle policy savings
 - Partition pruning query cost reduction
@@ -116,17 +133,20 @@ Cost optimization strategies visual.
 ## How to Use These Diagrams
 
 ### In Markdown Documents
+
 ```markdown
 # My Section
 ![Medallion Architecture](assets/diagrams/medallion-architecture.mmd)
-```
+```text
 
 ### Render in VS Code
+
 1. Install "Markdown Preview Mermaid Support" extension
 2. Open any `.mmd` file
 3. Press `Ctrl+Shift+V` (Preview)
 
 ### Export as Images
+
 ```bash
 # Using mermaid-cli
 npm install -g @mermaid-js/mermaid-cli
@@ -136,9 +156,10 @@ mmdc -i medallion-architecture.mmd -o medallion-architecture.png
 
 # Generate SVG (better quality)
 mmdc -i medallion-architecture.mmd -o medallion-architecture.svg
-```
+```text
 
 ### Edit Diagrams
+
 1. Copy diagram content
 2. Open [Mermaid Live Editor](https://mermaid.live/)
 3. Paste and edit

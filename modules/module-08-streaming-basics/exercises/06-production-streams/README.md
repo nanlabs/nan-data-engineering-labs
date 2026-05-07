@@ -9,6 +9,7 @@
 ## 🎯 Objectives
 
 Production-ready streaming:
+
 - **Monitoring**: Metrics and alerting
 - **Error Handling**: Dead letter queues
 - **Scaling**: Horizontal scaling strategies
@@ -85,7 +86,7 @@ def process_event(event: dict):
             error=str(e),
             exc_info=True
         )
-```
+```text
 
 ### Part 2: Metrics Collection (45 min)
 
@@ -184,7 +185,7 @@ def process_with_metrics(event: dict):
         duration = time.time() - start_time
         metrics.record_processing_time(event['event_type'], duration)
         metrics.events_in_flight.dec()
-```
+```text
 
 ### Part 3: Dead Letter Queue (60 min)
 
@@ -250,7 +251,7 @@ class RobustStreamProcessor:
         self.dlq.send_to_dlq(event, Exception('Max retries'),
                             retry_count=self.max_retries)
         return None
-```
+```text
 
 ### Part 4: Consumer Lag Monitoring (45 min)
 
@@ -412,7 +413,7 @@ class ConsumerAutoScaler:
                 logger.error('auto_scaling_failed', error=str(e))
 
             time.sleep(interval_seconds)
-```
+```text
 
 ### Part 6: Integration Testing (45 min)
 
@@ -471,18 +472,20 @@ def test_stream_processing_pipeline(kafka_container):
 
     assert len(results) == 2
     assert results[0]['amount'] == 100
-```
+```text
 
 ---
 
 ## ✅ Validation
 
 **Run tests**:
+
 ```bash
 pytest test_production.py -v
-```
+```text
 
 **Verify**:
+
 - ✅ Metrics exposed on :8000/metrics
 - ✅ DLQ receives failed events
 - ✅ Lag monitoring works

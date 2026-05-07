@@ -3,6 +3,7 @@
 ## 🎯 Objectives
 
 Prepare batch jobs for production:
+
 - Job scheduling y orchestration
 - Monitoring y alerting
 - Failure recovery y retry logic
@@ -22,11 +23,11 @@ Prepare batch jobs for production:
 
 ### Production Job Lifecycle
 
-```
+```text
 Schedule → Start → Monitor → Complete → Validate → Alert
                 ↓ Fail
             Retry → Success / Dead Letter
-```
+```text
 
 ## 🏋️ Exercises
 
@@ -100,7 +101,7 @@ class ProductionBatchJob:
         - Archive logs
         """
         pass
-```
+```text
 
 ### Parte 2: Retry Logic
 
@@ -228,7 +229,7 @@ class JobMonitor:
             }
         """
         pass
-```
+```text
 
 ### Parte 4: Data Quality Checks
 
@@ -295,7 +296,7 @@ class DataQualityChecker:
     def run_all_checks(self, df: DataFrame) -> Dict[str, bool]:
         """Run all configured checks and return results."""
         pass
-```
+```text
 
 ### Parte 5: Job Configuration
 
@@ -366,7 +367,7 @@ alerts:
   - condition: quality_check_failed
     severity: ERROR
     notify: [slack, email]
-```
+```text
 
 ## 📊 Testing
 
@@ -396,13 +397,13 @@ spark-submit \
   production_job.py \
   --config config/production_job.yaml \
   --date 2024-03-07
-```
+```text
 
 ## ✅ Validation
 
 ```bash
 pytest test_production_jobs.py -v
-```
+```text
 
 ## 💡 Hints
 
@@ -423,7 +424,8 @@ def execute_with_retry(func, max_retries=3):
             wait_time = min(2 ** attempt, 300)  # Cap at 5 min
             logger.warning(f"Attempt {attempt + 1} failed, retrying in {wait_time}s")
             time.sleep(wait_time)
-```
+```text
+
 </details>
 
 <details>
@@ -445,6 +447,7 @@ if duration_minutes > SLA_MINUTES:
         message=f"Job exceeded SLA: {duration_minutes:.1f}min > {SLA_MINUTES}min"
     )
 ```
+
 </details>
 
 <details>
@@ -467,7 +470,8 @@ def validate_output(df, config):
 
     if errors:
         raise ValueError(f"Quality checks failed: {errors}")
-```
+```text
+
 </details>
 
 <details>
@@ -494,7 +498,8 @@ def publish_metrics(metrics):
             }
         ]
     )
-```
+```text
+
 </details>
 
 ## 🎓 Learning Outcomes
@@ -512,9 +517,10 @@ def publish_metrics(metrics):
 - [AWS EMR Best Practices](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan.html)
 - [Site Reliability Engineering](https://sre.google/sre-book/table-of-contents/)
 
-## 🎉 Module Complete!
+## 🎉 Module Complete
 
 Has completed todos los exercises de Batch Processing. Ahora dominas:
+
 - Batch processing fundamentals
 - Data partitioning strategies
 - PySpark for distributed computing

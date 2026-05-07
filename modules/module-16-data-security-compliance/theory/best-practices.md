@@ -1,6 +1,7 @@
 # Security Best Practices for Data Engineering
 
 ## Table of Contents
+
 - [IAM Best Practices](#iam-best-practices)
 - [Data Protection](#data-protection)
 - [Network Security](#network-security)
@@ -14,7 +15,9 @@
 ## IAM Best Practices
 
 ### **1. Use IAM Roles Instead of Users**
+
 ❌ **Bad**:
+
 ```python
 # Hardcoded credentials in code
 aws_access_key = 'AKIAIOSFODNN7EXAMPLE'
@@ -24,15 +27,17 @@ s3 = boto3.client('s3',
     aws_access_key_id=aws_access_key,
     aws_secret_access_key=aws_secret_key
 )
-```
+```text
 
 ✅ **Good**:
+
 ```python
 # Use IAM role attached to EC2/Lambda/ECS
 s3 = boto3.client('s3')  # Automatically uses instance role
-```
+```text
 
 ### **2. Enable MFA for Sensitive Operations**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -49,9 +54,10 @@ s3 = boto3.client('s3')  # Automatically uses instance role
     }
   }]
 }
-```
+```text
 
 ### **3. Use Permission Boundaries**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -75,16 +81,19 @@ s3 = boto3.client('s3')  # Automatically uses instance role
 ```
 
 ### **4. Implement Least Privilege**
+
 ❌ **Bad** (overly permissive):
+
 ```json
 {
   "Effect": "Allow",
   "Action": "s3:*",
   "Resource": "*"
 }
-```
+```text
 
 ✅ **Good** (specific permissions):
+
 ```json
 {
   "Effect": "Allow",
@@ -94,18 +103,20 @@ s3 = boto3.client('s3')  # Automatically uses instance role
   ],
   "Resource": "arn:aws:s3:::my-bucket/data/*"
 }
-```
+```text
 
 ### **5. Rotate Access Keys Regularly**
+
 ```bash
 # Automated key rotation script
 aws iam create-access-key --user-name data-engineer
 aws iam update-access-key --access-key-id OLD_KEY --status Inactive
 # Wait 48 hours to ensure no usage
 aws iam delete-access-key --access-key-id OLD_KEY
-```
+```text
 
 ### **6. Use IAM Access Analyzer**
+
 ```python
 import boto3
 
@@ -133,6 +144,7 @@ for finding in findings['findings']:
 ### **1. Encrypt Data at Rest**
 
 **S3 Buckets**:
+
 ```python
 import boto3
 
@@ -169,9 +181,10 @@ bucket_policy = {
 }
 
 s3.put_bucket_policy(Bucket='data-lake-bucket', Policy=json.dumps(bucket_policy))
-```
+```text
 
 **RDS Databases**:
+
 ```python
 rds = boto3.client('rds')
 
@@ -187,11 +200,12 @@ rds.create_db_instance(
     BackupRetentionPeriod=30,  # Encrypted backups
     EnableCloudwatchLogsExports=['postgresql']
 )
-```
+```text
 
 ### **2. Encrypt Data in Transit**
 
 **ALB with TLS 1.2+**:
+
 ```python
 elbv2 = boto3.client('elbv2')
 
@@ -209,7 +223,7 @@ elbv2.create_listener(
     }],
     SslPolicy='ELBSecurityPolicy-TLS-1-2-2017-01'  # Enforce TLS 1.2+
 )
-```
+```text
 
 ### **3. Implement Data Classification**
 
@@ -259,7 +273,7 @@ s3.put_bucket_versioning(
 # aws s3api put-bucket-versioning --bucket critical-data \
 #   --versioning-configuration Status=Enabled,MFADelete=Enabled \
 #   --mfa "arn:aws:iam::123456789012:mfa/user 123456"
-```
+```text
 
 ### **5. Use S3 Object Lock (WORM)**
 
@@ -283,7 +297,7 @@ s3.put_object_lock_configuration(
         }
     }
 )
-```
+```text
 
 ---
 
@@ -311,7 +325,7 @@ ec2.authorize_security_group_ingress(
         'IpRanges': [{'CidrIp': '10.0.0.0/8', 'Description': 'Corporate VPN'}]
     }]
 )
-```
+```text
 
 ### **2. Use VPC Endpoints**
 
@@ -343,7 +357,7 @@ ec2.create_flow_logs(
     LogGroupName='/aws/vpc/flowlogs',
     DeliverLogsPermissionArn='arn:aws:iam::123456789012:role/flowlogsRole'
 )
-```
+```text
 
 ---
 
@@ -370,7 +384,7 @@ cloudtrail.create_trail(
         }]
     }]
 )
-```
+```text
 
 ### **2. Set Up CloudWatch Alarms**
 
@@ -389,7 +403,7 @@ cloudwatch.put_metric_alarm(
     ComparisonOperator='GreaterThanOrEqualToThreshold',
     AlarmActions=['arn:aws:sns:us-east-1:123456789012:security-alerts']
 )
-```
+```text
 
 ### **3. Enable GuardDuty**
 
@@ -418,6 +432,7 @@ guardduty.update_detector(
 ### **1. Create IR Playbooks**
 
 **Example: Compromised IAM Credentials**
+
 ```python
 def respond_to_compromised_credentials(access_key_id):
     """Automated response to compromised credentials"""
@@ -450,7 +465,7 @@ def respond_to_compromised_credentials(access_key_id):
         Message=f'Access key {access_key_id} for user {user} has been disabled.'
     )
     print("✓ Security team notified")
-```
+```text
 
 ### **2. Use AWS Systems Manager for Remediation**
 
@@ -476,7 +491,7 @@ ssm.create_document(
     Name='IsolateCompromisedInstance',
     DocumentType='Automation'
 )
-```
+```text
 
 ---
 
@@ -504,7 +519,7 @@ for user in users:
 
             if days > 90:
                 print(f"⚠️  {user['UserName']}: Access key {key['AccessKeyId']} unused for {days} days")
-```
+```text
 
 ---
 
@@ -534,7 +549,7 @@ npm audit
 
 # Container images
 trivy image my-app:latest
-```
+```text
 
 ### **3. Pre-commit Hooks**
 
@@ -549,7 +564,7 @@ repos:
     rev: v8.16.0
     hooks:
       - id: gitleaks
-```
+```text
 
 ---
 

@@ -18,7 +18,8 @@
 ### 1. Kinesis Shard Management
 
 **Right-Sizing Shards**:
-```
+
+```text
 Throughput needed: 10 MB/sec writes, 20 MB/sec reads
 
 Shard capacity:
@@ -30,9 +31,10 @@ Required shards:
 - Read: 20 MB/sec ÷ 2 MB/sec = 10 shards
 
 Choose: 10 shards (max of both)
-```
+```text
 
 **Shard Splitting Strategy**:
+
 ```python
 import boto3
 
@@ -57,9 +59,10 @@ def auto_scale_kinesis(stream_name, target_util=0.7):
                 ShardToMerge=shard_id,
                 AdjacentShardToMerge=find_adjacent(shard_id)
             )
-```
+```text
 
 **Partition Key Strategy**:
+
 ```python
 # Bad: All to one shard
 partition_key = "static-key"
@@ -74,6 +77,7 @@ partition_key = f"{user_id}#{session_id}"
 ### 2. Flink Application Performance
 
 **Parallelism Configuration**:
+
 ```python
 env = StreamExecutionEnvironment.get_execution_environment()
 
@@ -86,9 +90,10 @@ stream \
     .key_by(lambda x: x['key']) \
     .window(...) \
     .aggregate(agg_function).set_parallelism(8)
-```
+```text
 
 **State Backend Optimization**:
+
 ```python
 from pyflink.datastream.state_backend import RocksDBStateBackend
 
@@ -99,9 +104,10 @@ env.set_state_backend(state_backend)
 # Tune RocksDB
 state_backend.set_db_storage_path("/tmp/rocksdb")
 state_backend.set_predefined_options("SPINNING_DISK_OPTIMIZED")
-```
+```text
 
 **Checkpointing Tuning**:
+
 ```python
 # Enable checkpointing
 env.enable_checkpointing(60000)  # 60 seconds
@@ -116,11 +122,12 @@ checkpoint_config.set_max_concurrent_checkpoints(1)
 checkpoint_config.enable_externalized_checkpoints(
     ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION
 )
-```
+```text
 
 ### 3. Window Optimization
 
 **Choose Right Window Type**:
+
 ```sql
 -- Tumbling: For most use cases (least memory)
 SELECT
@@ -145,27 +152,30 @@ GROUP BY user_id, SESSION(ts, INTERVAL '30' MINUTE);
 ```
 
 **Late Data Handling**:
+
 ```python
 # Allow 5 minutes of lateness
 stream \
     .window(TumblingEventTimeWindows.of(Time.minutes(1))) \
     .allowed_lateness(Time.minutes(5)) \
     .aggregate(agg_function)
-```
+```text
 
 ### 4. Memory Management
 
 **JVM Heap Tuning**:
-```
+
+```text
 # Flink TaskManager configuration
 taskmanager.memory.process.size: 4096m
 taskmanager.memory.flink.size: 3072m
 taskmanager.memory.jvm-heap.size: 2048m
 taskmanager.memory.managed.size: 1024m
 taskmanager.memory.network.min: 256m
-```
+```text
 
 **Avoid Memory Leaks**:
+
 ```python
 class BadFunction(KeyedProcessFunction):
     def __init__(self):
@@ -203,7 +213,8 @@ class GoodFunction(KeyedProcessFunction):
 ### 1. Cost Breakdown
 
 **Monthly Cost Estimation**:
-```
+
+```text
 Service                     | Units           | Cost/Unit   | Total
 ────────────────────────────┼─────────────────┼─────────────┼────────
 Kinesis Data Streams (4 sh) | 720 shard-hrs   | $0.015/hr   | $43
@@ -215,12 +226,13 @@ S3 Standard                  | 100 GB          | $0.023/GB   | $2.30
 CloudWatch (Metrics)         | 50 custom       | $0.30/each  | $15
 ────────────────────────────┴─────────────────┴─────────────┴────────
 Total                                                          $225/mo
-```
+```text
 
 ### 2. Optimization Strategies
 
 **Strategy 1: On-Demand Kinesis**
-```
+
+```text
 Provisioned (4 shards):
 - Cost: $43/month
 - Best for: Steady workload
@@ -232,6 +244,7 @@ On-Demand:
 ```
 
 **Strategy 2: Scale Analytics During Business Hours**
+
 ```python
 import boto3
 import schedule
@@ -259,9 +272,10 @@ schedule.every().day.at("08:00").do(scale_up)    # Business hours
 schedule.every().day.at("18:00").do(scale_down)  # Off hours
 
 # Save: 7 KPUs × 10 hours/day × 30 days × $0.11 = $231/month
-```
+```text
 
 **Strategy 3: Lifecycle Policies**
+
 ```python
 # S3 lifecycle policy for checkpoint data
 lifecycle_policy = {
@@ -283,9 +297,10 @@ s3.put_bucket_lifecycle_configuration(
     Bucket='flink-state',
     LifecycleConfiguration=lifecycle_policy
 )
-```
+```text
 
 **Strategy 4: Query Optimization (Athena)**
+
 ```sql
 -- Bad: Scan entire table ($5 per 1 TB)
 SELECT * FROM events
@@ -301,7 +316,7 @@ SELECT user_id, event_type, timestamp
 FROM events
 WHERE year='2024' AND month='03' AND day='01';
 -- Cost: ~$0.005 (75% savings from "Good")
-```
+```text
 
 ### 3. Cost Alerts
 
@@ -347,7 +362,8 @@ def create_budget_alert():
 ### 1. Key Metrics to Track
 
 **Kinesis Data Streams**:
-```
+
+```text
 Metric                           | Threshold      | Action
 ─────────────────────────────────┼────────────────┼─────────────────
 IncomingRecords                  | -              | Track throughput
@@ -355,10 +371,11 @@ IncomingBytes                    | > 80% capacity | Add shards
 GetRecords.IteratorAgeMilliseconds| > 60000 ms    | Scale consumers
 ReadProvisionedThroughputExceeded| > 0           | Add shards / consumers
 WriteProvisionedThroughputExceeded| > 0          | Add shards / batch
-```
+```text
 
 **Kinesis Data Analytics**:
-```
+
+```text
 Metric                           | Threshold      | Action
 ─────────────────────────────────┼────────────────┼─────────────────
 KPUs                             | > 80% util     | Auto-scale or add KPUs
@@ -371,6 +388,7 @@ Records.numRecordsInPerSecond    | -              | Track input rate
 ```
 
 **Custom Application Metrics**:
+
 ```python
 from pyflink.datastream.functions import ProcessFunction
 import boto3
@@ -413,7 +431,7 @@ class MetricsCollector(ProcessFunction):
                 }
             ]
         )
-```
+```text
 
 ### 2. CloudWatch Alarms
 
@@ -471,11 +489,12 @@ cloudwatch.put_metric_alarm(
     ActionsEnabled=True,
     AlarmActions=['arn:aws:sns:us-east-1:123456789012:data-ops']
 )
-```
+```text
 
 ### 3. Dashboards
 
 **CloudWatch Dashboard (JSON)**:
+
 ```json
 {
   "widgets": [
@@ -519,7 +538,7 @@ cloudwatch.put_metric_alarm(
     }
   ]
 }
-```
+```text
 
 ---
 
@@ -594,7 +613,7 @@ class ResilientProcessor(ProcessFunction):
         except Exception as e:
             # After 3 retries, send to DLQ
             self.send_to_dlq(value, e)
-```
+```text
 
 ### 3. Checkpointing for Fault Tolerance
 
@@ -624,7 +643,7 @@ checkpoint_config.set_max_concurrent_checkpoints(1)
 
 # Tolerate failed checkpoints
 checkpoint_config.set_tolerable_checkpoint_failure_number(3)
-```
+```text
 
 ### 4. Circuit Breaker Pattern
 
@@ -676,7 +695,7 @@ class ResilientAPIProcessor(ProcessFunction):
         except Exception as e:
             # Fallback or DLQ
             yield {'status': 'fallback', 'data': value}
-```
+```text
 
 ---
 
@@ -754,7 +773,7 @@ def test_end_to_end_pipeline():
 
     assert 'Item' in response
     assert response['Item']['total_purchases'] >= 99.99
-```
+```text
 
 ### 3. Load Testing
 
@@ -801,7 +820,7 @@ def load_test(events_per_second=1000, duration_seconds=60):
 
 # Run load test
 load_test(events_per_second=5000, duration_seconds=300)  # 5K events/sec for 5 min
-```
+```text
 
 ---
 
@@ -853,7 +872,7 @@ if [ "$ERROR_COUNT" -gt "10" ]; then
 else
     echo "Deployment successful!"
 fi
-```
+```text
 
 ### 2. Infrastructure as Code (Terraform)
 
@@ -984,11 +1003,12 @@ resource "aws_kinesisanalyticsv2_application" "flink_app" {
     }
   ]
 }
-```
+```text
 
 ### 2. Encryption
 
 **Enable KMS Encryption**:
+
 ```python
 import boto3
 
@@ -1000,9 +1020,10 @@ kinesis.start_stream_encryption(
     EncryptionType='KMS',
     KeyId='arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012'
 )
-```
+```text
 
 **VPC Endpoints** (no internet traffic):
+
 ```hcl
 resource "aws_vpc_endpoint" "kinesis" {
   vpc_id            = aws_vpc.main.id
@@ -1015,7 +1036,7 @@ resource "aws_vpc_endpoint" "kinesis" {
 
   private_dns_enabled = true
 }
-```
+```text
 
 ---
 
@@ -1024,6 +1045,7 @@ resource "aws_vpc_endpoint" "kinesis" {
 ### 1. Runbook for Common Issues
 
 **Issue: High Iterator Age**
+
 ```
 Symptom: GetRecords.IteratorAgeMilliseconds > 60000
 Cause: Consumers can't keep up with incoming data
@@ -1032,10 +1054,11 @@ Solutions:
 2. Optimize consumer code (reduce processing time)
 3. Scale Flink application (add KPUs)
 4. Check for stuck consumers (restart if needed)
-```
+```text
 
 **Issue: Checkpoint Failures**
-```
+
+```text
 Symptom: Checkpoints.Failed > 0
 Cause: State too large, network issues, S3 throttling
 Solutions:
@@ -1043,21 +1066,23 @@ Solutions:
 2. Reduce state size (TTL on state, compaction)
 3. Use RocksDB state backend (off-heap)
 4. Check S3 request rates (add exponential backoff)
-```
+```text
 
 ### 2. On-Call Procedures
 
 **Escalation Levels**:
+
 ```
 Level 1: Automated recovery (auto-scaling, restarts)
 Level 2: On-call engineer notification (PagerDuty)
 Level 3: Team lead escalation (repeated failures)
 Level 4: Management escalation (SLA breach)
-```
+```text
 
 ### 3. Documentation
 
 **Key Documents**:
+
 - Architecture Diagram
 - Runbook for incidents
 - Deployment Procedure
@@ -1072,24 +1097,28 @@ Level 4: Management escalation (SLA breach)
 ### Key Takeaways
 
 **Performance**:
+
 - Right-size shards and KPUs
 - Use RocksDB for large state
 - Tune checkpointing intervals
 - Optimize window types
 
 **Cost**:
+
 - Use on-demand Kinesis for variable workloads
 - Scale analytics during business hours
 - Lifecycle policies for old data
 - Query optimization (partition pruning)
 
 **Reliability**:
+
 - Implement dead letter queues
 - Enable checkpointing (exactly-once)
 - Retry logic with exponential backoff
 - Circuit breaker for external calls
 
 **Security**:
+
 - Least privilege IAM roles
 - Enable KMS encryption
 - VPC endpoints for private traffic
@@ -1098,4 +1127,4 @@ Level 4: Management escalation (SLA breach)
 ---
 
 **Previous**: [architecture.md](./architecture.md) - AWS Architectures
-** Next**: [resources.md](./resources.md) - Learning Resources
+**Next**: [resources.md](./resources.md) - Learning Resources

@@ -46,7 +46,7 @@ sudo mv terraform /usr/local/bin/
 
 # Verificar instalación
 terraform version
-```
+```text
 
 **En macOS:**
 
@@ -57,7 +57,7 @@ brew install hashicorp/tap/terraform
 
 # Verificar instalación
 terraform version
-```
+```text
 
 **En Windows:**
 
@@ -67,7 +67,7 @@ choco install terraform
 
 # Verificar instalación
 terraform version
-```
+```text
 
 #### 1.2. Configurar LocalStack
 
@@ -117,7 +117,7 @@ docker-compose up -d
 # Verificar que LocalStack está corriendo
 docker-compose ps
 curl http://localhost:4566/_localstack/health
-```
+```text
 
 #### 1.4. Instalar AWS CLI (para testing)
 
@@ -127,7 +127,7 @@ pip install awscli-local
 
 # Verificar conexión con LocalStack
 awslocal s3 ls
-```
+```text
 
 ### Output Esperado
 
@@ -143,7 +143,7 @@ LocalStack Health:
     "dynamodb": "available"
   }
 }
-```
+```text
 
 ### Conceptos Clave
 
@@ -227,7 +227,7 @@ resource "aws_s3_bucket_versioning" "my_first_bucket_versioning" {
 terraform init
 
 # Esto descargará los plugins necesarios (provider AWS)
-```
+```text
 
 #### 2.3. Ver el Plan de Ejecución
 
@@ -237,7 +237,7 @@ terraform plan
 
 # Guardar el plan en un archivo
 terraform plan -out=tfplan
-```
+```text
 
 #### 2.4. Aplicar la Configuration
 
@@ -247,7 +247,7 @@ terraform apply
 
 # O aplicar sin confirmación
 terraform apply -auto-approve
-```
+```text
 
 #### 2.5. Verificar el Bucket Creado
 
@@ -279,7 +279,7 @@ Terraform will perform the following actions:
 Plan: 2 to add, 0 to change, 0 to destroy.
 
 Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
-```
+```text
 
 ### Conceptos Clave
 
@@ -349,7 +349,7 @@ variable "tags" {
     Project   = "Learning-IaC"
   }
 }
-```
+```text
 
 </details>
 
@@ -391,7 +391,7 @@ output "bucket_tags" {
   description = "Tags aplicados al bucket"
   value       = aws_s3_bucket.my_first_bucket.tags_all
 }
-```
+```text
 
 </details>
 
@@ -474,7 +474,7 @@ tags = {
   Team        = "Data-Engineering"
   CostCenter  = "Training"
 }
-```
+```text
 
 </details>
 
@@ -495,7 +495,7 @@ terraform output bucket_arn
 
 # Ver output en formato JSON
 terraform output -json
-```
+```text
 
 ### Output Esperado
 
@@ -517,7 +517,7 @@ bucket_tags = {
   "Team" = "Data-Engineering"
 }
 versioning_status = "Enabled"
-```
+```text
 
 ### Conceptos Clave
 
@@ -552,6 +552,7 @@ cat .terraform.lock.hcl
 ```
 
 **¿Qué hace `terraform init`?**
+
 - Descarga providers definidos en `required_providers`
 - Inicializa el backend (dónde se guarda el state)
 - Create el directorio `.terraform/`
@@ -574,7 +575,7 @@ terraform plan -var="bucket_name=custom-bucket-name"
 
 # Plan mostrando solo recursos específicos
 terraform plan -target=aws_s3_bucket.my_first_bucket
-```
+```text
 
 #### 4.3. Terraform Apply - Aplicación
 
@@ -590,7 +591,7 @@ terraform apply tfplan
 
 # Apply con target específico
 terraform apply -target=aws_s3_bucket.my_first_bucket
-```
+```text
 
 #### 4.4. Terraform Destroy - Eliminación
 
@@ -606,7 +607,7 @@ terraform destroy -target=aws_s3_bucket.my_first_bucket
 
 # Plan de destroy (ver qué se eliminará)
 terraform plan -destroy
-```
+```text
 
 #### 4.5. Otros Comandos Útiles
 
@@ -660,7 +661,7 @@ terraform console
 # Ejecutar comandos útiles
 chmod +x comandos-utiles.sh
 ./comandos-utiles.sh
-```
+```text
 
 #### 4.6. Experimento: Ciclo de Vida Completo
 
@@ -688,7 +689,7 @@ output "experiment_bucket" {
     arn = aws_s3_bucket.experiment.arn
   }
 }
-```
+```text
 
 </details>
 
@@ -729,7 +730,7 @@ terraform destroy -target=aws_s3_bucket.experiment -auto-approve
 # 12. Verificar que se eliminó
 awslocal s3 ls
 terraform state list
-```
+```text
 
 ### Output Esperado
 
@@ -781,7 +782,7 @@ terraform state list
 
 # Ver detalles de un recurso en el state
 terraform state show aws_s3_bucket.my_first_bucket
-```
+```text
 
 #### 5.2. Estructura del State File
 
@@ -823,7 +824,7 @@ terraform state show aws_s3_bucket.my_first_bucket
     }
   ]
 }
-```
+```text
 
 </details>
 
@@ -865,7 +866,7 @@ echo -e "\n=== Refresh State ==="
 terraform refresh
 
 echo -e "\n✅ State management commands completed"
-```
+```text
 
 </details>
 
@@ -907,7 +908,7 @@ terraform apply -auto-approve
 
 echo -e "\n=== 7. Verificar que el tag manual fue removido ==="
 awslocal s3api get-bucket-tagging --bucket data-learning-bucket-2024
-```
+```text
 
 </details>
 
@@ -915,7 +916,7 @@ awslocal s3api get-bucket-tagging --bucket data-learning-bucket-2024
 # Ejecutar experimento de drift
 chmod +x test-drift.sh
 ./test-drift.sh
-```
+```text
 
 #### 5.5. State File Best Practices
 
@@ -953,7 +954,7 @@ terraform.rc
 # Local environment files
 .env
 .env.local
-```
+```text
 
 </details>
 
@@ -984,27 +985,35 @@ El `terraform.tfstate` es un archivo JSON que mantiene el mapeo entre:
 ```json
 "version": 4
 ```
+
 Versión del formato del state file.
 
 ### 2. Terraform Version
+
 ```json
 "terraform_version": "1.7.5"
-```
+```text
+
 Versión de Terraform que creó/modificó el state.
 
 ### 3. Serial
+
 ```json
 "serial": 1
-```
+```text
+
 Número incremental para cada modificación (previene conflictos).
 
 ### 4. Lineage
+
 ```json
 "lineage": "unique-id"
-```
+```text
+
 ID único para este state (previene mezclar states diferentes).
 
 ### 5. Outputs
+
 ```json
 "outputs": {
   "bucket_id": {
@@ -1013,9 +1022,11 @@ ID único para este state (previene mezclar states diferentes).
   }
 }
 ```
+
 Valores de los outputs definidos.
 
 ### 6. Resources
+
 ```json
 "resources": [
   {
@@ -1025,18 +1036,21 @@ Valores de los outputs definidos.
     "instances": [...]
   }
 ]
-```
+```text
+
 Lista de todos los recursos gestionados.
 
 ## Best Practices
 
 ✅ **DO:**
+
 - Usar remote state en equipo
 - Hacer backup antes de operaciones peligrosas
 - Usar state locking
 - Versionar tu configuration (.tf), no el state
 
 ❌ **DON'T:**
+
 - Editar el state file manualmente
 - Versionar el state en Git
 - Compartir state por email/chat
@@ -1047,15 +1061,17 @@ Lista de todos los recursos gestionados.
 **Drift** = Cuando el estado real difiere del state file.
 
 Causas comunes:
+
 - Cambios manuales en la consola de AWS
 - Scripts que modifican recursos
 - Otro automation tool modificando recursos
 
 Detección:
+
 ```bash
 terraform plan  # Muestra diferencias
 terraform refresh  # Actualiza el state
-```
+```text
 
 ## Comandos Útiles
 
@@ -1077,14 +1093,16 @@ terraform state pull
 
 # Push state (remote)
 terraform state push
-```
+```text
 
 ## Próximo Step
 
 En exercises posteriores you will learn:
+
 - Remote state con S3
 - State locking con DynamoDB
 - Workspaces para múltiples ambientes
+
 ```
 
 </details>
@@ -1104,7 +1122,7 @@ Terraform detected the following changes made outside of Terraform:
     }
 
 Plan: 0 to add, 1 to change, 0 to destroy.
-```
+```text
 
 ### Conceptos Clave
 
@@ -1240,7 +1258,7 @@ output "data_bucket_details" {
     encryption_enabled  = true
   }
 }
-```
+```text
 
 </details>
 
@@ -1253,7 +1271,7 @@ terraform apply -auto-approve
 # Verificar recursos creados
 terraform state list
 awslocal s3 ls
-```
+```text
 
 #### 6.3. Modificaciones In-Place (Sin Recreación)
 
@@ -1315,7 +1333,7 @@ terraform plan
 
 # Aplicar cambios
 terraform apply -auto-approve
-```
+```text
 
 #### 6.4. Modificaciones con Recreación (Destroy + Create)
 
@@ -1339,7 +1357,7 @@ resource "aws_s3_bucket" "data_bucket" {
     }
   )
 }
-```
+```text
 
 </details>
 
@@ -1350,7 +1368,7 @@ terraform plan
 # ADVERTENCIA: Esto destruirá datos si el bucket tiene objetos
 # En producción, NUNCA hacer esto sin backup
 terraform apply
-```
+```text
 
 #### 6.5. Usar Lifecycle Rules para Prevenir Destrucción
 
@@ -1426,7 +1444,7 @@ terraform apply
 
 # Untaint (remover marca de taint)
 terraform untaint aws_s3_bucket.data_bucket
-```
+```text
 
 #### 6.7. Experimento Completo de Modificaciones
 
@@ -1504,14 +1522,14 @@ cd ..
 rm -rf "$EXPERIMENT_DIR"
 
 echo -e "\n✅ Experimento completed"
-```
+```text
 
 </details>
 
 ```bash
 chmod +x modification-experiment.sh
 ./modification-experiment.sh
-```
+```text
 
 ### Output Esperado
 
@@ -1556,26 +1574,30 @@ Plan: 1 to add, 0 to change, 1 to destroy.
 ### Problema 1: Error de Inicialización
 
 **Error:**
-```
+
+```text
 Error: Failed to install provider
-```
+```text
 
 **Solution:**
+
 ```bash
 # Limpiar cache y reinicializar
 rm -rf .terraform
 rm .terraform.lock.hcl
 terraform init
-```
+```text
 
 ### Problema 2: LocalStack No Responde
 
 **Error:**
+
 ```
 Error: error creating S3 bucket: connection refused
-```
+```text
 
 **Solution:**
+
 ```bash
 # Verificar estado de LocalStack
 docker-compose ps
@@ -1586,42 +1608,47 @@ docker-compose restart localstack
 
 # Verificar salud
 curl http://localhost:4566/_localstack/health
-```
+```text
 
 ### Problema 3: State Locked
 
 **Error:**
-```
+
+```text
 Error: Error acquiring the state lock
 ```
 
 **Solution:**
+
 ```bash
 # Forzar unlock (usar con cuidado)
 terraform force-unlock LOCK_ID
 
 # O eliminar el lock manualmente si es local
 rm .terraform.tfstate.lock.info
-```
+```text
 
 ### Problema 4: Recursos Huérfanos
 
 **Problema:** Recurso existe en AWS pero no en el state
 
 **Solution:**
+
 ```bash
 # Importar recurso existente al state
 terraform import aws_s3_bucket.my_bucket nombre-del-bucket-existente
-```
+```text
 
 ### Problema 5: Errores de Validation
 
 **Error:**
-```
+
+```text
 Error: Invalid value for variable
 ```
 
 **Solution:**
+
 ```bash
 # Verificar validaciones en variables.tf
 terraform validate
@@ -1629,7 +1656,7 @@ terraform validate
 # Ver valores actuales de variables
 terraform console
 > var.bucket_name
-```
+```text
 
 ---
 
@@ -1677,6 +1704,7 @@ terraform console
 **Continúa con:** [Exercise 02 - Multi-Resource](../02-multi-resource/README.md)
 
 En el próximo exercise you will learn a:
+
 - Gestionar múltiples recursos
 - Manejar dependencias
 - Usar count y for_each

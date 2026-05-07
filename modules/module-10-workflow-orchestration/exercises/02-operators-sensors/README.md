@@ -25,6 +25,7 @@ Create a DAG using multiple operator types:
 5. **EmailOperator**: Send report
 
 **Requirements:**
+
 - Use 5 different operator types
 - Proper error handling
 - Log all operations
@@ -44,15 +45,17 @@ Create a DAG that waits for a file before processing:
 4. **PythonOperator**: Generate report
 
 **Requirements:**
+
 - Sensor timeout: 10 minutes
 - Poke interval: 30 seconds
 - Sensor mode: `poke`
 - Handle file not found scenario
 
 **Test File Creation:**
+
 ```bash
 echo "id,name,value\n1,Alice,100\n2,Bob,200" > /tmp/input_data.csv
-```
+```text
 
 ---
 
@@ -66,19 +69,21 @@ Create a DAG for S3 operations (use LocalStack for local testing):
 4. **S3ListOperator**: List all files in bucket
 
 **Requirements:**
+
 - S3 bucket: `airflow-exercise-bucket`
 - Key prefix: `data/`
 - Use `aws_conn_id`
 - Handle S3 errors
 
 **LocalStack Setup:**
+
 ```bash
 # Start LocalStack
 docker run -d -p 4566:4566 localstack/localstack
 
 # Create bucket
 aws --endpoint-url=http://localhost:4566 s3 mb s3://airflow-exercise-bucket
-```
+```text
 
 ---
 
@@ -94,12 +99,14 @@ Create ETL pipeline with PostgreSQL:
 6. **SqlSensor**: Wait for data in final table
 
 **Requirements:**
+
 - Create 3 tables: staging, intermediate, final
 - Use SQL templating ({{ ds }})
 - Transaction handling
 - Check row counts
 
 **Schema:**
+
 ```sql
 CREATE TABLE user_staging (
     id INTEGER PRIMARY KEY,
@@ -114,7 +121,7 @@ CREATE TABLE user_final (
     domain VARCHAR(50),
     date DATE
 );
-```
+```text
 
 ---
 
@@ -129,6 +136,7 @@ Create a DAG that waits for API readiness:
 5. **HttpSensor**: Wait for async job completion
 
 **Requirements:**
+
 - HTTP connection with retry logic
 - Response validation
 - Parse JSON responses
@@ -149,12 +157,14 @@ Create a DAG combining multiple sensors:
 5. **PythonOperator**: Process when all conditions met
 
 **Requirements:**
+
 - All sensors in parallel
 - Join point after all sensors complete
 - Use trigger_rule: `all_success`
 - Sensor timeout handling
 
 **Dependency Graph:**
+
 ```
   start
     |
@@ -168,7 +178,7 @@ sensor sensor  sensor    sensor
   └──────┴───────┴──────────┘
           |
       process_all
-```
+```text
 
 ---
 
@@ -281,7 +291,7 @@ with DAG(
     setup >> [process, fetch_api]
     fetch_api >> create_table >> insert_data
     # [process, insert_data] >> send_email
-```
+```text
 
 ---
 
@@ -375,7 +385,7 @@ with DAG(
 
     # Pipeline
     wait_for_file >> process >> move_file >> report
-```
+```text
 
 ---
 
@@ -476,7 +486,7 @@ echo "id,name,value
 3,Charlie,300" > /tmp/input_data.csv
 
 # Check DAG continues and succeeds
-```
+```text
 
 ### Test Database Operations
 
@@ -489,7 +499,7 @@ psql -U airflow -d airflow
 
 # Check data inserted
 SELECT * FROM ex02_data;
-```
+```text
 
 ### Test S3 with LocalStack
 
@@ -502,7 +512,7 @@ aws --endpoint-url=http://localhost:4566 s3 ls s3://airflow-exercise-bucket/data
 
 # Download file
 aws --endpoint-url=http://localhost:4566 s3 cp s3://airflow-exercise-bucket/data/input_20240101.json .
-```
+```text
 
 ---
 
@@ -533,17 +543,20 @@ After completing this exercise, you should understand:
 ## 🆘 Troubleshooting
 
 **Sensor Timeout:**
+
 - Increase `timeout` parameter
 - Adjust `poke_interval`
 - Check condition is actually met
 - Use `mode='reschedule'` for long waits
 
 **S3 Connection Failed:**
+
 - Verify `aws_conn_id` configured
 - Check LocalStack running: `docker ps`
 - Test AWS CLI: `aws --endpoint-url=http://localhost:4566 s3 ls`
 
 **Database Connection:**
+
 - Check `postgres_conn_id` in Airflow UI
 - Test connection: `airflow connections test postgres_default`
 - Verify PostgreSQL running

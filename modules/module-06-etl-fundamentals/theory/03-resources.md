@@ -5,50 +5,61 @@
 ### Data Processing
 
 #### pandas
+
 **DataFrame manipulation standard**
+
 ```bash
 pip install pandas
-```
+```text
 
 Capacidades:
+
 - CSV, JSON, Excel, Parquet I/O
 - Transformaciones y agregaciones
 - Join y merge operations
 - Time series handling
 
-Documentation: HTTPs://pandas.pydata.org/docs/
+Documentation: <HTTPs://pandas.pydata.org/docs/>
 
 #### polars
+
 **Ultra-fast DataFrame library (Rust-based)**
+
 ```bash
 pip install polars
-```
+```text
 
 Ventajas sobre pandas:
+
 - 5-10x faster
 - Mejor memory efficiency
 - Lazy evaluation
 - Parallel processing NATivo
 
-Documentation: HTTPs://pola-rs.github.io/polars/
+Documentation: <HTTPs://pola-rs.github.io/polars/>
 
 #### dask
+
 **Parallel computing para datasets grandes**
+
 ```bash
 pip install dask
-```
+```text
 
 Usa cuando:
+
 - Datas no caben en memory
 - You need parallelization
 - Compatibilidad con pandas API
 
-Documentation: HTTPs://docs.dask.org/
+Documentation: <HTTPs://docs.dask.org/>
 
 ### Database Connectors
 
 #### SQLAlchemy
+
 **ORM y connection pooling**
+
 ```python
 from sqlalchemy import create_engine
 
@@ -57,36 +68,42 @@ df = pd.read_sql('SELECT * FROM users', engine)
 ```
 
 #### psycopg2
+
 **PostgreSQL adapter directo**
+
 ```python
 import psycopg2
 
 conn = psycopg2.connect("dbname=test user=postgres")
 cursor = conn.cursor()
 cursor.execute("SELECT * FROM users")
-```
+```text
 
 #### pymongo
+
 **MongoDB driver**
+
 ```python
 from pymongo import MongoClient
 
 client = MongoClient('mongodb://localhost:27017/')
 db = client['mydatabase']
 collection = db['users']
-```
+```text
 
 ### Cloud SDKs
 
 #### boto3 (AWS)
+
 ```python
 import boto3
 
 s3 = boto3.client('s3')
 s3.download_file('bucket', 'key', 'local_file')
-```
+```text
 
 #### google-cloud-storage (GCP)
+
 ```python
 from google.cloud import storage
 
@@ -97,17 +114,20 @@ blob.download_to_filename('local.csv')
 ```
 
 #### azure-storage-blob (Azure)
+
 ```python
 from azure.storage.blob import BlobServiceClient
 
 client = BlobServiceClient.from_connection_string(conn_str)
 blob_client = client.get_blob_client('container', 'blob')
-```
+```text
 
 ### Data Quality
 
 #### Great Expectations
+
 **Data validation framework**
+
 ```python
 import great_expectations as gx
 
@@ -117,10 +137,12 @@ batch = context.sources.pandas_default.read_dataframe(df)
 
 batch.expect_column_values_to_not_be_null('email')
 batch.expect_column_values_to_match_regex('email', r'^[^@]+@[^@]+\.[^@]+$')
-```
+```text
 
 #### pandera
+
 **pandas DataFrame validation**
+
 ```python
 import pandera as pa
 
@@ -131,10 +153,12 @@ schema = pa.DataFrameSchema({
 })
 
 validated_df = schema.validate(df)
-```
+```text
 
 #### pydantic
+
 **Data modeling y validation**
+
 ```python
 from pydantic import BaseModel, EmailStr
 
@@ -150,21 +174,23 @@ user = User(**data)  # Valida automáticamente
 ### Testing
 
 #### pytest
+
 ```bash
 pip install pytest pytest-cov
-```
+```text
 
 ```python
 def test_transform():
     input_df = pd.DataFrame({'a': [1, 2, 3]})
     result = transform(input_df)
     assert len(result) == 3
-```
+```text
 
 #### pytest-mock
+
 ```bash
 pip install pytest-mock
-```
+```text
 
 ```python
 def test_api_call(mocker):
@@ -176,28 +202,33 @@ def test_api_call(mocker):
 ### Logging & Monitoring
 
 #### structlog
+
 **Structunetwork logging**
+
 ```python
 import structlog
 
 log = structlog.get_logger()
 log.info("etl.started", records=1000, source="db")
-```
+```text
 
 #### loguru
+
 **Simplified logging**
+
 ```python
 from loguru import logger
 
 logger.add("etl.log", rotation="500 MB")
 logger.info(f"Processed {count} records")
-```
+```text
 
 ---
 
 ## 🛠️ ETL Tools
 
 ### Apache Airflow
+
 **Workflow orchestration**
 
 ```python
@@ -210,20 +241,23 @@ with DAG('etl_dag', schedule='@daily') as dag:
     load = PythonOperator(task_id='load', python_callable=load_data)
 
     extract >> transform >> load
-```
+```text
 
 **Pros**:
+
 - Powerful scheduling
 - Rich UI
 - Extensible
 
 **Cons**:
+
 - Complex setup
 - Steep learning curve
 
-Website: HTTPs://airflow.apache.org/
+Website: <HTTPs://airflow.apache.org/>
 
 ### Prefect
+
 **Modern workflow orchestration**
 
 ```python
@@ -249,13 +283,15 @@ def etl_flow():
 ```
 
 **Pros**:
+
 - Pythonic
 - Easy to learn
 - Great observability
 
-Website: HTTPs://www.prefect.io/
+Website: <HTTPs://www.prefect.io/>
 
 ### Apache Spark
+
 **Distributed data processing**
 
 ```python
@@ -266,16 +302,18 @@ spark = SparkSession.builder.appName("ETL").getOrCreate()
 df = spark.read.csv("large_file.csv")
 transformed = df.filter(df.status == 'active')
 transformed.write.parquet("output/")
-```
+```text
 
 **Usa cuando**:
+
 - Datas > 100GB
 - Necesitas distributed processing
 - Transformaciones complejas
 
-Website: HTTPs://spark.apache.org/
+Website: <HTTPs://spark.apache.org/>
 
 ### dbt (Data Build Tool)
+
 **SQL-based transformations**
 
 ```sql
@@ -286,21 +324,24 @@ SELECT
     email
 FROM {{ ref('users_raw') }}
 WHERE status = 'active'
-```
+```text
 
 **Pros**:
+
 - SQL-NATive
 - Testing built-in
 - Great documentation
 - Version controle
 
 **Cons**:
+
 - Solo transformaciones (T)
 - Requiere data warehouse
 
-Website: HTTPs://www.getdbt.com/
+Website: <HTTPs://www.getdbt.com/>
 
 ### Airbyte
+
 **Open-source data integration**
 
 - 300+ pre-built connectors
@@ -308,9 +349,10 @@ Website: HTTPs://www.getdbt.com/
 - CDC support
 - Schedule & monitoring
 
-Website: HTTPs://airbyte.com/
+Website: <HTTPs://airbyte.com/>
 
 ### Fivetran
+
 **Managed ELT platform**
 
 - 500+ connectors
@@ -318,7 +360,7 @@ Website: HTTPs://airbyte.com/
 - Auto schema changes
 - High reliability
 
-Website: HTTPs://www.fivetran.com/
+Website: <HTTPs://www.fivetran.com/>
 
 ---
 
@@ -349,9 +391,9 @@ Website: HTTPs://www.fivetran.com/
 
 ### Blogs & Newsletters
 
-- **Data Engineering Weekly**: HTTPs://www.dataengineeringweekly.com/
-- **The Data Engineering Podcast**: HTTPs://www.dataengineeringpodcast.com/
-- **Locally Optimistic**: HTTPs://locallyoptimistic.com/
+- **Data Engineering Weekly**: <HTTPs://www.dataengineeringweekly.com/>
+- **The Data Engineering Podcast**: <HTTPs://www.dataengineeringpodcast.com/>
+- **Locally Optimistic**: <HTTPs://locallyoptimistic.com/>
 
 ### Communities
 
@@ -364,17 +406,20 @@ Website: HTTPs://www.fivetran.com/
 ## 🔧 Development Tools
 
 ### Jupyter Notebooks
+
 ```bash
 pip install jupyter
 jupyter notebook
-```
+```text
 
 Ideal para:
+
 - Exploratory data analysis
 - Prototyping pipelines
 - Documentation
 
 ### DBeaver
+
 **Universal database tool**
 
 - Multi-database support
@@ -382,23 +427,26 @@ Ideal para:
 - ER diagrams
 - Data viewer
 
-Download: HTTPs://dbeaver.io/
+Download: <HTTPs://dbeaver.io/>
 
 ### pgAdmin
+
 **PostgreSQL management**
 
-Download: HTTPs://www.pgadmin.org/
+Download: <HTTPs://www.pgadmin.org/>
 
 ### MongoDB Compass
+
 **MongoDB GUI**
 
-Download: HTTPs://www.mongodb.com/products/compass
+Download: <HTTPs://www.mongodb.com/products/compass>
 
 ---
 
 ## 📊 Monitoring & Observability
 
 ### Prometheus + Grafana
+
 **Metrics collection & visualization**
 
 ```python
@@ -413,6 +461,7 @@ with duration.time():
 ```
 
 ### Datadog
+
 **Comprehensive monitoring**
 
 ```python
@@ -421,9 +470,10 @@ from datadog import initialize, statsd
 initialize(api_key='your_key')
 statsd.increment('etl.records_processed', 1000)
 statsd.timing('etl.duration', 45.2)
-```
+```text
 
 ### Sentry
+
 **Error tracking**
 
 ```python
@@ -436,14 +486,15 @@ try:
 except Exception as e:
     sentry_sdk.capture_exception(e)
     raise
-```
+```text
 
 ---
 
 ## 🎯 Best Practices Summary
 
 ### Code Organization
-```
+
+```text
 etl_project/
 ├── config/
 │   ├── dev.yaml
@@ -463,11 +514,13 @@ etl_project/
 ```
 
 ### Configuration Management
+
 - Usar environment variables
 - Secrets en vault (AWS Secrets Manager, etc)
 - Config files para cada environment
 
 ### Version Controle
+
 ```bash
 # .gitignore
 data/
@@ -476,9 +529,10 @@ logs/
 *.parquet
 __pycache__/
 .env
-```
+```text
 
 ### CI/CD
+
 ```yaml
 # .github/workflows/test.yml
 name: Test
@@ -492,7 +546,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           pytest tests/
-```
+```text
 
 ---
 
@@ -585,7 +639,7 @@ if __name__ == '__main__':
     pipeline = ETLPipeline(config)
     metrics = pipeline.run()
     print(f"Metrics: {metrics}")
-```
+```text
 
 ---
 

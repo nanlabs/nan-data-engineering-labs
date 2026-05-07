@@ -3,6 +3,7 @@
 ## ✅ Planning Phase
 
 ### Requirements Gathering
+
 - [ ] Identify data sources
 - [ ] Define destiNATion schema
 - [ ] Document business rules
@@ -11,6 +12,7 @@
 - [ ] Identify data quality requirements
 
 ### Architecture Design
+
 - [ ] Choose ETL vs ELT approach
 - [ ] Decide on batch vs streaming
 - [ ] Select technology stack
@@ -21,6 +23,7 @@
 ## ✅ Implementation Phase
 
 ### Extract
+
 - [ ] Connect to data sources
 - [ ] Implement extraction logic
 - [ ] Handle connection failures
@@ -29,6 +32,7 @@
 - [ ] Log extraction metrics (rows, duration)
 
 ### Transform
+
 - [ ] Implement data cleaning
   - [ ] Remove duplicates
   - [ ] Handle missing values
@@ -41,6 +45,7 @@
 - [ ] Validate transformations
 
 ### Load
+
 - [ ] Create destiNATion schema
 - [ ] Implement loading logic
 - [ ] Handle insert/update conflicts (UPSERT)
@@ -51,6 +56,7 @@
 ## ✅ Quality Assurance
 
 ### Testing
+
 - [ ] Unit tests for each function
 - [ ] Integration tests for pipeline
 - [ ] Test with sample data
@@ -59,6 +65,7 @@
 - [ ] Performance testing
 
 ### Data Quality
+
 - [ ] Schema validation
 - [ ] Null value checks
 - [ ] Duplicate detection
@@ -70,6 +77,7 @@
 ## ✅ Operations
 
 ### Monitoring
+
 - [ ] Log pipeline execution
 - [ ] Track record counts (extracted, transformed, loaded)
 - [ ] Monitor execution duration
@@ -78,6 +86,7 @@
 - [ ] Dashboard for pipeline visibility
 
 ### Error Handling
+
 - [ ] Try/catch blocks
 - [ ] Meaningful error messages
 - [ ] Dead letter queue for bad records
@@ -85,6 +94,7 @@
 - [ ] Automated retry for transient errors
 
 ### Documentation
+
 - [ ] README with setup instructions
 - [ ] Data dictionary
 - [ ] pipeline architecture diagram
@@ -94,6 +104,7 @@
 ## ✅ Production Readiness
 
 ### Configuration
+
 - [ ] Externalize configuration
 - [ ] Use environment variables for secrets
 - [ ] Different configs for dev/prod
@@ -101,6 +112,7 @@
 - [ ] Configure logging levels
 
 ### Deployment
+
 - [ ] Schedule pipeline execution
 - [ ] Set up orchestration (Airflow, Prefect, etc.)
 - [ ] Configure resource limits
@@ -108,6 +120,7 @@
 - [ ] Document deployment process
 
 ### Security
+
 - [ ] Encrypt sensitive data
 - [ ] Use secure connections (SSL/TLS)
 - [ ] Manage cnetworkentials securely
@@ -118,6 +131,7 @@
 ## ✅ Optimization
 
 ### Performance
+
 - [ ] Profile slow operations
 - [ ] Implement parallel processing
 - [ ] Use appropriate data types
@@ -126,6 +140,7 @@
 - [ ] Use columnr formats (Parquet) for large files
 
 ### Cost
+
 - [ ] Monitor compute costs
 - [ ] Optimize storage costs
 - [ ] Use spot/preemptible instances
@@ -135,6 +150,7 @@
 ## ✅ Maintenance
 
 ### Regular Tasks
+
 - [ ] Review pipeline logs
 - [ ] Check data quality reports
 - [ ] Update documentation
@@ -143,6 +159,7 @@
 - [ ] Review and optimize queries
 
 ### Troubleshooting
+
 - [ ] Check logs for errors
 - [ ] Verify data source connectivity
 - [ ] Validate data quality
@@ -155,12 +172,14 @@
 ## Quick Reference
 
 ### Before Each Run
+
 1. Verify data sources are accessible
 2. Check destiNATion has enough space
 3. Review recent error logs
 4. Confirm schedule alignment
 
 ### After Each Run
+
 1. Verify record counts
 2. Check data quality metrics
 3. Review execution time
@@ -168,6 +187,7 @@
 5. Update status dashboard
 
 ### When Issues Occur
+
 1. Check logs for error details
 2. Verify data source changes
 3. Test with small sample

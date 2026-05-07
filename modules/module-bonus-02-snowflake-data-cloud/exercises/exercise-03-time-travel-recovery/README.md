@@ -1,6 +1,7 @@
 # Exercise 03: Time Travel Recovery
 
 ## Overview
+
 Implement disaster recovery strategies using Time Travel and Fail-safe to protect against data loss, corruption, and accidental deletions.
 
 **Estimated Time**: 2.5 hours
@@ -10,7 +11,9 @@ Implement disaster recovery strategies using Time Travel and Fail-safe to protec
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Query historical data at specific timestamps and offsets
 - Recover dropped tables using UNDROP command
 - Restore data to specific points in time using cloning
@@ -21,9 +24,11 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 **Production Incident Alert!**
 
 Your e-commerce platform experienced a critical data incident:
+
 - **10:00 AM**: Normal operations, 50,000 orders in database
 - **10:15 AM**: Developer runs test DELETE query... against production table (Oops!)
 - **10:20 AM**: Dashboards show zero revenue, customers complaining
@@ -37,18 +42,21 @@ Mission: Demonstrate Time Travel and recovery capabilities to restore the busine
 ## Requirements
 
 ### Task 1: Setup & Baseline (20 min)
+
 Create production tables and establish baseline for recovery testing.
 
 **Database Setup**:
+
 ```sql
 -- Create production database
 CREATE DATABASE PROD_RECOVERY_TEST;
 USE DATABASE PROD_RECOVERY_TEST;
 CREATE SCHEMA sales;
 USE SCHEMA sales;
-```
+```text
 
 **Create Orders Table**:
+
 ```sql
 CREATE TABLE orders (
     order_id INT,
@@ -58,9 +66,10 @@ CREATE TABLE orders (
     status VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
 );
-```
+```text
 
 **Load Baseline Data** (1,000 orders):
+
 ```sql
 INSERT INTO orders
 SELECT
@@ -77,9 +86,10 @@ SELECT
     END as status,
     current_timestamp() as created_at
 FROM table(generator(rowcount => 1000));
-```
+```text
 
 **Record Baseline Metrics**:
+
 ```sql
 -- Save baseline for later comparison
 CREATE TABLE baseline_metrics AS
@@ -96,6 +106,7 @@ SELECT * FROM baseline_metrics;
 ```
 
 **Success Criteria**:
+
 - ✅ Production database and schema created
 - ✅ Orders table contains exactly 1,000 rows
 - ✅ Baseline metrics recorded for comparison
@@ -104,15 +115,18 @@ SELECT * FROM baseline_metrics;
 ---
 
 ### Task 2: Historical Queries (30 min)
+
 Practice querying data at different points in time.
 
 **Query 1: Current State**:
+
 ```sql
 -- Current data
 SELECT COUNT(*) as current_count FROM orders;
-```
+```text
 
 **Simulate Time-Based Changes**:
+
 ```sql
 -- Snapshot 1: Add 100 orders
 INSERT INTO orders
@@ -140,9 +154,10 @@ SET snapshot2_time = CURRENT_TIMESTAMP();
 DELETE FROM orders WHERE order_id BETWEEN 51 AND 75;
 
 SET snapshot3_time = CURRENT_TIMESTAMP();
-```
+```text
 
 **Query 2: Historical Queries with AT**:
+
 ```sql
 -- Query from 1 hour ago
 SELECT COUNT(*) as count_1h_ago
@@ -174,9 +189,10 @@ SELECT
     COUNT(*) as row_count,
     SUM(order_total) as revenue
 FROM orders AT(TIMESTAMP => $snapshot1_time);
-```
+```text
 
 **Query 3: Track Specific Row Changes**:
+
 ```sql
 -- See how order_id=10 changed over time
 SELECT
@@ -205,6 +221,7 @@ WHERE order_id = 10;
 ```
 
 **Use DESCRIBE HISTORY**:
+
 ```sql
 -- View complete history of changes
 SELECT
@@ -220,9 +237,10 @@ WHERE query_text LIKE '%orders%'
     AND query_type IN ('INSERT', 'UPDATE', 'DELETE')
 ORDER BY created_on DESC
 LIMIT 20;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Successfully queried data from 3 different timestamps
 - ✅ Tracked changes to specific rows over time
 - ✅ Used both AT(OFFSET) and AT(TIMESTAMP) syntax correctly
@@ -231,9 +249,11 @@ LIMIT 20;
 ---
 
 ### Task 3: Accidental Delete (20 min)
+
 Simulate and recover from accidental data deletion.
 
 **The Accident**:
+
 ```sql
 -- Developer meant to run:
 -- DELETE FROM dev.orders WHERE status = 'cancelled';
@@ -250,9 +270,10 @@ SELECT
     'Rows after delete' as description,
     COUNT(*) as count
 FROM orders;
-```
+```text
 
 **Recovery Option 1: UNDROP (if table dropped)**:
+
 ```sql
 -- Worst case: Someone dropped the table
 DROP TABLE orders;
@@ -266,9 +287,10 @@ UNDROP TABLE orders;
 
 -- Verify recovery
 SELECT COUNT(*) FROM orders;
-```
+```text
 
 **Recovery Option 2: Restore from History**:
+
 ```sql
 -- If data deleted but table still exists:
 -- Strategy 1: Create backup from before delete
@@ -286,6 +308,7 @@ WHERE status = 'cancelled';
 ```
 
 **Verify Recovery**:
+
 ```sql
 -- Compare with baseline
 SELECT
@@ -299,9 +322,10 @@ SELECT
     COUNT(*) as total_orders,
     SUM(order_total) as total_revenue
 FROM orders;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Successfully simulated accidental deletion
 - ✅ Used UNDROP to restore dropped table
 - ✅ Restored deleted data using historical cloning
@@ -310,9 +334,11 @@ FROM orders;
 ---
 
 ### Task 4: Point-in-Time Recovery (30 min)
+
 Recover from data corruption to specific timestamp.
 
 **Scenario**:
+
 ```sql
 -- 09:45 AM: Good data (baseline)
 CREATE TABLE orders_0945 CLONE orders AT(OFFSET => -7200);
@@ -331,11 +357,12 @@ WHERE order_id BETWEEN 501 AND 750;
 
 -- 10:30 AM: Discovery!
 -- Need to restore to 09:45 AM state
-```
+```text
 
 **Recovery Plan**:
 
 1. **Identify Corruption Scope**:
+
    ```sql
    -- Find affected rows
    SELECT
@@ -348,6 +375,7 @@ WHERE order_id BETWEEN 501 AND 750;
    ```
 
 2. **Get Query ID of Corruption**:
+
    ```sql
    -- Find the problematic UPDATE
    SELECT
@@ -361,9 +389,10 @@ WHERE order_id BETWEEN 501 AND 750;
    LIMIT 1;
 
    SET corruption_query_id = 'query_id_here';
-   ```
+   ```text
 
 3. **Clone Before Corruption**:
+
    ```sql
    -- Option 1: Clone from specific timestamp (09:45 AM)
    CREATE OR REPLACE TABLE orders_recovered
@@ -377,6 +406,7 @@ WHERE order_id BETWEEN 501 AND 750;
    ```
 
 4. **Validate Recovery**:
+
    ```sql
    -- Compare recovered data to corrupted current
    SELECT
@@ -394,9 +424,10 @@ WHERE order_id BETWEEN 501 AND 750;
        MAX(order_total) as max_amount,
        COUNT(CASE WHEN status = 'ERROR' THEN 1 END) as error_count
    FROM orders_recovered;
-   ```
+   ```text
 
 5. **Atomic Swap**:
+
    ```sql
    -- Swap recovered table with current (atomic operation)
    ALTER TABLE orders RENAME TO orders_corrupted_backup;
@@ -407,6 +438,7 @@ WHERE order_id BETWEEN 501 AND 750;
    ```
 
 **Success Criteria**:
+
 - ✅ Identified corruption scope and timing
 - ✅ Used BEFORE(STATEMENT) to clone before corruption
 - ✅ Validated recovery data matches 09:45 AM baseline
@@ -416,18 +448,21 @@ WHERE order_id BETWEEN 501 AND 750;
 ---
 
 ### Task 5: Retention Configuration (20 min)
+
 Configure and understand data retention periods.
 
 **Default Retention**:
+
 ```sql
 -- Check current retention
 SHOW PARAMETERS LIKE 'DATA_RETENTION_TIME_IN_DAYS' IN ACCOUNT;
 
 -- Default: 1 day (Standard Edition)
 -- Enterprise: Up to 90 days configurable
-```
+```text
 
 **Configure Table-Level Retention**:
+
 ```sql
 -- Set extended retention for critical table
 ALTER TABLE orders
@@ -436,18 +471,20 @@ SET DATA_RETENTION_TIME_IN_DAYS = 7;
 -- Verify retention setting
 SHOW TABLES LIKE 'orders';
 -- Look for DATA_RETENTION_TIME_IN_DAYS column
-```
+```text
 
 **Configure Database-Level Retention**:
+
 ```sql
 -- Set retention for entire database
 ALTER DATABASE PROD_RECOVERY_TEST
 SET DATA_RETENTION_TIME_IN_DAYS = 14;
 
 -- All tables inherit this unless overridden
-```
+```text
 
 **Test Retention Limits**:
+
 ```sql
 -- Try to query beyond retention period
 -- This will fail if data is outside retention window
@@ -466,15 +503,17 @@ WHERE table_name = 'ORDERS';
 ```
 
 **Understand Fail-safe**:
+
 ```text
 Time Travel: 1-90 days (configurable, queryable)
    ↓
 Fail-safe: Additional 7 days (not queryable, Snowflake-only recovery)
    ↓
 Permanent deletion
-```
+```text
 
 **Calculate Storage Impact**:
+
 ```sql
 -- Estimate Time Travel storage costs
 SELECT
@@ -488,9 +527,10 @@ SELECT
 FROM snowflake.account_usage.table_storage_metrics
 WHERE table_name = 'ORDERS'
 ORDER BY time_travel_bytes DESC;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Configured table-level retention (7 days)
 - ✅ Configured database-level retention (14 days)
 - ✅ Verified retention settings with SHOW command
@@ -500,9 +540,11 @@ ORDER BY time_travel_bytes DESC;
 ---
 
 ### Task 6: Disaster Recovery Plan (30 min)
+
 Document comprehensive recovery procedures for 5 scenarios.
 
 **Scenario 1: Accidental Table Drop**:
+
 ```sql
 -- Recovery Procedure
 -- Step 1: Verify table dropped
@@ -521,9 +563,10 @@ ORDER BY start_time DESC;
 
 -- RTO: < 5 minutes
 -- RPO: 0 (no data loss)
-```
+```text
 
 **Scenario 2: Mass Data Deletion**:
+
 ```sql
 -- Recovery Procedure
 -- Step 1: Identify deletion scope
@@ -544,6 +587,7 @@ CLONE critical_table AT(OFFSET => -300);
 ```
 
 **Scenario 3: Data Corruption**:
+
 ```sql
 -- Recovery Procedure
 -- Step 1: Find corruption timestamp
@@ -564,9 +608,10 @@ ALTER TABLE clean_data RENAME TO critical_table;
 
 -- RTO: < 15 minutes
 -- RPO: 0 (exact point before corruption)
-```
+```text
 
 **Scenario 4: Schema Change Gone Wrong**:
+
 ```sql
 -- Recovery Procedure
 -- Step 1: Find schema change
@@ -587,9 +632,10 @@ CREATE TABLE critical_table CLONE critical_table_old_schema;
 
 -- RTO: < 10 minutes
 -- RPO: 0
-```
+```text
 
 **Scenario 5: Complete Database Recovery**:
+
 ```sql
 -- Recovery Procedure
 -- Step 1: Assess scope (entire database)
@@ -606,9 +652,10 @@ AT(TIMESTAMP => '2026-03-09 09:00:00'::TIMESTAMP);
 
 -- RTO: < 30 minutes
 -- RPO: Based on recovery point chosen
-```
+```text
 
 **Recovery Runbook Template**:
+
 ```markdown
 # Disaster Recovery Runbook
 
@@ -643,6 +690,7 @@ AT(TIMESTAMP => '2026-03-09 09:00:00'::TIMESTAMP);
 ```
 
 **Create Automated Recovery Script**:
+
 ```sql
 -- Stored procedure for common recovery
 CREATE OR REPLACE PROCEDURE emergency_table_recovery(
@@ -670,9 +718,10 @@ $$;
 
 -- Usage
 CALL emergency_table_recovery('orders', 30);  -- Restore to 30 min ago
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Documented 5 disaster recovery scenarios with SQL
 - ✅ Created recovery runbook template
 - ✅ Calculated RTO/RPO for each scenario
@@ -702,7 +751,8 @@ SELECT query_id, query_text, start_time, rows_inserted, rows_deleted
 FROM TABLE(information_schema.query_history())
 WHERE query_text LIKE '%orders%'
 ORDER BY start_time DESC;
-```
+```text
+
 </details>
 
 <details>
@@ -727,7 +777,8 @@ SHOW DATABASES HISTORY;
 -- 1. Retention period expired
 -- 2. New object created with same name
 -- 3. In Fail-safe period (need Snowflake support)
-```
+```text
+
 </details>
 
 <details>
@@ -753,6 +804,7 @@ ALTER TABLE my_table UNSET DATA_RETENTION_TIME_IN_DAYS;
 -- Standard Edition: 0-1 days
 -- Enterprise Edition: 0-90 days
 ```
+
 </details>
 
 <details>
@@ -783,21 +835,24 @@ FROM snowflake.account_usage.table_storage_usage_history
 WHERE table_name = 'ORDERS'
     AND usage_date >= DATEADD(day, -30, CURRENT_DATE())
 ORDER BY usage_date DESC;
-```
+```text
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
 cd exercises/exercise-03-time-travel-recovery
 bash validate.sh
-```
+```text
 
 **Expected Output**:
-```
+
+```text
 ✅ Task 1: Baseline created (1,000 orders, metrics recorded)
 ✅ Task 2: Historical queries working (3 timestamps queried)
 ✅ Task 3: UNDROP successful (table restored)
@@ -811,7 +866,9 @@ bash validate.sh
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.sql` - All Time Travel queries and recovery commands
 2. `disaster-recovery-runbook.md` - Complete runbook with 5 scenarios
 3. `retention-cost-analysis.md` - Storage cost calculations for retention policies
@@ -821,6 +878,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - Snowflake Documentation: [Time Travel](https://docs.snowflake.com/en/user-guide/data-time-travel)
 - Snowflake Documentation: [Fail-safe](https://docs.snowflake.com/en/user-guide/data-failsafe)
 - Snowflake Documentation: [Undrop](https://docs.snowflake.com/en/sql-reference/sql/undrop-table)
@@ -832,7 +890,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Exercise 04: Data Sharing (secure data sharing without copies)
 - ✅ Exercise 05: Snowpipe Automation (continuous data ingestion)
 - Review Module 16: Data Security & Compliance for protection strategies

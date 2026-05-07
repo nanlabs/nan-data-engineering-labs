@@ -32,24 +32,29 @@ You are building a real-time analytics platform for a ride-sharing company. The 
 ## Architecture Components
 
 ### Data Ingestion Layer
+
 - **Kinesis Data Streams**: Ingest ride events at scale
 - **Producer Applications**: Simulate ride event generation
 
 ### Processing Layer
+
 - **Lambda Functions**: Process events in real-time
 - **DynamoDB**: Store ride state and metrics
 - **S3**: Archive raw and processed events
 
 ### Analytics Layer
+
 - **AWS Glue**: Catalog data in S3
 - **Amazon Athena**: Query historical ride data
 - **CloudWatch Metrics**: Real-time monitoring
 
 ### Orchestration Layer
+
 - **Apache Airflow**: Scheduled batch jobs
 - **AWS EventBridge**: Event-driven workflows
 
 ### Visualization Layer
+
 - **CloudWatch Dashboards**: Operational metrics
 - **Grafana**: Custom analytics dashboards
 
@@ -69,12 +74,14 @@ Before starting this project, ensure you have:
 ### Environment Setup
 
 1. **Clone and Navigate to Project**
+
    ```bash
    cd /path/to/module-checkpoint-02-realtime-analytics-platform
    cd starter-template
-   ```
+   ```text
 
 2. **Create Python Virtual Environment**
+
    ```bash
    python3 -m venv venv
    source venv/bin/activate  # On Linux/Mac
@@ -83,11 +90,13 @@ Before starting this project, ensure you have:
    ```
 
 3. **Install Dependencies**
+
    ```bash
    pip install -r requirements.txt
-   ```
+   ```text
 
 4. **Set AWS Environment Variables**
+
    ```bash
    export AWS_PROFILE=your-profile
    export AWS_REGION=us-east-1
@@ -95,14 +104,15 @@ Before starting this project, ensure you have:
    ```
 
 5. **Initialize Terraform**
+
    ```bash
    cd infrastructure/terraform
    terraform init
-   ```
+   ```text
 
 ### Project Structure
 
-```
+```text
 starter-template/
 ├── README.md                          # This file
 ├── CHECKLIST.md                       # Task completion checklist
@@ -171,11 +181,13 @@ Follow these phases in order. Complete each phase before moving to the next. Use
 #### 1.2 Configure Variables and Outputs
 
 **TODO**: Complete `infrastructure/terraform/variables.tf`
+
 - Define variables for environment, region, project name
 - Add validation rules for critical variables
 - Set appropriate defaults
 
 **TODO**: Complete `infrastructure/terraform/outputs.tf`
+
 - Export Kinesis stream ARN and name
 - Export DynamoDB table names
 - Export S3 bucket names
@@ -187,7 +199,7 @@ Follow these phases in order. Complete each phase before moving to the next. Use
 cd infrastructure/terraform
 terraform plan -out=tfplan
 terraform apply tfplan
-```
+```text
 
 **Validation**: Verify resources in AWS Console
 
@@ -232,12 +244,13 @@ terraform apply tfplan
 5. Implement graceful shutdown
 
 **Run Producer**:
+
 ```bash
 python pipelines/producers/ride_event_producer.py \
   --stream-name ride-events-stream \
   --rate 10 \
   --duration 3600
-```
+```text
 
 ---
 
@@ -352,7 +365,7 @@ aws athena start-query-execution \
   --query-string "$(cat sql/athena/business_queries.sql | grep -A 10 'Daily Ride Statistics')" \
   --result-configuration "OutputLocation=s3://your-athena-results-bucket/" \
   --query-execution-context "Database=ride_analytics_db"
-```
+```text
 
 ---
 
@@ -403,11 +416,12 @@ Access Airflow UI: `http://localhost:8080`
    - Average fare line chart
 
 2. Deploy dashboard:
+
 ```bash
 aws cloudwatch put-dashboard \
   --dashboard-name RideAnalytics \
   --dashboard-body file://monitoring/cloudwatch/ride_analytics_dashboard.json
-```
+```text
 
 #### 6.2 CloudWatch Alarms
 
@@ -464,9 +478,10 @@ aws cloudwatch put-dashboard \
 5. Test duplicate detection
 
 **Run Tests**:
+
 ```bash
 pytest validation/ -v
-```
+```text
 
 ---
 
@@ -475,18 +490,20 @@ pytest validation/ -v
 #### 8.1 Production Deployment
 
 1. Create production Terraform workspace:
+
 ```bash
 terraform workspace new prod
 terraform workspace select prod
-```
+```text
 
-2. Update variables for production:
+1. Update variables for production:
    - Increase Kinesis shard count
    - Enable DynamoDB autoscaling
    - Configure backup schedules
    - Set up cross-region replication
 
-3. Deploy to production:
+2. Deploy to production:
+
 ```bash
 terraform apply -var-file=prod.tfvars
 ```
@@ -593,6 +610,7 @@ Your project will be evaluated on:
 ### Submission Deadline
 
 Complete the project within 2 weeks. Submit via:
+
 - Git repository URL (GitHub/GitLab)
 - Video demonstration link
 - Architecture documentation
@@ -602,17 +620,20 @@ Complete the project within 2 weeks. Submit via:
 ## Additional Resources
 
 ### AWS Documentation
+
 - [Kinesis Data Streams Developer Guide](https://docs.aws.amazon.com/streams/)
 - [Lambda Developer Guide](https://docs.aws.amazon.com/lambda/)
 - [DynamoDB Developer Guide](https://docs.aws.amazon.com/dynamodb/)
 - [Athena User Guide](https://docs.aws.amazon.com/athena/)
 
 ### Tutorials and Examples
+
 - [Streaming Analytics with Kinesis](https://aws.amazon.com/kinesis/getting-started/)
 - [Serverless Architecture Patterns](https://aws.amazon.com/serverless/)
 - [Terraform AWS Provider Documentation](https://registry.terraform.io/providers/hashicorp/aws/)
 
 ### Community Support
+
 - Project discussion forum: [Link to forum]
 - Office hours: Wednesdays 3-5 PM
 - Slack channel: #checkpoint-02-realtime
@@ -624,21 +645,25 @@ Complete the project within 2 weeks. Submit via:
 ### Common Issues
 
 **Issue**: Kinesis stream not receiving records
+
 - Check AWS credentials and permissions
 - Verify stream name matches configuration
 - Check producer error logs
 
 **Issue**: Lambda function timeout
+
 - Increase timeout in Terraform configuration
 - Optimize batch size for Kinesis trigger
 - Review CloudWatch logs for bottlenecks
 
 **Issue**: DynamoDB throttling
+
 - Increase provisioned capacity
 - Switch to on-demand billing mode
 - Review access patterns and indexes
 
 **Issue**: High AWS costs
+
 - Reduce Kinesis shard count during development
 - Use on-demand DynamoDB for variable workloads
 - Clean up unused resources regularly

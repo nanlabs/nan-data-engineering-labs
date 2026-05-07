@@ -32,6 +32,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 ### Amazon Kinesis Data Streams
 
 **Pricing Model**:
+
 - **Shard Hour**: $0.015 per shard-hour
 - **PUT Payload Units**: $0.014 per million PUT payload units (25 KB per unit)
 - **Enhanced Fan-Out**: $0.015 per shard-hour + $0.013 per GB data retrieved
@@ -57,6 +58,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 | **Total** | **17** | **12,410** | **10.48M units** | **$332.87** |
 
 **Cost Optimization**:
+
 - Use **On-Demand mode** for unpredictable workloads (auto-scales, $0.04 per GB data ingested + $0.04 per GB data retrieved)
 - For production at 10M events/day = ~3 GB/day = 90 GB/month:
   - On-Demand cost: 90 GB × $0.04 = $3.60 ingestion + variable consumption cost
@@ -65,6 +67,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 ### AWS Lambda
 
 **Pricing Model**:
+
 - **Free Tier**: 1M requests/month + 400,000 GB-seconds compute
 - **Requests**: $0.20 per 1M requests
 - **Compute**: $0.0000166667 per GB-second
@@ -94,6 +97,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 | **Total** | **890M** | - | - | **34.259M GB-s** | **$747.84** |
 
 **Cost Optimization**:
+
 - Right-size memory (test 256 MB, 512 MB, 1024 MB to find optimal)
 - Use **Graviton2 processors** (20% cheaper, 34% better price-performance)
 - Optimize code to reduce duration
@@ -102,6 +106,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 ### Amazon DynamoDB
 
 **Pricing Model**:
+
 - **On-Demand Mode**:
   - Write: $1.25 per million write request units (1 WRU = 1 KB)
   - Read: $0.25 per million read request units (1 RRU = 4 KB)
@@ -129,6 +134,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 | **Total** | **701M** | **400.5M WRUs** | **70M** | **17.5M RRUs** | **80 GB** | **$525.02** |
 
 **Cost Optimization**:
+
 - Consider **Provisioned Mode** for steady workloads (50% cheaper)
 - Use **Reserved Capacity** (1-year or 3-year commitment, up to 75% discount)
 - Enable **Auto-Scaling** for provisioned capacity
@@ -137,6 +143,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 ### Amazon S3
 
 **Pricing Model**:
+
 - **Storage**:
   - Standard: $0.023 per GB-month (first 50 TB)
   - Standard-IA: $0.0125 per GB-month
@@ -162,6 +169,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 | **Total** | **505 GB** | Mixed | - | **$515.08** |
 
 **Cost Optimization**:
+
 - Use **S3 Intelligent-Tiering** (auto-moves objects between tiers, $0.0025/1000 objects monitoring fee)
 - **Compress data** before uploading (gzip, Parquet columnar format)
 - **Lifecycle policies**: Transition to IA after 30 days, Glacier after 90 days
@@ -171,6 +179,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 ### Amazon Kinesis Data Analytics
 
 **Pricing Model**:
+
 - **KPU (Kinesis Processing Unit)**: $0.11 per KPU-hour
 - 1 KPU = 1 vCPU + 4 GB memory
 
@@ -193,6 +202,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 | **Total** | **6** | **4,380** | **$481.80** |
 
 **Cost Optimization**:
+
 - Optimize SQL queries to use fewer KPUs
 - Consider **Apache Flink on EMR** for very high throughput (can be cheaper at large scale)
 - Use **Flink Savepoints** to pause/resume applications (stop during low-traffic hours)
@@ -201,6 +211,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 ### AWS Step Functions
 
 **Pricing Model**:
+
 - **Standard Workflows**: $0.025 per 1,000 state transitions
 - **Express Workflows**: $1.00 per 1M requests + $0.00001667 per GB-second
 
@@ -213,28 +224,34 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 | **Total** | **34** | - | **380** | **$0.012** |
 
 **Production Environment** (same):
+
 - **Total**: $0.012
 
 **Cost Optimization**:
+
 - Minimize state transitions (combine steps where possible)
 - Use **Express Workflows** for high-volume, short-duration workflows
 
 ### Amazon EventBridge
 
 **Pricing Model**:
+
 - **Custom Events**: $1.00 per million events
 - **Scheduled Rules**: Free
 
 **Development Environment**:
+
 - **Scheduled Rules Only**: $0 (cron jobs for daily/weekly workflows)
 
 **Production Environment**:
+
 - **Scheduled Rules**: $0
 - **Custom Events** (data quality alerts): 1,000/month = $0.001
 
 ### Amazon CloudWatch
 
 **Pricing Model**:
+
 - **Logs**:
   - Ingestion: $0.50 per GB
   - Storage: $0.03 per GB-month
@@ -265,6 +282,7 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 | **Total** | - | **$90.50** |
 
 **Cost Optimization**:
+
 - **Filter logs**: Only log important events (not every invocation)
 - **Aggregate metrics**: Use CloudWatch Embedded Metric Format
 - **Set retention**: 7 days for debug logs, 30 days for important logs
@@ -273,13 +291,16 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 ### Amazon SNS
 
 **Pricing Model**:
+
 - **Email Notifications**: $2.00 per 100,000 notifications
 - **SMS**: $0.00645 per message (US)
 
 **Development Environment**:
+
 - **Email**: 100 notifications/month = $0.002
 
 **Production Environment**:
+
 - **Email**: 1,000 notifications/month = $0.02
 - **SMS** (optional): 100 SMS/month = $0.65
 
@@ -288,36 +309,44 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 ### Amazon QuickSight
 
 **Pricing Model**:
+
 - **Standard Edition**: $9 per user/month (pay-per-session available)
 - **Enterprise Edition**: $18 per user/month
 - **SPICE Capacity**: Included up to 10 GB per user, then $0.25 per GB
 
 **Development Environment**:
+
 - **2 Users** (dev, analyst): 2 × $18 = $36/month
 
 **Production Environment**:
+
 - **10 Users** (operations team, executives): 10 × $18 = $180/month
 - **SPICE**: 20 GB = 10 GB included per user (100 GB total < 10 users × 10 GB) = $0
 
 **Total**: $180/month
 
 **Cost Optimization**:
+
 - Use **Pay-Per-Session** for users who access infrequently ($0.30/session, max $5/month)
 - Use **Direct Query** to DynamoDB/Athena instead of SPICE (slower but no storage cost)
 
 ### AWS X-Ray
 
 **Pricing Model**:
+
 - **Traces**: $5.00 per 1M traces recorded, $0.50 per 1M traces retrieved
 - **Scanned traces**: $0.50 per 1M scanned
 
 **Development Environment**:
+
 - **Traces**: 1M/month recorded, 100K retrieved = $5.00 + $0.05 = $5.05
 
 **Production Environment**:
+
 - **Traces**: 10M/month recorded, 1M retrieved = $50.00 + $0.50 = $50.50
 
 **Cost Optimization**:
+
 - **Sampling**: Trace 1% of requests (100K traces/month = $0.50)
 - Use X-Ray only for debugging (disable in production once stable)
 
@@ -383,12 +412,14 @@ This document provides a detailed cost breakdown for the RideShare Real-Time Ana
 **Strategy**: Test different memory configurations (128 MB, 256 MB, 512 MB, 1024 MB) and measure execution time vs cost.
 
 **Example**:
+
 - **Current**: 512 MB, 100ms duration = $0.000000833 per invocation
 - **Optimized**: 256 MB, 120ms duration = $0.000000500 per invocation (40% cheaper)
 
 **Savings**: $18/month per function (for 10M invocations)
 
 **Action**:
+
 ```bash
 # Test different memory sizes
 aws lambda update-function-configuration \
@@ -407,19 +438,21 @@ aws cloudwatch get-metric-statistics \
   --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
   --period 300 \
   --statistics Average,Maximum
-```
+```text
 
 ### 2. Optimize Kinesis Shard Count
 
 **Strategy**: Monitor `IncomingRecords` and `WriteProvisionedThroughputExceeded` metrics. Reduce shards if under-utilized.
 
 **Example**:
+
 - **Current**: 4 shards for ride-events = $44/month
 - **Optimized**: 2 shards (if throughput allows) = $22/month
 
 **Savings**: $22/month per stream
 
 **Action**:
+
 ```bash
 # Check current throughput
 aws cloudwatch get-metric-statistics \
@@ -436,13 +469,14 @@ aws kinesis update-shard-count \
   --stream-name rideshare-ride-events-dev \
   --target-shard-count 2 \
   --scaling-type UNIFORM_SCALING
-```
+```text
 
 ### 3. Use DynamoDB Provisioned Capacity with Auto-Scaling
 
 **Strategy**: Switch from on-demand to provisioned capacity for predictable workloads.
 
 **Example**:
+
 - **Current (On-Demand)**: $525/month for 400M WRUs
 - **Optimized (Provisioned)**: $285/month (55 WCUs × 730 hours × $0.00065)
 
@@ -451,6 +485,7 @@ aws kinesis update-shard-count \
 **Trade-off**: Need to manage capacity, set up auto-scaling
 
 **Action**:
+
 ```bash
 # Update table billing mode
 aws dynamodb update-table \
@@ -474,19 +509,21 @@ aws application-autoscaling put-scaling-policy \
   --policy-type TargetTrackingScaling \
   --target-tracking-scaling-policy-configuration \
       file://scaling-policy.json
-```
+```text
 
 ### 4. Compress and Optimize S3 Storage
 
 **Strategy**: Use Parquet columnar format, gzip compression, and S3 Intelligent-Tiering.
 
 **Example**:
+
 - **Current (JSON)**: 500 GB/month = $11.50
 - **Optimized (Parquet + gzip)**: 100 GB/month = $2.30 (5x compression)
 
 **Savings**: $9.20/month (80% reduction)
 
 **Action**:
+
 ```python
 # Use Parquet instead of JSON
 import pandas as pd
@@ -503,6 +540,7 @@ df.to_parquet('s3://rideshare-event-archive-prod/raw/rides/2024/01/15/rides.parq
 **Strategy**: Optimize SQL queries to use fewer KPUs, or move some analytics to Lambda.
 
 **Example**:
+
 - **Current**: 3 apps × 1 KPU × 730 hours = $240/month
 - **Optimized**: Run only during business hours (12 hours/day) = 3 × 1 × 360 hours = $119/month
 
@@ -515,6 +553,7 @@ df.to_parquet('s3://rideshare-event-archive-prod/raw/rides/2024/01/15/rides.parq
 **Strategy**: Purchase 1-year or 3-year reserved capacity for DynamoDB, Kinesis.
 
 **Example** (DynamoDB):
+
 - **Current**: 100 WCUs on-demand = $5,475/year
 - **Optimized**: 100 WCUs reserved (1-year, no upfront) = $2,737/year
 
@@ -537,6 +576,7 @@ df.to_parquet('s3://rideshare-event-archive-prod/raw/rides/2024/01/15/rides.parq
 **Strategy**: Instead of calling `put_metric_data` API, embed metrics in log output.
 
 **Example**:
+
 ```python
 import json
 
@@ -557,7 +597,7 @@ def lambda_handler(event, context):
         "FunctionName": context.function_name,
         "ProcessedRecords": processed_count
     }))
-```
+```text
 
 **Savings**: $5/month (no API calls for metrics)
 
@@ -566,6 +606,7 @@ def lambda_handler(event, context):
 **Strategy**: Use S3 Select to retrieve only necessary columns from Parquet files.
 
 **Example**:
+
 - **Current**: Query 10 GB Parquet file, scan all columns = $0.05
 - **Optimized**: Query 10 GB, scan 2 columns = $0.01
 
@@ -576,12 +617,14 @@ def lambda_handler(event, context):
 **Strategy**: For development environment, stop Kinesis Data Analytics applications during nights/weekends.
 
 **Example**:
+
 - **Current**: 3 apps × 24/7 = $240/month
 - **Optimized**: 3 apps × 12 hours/day × 5 days/week = $60/month
 
 **Savings**: $180/month (75% reduction)
 
 **Implementation**:
+
 ```bash
 # Stop application (save to S3 snapshot)
 aws kinesisanalyticsv2 stop-application \
@@ -595,7 +638,7 @@ aws kinesisanalyticsv2 start-application \
 # Automate with Lambda + EventBridge (cron)
 # Stop at 6pm: cron(0 18 * * ? *)
 # Start at 8am: cron(0 8 * * ? *)
-```
+```text
 
 ---
 
@@ -609,9 +652,10 @@ aws budgets create-budget \
   --account-id 123456789012 \
   --budget file://budget.json \
   --notifications-with-subscribers file://notifications.json
-```
+```text
 
 **budget.json**:
+
 ```json
 {
   "BudgetName": "RideShare-Dev-Monthly-Budget",
@@ -628,6 +672,7 @@ aws budgets create-budget \
 ```
 
 **notifications.json**:
+
 ```json
 [
   {
@@ -659,7 +704,7 @@ aws budgets create-budget \
     ]
   }
 ]
-```
+```text
 
 ### Cost Anomaly Detection
 
@@ -670,7 +715,7 @@ aws ce create-anomaly-monitor \
 
 aws ce create-anomaly-subscription \
   --anomaly-subscription file://anomaly-subscription.json
-```
+```text
 
 ### Daily Cost Reports
 
@@ -696,7 +741,7 @@ for result in response['ResultsByTime'][0]['Groups']:
     service = result['Keys'][0]
     cost = result['Metrics']['UnblendedCost']['Amount']
     print(f"  {service}: ${float(cost):.2f}")
-```
+```text
 
 ---
 
@@ -770,7 +815,7 @@ aws ce get-cost-and-usage \
   --granularity MONTHLY \
   --metrics UnblendedCost \
   --group-by Type=TAG,Key=CostCenter
-```
+```text
 
 ### Chargeback to Business Units
 
@@ -792,6 +837,7 @@ aws ce get-cost-and-usage \
 | **Optimization Potential** | -30% | -40% | -40% |
 
 **Key Takeaways**:
+
 1. Development environment can be kept under $80/month by leveraging Free Tier
 2. Production costs scale linearly with ride volume (cost per ride decreases)
 3. 40% cost savings possible with optimization strategies

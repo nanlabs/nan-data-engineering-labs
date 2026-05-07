@@ -4,18 +4,18 @@
 
 ### Basic Component
 
-```
+```text
 ┌────────────┐    ┌───────────┐    ┌──────────┐    ┌─────────┐
 │   Source   │ → │  Extract  │ → │ Transform │ → │  Load   │
 └────────────┘    └───────────┘    └──────────┘    └─────────┘
    Database         Read data       Process         Write to
    Files            Validate        Clean           Data Lake
    APIs             Filter          Aggregate       Warehouse
-```
+```text
 
 ### Multi-Stage pipeline
 
-```
+```text
 ┌─────────┐
 │ Source  │
 └────┬────┘
@@ -56,7 +56,7 @@
 
 ### Spark Architecture
 
-```
+```text
 ┌─────────────────┐
 │  Driver Program │
 │   (SparkContext)│
@@ -74,9 +74,10 @@
 │ Task 1 │          │ Task 3 │
 │ Task 2 │          │ Task 4 │
 └────────┘          └────────┘
-```
+```text
 
 **Componentes**:
+
 - **Driver**: Coordina el trabajo
 - **Executors**: Ejecutan tasks
 - **Cluster Manager**: Gestiona resources (YARN, K8s, Mesos)
@@ -99,9 +100,10 @@ rdd3 = rdd2.filter(lambda x: x > 5)
 
 # Action (triggers computation)
 result = rdd3.collect()  # [6, 8, 10]
-```
+```text
 
 **features RDD**:
+
 - Immutable
 - Lazily evaluated
 - Fault-tolerant (lineage)
@@ -125,6 +127,7 @@ df_grouped.show()
 ```
 
 **Ventajas DataFrame**:
+
 - Simpler API than RDD
 - Automatic optimizations (Catalyst)
 - Schema enforcement
@@ -142,7 +145,7 @@ ds = spark.read.json("data.json").as[Transaction]
 
 # Type-safe operations
 ds.filter(_.amount > 100).map(_.category)
-```
+```text
 
 **Nota**: Python usa DataFrame (no tiene Dataset tipado)
 
@@ -161,9 +164,10 @@ df3 = df.select("name", "age")         # Select columns
 df4 = df.withColumn("age2", df.age * 2) # Add column
 df5 = df.groupBy("country").count()    # Group & aggregate
 df6 = df.join(other, "id")             # Join datasets
-```
+```text
 
 **Common Transformations**:
+
 - `filter()`, `where()`
 - `select()`, `drop()`
 - `withColumn()`, `withColumnRenamed()`
@@ -185,9 +189,10 @@ df.collect()                 # Return all rows to driver
 df.take(10)                  # Return first 10 rows
 df.first()                   # Return first row
 df.write.parquet("output/")  # Write to storage
-```
+```text
 
 **Common Actions**:
+
 - `show()`, `display()`
 - `count()`
 - `collect()`, `take()`, `first()`
@@ -210,7 +215,7 @@ df.explain(True)
 
 ### 1. Lambda Architecture
 
-```
+```text
               ┌──────────────┐
               │ Data Source  │
               └──────┬───────┘
@@ -227,24 +232,27 @@ df.explain(True)
          └──►│   Serving   │◄────┘
              │    Layer    │
              └─────────────┘
-```
+```text
 
 **features**:
+
 - **Batch Layer**: Processes the entire history (slow, accurate)
 - **Speed Layer**: Procesa datos recientes (fast, approximate)
 - **Serving Layer**: Combina batch + speed views
 
 **Ventajas**:
+
 - ✅ Fault tolerant
 - ✅ Accurate (batch) + Fast (speed)
 
 **Desventajas**:
+
 - ❌ Logic duplication (batch + stream)
 - ❌ Complejo de mantener
 
 ### 2. Kappa Architecture (Simplified Lambda)
 
-```
+```text
 ┌──────────────┐
 │ Data Source  │
 └──────┬───────┘
@@ -264,15 +272,17 @@ df.explain(True)
 **Philosophy**: Everything is stream (batch = bounded stream)
 
 **Ventajas**:
+
 - ✅ Single code path
 - ✅ Simpler than Lambda
 
 **Desventajas**:
+
 - ❌ Requiere streaming infrastructure
 
 ### 3. Batch-Only Architecture (Simple)
 
-```
+```text
 ┌──────────────┐
 │ Data Source  │
 └──────┬───────┘
@@ -287,14 +297,16 @@ df.explain(True)
 │ Data Lake/   │
 │ Warehouse    │
 └──────────────┘
-```
+```text
 
 **features**:
+
 - Solo batch processing
 - latency alta (hours)
 - Simple and economical
 
 **When to use**:
+
 - No necesitas real-time
 - Budget limitado
 - small team
@@ -311,7 +323,7 @@ mapped = rdd.map(lambda x: (x.category, x.amount))
 
 # Reduce phase: Aggregate por key
 reduced = mapped.reduceByKey(lambda a, b: a + b)
-```
+```text
 
 **Uso**: Aggregations distribuidas
 
@@ -336,9 +348,10 @@ result = orders.join(users, orders.user_id == users.id)
 
 # Left join
 result = orders.join(users, "user_id", "left")
-```
+```text
 
 **Optimizaciones**:
+
 - Broadcast join for small tables
 - Partition pruning
 - Predicate pushdown
@@ -357,7 +370,7 @@ df_ranked = df.withColumn("rank", rank().over(window))
 
 # Top N por categoría
 top_per_category = df_ranked.filter(col("rank") <= 10)
-```
+```text
 
 **Uso**: Ranking, running totals, moving averages
 
@@ -373,7 +386,7 @@ df.write.partitionBy("year", "month").parquet("data/")
 
 # Read with partition pruning
 df = spark.read.parquet("data/").filter("year = 2024 AND month = 3")
-```
+```text
 
 **Beneficio**: Read solo particiones relevantes
 
@@ -392,6 +405,7 @@ df_cached.unpersist()
 ```
 
 **When to search**:
+
 - Dataset usado > 1 vez
 - After expensive transformations
 - Before multiple actions
@@ -406,7 +420,7 @@ small_df = spark.read.parquet("categories/")
 
 # Broadcast join (evita shuffle)
 result = large_df.join(broadcast(small_df), "category_id")
-```
+```text
 
 **Benefit**: 10-100x faster for joins with small tables
 
@@ -418,7 +432,7 @@ df_repart = df.repartition(200)  # 200 partitions
 
 # Coalesce para reducir particiones (no shuffle)
 df_coal = df.coalesce(10)
-```
+```text
 
 **Regla**: 2-4 partitions por core
 
@@ -434,7 +448,7 @@ result = df1_filtered.join(df2_filtered, "id")
 result = df1.join(df2, "id").filter(
     (col("year") == 2024) & (col("amount") > 100)
 )
-```
+```text
 
 ---
 
@@ -472,6 +486,7 @@ def monitor_batch_job():
 ```
 
 **Metrics to monitor**:
+
 - ⏱️ Duration
 - 📊 Records processed
 - 🚀 throughput (records/sec)
@@ -495,7 +510,7 @@ def process_with_alerts(df):
     except Exception as e:
         alert(f"Batch job failed: {e}", severity="CRITICAL")
         raise
-```
+```text
 
 ---
 
@@ -524,7 +539,7 @@ def resilient_batch():
 
         # Re-raise para alerting
         raise
-```
+```text
 
 ### 2. Usa Checkpointing
 
@@ -544,7 +559,7 @@ def batch_with_checkpoint(partitions):
         # Save checkpoint
         completed.add(partition)
         save_checkpoint(checkpoint_file, completed)
-```
+```text
 
 ### 3. Implement Idempotencia
 
@@ -575,7 +590,7 @@ def validated_batch(input_path, output_path):
 
     # Write
     result.write.parquet(output_path)
-```
+```text
 
 ### 5. Document Dependencies
 
@@ -590,7 +605,7 @@ outputs:
   - sales_summary
   - customer_aggregates
 sla_hours: 4
-```
+```text
 
 ---
 

@@ -8,12 +8,12 @@
 - Basic command-line familiarity helpful but not required
 - AWS account NOT required (we use LocalStack)
 
-
 ## Module Overview
 
 This module gives you the AWS and cloud computing foundations required for data engineering. You will learn core concepts and practical implementations using LocalStack (without AWS costs).
 
 **What will you build?**
+
 - S3 storage system with data lake structure
 - Restrictive IAM policies for security
 - Lambda functions for serverless processing
@@ -67,14 +67,16 @@ By the end of this module, you will be able to:
 
 **Phase 2: Setup (15-20 min)**
 
-4. Verify that LocalStack is running:
+1. Verify that LocalStack is running:
+
    ```bash
    cd ../../..  # Return to project root
    make up
    docker ps | grep localstack
-   ```
+   ```text
 
-5. Install AWS CLI if needed:
+2. Install AWS CLI if needed:
+
    ```bash
    # macOS
    brew install awscli
@@ -86,35 +88,39 @@ By the end of this module, you will be able to:
    pip install awscli
    ```
 
-6. Configure dummy credentials for LocalStack:
+3. Configure dummy credentials for LocalStack:
+
    ```bash
    aws configure
    # Access Key: test
    # Secret Key: test
    # Region: us-east-1
-   ```
+   ```text
 
 **Phase 3: Exercises (5-8 hours)**
 
-7. Complete exercises in order:
+1. Complete exercises in order:
    - Each exercise includes: README -> starter/ -> my_solution/ -> hints.md -> solution/
    - Work ONLY in `my_solution/` (copy from `starter/` first)
    - Do not open `solution/` until you attempt with hints
 
-8. Validate after each exercise:
+2. Validate after each exercise:
+
    ```bash
    ../../scripts/validate-module.sh 01
    ```
 
 **Phase 4: Final Validation (15 min)**
 
-9. Run all validations:
+1. Run all validations:
+
    ```bash
    cd scripts/
    bash validate.sh
-   ```
+   ```text
 
-10. Check your progress:
+2. Check your progress:
+
     ```bash
     cd ../../..  # Project root
     make progress
@@ -123,50 +129,57 @@ By the end of this module, you will be able to:
 ## Exercises
 
 ### 1. **AWS CLI & S3 Basics** - 45-60 min
-   - Configure AWS CLI for LocalStack
-   - Create buckets with partitioned structure (year/month/day)
-   - Upload, download, and copy objects
-   - List with prefixes and retrieve metadata
-   - **Deliverable:** Automated script `s3_operations.sh`
+
+- Configure AWS CLI for LocalStack
+- Create buckets with partitioned structure (year/month/day)
+- Upload, download, and copy objects
+- List with prefixes and retrieve metadata
+- **Deliverable:** Automated script `s3_operations.sh`
 
 ### 2. **IAM Policies & Security** - 60-75 min
-   - Create users, groups, and roles
-   - Write restrictive IAM policies (least privilege)
-   - Implement S3 bucket policies
-   - Cross-account access scenarios
-   - **Deliverable:** JSON policies and permissions documentation
+
+- Create users, groups, and roles
+- Write restrictive IAM policies (least privilege)
+- Implement S3 bucket policies
+- Cross-account access scenarios
+- **Deliverable:** JSON policies and permissions documentation
 
 ### 3. **S3 Advanced Features** - 60-75 min
-   - Configure versioning and MFA delete
-   - Implement lifecycle policies (Standard -> IA -> Glacier)
-   - Set up cross-region replication
-   - Configure S3 event notifications to Lambda
-   - **Deliverable:** Production-ready bucket configuration
+
+- Configure versioning and MFA delete
+- Implement lifecycle policies (Standard -> IA -> Glacier)
+- Set up cross-region replication
+- Configure S3 event notifications to Lambda
+- **Deliverable:** Production-ready bucket configuration
 
 ### 4. **Lambda Functions** - 75-90 min
-   - Create Lambda function for S3 file processing
-   - Configure execution roles and permissions
-   - Implement error handling and retry logic
-   - Add logging with CloudWatch
-   - **Deliverable:** Lambda function that processes CSV -> JSON
+
+- Create Lambda function for S3 file processing
+- Configure execution roles and permissions
+- Implement error handling and retry logic
+- Add logging with CloudWatch
+- **Deliverable:** Lambda function that processes CSV -> JSON
 
 ### 5. **Infrastructure as Code (CloudFormation)** - 75-90 min
-   - Write YAML templates for S3 + Lambda + IAM
-   - Use parameters and outputs
-   - Practice stack updates and changesets
-   - Simulate rollback scenarios
-   - **Deliverable:** Reusable basic data pipeline template
+
+- Write YAML templates for S3 + Lambda + IAM
+- Use parameters and outputs
+- Practice stack updates and changesets
+- Simulate rollback scenarios
+- **Deliverable:** Reusable basic data pipeline template
 
 ### 6. **Cost Optimization** - 60-75 min
-   - Analyze simulated AWS bill
-   - Implement lifecycle policies to reduce storage cost
-   - Configure budgets and alerts
-   - Compare costs: On-Demand vs Reserved vs Spot
-   - **Deliverable:** Optimization plan with projected savings
+
+- Analyze simulated AWS bill
+- Implement lifecycle policies to reduce storage cost
+- Configure budgets and alerts
+- Compare costs: On-Demand vs Reserved vs Spot
+- **Deliverable:** Optimization plan with projected savings
 
 ## Resources
 
 See `theory/resources.md` for:
+
 - Official AWS documentation
 - Video tutorials and workshops
 - Community resources
@@ -175,14 +188,16 @@ See `theory/resources.md` for:
 ## Validation
 
 Run all validations:
+
 ```bash
 bash scripts/validate.sh
-```
+```text
 
 Or use the global validation:
+
 ```bash
 make validate MODULE=module-{module_id}-{module["name"]}
-```
+```text
 
 ## Progress Checklist
 

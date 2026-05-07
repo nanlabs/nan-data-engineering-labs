@@ -7,6 +7,7 @@
 Data governance is the overall management of data availability, usability, integrity, and security in an organization. It establishes processes and responsibilities that ensure quality and security of the data used across an organization.
 
 **Key Principles:**
+
 - **Accountability**: Clear ownership of data assets
 - **Transparency**: Documented data lineage and transformations
 - **Integrity**: Accurate, consistent, and trustworthy data
@@ -74,13 +75,14 @@ Each table in the Data Catalog contains:
   ],
   "TableType": "EXTERNAL_TABLE"
 }
-```
+```text
 
 ### Crawlers
 
 Crawlers automatically discover and catalog data:
 
 **Crawler Process:**
+
 1. **Connect**: Access data store (S3, RDS, DynamoDB, JDBC)
 2. **Scan**: Read sample data to infer schema
 3. **Classify**: Determine format (JSON, CSV, Parquet, Avro)
@@ -88,6 +90,7 @@ Crawlers automatically discover and catalog data:
 5. **Partition**: Detect partition scheme (year/month/day)
 
 **Crawler Configuration:**
+
 ```json
 {
   "Name": "sales-data-crawler",
@@ -108,13 +111,14 @@ Crawlers automatically discover and catalog data:
   },
   "Configuration": "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"}}}"
 }
-```
+```text
 
 ### Classifiers
 
 Classifiers determine the schema of your data:
 
 **Built-in Classifiers (in order):**
+
 1. Apache Avro
 2. Apache Parquet
 3. Apache ORC
@@ -125,6 +129,7 @@ Classifiers determine the schema of your data:
 8. Apache Log formats
 
 **Custom Classifiers:**
+
 ```json
 {
   "Name": "custom-csv-classifier",
@@ -137,7 +142,7 @@ Classifiers determine the schema of your data:
     "AllowSingleColumn": false
   }
 }
-```
+```text
 
 ## 3. AWS Lake Formation
 
@@ -161,6 +166,7 @@ Lake Formation implements a layered permission model:
 **Permission Types:**
 
 1. **Data Location Permissions**: Access to S3 paths
+
    ```json
    {
      "DataLocationResource": {
@@ -171,6 +177,7 @@ Lake Formation implements a layered permission model:
    ```
 
 2. **Database Permissions**: Create/drop tables in database
+
    ```json
    {
      "DatabaseResource": {
@@ -178,9 +185,10 @@ Lake Formation implements a layered permission model:
      },
      "Permissions": ["CREATE_TABLE", "ALTER", "DROP"]
    }
-   ```
+   ```text
 
 3. **Table Permissions**: Select/insert/delete data
+
    ```json
    {
      "TableResource": {
@@ -193,6 +201,7 @@ Lake Formation implements a layered permission model:
    ```
 
 4. **Column Permissions**: Fine-grained column access
+
    ```json
    {
      "TableWithColumnsResource": {
@@ -202,7 +211,7 @@ Lake Formation implements a layered permission model:
      },
      "Permissions": ["SELECT"]
    }
-   ```
+   ```text
 
 ### Data Filters (Row-Level Security)
 
@@ -221,6 +230,7 @@ Create filters to restrict access to specific rows:
 ```
 
 **Use Cases:**
+
 - Regional data segregation
 - Multi-tenant data isolation
 - Time-based access control
@@ -231,12 +241,14 @@ Create filters to restrict access to specific rows:
 Governed tables provide ACID transactions and automatic optimization:
 
 **Features:**
+
 - **ACID Transactions**: Full transaction support
 - **Time Travel**: Query historical versions
 - **Automatic Compaction**: Optimize small files
 - **Schema Evolution**: Add/modify columns safely
 
 **Creating a Governed Table:**
+
 ```sql
 CREATE TABLE analytics_db.customer_orders (
   order_id STRING,
@@ -251,7 +263,7 @@ TBLPROPERTIES (
   'table_type'='GOVERNED',
   'format-version'='2'
 );
-```
+```text
 
 ## 4. Metadata Management
 
@@ -281,6 +293,7 @@ TBLPROPERTIES (
 ### Tags and Classification
 
 **AWS Glue Tags:**
+
 ```json
 {
   "ResourceArn": "arn:aws:glue:us-east-1:123456789012:table/sales_db/transactions",
@@ -293,18 +306,20 @@ TBLPROPERTIES (
     "ComplianceRequirement": "SOX"
   }
 }
-```
+```text
 
 **Lake Formation Tags (LF-Tags):**
+
 ```json
 {
   "CatalogId": "123456789012",
   "TagKey": "DataSensitivity",
   "TagValues": ["Public", "Internal", "Confidential", "Restricted"]
 }
-```
+```text
 
 **Tag-Based Access Control (TBAC):**
+
 ```json
 {
   "Resource": {
@@ -325,6 +340,7 @@ TBLPROPERTIES (
 Data lineage tracks the flow of data from source to destination, including all transformations applied along the way.
 
 **Benefits:**
+
 - **Impact Analysis**: Understand downstream effects of changes
 - **Root Cause Analysis**: Trace data quality issues to source
 - **Compliance**: Demonstrate data handling for audits
@@ -342,6 +358,7 @@ Data lineage tracks the flow of data from source to destination, including all t
 ### Capturing Lineage
 
 **AWS Glue Job Lineage:**
+
 ```python
 import sys
 from awsglue.transforms import *
@@ -374,13 +391,14 @@ glueContext.write_dynamic_frame.from_catalog(
 )
 
 job.commit()
-```
+```text
 
 ## 6. Data Discovery
 
 ### Search and Discovery
 
 **AWS Glue Data Catalog Search:**
+
 ```python
 import boto3
 
@@ -409,11 +427,12 @@ response = glue.search_tables(
         }
     ]
 )
-```
+```text
 
 ### Data Catalog Federation
 
 **Query External Catalogs:**
+
 - AWS Glue Data Catalog
 - Apache Hive Metastore
 - Amazon Redshift
@@ -421,6 +440,7 @@ response = glue.search_tables(
 - Third-party catalogs
 
 **Federated Query Example:**
+
 ```sql
 -- Query across catalogs
 SELECT
@@ -437,13 +457,14 @@ JOIN
     ON glue.sales.product_id = glue.products.product_id
 WHERE
     glue.sales.transaction_date >= CURRENT_DATE - INTERVAL '30' DAY;
-```
+```text
 
 ## 7. Data Quality and Validation
 
 ### Data Quality Rules
 
 **AWS Glue Data Quality:**
+
 ```json
 {
   "RulesetName": "customer-data-quality",
@@ -513,13 +534,14 @@ print(f"Status: {results['Status']}")
 print(f"Started: {results['StartedOn']}")
 print(f"Completed: {results['CompletedOn']}")
 print(f"Rules Passed: {results['ResultIds']}")
-```
+```text
 
 ## 8. Compliance and Security
 
 ### Data Classification
 
 **Sensitivity Levels:**
+
 1. **Public**: Can be shared freely
 2. **Internal**: For organizational use only
 3. **Confidential**: Restricted access required
@@ -528,6 +550,7 @@ print(f"Rules Passed: {results['ResultIds']}")
 ### PII Detection
 
 **AWS Glue Sensitive Data Detection:**
+
 ```python
 import boto3
 
@@ -548,17 +571,19 @@ response = glue.create_classifier(
 glue.start_crawler(
     Name='pii-detection-crawler'
 )
-```
+```text
 
 ### Audit Logging
 
 **CloudTrail Integration:**
+
 - Track all Data Catalog API calls
 - Monitor Lake Formation permission changes
 - Log data access patterns
 - Detect anomalous behavior
 
 **Example Audit Query:**
+
 ```sql
 SELECT
     eventTime,
@@ -575,7 +600,7 @@ WHERE
     AND eventTime > CURRENT_TIMESTAMP - INTERVAL '24' HOUR
 ORDER BY
     eventTime DESC;
-```
+```text
 
 ## Key Takeaways
 

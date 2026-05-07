@@ -83,25 +83,30 @@ Validates workflow automation:
 
 1. **AWS Account**: Active AWS account with appropriate permissions
 2. **AWS CLI**: Configured with credentials
+
    ```bash
    aws configure
-   ```
+   ```text
+
 3. **Python 3.9+**: Installed on your system
 4. **Infrastructure Deployed**: The platform must be deployed before running tests
 
 ### Installation
 
 1. Navigate to the test directory:
+
    ```bash
    cd validation/acceptance-tests
    ```
 
 2. Install dependencies:
+
    ```bash
    pip install -r requirements.txt
-   ```
+   ```text
 
 3. Set environment variables:
+
    ```bash
    export PROJECT_NAME="rideshare-analytics"
    export ENVIRONMENT="dev"
@@ -114,7 +119,7 @@ Validates workflow automation:
 
 ```bash
 ./run_tests.sh all
-```
+```text
 
 ### Option 2: Run Specific Test Suites
 
@@ -133,7 +138,7 @@ Validates workflow automation:
 
 # Orchestration tests
 ./run_tests.sh orchestration
-```
+```text
 
 ### Option 3: Run with pytest Directly
 
@@ -152,7 +157,7 @@ pytest -v test_performance.py::TestLatency::test_end_to_end_latency
 
 # Run with markers
 pytest -v -m "not slow"
-```
+```text
 
 ## Test Reports
 
@@ -163,6 +168,7 @@ After running tests, reports are generated in `./test-reports/`:
 - **Coverage Report**: `coverage_YYYYMMDD_HHMMSS/index.html` - Code coverage
 
 View HTML report:
+
 ```bash
 open test-reports/report_*.html
 ```
@@ -186,21 +192,27 @@ Tests may be skipped for valid reasons:
 ### Common Issues
 
 #### AWS Credentials Error
-```
+
+```text
 Error: AWS credentials not configured properly
-```
+```text
+
 **Solution**: Run `aws configure` and provide valid credentials
 
 #### Infrastructure Not Found
-```
+
+```text
 AssertionError: Stream rideshare-analytics-dev-rides-stream not found
 ```
+
 **Solution**: Deploy infrastructure with Terraform first
 
 #### Processing Delays
-```
+
+```text
 Skipped: Event not processed within timeout
-```
+```text
+
 **Solution**: Wait a few minutes and retry - Lambda cold starts can cause delays
 
 ## Test Configuration
@@ -231,7 +243,7 @@ testpaths = .
 python_files = test_*.py
 python_classes = Test*
 python_functions = test_*
-```
+```text
 
 ## Troubleshooting
 
@@ -240,11 +252,13 @@ python_functions = test_*
 **Symptoms**: Events sent but not appearing in DynamoDB
 
 **Possible Causes**:
+
 - Lambda cold start delays
 - Kinesis event source mapping disabled
 - IAM permission issues
 
 **Solutions**:
+
 1. Check Lambda function logs in CloudWatch
 2. Verify event source mapping is enabled
 3. Review IAM role policies
@@ -254,6 +268,7 @@ python_functions = test_*
 **Symptoms**: `ProvisionedThroughputExceededException`
 
 **Solutions**:
+
 1. Increase Kinesis shard count
 2. Add exponential backoff in producers
 3. Use batch operations
@@ -263,6 +278,7 @@ python_functions = test_*
 **Symptoms**: Query latency > 500ms
 
 **Solutions**:
+
 1. Check DynamoDB table capacity mode
 2. Verify GSI configuration
 3. Review query patterns
@@ -272,6 +288,7 @@ python_functions = test_*
 **Symptoms**: Estimated costs exceed threshold
 
 **Solutions**:
+
 1. Review resource configurations (oversized Lambda, too many shards)
 2. Enable lifecycle policies on S3
 3. Use on-demand billing for DynamoDB if usage is variable

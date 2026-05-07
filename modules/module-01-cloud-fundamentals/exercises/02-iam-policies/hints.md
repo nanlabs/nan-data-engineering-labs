@@ -5,6 +5,7 @@
 ### Hint 1.1: IAM Policy Structure
 
 Every IAM policy has this structure:
+
 ```json
 {
   "Version": "2012-10-17",
@@ -17,9 +18,10 @@ Every IAM policy has this structure:
     }
   ]
 }
-```
+```text
 
 **Common mistakes:**
+
 - Olvidar el `Version` (debe ser "2012-10-17")
 - `Action` y `Resource` deben ser arrays (con `[]`)
 - ARNs deben tener formato runcto
@@ -50,7 +52,7 @@ iam.add_user_to_group(
     UserName='john.doe',
     GroupName='my-group'
 )
-```
+```text
 
 ### Hint 1.3: Reading JSON Files
 
@@ -63,7 +65,7 @@ with open('policies/data_engineer.json', 'r') as f:
     policy_doc = json.load(f)
 
 # Now policy_doc is a Python dict
-```
+```text
 
 ---
 
@@ -105,7 +107,7 @@ def create_policy(policy_name: str, policy_document: Dict) -> str:
     except Exception as e:
         print_error(f"Failed to create policy: {str(e)}")
         return ""
-```
+```text
 
 ### Hint 2.3: Main Function - Create Groups
 
@@ -117,7 +119,7 @@ groups = ['data-engineers', 'data-analysts', 'ml-scientists']
 
 for group in groups:
     create_group(group)
-```
+```text
 
 ### Hint 2.4: Main Function - Load and Create Policies
 
@@ -144,7 +146,7 @@ with open(policies_dir / 'ml_scientist.json', 'r') as f:
     policy_doc = json.load(f)
     arn = create_policy('MLScientistPolicy', policy_doc)
     policy_arns['scientist'] = arn
-```
+```text
 
 ### Hint 2.5: Attach Policies to Groups
 
@@ -180,7 +182,7 @@ print_step("Step 5: Adding Users to Groups")
 
 for username, group_name in users.items():
     add_user_to_group(username, group_name)
-```
+```text
 
 ### Hint 3.2: Lambda Role Creation
 
@@ -223,7 +225,7 @@ if role_arn:
     lambda_policy_arn = create_policy('LambdaDataProcessorPolicy', lambda_policy)
     if lambda_policy_arn:
         attach_policy_to_role('lambda-data-processor-role', lambda_policy_arn)
-```
+```text
 
 ### Hint 3.3: Apply S3 Bucket Policy
 
@@ -239,7 +241,7 @@ if bucket_policy_file.exists():
     apply_bucket_policy('my-data-lake-raw', bucket_policy)
 else:
     print_error("bucket_policy.json not found")
-```
+```text
 
 ### Hint 3.4: Complete attach_policy_to_group Function
 
@@ -276,7 +278,7 @@ def create_role(role_name: str, trust_policy: Dict) -> str:
     except Exception as e:
         print_error(f"Failed to create role: {str(e)}")
         return ""
-```
+```text
 
 ---
 
@@ -298,7 +300,7 @@ python3
 
 >>> # List groups to verify
 >>> iam.list_groups()
-```
+```text
 
 ### Verify IAM Resources
 
@@ -316,21 +318,24 @@ aws --endpoint-url=http://localhost:4566 iam list-attached-group-policies \
 # Get policy document
 aws --endpoint-url=http://localhost:4566 iam get-policy \
   --policy-arn arn:aws:iam::000000000000:policy/DataEngineerPolicy
-```
+```text
 
 ### Common Errors
 
 **Error: "EntityAlreadyExists"**
+
 - Group/user/policy already created
 - Handle with try/except
 - Or delete first: `iam.delete_group(GroupName='...')`
 
 **Error: "No such file or directory"**
+
 - Check Path is runct
 - Use `Path(__file__).parent` for relative paths
 - Print paths for debugging
 
 **Error: "Invalid JSON"**
+
 - Validate JSON: `cat policies/file.json | jq .`
 - Check for trailing commas
 - Verify quotes are runct (`"`, not `'`)
@@ -372,8 +377,8 @@ except Exception as e:
 
 ## 📚 Additional Resources
 
-- IAM Policy Simulator (AWS real): https://policysim.aws.amazon.com/
-- IAM Policy Examples: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_examples.html
-- boto3 IAM Reference: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/iam.html
+- IAM Policy Simulator (AWS real): <https://policysim.aws.amazon.com/>
+- IAM Policy Examples: <https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_examples.html>
+- boto3 IAM Reference: <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/iam.html>
 
 **Remember:** Least privilege is not just best practice, it's a security requirement!

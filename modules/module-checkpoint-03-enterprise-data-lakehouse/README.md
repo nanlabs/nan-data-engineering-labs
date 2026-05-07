@@ -6,13 +6,13 @@
 ## Prerequisites
 
 **Required Modules (Must be 100% complete):**
+
 - ✅ Module 13
 - ✅ Module 14
 - ✅ Module 15
 - ✅ Module 16
 - ✅ Module 17
 - ✅ Module 18
-
 
 ## Project Overview
 
@@ -40,6 +40,7 @@ You will complete this checkpoint when:
 ## Architecture
 
 See `architecture/` folder for:
+
 - Target architecture diagrams (Mermaid)
 - Data flow diagrams
 - Design decisions documentation
@@ -65,6 +66,7 @@ See `architecture/` folder for:
 ## Implementation Approach
 
 See `IMPLEMENTATION-GUIDE.md` for step-by-step guidance on:
+
 - Setting up infrastructure
 - Building data pipelines
 - Implementing transformations
@@ -74,9 +76,10 @@ See `IMPLEMENTATION-GUIDE.md` for step-by-step guidance on:
 ## Validation
 
 Run acceptance tests:
+
 ```bash
 bash validation/run-tests.sh
-```
+```text
 
 ## Certification Bonus
 

@@ -9,6 +9,7 @@
 ## 🎯 Objectives
 
 Master Apache Flink:
+
 - **DataStream API**: Transform streams
 - **Windows**: Time-based aggregation
 - **State**: Stateful operations
@@ -21,21 +22,21 @@ Master Apache Flink:
 
 ### Flink Architecture
 
-```
+```text
 Source → Transformations → Sink
          ├─ Map
          ├─ Filter
          ├─ KeyBy
          ├─ Window
          └─ Aggregate
-```
+```text
 
 ### Event Time vs Processing Time
 
 **Processing Time**: Time when event arrives at operator
 **Event Time**: Time when event actually occurred (in event payload)
 
-```
+```text
 Event occurs → Network delay → Flink processes
    t=0              ?              t=5s
 
@@ -109,7 +110,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-```
+```text
 
 ### Part 2: Keyed Streams (45 min)
 
@@ -155,7 +156,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-```
+```text
 
 ### Part 3: Windowed Aggregation (60 min)
 
@@ -214,7 +215,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-```
+```text
 
 ### Part 4: Stateful Processing (60 min)
 
@@ -328,7 +329,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-```
+```text
 
 ### Part 6: Checkpointing (30 min)
 
@@ -370,18 +371,20 @@ def main():
 
 if __name__ == '__main__':
     main()
-```
+```text
 
 ---
 
 ## ✅ Validation
 
 **Run tests**:
+
 ```bash
 pytest test_flink.py -v
-```
+```text
 
 **Tests cover**:
+
 - ✅ Simple transformations work
 - ✅ Keyed aggregation correct
 - ✅ Windows aggregate properly

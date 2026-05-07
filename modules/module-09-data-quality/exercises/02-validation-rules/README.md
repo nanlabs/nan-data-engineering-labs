@@ -50,7 +50,7 @@ def validate_not_null(df: pd.DataFrame, columns: list) -> dict:
         'passed': len(violations) == 0,
         'violations': violations
     }
-```
+```text
 
 **Task 1.2: Validar Formatos**
 
@@ -79,7 +79,7 @@ def validate_date_format(df: pd.DataFrame, column: str, format: str = '%Y-%m-%d'
     """Validate formato de fechas."""
     # TODO: Implementar
     pass
-```
+```text
 
 **Task 1.3: Validar Rangos**
 
@@ -111,7 +111,7 @@ def validate_range(df: pd.DataFrame, column: str, min_val=None, max_val=None) ->
 
 # Uso
 result = validate_range(transactions, 'amount', min_val=0, max_val=1000000)
-```
+```text
 
 **Task 1.4: Validar Dominios**
 
@@ -144,7 +144,7 @@ def validate_uniqueness(df: pd.DataFrame, columns: list) -> dict:
         'duplicate_count': len(duplicates),
         'violations': duplicates[columns].to_dict('records') if len(duplicates) > 0 else []
     }
-```
+```text
 
 **Task 2.2: Integridad Referencial**
 
@@ -175,7 +175,7 @@ result = validate_foreign_key(
     transactions, customers,
     'customer_id', 'customer_id'
 )
-```
+```text
 
 ---
 
@@ -239,12 +239,11 @@ class BusinessRuleValidator:
         """
         # TODO: Implementar
         pass
-```
+```text
 
 ---
 
 ### Part 4: Validation Framework
-
 
 **Task 4.1: Validation Engine**
 
@@ -396,7 +395,7 @@ if not summary['overall_passed']:
     raise ValidationException("Data quality validation failed")
 else:
     print("\n✅ All validations passed. Proceeding to next step.")
-```
+```text
 
 ---
 

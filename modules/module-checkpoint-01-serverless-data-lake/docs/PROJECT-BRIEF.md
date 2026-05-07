@@ -43,6 +43,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 ### 1.2 Business Value
 
 **Expected Benefits:**
+
 - **90% reduction** in analytics infrastructure costs (from traditional data warehouse)
 - **From days to minutes:** Time-to-insight improvement
 - **Self-service analytics:** Enable 50+ business users to query data independently
@@ -51,6 +52,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 - **Foundation for ML:** Enable predictive analytics and recommendation engines
 
 **ROI Projection:**
+
 - Infrastructure cost savings: $300K annually
 - Analyst productivity improvement: 40 hours/week reclaimed
 - Faster decision-making: Estimated $500K in revenue opportunities
@@ -58,6 +60,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 ### 1.3 Project Scope
 
 **In Scope:**
+
 - ✅ Serverless data lake infrastructure on AWS
 - ✅ Data ingestion from 4 primary data sources
 - ✅ Automated data cataloging and schema management
@@ -68,6 +71,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 - ✅ Documentation and operational runbooks
 
 **Out of Scope:**
+
 - ❌ Real-time streaming pipelines (future phase - Checkpoint 02)
 - ❌ Machine learning model deployment (future phase)
 - ❌ Business intelligence dashboards (integration only)
@@ -84,6 +88,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 **CloudMart** is a global e-commerce marketplace founded in 2018, enabling consumers to purchase products from thousands of merchants worldwide.
 
 **Key Statistics (2025):**
+
 - **Monthly Active Users:** 500,000+
 - **Daily Transactions:** 50,000+
 - **Product Catalog:** 100,000+ SKUs
@@ -94,6 +99,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 - **Employee Count:** 250
 
 **Business Model:**
+
 - Direct sales (75% of revenue)
 - Marketplace commissions (20% of revenue)
 - Subscription services (5% of revenue)
@@ -128,6 +134,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
    - Compliance and audit liaison
 
 **Business Users (50+ people):**
+
 - Product managers
 - Marketing analysts
 - Finance analysts
@@ -146,6 +153,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 6. **Technical Debt:** Legacy systems built 4 years ago need modernization
 
 **Strategic Initiatives Enabled:**
+
 - Personalized product recommendations
 - Dynamic pricing optimization
 - Customer churn prediction
@@ -210,6 +218,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 6. Results delivered (3-5 days total time)
 
 **Problems:**
+
 - ⏱️ Slow turnaround time (3-5 days average)
 - 🔄 No refresh capability (outdated immediately)
 - 🤷 No self-service (bottleneck on data engineers)
@@ -320,6 +329,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 **Description:** System must automatically ingest data from multiple sources into the Raw (Bronze) zone.
 
 **Requirements:**
+
 - **FR-001.1:** Support ingestion of JSON, CSV, and Parquet formats
 - **FR-001.2:** Validate data schema before accepting into data lake
 - **FR-001.3:** Reject invalid records to a quarantine/DLQ location
@@ -330,6 +340,7 @@ This project will design and implement a **serverless data lake on AWS**, levera
 - **FR-001.8:** Ensure exactly-once semantics (no duplicates)
 
 **Acceptance Test:**
+
 ```bash
 # Upload test file to S3
 aws s3 cp test-orders.json s3://cloudmart-raw/orders/
@@ -337,13 +348,14 @@ aws s3 cp test-orders.json s3://cloudmart-raw/orders/
 # Verify ingestion within 1 minute
 # Verify data appears in correct partition
 # Verify metadata logged to CloudWatch
-```
+```text
 
 #### FR-002: Data Cataloging
 
 **Description:** System must automatically catalog data and maintain searchable metadata.
 
 **Requirements:**
+
 - **FR-002.1:** Automatically discover schemas from Raw, Processed, and Curated zones
 - **FR-002.2:** Run crawlers on schedule (daily for Raw, after ETL for others)
 - **FR-002.3:** Maintain table and column-level metadata
@@ -352,18 +364,20 @@ aws s3 cp test-orders.json s3://cloudmart-raw/orders/
 - **FR-002.6:** Data type inference with >95% accuracy
 
 **Acceptance Test:**
+
 ```bash
 # Upload new data with additional column
 # Run crawler
 # Verify new column appears in Data Catalog
 # Verify backward compatibility with old queries
-```
+```text
 
 #### FR-003: Data Transformation (Bronze → Silver)
 
 **Description:** Cleanse and standardize raw data into the Processed (Silver) zone.
 
 **Requirements:**
+
 - **FR-003.1:** Remove duplicate records based on business keys
 - **FR-003.2:** Standardize data types (dates, numeric fields)
 - **FR-003.3:** Handle null and missing values appropriately
@@ -374,19 +388,21 @@ aws s3 cp test-orders.json s3://cloudmart-raw/orders/
 - **FR-003.8:** Maintain data lineage (source file references)
 
 **Acceptance Test:**
+
 ```bash
 # Load raw data with known duplicates and issues
 # Run Bronze → Silver ETL
 # Verify duplicates removed
 # Verify data types corrected
 # Verify Parquet files created
-```
+```text
 
 #### FR-004: Data Transformation (Silver → Gold)
 
 **Description:** Create business-ready aggregated datasets in the Curated (Gold) zone.
 
 **Requirements:**
+
 - **FR-004.1:** Daily order summary (revenue, order count, average order value)
 - **FR-004.2:** Customer lifetime value and purchase history
 - **FR-004.3:** Product performance metrics (views, sales, conversion rate)
@@ -396,6 +412,7 @@ aws s3 cp test-orders.json s3://cloudmart-raw/orders/
 - **FR-004.7:** Business logic validation (e.g., revenue = sum(order_items))
 
 **Acceptance Test:**
+
 ```bash
 # Run Silver → Gold ETL
 # Query daily summary in Athena
@@ -408,6 +425,7 @@ aws s3 cp test-orders.json s3://cloudmart-raw/orders/
 **Description:** Enable business users to query data using SQL via Amazon Athena.
 
 **Requirements:**
+
 - **FR-005.1:** All Gold tables queryable via Athena
 - **FR-005.2:** Query response time <5 seconds for 90% of business queries
 - **FR-005.3:** Support for common SQL operations (joins, aggregations, window functions)
@@ -417,18 +435,20 @@ aws s3 cp test-orders.json s3://cloudmart-raw/orders/
 - **FR-005.7:** Cost estimation before query execution
 
 **Acceptance Test:**
+
 ```sql
 -- Execute 10 standard business queries
 -- Measure query execution time
 -- Verify results accuracy
 -- Confirm cost within budget (<$5 per TB scanned)
-```
+```text
 
 #### FR-006: Monitoring and Alerting
 
 **Description:** Monitor data pipeline health and alert on failures or anomalies.
 
 **Requirements:**
+
 - **FR-006.1:** CloudWatch dashboard showing pipeline status
 - **FR-006.2:** Alarms for Lambda function failures
 - **FR-006.3:** Alarms for Glue job failures
@@ -438,12 +458,13 @@ aws s3 cp test-orders.json s3://cloudmart-raw/orders/
 - **FR-006.7:** Daily health check summary
 
 **Acceptance Test:**
+
 ```bash
 # Simulate Lambda failure
 # Verify CloudWatch alarm triggers
 # Verify SNS notification sent
 # Verify visible in dashboard
-```
+```text
 
 ### 5.2 Non-Functional Requirements
 
@@ -520,6 +541,7 @@ aws s3 cp test-orders.json s3://cloudmart-raw/orders/
 **Schema:**
 
 **Orders Table:**
+
 ```sql
 CREATE TABLE orders (
     order_id VARCHAR(36) PRIMARY KEY,
@@ -534,9 +556,10 @@ CREATE TABLE orders (
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-```
+```text
 
 **Order Items Table:**
+
 ```sql
 CREATE TABLE order_items (
     order_item_id VARCHAR(36) PRIMARY KEY,
@@ -551,6 +574,7 @@ CREATE TABLE order_items (
 ```
 
 **Customers Table:**
+
 ```sql
 CREATE TABLE customers (
     customer_id VARCHAR(36) PRIMARY KEY,
@@ -564,9 +588,10 @@ CREATE TABLE customers (
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-```
+```text
 
 **Products Table:**
+
 ```sql
 CREATE TABLE products (
     product_id VARCHAR(36) PRIMARY KEY,
@@ -581,9 +606,10 @@ CREATE TABLE products (
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-```
+```text
 
 **Characteristics:**
+
 - Volume: ~10K orders/day, ~25K order items/day
 - File Format: CSV (gzip compressed)
 - Estimated Daily Size: 50MB compressed
@@ -599,6 +625,7 @@ CREATE TABLE products (
 **File Format:** Newline-delimited JSON (NDJSON)
 
 **Event Schema:**
+
 ```json
 {
   "event_id": "uuid",
@@ -622,9 +649,10 @@ CREATE TABLE products (
     "cart_value": "numeric (nullable)"
   }
 }
-```
+```text
 
 **Characteristics:**
+
 - Volume: ~2M events/day
 - File Format: NDJSON (gzip compressed)
 - File Size: ~10MB per file, 300+ files/day
@@ -640,6 +668,7 @@ CREATE TABLE products (
 **File Format:** JSON
 
 **API Response Schema:**
+
 ```json
 {
   "catalog_snapshot_timestamp": "ISO 8601 timestamp",
@@ -672,6 +701,7 @@ CREATE TABLE products (
 ```
 
 **Characteristics:**
+
 - Volume: 100K products
 - File Format: JSON
 - Estimated Hourly Size: 25MB
@@ -686,11 +716,13 @@ CREATE TABLE products (
 **File Format:** CSV
 
 **Schema:**
+
 ```csv
 campaign_id,campaign_name,start_date,end_date,channel,budget,impressions,clicks,conversions,revenue,customer_id
-```
+```text
 
 **Characteristics:**
+
 - Volume: ~50 campaigns, ~10K records/day
 - File Format: CSV
 - Estimated Daily Size: 5MB
@@ -698,6 +730,7 @@ campaign_id,campaign_name,start_date,end_date,channel,budget,impressions,clicks,
 ### 6.2 Data Volume Projections
 
 **Current State (Month 1):**
+
 - Orders: 10K/day = 300K/month = 50MB/day = 1.5GB/month
 - Clickstream: 2M events/day = 60M/month = 3GB/day = 90GB/month
 - Products: 100K products x 24 snapshots/day = 25MB x 24 = 600MB/day = 18GB/month
@@ -706,6 +739,7 @@ campaign_id,campaign_name,start_date,end_date,channel,budget,impressions,clicks,
 **Total: ~110GB/month raw data**
 
 **6-Month Projection:**
+
 - Orders: 15K/day = 2.25GB/month
 - Clickstream: 3M events/day = 135GB/month
 - Products: 150K products = 27GB/month
@@ -714,6 +748,7 @@ campaign_id,campaign_name,start_date,end_date,channel,budget,impressions,clicks,
 **Total: ~165GB/month raw data**
 
 **Storage Estimates:**
+
 - Raw (Bronze): Full data in JSON/CSV = 165GB/month
 - Processed (Silver): Parquet = 50GB/month (3:1 compression)
 - Curated (Gold): Aggregated = 5GB/month
@@ -731,6 +766,7 @@ campaign_id,campaign_name,start_date,end_date,channel,budget,impressions,clicks,
 **Purpose:** Landing zone for all ingested data in original format
 
 **Characteristics:**
+
 - Immutable: Data never modified after ingestion
 - File Format: Original (JSON, CSV, Parquet)
 - Partitioning: /source/year/month/day/
@@ -738,7 +774,8 @@ campaign_id,campaign_name,start_date,end_date,channel,budget,impressions,clicks,
 - Access: Restricted to data engineering team
 
 **Directory Structure:**
-```
+
+```text
 s3://cloudmart-raw/
 ├── orders/
 │   └── year=2026/
@@ -768,7 +805,7 @@ s3://cloudmart-raw/
             └── day=09/
                 ├── campaigns_20260309.csv
                 └── _metadata.json
-```
+```text
 
 **Data Quality:** None (accept all data as-is, validation happens in Silver layer)
 
@@ -777,6 +814,7 @@ s3://cloudmart-raw/
 **Purpose:** Cleansed, validated, and standardized data ready for analysis
 
 **Characteristics:**
+
 - Cleansed: Duplicates removed, nulls handled, types standardized
 - File Format: Parquet (columnar, compressed)
 - Partitioning: Optimized for query patterns (date-based)
@@ -784,6 +822,7 @@ s3://cloudmart-raw/
 - Access: Data engineering + business analysts
 
 **Directory Structure:**
+
 ```
 s3://cloudmart-processed/
 ├── orders/
@@ -811,9 +850,10 @@ s3://cloudmart-processed/
         └── month=03/
             └── day=09/
                 └── events.parquet
-```
+```text
 
 **Data Quality Checks:**
+
 - Schema validation
 - Duplicate detection and removal
 - Referential integrity checks
@@ -826,6 +866,7 @@ s3://cloudmart-processed/
 **Purpose:** Business-ready aggregated datasets optimized for analytics
 
 **Characteristics:**
+
 - Aggregated: Pre-computed metrics and summaries
 - File Format: Parquet (highly optimized partitions)
 - Partitioning: By date and other business dimensions
@@ -833,7 +874,8 @@ s3://cloudmart-processed/
 - Access: All business users via Athena
 
 **Directory Structure:**
-```
+
+```text
 s3://cloudmart-curated/
 ├── daily_sales_summary/
 │   └── year=2026/
@@ -855,9 +897,10 @@ s3://cloudmart-curated/
     └── year=2026/
         └── month=03/
             └── geo_summary.parquet
-```
+```text
 
 **Datasets:**
+
 1. **daily_sales_summary:** Revenue, order count, AOV by day
 2. **customer_lifetime_value:** CLV, purchase frequency, recency
 3. **product_performance:** Views, sales, conversion rate, inventory
@@ -962,7 +1005,7 @@ s3://cloudmart-curated/
     │  • Dashboards                                 │
     │  • Ad-hoc queries                             │
     └───────────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -975,6 +1018,7 @@ s3://cloudmart-curated/
 **Description:** Complete infrastructure as code for all AWS resources
 
 **Contents:**
+
 - CloudFormation or Terraform templates
 - S3 bucket definitions with policies
 - IAM role and policy definitions
@@ -984,6 +1028,7 @@ s3://cloudmart-curated/
 - SNS topic for notifications
 
 **Acceptance Criteria:**
+
 - [ ] All resources can be deployed via single command
 - [ ] Infrastructure is parameterized (dev/prod environments)
 - [ ] All resources properly tagged
@@ -997,6 +1042,7 @@ s3://cloudmart-curated/
 **Description:** Python Lambda functions for data ingestion
 
 **Contents:**
+
 - `orders_ingestion.py`: Ingest order data from RDS export
 - `clickstream_ingestion.py`: Ingest clickstream events
 - `products_ingestion.py`: Ingest product catalog
@@ -1006,6 +1052,7 @@ s3://cloudmart-curated/
 - Unit tests for all functions
 
 **Acceptance Criteria:**
+
 - [ ] Functions handle errors gracefully
 - [ ] Logging to CloudWatch implemented
 - [ ] Dead letter queue configured
@@ -1019,6 +1066,7 @@ s3://cloudmart-curated/
 **Description:** PySpark scripts for data transformations
 
 **Contents:**
+
 - `bronze_to_silver_orders.py`: Cleanse orders data
 - `bronze_to_silver_clickstream.py`: Cleanse clickstream data
 - `silver_to_gold_daily_sales.py`: Create daily sales summary
@@ -1027,6 +1075,7 @@ s3://cloudmart-curated/
 - `data_quality.py`: Shared data quality checks
 
 **Acceptance Criteria:**
+
 - [ ] Scripts handle incremental processing
 - [ ] Data quality checks implemented
 - [ ] Error handling and logging
@@ -1040,6 +1089,7 @@ s3://cloudmart-curated/
 **Description:** SQL queries for business analytics
 
 **Contents:**
+
 - Minimum 10 business queries covering:
   - Daily/weekly/monthly revenue trends
   - Customer segmentation and CLV
@@ -1053,6 +1103,7 @@ s3://cloudmart-curated/
   - Top customers by revenue
 
 **Acceptance Criteria:**
+
 - [ ] All queries execute successfully
 - [ ] Queries optimized for performance (<5s)
 - [ ] Queries documented with business context
@@ -1066,6 +1117,7 @@ s3://cloudmart-curated/
 **Description:** Comprehensive project documentation
 
 **Contents:**
+
 - Architecture diagrams (infrastructure, data flow, security)
 - Setup and deployment instructions
 - Operational runbook (start/stop, troubleshooting)
@@ -1075,6 +1127,7 @@ s3://cloudmart-curated/
 - Cost analysis and optimization guide
 
 **Acceptance Criteria:**
+
 - [ ] Documentation is clear and comprehensive
 - [ ] Diagrams are professional and accurate
 - [ ] Instructions can be followed by non-expert
@@ -1088,6 +1141,7 @@ s3://cloudmart-curated/
 **Description:** Automated tests and validation scripts
 
 **Contents:**
+
 - Unit tests for Lambda functions
 - Integration tests for end-to-end pipeline
 - Data quality validation scripts
@@ -1095,6 +1149,7 @@ s3://cloudmart-curated/
 - Performance test scripts
 
 **Acceptance Criteria:**
+
 - [ ] All tests pass
 - [ ] Test coverage >80% for Lambda functions
 - [ ] End-to-end pipeline test successful
@@ -1120,6 +1175,7 @@ s3://cloudmart-curated/
 ### 9.1 Infrastructure Acceptance
 
 **Criteria:**
+
 - [ ] **AC-INF-001:** All S3 buckets created with correct naming convention
 - [ ] **AC-INF-002:** Bucket policies enforce least privilege access
 - [ ] **AC-INF-003:** Server-side encryption enabled (SSE-KMS)
@@ -1136,6 +1192,7 @@ s3://cloudmart-curated/
 ### 9.2 Data Ingestion Acceptance
 
 **Criteria:**
+
 - [ ] **AC-ING-001:** Lambda functions deploy successfully
 - [ ] **AC-ING-002:** S3 event triggers configured correctly
 - [ ] **AC-ING-003:** Sample data ingests within 1 minute
@@ -1152,6 +1209,7 @@ s3://cloudmart-curated/
 ### 9.3 Data Cataloging Acceptance
 
 **Criteria:**
+
 - [ ] **AC-CAT-001:** Glue Database created
 - [ ] **AC-CAT-002:** Crawlers configured for all zones
 - [ ] **AC-CAT-003:** Crawlers discover schemas correctly
@@ -1168,6 +1226,7 @@ s3://cloudmart-curated/
 ### 9.4 ETL Pipeline Acceptance
 
 **Criteria:**
+
 - [ ] **AC-ETL-001:** Bronze → Silver ETL job executes successfully
 - [ ] **AC-ETL-002:** Duplicates removed (verified with test data)
 - [ ] **AC-ETL-003:** Data types standardized
@@ -1184,6 +1243,7 @@ s3://cloudmart-curated/
 ### 9.5 Analytics Acceptance
 
 **Criteria:**
+
 - [ ] **AC-ANL-001:** Athena workgroup configured
 - [ ] **AC-ANL-002:** All Gold tables queryable
 - [ ] **AC-ANL-003:** 10+ business queries execute successfully
@@ -1200,6 +1260,7 @@ s3://cloudmart-curated/
 ### 9.6 Monitoring Acceptance
 
 **Criteria:**
+
 - [ ] **AC-MON-001:** CloudWatch dashboard created
 - [ ] **AC-MON-002:** Dashboard shows key metrics (ingestion, ETL status, costs)
 - [ ] **AC-MON-003:** Alarms configured for Lambda failures
@@ -1216,6 +1277,7 @@ s3://cloudmart-curated/
 ### 9.7 Documentation Acceptance
 
 **Criteria:**
+
 - [ ] **AC-DOC-001:** Architecture diagrams created (infrastructure, data flow)
 - [ ] **AC-DOC-002:** README with project overview complete
 - [ ] **AC-DOC-003:** Setup instructions documented (step-by-step)
@@ -1232,6 +1294,7 @@ s3://cloudmart-curated/
 ### 9.8 Cost Acceptance
 
 **Criteria:**
+
 - [ ] **AC-CST-001:** Monthly cost <$50 (verified)
 - [ ] **AC-CST-002:** Cost breakdown documented by service
 - [ ] **AC-CST-003:** Cost optimization implemented (S3 lifecycle, Glue DPU tuning)
@@ -1273,6 +1336,7 @@ s3://cloudmart-curated/
 | **Business Queries** | 100/day | 500/day | 1,000/day |
 
 **Scalability Tests:**
+
 - [ ] Test with 2x current data volume
 - [ ] Test with 5x current query load
 - [ ] Test with 10x file count
@@ -1291,27 +1355,32 @@ s3://cloudmart-curated/
 ### 10.4 Security Requirements
 
 **Authentication and Authorization:**
+
 - IAM for all AWS service access
 - MFA required for production access
 - Role-based access control (RBAC)
 
 **\Encryption:**
+
 - S3 encryption: SSE-KMS (AWS KMS)
 - Athena query results: Encrypted
 - Data in transit: TLS 1.2+
 
 **Audit and Compliance:**
+
 - CloudTrail enabled for all API calls
 - CloudWatch Logs retention: 30 days
 - Access logs for S3 buckets
 - Regular access reviews (quarterly)
 
 **Network Security:**
+
 - VPC endpoints for private access (optional)
 - No public exposure of sensitive data
 - IP whitelisting for production access (optional)
 
 **Data Privacy:**
+
 - PII data identified and protected
 - Data masking for non-production environments (future)
 - GDPR compliance considerations (right to forget)
@@ -1323,43 +1392,51 @@ s3://cloudmart-curated/
 ### 11.1 Data Classification
 
 **Public Data:**
+
 - Product catalog (non-pricing)
 - Marketing campaign names
 
 **Internal Data:**
+
 - Aggregated analytics
 - Business metrics and KPIs
 
 **Confidential Data:**
+
 - Customer PII (name, email, phone)
 - Order details
 - Pricing and cost information
 
 **Highly Confidential:**
+
 - Payment information (not stored in data lake)
 - Authentication credentials
 
 ### 11.2 Security Controls
 
 **Access Control:**
+
 - Principle of least privilege for all IAM roles
 - Separate roles for Lambda, Glue, Athena
 - Read-only access for business users
 - Separate dev/prod environments
 
 **Encryption:**
+
 - S3 buckets: SSE-KMS with customer-managed keys
 - Glue Data Catalog: Encrypted at rest
 - Athena results: Encrypted
 - CloudWatch Logs: Encrypted
 
 **Monitoring:**
+
 - CloudTrail for API call auditing
 - CloudWatch for operational monitoring
 - Anomaly detection for unusual access patterns
 - Budget alerts for cost anomalies
 
 **Data Retention:**
+
 - Raw data: 90 days (then Glacier or delete)
 - Processed data: 2 years
 - Curated data: 2 years
@@ -1369,18 +1446,21 @@ s3://cloudmart-curated/
 ### 11.3 Compliance Requirements
 
 **GDPR Considerations:**
+
 - Right to access: Ability to query customer data
 - Right to erasure: Ability to delete customer records
 - Data minimization: Only store necessary data
 - Data lineage: Track data sources
 
 **SOC 2 (future):**
+
 - Access controls and monitoring
 - Encryption of sensitive data
 - Regular security reviews
 - Incident response procedures
 
 **PCI DSS:**
+
 - Payment data NOT stored in data lake
 - Only transaction IDs and amounts (no card details)
 
@@ -1397,6 +1477,7 @@ s3://cloudmart-curated/
 **Objective:** Provision all AWS infrastructure
 
 **Tasks:**
+
 1. Create S3 buckets (raw, processed, curated, scripts, logs)
 2. Configure bucket policies and encryption
 3. Create IAM roles (Lambda, Glue, Athena)
@@ -1406,6 +1487,7 @@ s3://cloudmart-curated/
 7. Validate deployment
 
 **Deliverables:**
+
 - Infrastructure as Code templates
 - Deployed AWS resources
 - Deployment validation report
@@ -1417,6 +1499,7 @@ s3://cloudmart-curated/
 **Objective:** Implement Lambda-based data ingestion
 
 **Tasks:**
+
 1. Write Lambda function for orders data
 2. Write Lambda function for clickstream data
 3. Write Lambda function for products data
@@ -1428,6 +1511,7 @@ s3://cloudmart-curated/
 9. Deploy and test with sample data
 
 **Deliverables:**
+
 - Lambda function code
 - Unit tests
 - Test data in Raw zone
@@ -1440,6 +1524,7 @@ s3://cloudmart-curated/
 **Objective:** Set up Glue Data Catalog
 
 **Tasks:**
+
 1. Create Glue Database
 2. Configure Glue Crawler for Raw zone
 3. Run crawler and validate tables
@@ -1448,6 +1533,7 @@ s3://cloudmart-curated/
 6. Validate schema discovery
 
 **Deliverables:**
+
 - Glue database and tables
 - Crawler configurations
 - Validated schemas
@@ -1459,6 +1545,7 @@ s3://cloudmart-curated/
 **Objective:** Build ETL pipelines
 
 **Tasks:**
+
 1. Write Bronze → Silver transformation for orders
 2. Write Bronze → Silver transformation for clickstream
 3. Implement data quality checks
@@ -1469,6 +1556,7 @@ s3://cloudmart-curated/
 8. Test with sample data
 
 **Deliverables:**
+
 - Glue ETL scripts
 - Data quality checks
 - Transformed data in Processed and Curated zones
@@ -1481,6 +1569,7 @@ s3://cloudmart-curated/
 **Objective:** Enable SQL analytics and finalize project
 
 **Tasks:**
+
 1. Create Athena workgroup
 2. Write business SQL queries (10+)
 3. Create views for common queries
@@ -1493,6 +1582,7 @@ s3://cloudmart-curated/
 10. Record demo video
 
 **Deliverables:**
+
 - Athena queries and views
 - CloudWatch dashboard
 - Monitoring alarms
@@ -1637,6 +1727,7 @@ s3://cloudmart-curated/
 ### 14.2 Constraints
 
 **Technical Constraints:**
+
 1. **Budget:** Maximum $50/month for all AWS services
 2. **Services:** Limited to AWS services covered in Modules 01-06
 3. **Region:** Single-region deployment (multi-region optional)
@@ -1646,11 +1737,13 @@ s3://cloudmart-curated/
 7. **Authentication:** IAM only (no SSO or federated identity)
 
 **Time Constraints:**
+
 1. **Duration:** Must complete within 5 days maximum
 2. **Support:** Office hours once per week (async otherwise)
 3. **Review:** Submission review within 1 week
 
 **Scope Constraints:**
+
 1. **Historical Data:** Not migrating historical data (>2 years)
 2. **ML Models:** Not deploying machine learning models
 3. **Streaming:** Batch processing only (no Kinesis/Kafka)
@@ -1659,26 +1752,31 @@ s3://cloudmart-curated/
 ### 14.3 Risks and Mitigations
 
 **Risk 1: Budget Overrun**
+
 - **Likelihood:** Medium
 - **Impact:** High (student cost)
 - **Mitigation:** Budget alerts at 80%, cost monitoring dashboard, cleanup scripts
 
 **Risk 2: Incomplete Prerequisites**
+
 - **Likelihood:** Low
 - **Impact:** High (project failure)
 - **Mitigation:** Prerequisites validation quiz, module completion tracking
 
 **Risk 3: AWS Service Limits**
+
 - **Likelihood:** Low
 - **Impact:** Medium (project delays)
 - **Mitigation:** Request limit increases proactively, document limits
 
 **Risk 4: Data Quality Issues**
+
 - **Likelihood:** Medium
 - **Impact:** Medium (incorrect results)
 - **Mitigation:** Comprehensive DQ checks, validation scripts, test data
 
 **Risk 5: Time Management**
+
 - **Likelihood:** High
 - **Impact:** Medium (incomplete project)
 - **Mitigation:** Phased approach, milestones, time tracking, MVP focus
@@ -1690,6 +1788,7 @@ s3://cloudmart-curated/
 ### 15.1 Project Success Indicators
 
 **Technical Success:**
+
 - ✅ All acceptance criteria met (100%)
 - ✅ All automated tests passing
 - ✅ Performance targets achieved
@@ -1697,12 +1796,14 @@ s3://cloudmart-curated/
 - ✅ Zero critical security vulnerabilities
 
 **Learning Success:**
+
 - ✅ Student demonstrates understanding of all concepts
 - ✅ Student can explain architecture decisions
 - ✅ Student can troubleshoot issues independently
 - ✅ Student can optimize costs and performance
 
 **Business Success (Simulation):**
+
 - ✅ Business users can self-serve analytics
 - ✅ Time-to-insight reduced from days to minutes
 - ✅ Data quality >99%
@@ -1711,6 +1812,7 @@ s3://cloudmart-curated/
 ### 15.2 Post-Project Assessment
 
 **Self-Reflection Questions:**
+
 1. What was the most challenging aspect of the project?
 2. Which AWS service did you find most interesting?
 3. What would you do differently if starting over?
@@ -1718,6 +1820,7 @@ s3://cloudmart-curated/
 5. What additional features would you add?
 
 **Instructor Evaluation:**
+
 - Code quality and organization
 - Architecture appropriateness
 - Problem-solving approach
@@ -1740,6 +1843,7 @@ s3://cloudmart-curated/
 ### 16.2 Sample Data
 
 Sample datasets will be provided in `/data/input/`:
+
 - `orders_sample.csv`: 1,000 sample orders
 - `order_items_sample.csv`: 2,500 sample order items
 - `customers_sample.csv`: 500 sample customers
@@ -1768,6 +1872,7 @@ Sample datasets will be provided in `/data/input/`:
 This project represents the culmination of Modules 01-06 and your first major cloud data engineering deliverable. Successfully completing this checkpoint demonstrates your ability to design, build,and operate a production-grade serverless data lake on AWS.
 
 **Remember:**
+
 - Start early; don't leave it all for the last day
 - Test incrementally; don't wait until the end
 - Document as you go; it's easier in the moment

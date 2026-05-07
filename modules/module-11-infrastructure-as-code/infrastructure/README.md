@@ -4,7 +4,7 @@ Este directorio contiene configuraciones de referencia de Terraform para diferen
 
 ## Estructura
 
-```
+```text
 infrastructure/
 ├── terraform/
 │   ├── examples/       # Ejemplos completos
@@ -19,7 +19,7 @@ infrastructure/
     ├── dev/
     ├── staging/
     └── prod/
-```
+```text
 
 ## Uso
 
@@ -31,7 +31,7 @@ Primero, crea el backend para almacenar el state:
 cd terraform/backend
 terraform init
 terraform apply
-```
+```text
 
 ### 2. Usar Modules
 
@@ -51,7 +51,7 @@ module "my_bucket" {
 cd environments/dev
 terraform init -backend-config=backend.hcl
 terraform apply
-```
+```text
 
 ## Modules Disponibles
 

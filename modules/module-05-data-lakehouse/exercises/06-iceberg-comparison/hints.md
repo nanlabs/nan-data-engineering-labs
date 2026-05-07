@@ -3,12 +3,14 @@
 ## 🎯 Conceptos Key
 
 ### Delta Lake
+
 - **Origen**: Databricks (2019, open-source 2020)
 - **Formato**: Parquet + Transaction Log (JSON)
 - **Catalogo**: Delta Catalog or Hive Metastore
 - **Optimizado for**: Spark/Databricks workloads
 
 ### Apache Iceberg
+
 - **Origen**: Netflix → Apache (2018)
 - **Formato**: Parquet/ORC + Metadata (Avro)
 - **Catalogo**: Hive, Hadoop, AWS Glue, Nessie
@@ -19,6 +21,7 @@
 ## 📝 comparison.py
 
 ### Configurar Spark with ambos
+
 ```python
 from pyspark.sql import SparkSession
 from delta import configure_spark_with_delta_pIP
@@ -38,9 +41,10 @@ builder = SparkSession.builder.appName("Comparison") \
             "s3a://warehouse/iceberg")
 
 spark = configure_spark_with_delta_pIP(builder).getOrCreate()
-```
+```text
 
 ### 1. Delta Lake - Escribir and Leer
+
 ```python
 import time
 
@@ -60,9 +64,10 @@ delta_read_time = time.time() - start
 print(f"Delta Write: {delta_write_time:.2f}s")
 print(f"Delta Read: {delta_read_time:.2f}s")
 print(f"Delta Count: {delta_count:,}")
-```
+```text
 
 ### 2. Apache Iceberg - Escribir and Leer
+
 ```python
 # Escribir - Opción 1: writeTo()
 start = time.time()
@@ -91,11 +96,12 @@ iceberg_df = spark.table("iceberg_catalog.default.comparison_iceberg")
 print(f"Iceberg Write: {iceberg_write_time:.2f}s")
 print(f"Iceberg Read: {iceberg_read_time:.2f}s")
 print(f"Iceberg Count: {iceberg_count:,}")
-```
+```text
 
 ### 3. Feature Comparison
 
 #### Time Travel
+
 ```python
 # Delta Lake
 df_v0 = spark.read.format("delta") \
@@ -114,6 +120,7 @@ df_time = spark.read.format("iceberg") \
 ```
 
 #### ACID Transactions
+
 ```python
 # Delta Lake - UPDATE/DELETE/MERGE
 from delta.tables import DeltaTable
@@ -130,9 +137,10 @@ spark.sql("""
     SET status = 'completed'
     WHERE status = 'pending'
 """)
-```
+```text
 
 #### Schema Evolution
+
 ```python
 # Delta Lake
 df_new_schema.write.format("delta") \
@@ -144,9 +152,10 @@ df_new_schema.write.format("delta") \
 df_new_schema.writeTo("iceberg_catalog.default.table") \
     .using("iceberg") \
     .append()  # Auto merge schema
-```
+```text
 
 #### Partitioning
+
 ```python
 # Delta Lake - Explicit partitioning
 df.write.format("delta") \
@@ -169,48 +178,56 @@ spark.sql("""
     ALTER TABLE iceberg_catalog.default.table
     REPLACE PARTITION FIELD days(timestamp) WITH months(timestamp)
 """)
-```
+```text
 
 ---
 
 ## 🚨 Errores Comunes
 
 ### Error 1: Iceberg JAR faltante
+
 ```
 ClassNotFoundException: org.apache.iceberg.spark.SparkCatalog
-```
+```text
+
 **Solution:** Add Iceberg JAR:
+
 ```bash
 --packages org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.4.0
-```
+```text
 
 ### Error 2: Catalog not configurado
-```
+
+```text
 AnalysisException: Database 'default' not found
 ```
+
 **Solution:** Verify catalog configuration:
+
 ```python
 .config("spark.sql.catalog.iceberg_catalog.type", "hive")
 .config("spark.sql.catalog.iceberg_catalog.uri", "thrift://...")
-```
+```text
 
 ### Error 3: Namespace incorrecto
+
 ```python
 # ❌ MAL
 spark.read.format("iceberg").load("table_name")
 
 # ✅ BIEN - incluir catalog.database
 spark.read.format("iceberg").load("iceberg_catalog.default.table_name")
-```
+```text
 
 ### Error 4: write() vs writeTo()
+
 ```python
 # ❌ MAL - write() not funciona bien with Iceberg
 df.write.format("iceberg").save("iceberg_catalog.default.table")
 
 # ✅ BIEN - usar writeTo()
 df.writeTo("iceberg_catalog.default.table").using("iceberg").create()
-```
+```text
 
 ---
 
@@ -255,6 +272,7 @@ df.writeTo("iceberg_catalog.default.table").using("iceberg").create()
 ## 🎓 Conceptos Avanzados
 
 ### Hidden Partitioning (Iceberg)
+
 ```python
 # Problem in Delta Lake
 df.filter("date = '2024-01-15'")  # User debe conocer particionamiento
@@ -276,6 +294,7 @@ spark.sql("SELECT * FROM iceberg_catalog.default.events WHERE timestamp = '2024-
 ```
 
 ### Partition Evolution (Iceberg)
+
 ```python
 # Cambiar estrategia of particionamiento without reescribir datas
 spark.sql("""
@@ -285,9 +304,10 @@ spark.sql("""
 
 # Nuevos datas usan months(), pero datas viejos with days() siguen accesibles
 # Iceberg maneja esto transparentemente
-```
+```text
 
 ### Snapshot Management (Iceberg)
+
 ```python
 # to see snapshots
 spark.sql("""
@@ -308,9 +328,10 @@ spark.sql("""
         older_than => TIMESTAMP '2024-01-01 00:00:00'
     )
 """)
-```
+```text
 
 ### Change data Feed (Delta Lake)
+
 ```python
 # Habilitar CDF
 spark.conf.set("spark.databricks.delta.properties.defaults.enableChangeDataFeed", "true")
@@ -329,27 +350,30 @@ changes = spark.read.format("delta") \
 
 changes.show()
 # Muestra: _change_type (insert, update_preimage, update_postimage, delete)
-```
+```text
 
 ---
 
 ## 🎯 When to Use Each One
 
-### Usar Delta Lake when:
+### Usar Delta Lake when
+
 - ✅ You are in the Spark/Databricks ecosystem
 - ✅ Necesitas Z-Ordering
 - ✅ you want Change data Feed
 - ✅ Performance in Spark is critical
 - ✅ Team is already familiar with Delta
 
-### Usar Apache Iceberg when:
+### Usar Apache Iceberg when
+
 - ✅ Necesitas multi-engine support (Flink, Trino, Presto)
 - ✅ Partition evolution is importante
 - ✅ Migras desde Hive
 - ✅ Necesitas hidden partitioning
 - ✅ you want vendor-neutrality
 
-### Considerar ambos when:
+### Considerar ambos when
+
 - ⚠️ you have workloads mixtos (batch + streaming)
 - ⚠️ Necesitas flexibility for cambiar engines
 - ⚠️ You are building to new data platform

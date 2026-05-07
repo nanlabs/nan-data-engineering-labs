@@ -26,11 +26,12 @@ def clean_data(df):
     df = remove_outliers(df)
     
     return df
-```
+```text
 
 ## 🔍 Problem Detection
 
 ### Initial Analysis
+
 ```python
 def data_quality_report(df):
     """Reporte completo de calidad de data"""
@@ -73,9 +74,10 @@ def data_quality_report(df):
         'null_percentage': (df.isnull().sum().sum() / df.size * 100),
         'duplicate_percentage': (duplicates / len(df) * 100)
     }
-```
+```text
 
 ### Identificar Outliers
+
 ```python
 def detect_outliers_iqr(df, column):
     """Detectar outliers usando metodo IQR"""
@@ -108,13 +110,14 @@ def detect_outliers_zscore(df, column, threshold=3):
     print(f"  Outliers encontrados: {len(outliers)}")
     
     return outliers
-```
+```text
 
 ## 🛠️ Manejo de Valores Nulos
 
 ### Imputation Strategies
 
 #### 1. Elimination
+
 ```python
 # Eliminar filas con cualquier null
 df_clean = df.dropna()
@@ -133,6 +136,7 @@ df_clean = df[cols_to_keep]
 ```
 
 #### 2. Numerical Imputation
+
 ```python
 # Media (sensible a outliers)
 df['edad'].fillna(df['edad'].mean(), inplace=True)
@@ -152,9 +156,10 @@ df['temperatura'] = df['temperatura'].interpolate(method='linear')
 # Forward/Backward fill
 df['precio'] = df['precio'].fillna(method='ffill')  # Propagar hacia adelante
 df['precio'] = df['precio'].fillna(method='bfill')  # Propagar hacia atras
-```
+```text
 
 #### 3. Imputation by Groups
+
 ```python
 # Imputar con media del grupo
 df['salario'] = df.groupby('departamento')['salario'].transform(
@@ -165,9 +170,10 @@ df['salario'] = df.groupby('departamento')['salario'].transform(
 df['precio'] = df.groupby('categoria')['precio'].transform(
     lambda x: x.fillna(x.median())
 )
-```
+```text
 
 #### 4. Advanced Imputation
+
 ```python
 from sklearn.impute import SimpleImputer, KNNImputer
 
@@ -178,9 +184,10 @@ df[['edad', 'salario']] = imputer.fit_transform(df[['edad', 'salario']])
 # KNN Imputer (usa vecinos mas cercanos)
 imputer = KNNImputer(n_neighbors=5)
 df[['edad', 'salario']] = imputer.fit_transform(df[['edad', 'salario']])
-```
+```text
 
 ### Crear Indicadores de Nulls
+
 ```python
 # Flag para indicar si habia null (puede ser importante para ML)
 df['edad_was_null'] = df['edad'].isnull().astype(int)
@@ -190,6 +197,7 @@ df['edad'].fillna(df['edad'].median(), inplace=True)
 ## 🔄 Manejo de Duplicados
 
 ### Intelligent Detection
+
 ```python
 # Duplicados exactos
 duplicates = df[df.duplicated(keep=False)]
@@ -202,9 +210,10 @@ for group_id, group in df.groupby(['customer_id', 'fecha']):
     if len(group) > 1:
         print(f"\nGrupo duplicado: {group_id}")
         print(group)
-```
+```text
 
 ### Strategic Elimination
+
 ```python
 # Mantener primera ocurrencia
 df_clean = df.drop_duplicates(keep='first')
@@ -220,9 +229,10 @@ df_clean = df.sort_values('fecha').drop_duplicates(
     subset=['customer_id'], 
     keep='last'
 )
-```
+```text
 
 ### Aggregation instead of Deletion
+
 ```python
 # Si duplicados son validos, agregar
 df_agg = df.groupby(['customer_id', 'fecha']).agg({
@@ -230,11 +240,12 @@ df_agg = df.groupby(['customer_id', 'fecha']).agg({
     'cantidad': 'sum',
     'transaccion_id': 'count'  # Contar transacciones
 }).reset_index()
-```
+```text
 
 ## 🔧 Correction of Data Types
 
 ### Conversiones Comunes
+
 ```python
 # Numericos
 df['edad'] = pd.to_numeric(df['edad'], errors='coerce')  # NaN si falla
@@ -254,6 +265,7 @@ df['estado'] = pd.Categorical(df['estado'], categories=['bajo', 'medio', 'alto']
 ```
 
 ### Cleaning Before Conversion
+
 ```python
 # Limpiar strings antes de convertir a numero
 df['precio'] = df['precio'].str.replace('$', '').str.replace(',', '')
@@ -264,11 +276,12 @@ df['nombre'] = df['nombre'].str.strip()
 
 # Normalizar texto
 df['email'] = df['email'].str.lower().str.strip()
-```
+```text
 
 ## 📝 String Normalization
 
 ### Basic Cleaning
+
 ```python
 def normalize_strings(df):
     """Normalizar todas las columnas string"""
@@ -289,9 +302,10 @@ def normalize_strings(df):
         # df[col] = df[col].str.replace(r'[^\w\s]', '', regex=True)
     
     return df
-```
+```text
 
 ### Specific Cases
+
 ```python
 # Telefonos (formato uniforme)
 df['telefono'] = df['telefono'].str.replace(r'\D', '', regex=True)  # Solo digitos
@@ -304,11 +318,12 @@ df['nombre'] = df['nombre'].str.title()
 
 # Codigos postales (padding con ceros)
 df['codigo_postal'] = df['codigo_postal'].astype(str).str.zfill(5)
-```
+```text
 
 ## ✅ Range Validation
 
 ### Numerical Validation
+
 ```python
 def validate_numeric_ranges(df, rules):
     """
@@ -361,6 +376,7 @@ def fix_ranges(df, column, min_val=None, max_val=None):
 ```
 
 ### Relationship Validation
+
 ```python
 def validate_relationships(df):
     """Validate relaciones logicas entre columnas"""
@@ -381,11 +397,12 @@ def validate_relationships(df):
             issues.append(f"Total inconsistente: {len(invalid)} casos")
     
     return issues
-```
+```text
 
 ## 🎯 Remover Outliers
 
 ### Removal Methods
+
 ```python
 def remove_outliers_iqr(df, column):
     """Remover outliers usando IQR"""
@@ -414,11 +431,12 @@ def cap_outliers(df, column, lower_percentile=0.01, upper_percentile=0.99):
     df[column] = df[column].clip(lower=lower_bound, upper=upper_bound)
     
     return df
-```
+```text
 
 ## 💡 pipeline Completo
 
 ### Ejemplo Integrado
+
 ```python
 def comprehensive_cleaning_pipeline(df):
     """Pipeline completo de limpieza"""
@@ -482,7 +500,7 @@ def comprehensive_cleaning_pipeline(df):
     print(f"   Filas removidas: {initial_rows - len(df_clean):,} ({(1 - len(df_clean)/initial_rows)*100:.1f}%)")
     
     return df_clean, initial_report, final_report
-```
+```text
 
 ## ⚠️ Best Practices
 

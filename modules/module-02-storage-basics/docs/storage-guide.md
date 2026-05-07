@@ -1,6 +1,7 @@
 # Storage Formats Deep Dive Guide
 
 ## Table of Contents
+
 1. [Format Comparison Matrix](#format-comparison-matrix)
 2. [CSV - Comma Separated Values](#csv)
 3. [JSON - JavaScript Object Notation](#json)
@@ -29,17 +30,20 @@
 ## CSV - Comma Separated Values
 
 ### Overview
+
 - **Created**: 1970s
 - **Type**: Row-based, plain text
 - **Use Case**: Data exchange, human review
 
 ### Pros
+
 ✅ Universal compatibility
 ✅ Human-readable
 ✅ Simple to create and parse
 ✅ Works with Excel, databases, any tool
 
 ### Cons
+
 ❌ No schema enforcement
 ❌ Poor compression (text-based)
 ❌ No data types (everything is string)
@@ -48,23 +52,27 @@
 ❌ No support for nested structures
 
 ### Technical Details
+
 ```csv
 transaction_id,user_id,amount,timestamp,country
 1,1001,125.50,2024-01-15T10:30:00,USA
 2,1002,89.99,2024-01-15T11:15:00,UK
-```
+```text
 
 **File Size Example** (100K rows):
+
 - Raw CSV: 15.8 MB
 - Gzipped CSV: 3.2 MB (79.7% savings)
 
 ### When to Use
+
 - Exchanging data with external systems
 - One-time data exports for human review
 - Bronze layer (preserving original format)
 - Small datasets (<1 GB)
 
 ### When NOT to Use
+
 - Large-scale analytics (use Parquet)
 - Nested/complex structures (use JSON/Parquet)
 - High-performance queries (use Parquet/ORC)
@@ -72,11 +80,13 @@ transaction_id,user_id,amount,timestamp,country
 ## JSON - JavaScript Object Notation
 
 ### Overview
+
 - **Created**: 2001 (Douglas Crockford)
 - **Type**: Row-based, text, semi-structured
 - **Use Case**: APIs, configuration, event logs
 
 ### Pros
+
 ✅ Human-readable
 ✅ Supports nested objects/arrays
 ✅ Flexible schema
@@ -84,6 +94,7 @@ transaction_id,user_id,amount,timestamp,country
 ✅ Self-describing data
 
 ### Cons
+
 ❌ Larger than CSV (verbose syntax)
 ❌ Slow parsing
 ❌ No compression (text-based)
@@ -91,6 +102,7 @@ transaction_id,user_id,amount,timestamp,country
 ❌ No schema validation (unless JSON Schema used)
 
 ### Technical Details
+
 ```json
 {
   "transaction_id": 1,
@@ -103,20 +115,23 @@ transaction_id,user_id,amount,timestamp,country
     "browser": "Chrome"
   }
 }
-```
+```text
 
 **JSONL (JSON Lines)** - Better for big data:
+
 ```jsonl
 {"transaction_id":1,"user_id":1001,"amount":125.50}
 {"transaction_id":2,"user_id":1002,"amount":89.99}
-```
+```text
 
 **File Size Example** (100K rows):
+
 - JSON: 18.5 MB (17% larger than CSV!)
 - JSONL: 16.2 MB
 - Gzipped JSONL: 2.8 MB
 
 ### When to Use
+
 - API responses
 - Event logs with variable structure
 - Configuration files
@@ -124,6 +139,7 @@ transaction_id,user_id,amount,timestamp,country
 - Data with deep nesting
 
 ### When NOT to Use
+
 - Large datasets (>10 GB) → use Parquet
 - Analytics workloads → use Parquet
 - When storage cost matters → use Parquet
@@ -131,11 +147,13 @@ transaction_id,user_id,amount,timestamp,country
 ## Parquet - Apache Parquet
 
 ### Overview
+
 - **Created**: 2013 (Twitter & Cloudera)
 - **Type**: Columnar, binary
 - **Use Case**: Data lakes, analytics, BI tools
 
 ### Pros
+
 ✅ Excellent compression (70-90% savings)
 ✅ Fastest read for analytics (columnr)
 ✅ Predicate pushdown (read only needed columns)
@@ -146,6 +164,7 @@ transaction_id,user_id,amount,timestamp,country
 ✅ Industry standard for data lakes
 
 ### Cons
+
 ❌ Not human-readable (binary)
 ❌ Slower writes than CSV
 ❌ Requires specialized tools (PyArrow, Spark)
@@ -153,6 +172,7 @@ transaction_id,user_id,amount,timestamp,country
 ### Technical Details
 
 **Columnar Storage**:
+
 ```
 CSV (Row-based):
 Row 1: [1, 1001, 125.50, 2024-01-15, USA]
@@ -162,10 +182,11 @@ Parquet (Column-based):
 transaction_id: [1, 2, 3, ...]
 user_id:       [1001, 1002, 1003, ...]
 amount:        [125.50, 89.99, 210.00, ...]
-```
+```text
 
 **Internal Structure**:
-```
+
+```text
 Parquet File
 ├── File Metadata
 ├── Row Group 1 (128 MB default)
@@ -176,9 +197,10 @@ Parquet File
 │   └── Column Chunk: country
 ├── Row Group 2
 └── Footer (schema, offsets)
-```
+```text
 
 **Compression Comparison** (100K rows):
+
 - CSV: 15.8 MB
 - Parquet (Snappy): 3.2 MB (79.7% compression)
 - Parquet (Gzip): 2.1 MB (86.7% compression)
@@ -186,6 +208,7 @@ Parquet File
 - Parquet (Zstd): 2.3 MB (85.4% compression)
 
 **Query Performance**:
+
 ```python
 # CSV: Read entire file (15.8 MB)
 df = pd.read_csv('data.csv')
@@ -208,6 +231,7 @@ result = df[df['country'] == 'USA']['amount'].sum()
 | **Zstd** | 70-75% | ⚡⚡ Fast | ⚡⚡⚡ Very Fast | Medium | Modern balanced |
 
 **Recommendation by Layer**:
+
 - Bronze: Gzip (maximize storage savings, infrequent access)
 - Silver: Snappy (balance of compression and speed)
 - Gold: Snappy (optimized for fast queries)
@@ -230,9 +254,10 @@ schema_v2 = pa.schema([
 
 # Old readers can still read V2 files (ignores new column)
 # New readers can read V1 files (loyalty_points = null)
-```
+```text
 
 ### When to Use ⭐ HIGHLY RECOMMENDED
+
 - Data lakes (Silver/Gold layers)
 - Analytics workloads
 - BI tools (Tableau, PowerBI, Looker)
@@ -240,6 +265,7 @@ schema_v2 = pa.schema([
 - Any scenario with >1 GB data
 
 ### When NOT to Use
+
 - Real-time streaming (consider Avro)
 - Transactional updates (use database)
 - Human need to read files (use CSV)
@@ -247,11 +273,13 @@ schema_v2 = pa.schema([
 ## Avro - Apache Avro
 
 ### Overview
+
 - **Created**: 2009 (Doug Cutting)
 - **Type**: Row-based, binary
 - **Use Case**: Data serialization, Kafka, streaming
 
 ### Pros
+
 ✅ Excellent schema evolution
 ✅ Compact binary format
 ✅ Self-describing (schema in file)
@@ -260,6 +288,7 @@ schema_v2 = pa.schema([
 ✅ Dynamic typing support
 
 ### Cons
+
 ❌ Larger than Parquet (row-based)
 ❌ Slower for analytics than Parquet
 ❌ Less tool support than Parquet
@@ -267,6 +296,7 @@ schema_v2 = pa.schema([
 ### Technical Details
 
 **Schema Definition** (JSON):
+
 ```json
 {
   "type": "record",
@@ -287,9 +317,10 @@ schema_v2 = pa.schema([
     }], "default": null}
   ]
 }
-```
+```text
 
 **File Size Example** (100K rows):
+
 - CSV: 15.8 MB
 - Avro: 8.2 MB (48% compression)
 - Avro (Deflate): 2.5 MB (84% compression)
@@ -297,6 +328,7 @@ schema_v2 = pa.schema([
 ### Schema Evolution
 
 **Backward Compatibility** (new code reads old data):
+
 ```json
 // Old schema
 {"fields": [{"name": "amount", "type": "double"}]}
@@ -306,15 +338,17 @@ schema_v2 = pa.schema([
   {"name": "amount", "type": "double"},
   {"name": "currency", "type": "string", "default": "USD"}
 ]}
-```
+```text
 
 **Forward Compatibility** (old code reads new data):
+
 ```json
 // Add optional field
 {"name": "loyalty_points", "type": ["null", "int"], "default": null}
 ```
 
 ### When to Use
+
 - Kafka message serialization
 - Event streaming (Kinesis, Pulsar)
 - RPC systems (Hadoop)
@@ -322,6 +356,7 @@ schema_v2 = pa.schema([
 - When strong schema evolution is needed
 
 ### When NOT to Use
+
 - Analytics queries (use Parquet)
 - Human-readable data (use JSON)
 - Storage optimization critical (use Parquet)
@@ -329,11 +364,13 @@ schema_v2 = pa.schema([
 ## ORC - Optimized Row Columnar
 
 ### Overview
+
 - **Created**: 2013 (Hortonworks)
 - **Type**: Columnar, binary
 - **Use Case**: Hive, Spark
 
 ### Pros
+
 ✅ Excellent compression
 ✅ Fast for analytics
 ✅ ACID transactions support
@@ -341,16 +378,19 @@ schema_v2 = pa.schema([
 ✅ Bloom filters for fast lookups
 
 ### Cons
+
 ❌ Less ecosystem support than Parquet
 ❌ Primarily Hive-focused
 ❌ Complex to work with directly
 
 ### When to Use
+
 - Hive data warehouses
 - Spark jobs reading from Hive
 - ACID transactional tables
 
 ### When NOT to Use
+
 - General data lakes (use Parquet)
 - Non-Hive ecosystems (use Parquet)
 
@@ -358,7 +398,7 @@ schema_v2 = pa.schema([
 
 ### Step 1: Determine Your Use Case
 
-```
+```text
 START
   │
   ├─ Human needs to read? ──> CSV
@@ -370,11 +410,11 @@ START
   ├─ Analytics/BI? ──> Parquet ⭐
   │
   └─ Hive tables? ──> ORC
-```
+```text
 
 ### Step 2: Data Size Threshold
 
-```
+```text
 < 100 MB      → CSV is fine
 100 MB - 1 GB → CSV acceptable, Parquet better
 1 GB - 10 GB  → Parquet recommended
@@ -383,27 +423,30 @@ START
 
 ### Step 3: Query Pattern
 
-```
+```text
 Full table scans        → Any format
 Column-specific queries → Parquet/ORC ⭐
 Row-by-row access      → Avro
 One-time export        → CSV
-```
+```text
 
 ## Real-World Examples
 
 ### Netflix
+
 - **Bronze**: JSON (preserve raw events)
 - **Silver**: Parquet with Snappy (cleaned data)
 - **Gold**: Parquet with Snappy (aggregated metrics)
 - **Result**: 70% storage reduction, 10x faster queries
 
 ### Uber
+
 - **Transactional Data**: Avro in Kafka
 - **Analytics Data**: Parquet in S3
 - **Result**: Schema evolution without downtime
 
 ### Spotify
+
 - **Event Logs**: JSON → Parquet daily
 - **User Profiles**: Parquet partitioned by country
 - **Result**: $2M/year savings in storage costs
@@ -413,6 +456,7 @@ One-time export        → CSV
 ### The Clear Winner for Data Lakes: Parquet ⭐
 
 **Why Parquet is #1**:
+
 1. **Storage Efficiency**: 70-90% compression
 2. **Query Speed**: 5-10x faster than CSV/JSON
 3. **Industry Standard**: Supported by every tool

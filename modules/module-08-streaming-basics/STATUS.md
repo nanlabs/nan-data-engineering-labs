@@ -39,6 +39,7 @@
 ## Ready for Production Use
 
 Los estudiantes pueden:
+
 1. Ejecutar `./scripts/setup.sh` para inicializar
 2. Complete 6 practical exercises
 3. Learn Kafka, Flink, Kinesis

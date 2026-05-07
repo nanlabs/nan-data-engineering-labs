@@ -5,6 +5,7 @@
 QuickMart's AWS bill is growing faster than revenue:
 
 **Current State (Month 1):**
+
 - **S3 Storage:** $450/month (2TB of data, all STANDARD class)
 - **CloudWatch Logs:** $180/month (500GB retained for 6 months)
 - **Lambda Executions:** $85/month (25M invocations, 512MB memory)
@@ -25,12 +26,14 @@ Implement cost optimization strategies across the data platform:
 Analyze data access patterns and implement lifecycle policies:
 
 **Current:**
-```
+
+```text
 2TB data → 100% STANDARD ($0.023/GB) = $47/GB = $450/month
-```
+```text
 
 **Optimized:**
-```
+
+```text
 - Hot data (30 days): 200GB STANDARD = $4.60
 - Warm data (90 days): 500GB STANDARD_IA ($0.0125/GB) = $6.25
 - Cold data (1 year): 800GB GLACIER ($0.004/GB) = $3.20
@@ -43,12 +46,14 @@ Total: $14.55/month (97% reduction)
 Reduce retention and export to S3:
 
 **Current:**
-```
+
+```text
 500GB logs × 6 months retention × $0.03/GB = $180/month
-```
+```text
 
 **Optimized:**
-```
+
+```text
 - 7 days retention: 60GB × $0.03/GB = $1.80
 - Archive to S3 GLACIER: 440GB × $0.004/GB = $1.76
 Total: $3.56/month (98% reduction)
@@ -59,12 +64,14 @@ Total: $3.56/month (98% reduction)
 Analyze execution time and adjust memory:
 
 **Current:**
-```
+
+```text
 25M invocations × 512MB × 1000ms avg × $0.0000166667 = $85/month
-```
+```text
 
 **Optimized:**
-```
+
+```text
 - Memory: 512MB → 256MB (sufficient for workload)
 - Duration: 1000ms → 800ms (code optimization)
 25M × 256MB × 800ms × $0.0000166667 = $34/month (60% reduction)
@@ -75,6 +82,7 @@ Analyze execution time and adjust memory:
 Identify and remove unused resources:
 
 **Targets:**
+
 - Stopped EC2 instances (pay for EBS)
 - Unattached EBS volumes
 - Old EBS snapshots
@@ -87,6 +95,7 @@ Identify and remove unused resources:
 ## 📋 Acceptance Criteria
 
 ### Analysis Scripts
+
 - [x] Python script to analyze S3 storage by age
 - [x] Generate lifecycle policy recommendations
 - [x] CloudWatch Logs analyzer (size, retention)
@@ -94,24 +103,27 @@ Identify and remove unused resources:
 - [x] Resource scanner (unused/orphaned)
 
 ### Cost Budgets
+
 - [x] Create AWS Budget with $800/month limit
 - [x] Configure SNS alerts at 80%, 90%, 100%
 - [x] Email notifications to engineering team
 
 ### CloudWatch Dashboards
+
 - [x] S3 storage by class (chart)
 - [x] Lambda duration percentiles (p50, p95, p99)
 - [x] CloudWatch Logs ingestion rate
 - [x] Monthly cost projection
 
 ### Reporting
+
 - [x] Weekly cost report (by service)
 - [x] Monthly optimization recommendations
 - [x] Savings achieved vs. target
 
 ## 🏗️ Architecture
 
-```
+```text
 Cost Optimization Platform
 ├── Analysis Layer
 │   ├── s3_storage_analyzer.py → CSV report
@@ -131,7 +143,7 @@ Cost Optimization Platform
 └── Reporting Layer
     ├── weekly_report.py → Email summary
     └── savings_calculator.py → ROI calculation
-```
+```text
 
 ## 💡 Implementation Tips
 
@@ -169,7 +181,7 @@ def analyze_bucket(bucket_name):
                 age_buckets['archive'] += size
 
     return age_buckets
-```
+```text
 
 ### Lambda Right-Sizing
 
@@ -240,7 +252,7 @@ Resources:
           Subscribers:
             - SubscriptionType: EMAIL
               Address: cfo@quickmart.com
-```
+```text
 
 ## 🧪 Test Scenarios
 
@@ -256,7 +268,7 @@ python3 s3_storage_analyzer.py --bucket quickmart-data-lake-prod
 # Cold (91-365d):  800GB → GLACIER (save $15.20/month)
 # Archive (365+d): 500GB → DEEP_ARCHIVE (save $11.00/month)
 # Total Savings: $31.95/month (70%)
-```
+```text
 
 ### Scenario 2: Resource Cleanup
 
@@ -269,7 +281,7 @@ python3 resource_scanner.py --region us-east-1
 # - 12 unattached EBS volumes (save $120/month)
 # - 200 old snapshots (save $20/month)
 # - 3 unused Elastic IPs (save $10.80/month)
-```
+```text
 
 ### Scenario 3: Budget Alerts
 

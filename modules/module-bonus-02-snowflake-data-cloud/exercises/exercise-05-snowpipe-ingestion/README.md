@@ -1,6 +1,7 @@
 # Exercise 05: Snowpipe Auto-Ingestion
 
 ## Overview
+
 Implement event-driven, near real-time data loading with Snowpipe to automatically ingest files from cloud storage as they arrive, eliminating the need for scheduled batch loads.
 
 **Estimated Time**: 2 hours
@@ -10,7 +11,9 @@ Implement event-driven, near real-time data loading with Snowpipe to automatical
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Create external stages pointing to cloud storage (S3/Azure/GCS)
 - Configure file formats for structured and semi-structured data
 - Create and manage Snowpipe objects
@@ -22,7 +25,9 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 You're managing an IoT platform that collects sensor data from thousands of devices deployed in the field. Sensors generate JSON files every minute and upload them to an S3 bucket. Requirements:
+
 - **Near real-time ingestion**: Data must be available within 1-2 minutes of file upload
 - **Zero manual intervention**: No scheduled jobs or manual COPY commands
 - **Cost-effective**: Minimize compute costs while maintaining performance
@@ -35,9 +40,11 @@ Your goal is to implement a fully automated ingestion pipeline using Snowpipe.
 ## Requirements
 
 ### Task 1: Setup Stage & Format (20 min)
+
 Create an external stage connected to cloud storage and define file formats.
 
 **Create Storage Integration** (requires ACCOUNTADMIN):
+
 ```sql
 -- For AWS S3
 CREATE OR REPLACE STORAGE INTEGRATION s3_integration
@@ -49,9 +56,10 @@ CREATE OR REPLACE STORAGE INTEGRATION s3_integration
 
 -- Describe integration to get AWS_IAM_USER_ARN and AWS_EXTERNAL_ID
 DESC STORAGE INTEGRATION s3_integration;
-```
+```text
 
 **AWS IAM Setup** (in AWS Console):
+
 ```json
 {
   "Version": "2012-10-17",
@@ -70,9 +78,10 @@ DESC STORAGE INTEGRATION s3_integration;
     }
   ]
 }
-```
+```text
 
 **Create External Stage**:
+
 ```sql
 CREATE OR REPLACE STAGE s3_sensor_stage
     STORAGE_INTEGRATION = s3_integration
@@ -81,9 +90,10 @@ CREATE OR REPLACE STAGE s3_sensor_stage
 
 -- Test stage access
 LIST @s3_sensor_stage;
-```
+```text
 
 **Create File Formats**:
+
 ```sql
 -- JSON format for sensor data
 CREATE OR REPLACE FILE FORMAT json_sensor_format
@@ -107,6 +117,7 @@ SHOW FILE FORMATS LIKE '%sensor%';
 ```
 
 **Test File Read**:
+
 ```sql
 -- Create sample JSON file content:
 -- {"sensor_id": "SENSOR_001", "timestamp": "2024-03-09T10:30:00Z", "temperature": 22.5, "humidity": 65.2, "location": {"lat": 40.7128, "lon": -74.0060}}
@@ -120,9 +131,10 @@ SELECT
     $1:location as location_json
 FROM @s3_sensor_stage/test_sensor.json
 (FILE_FORMAT => json_sensor_format);
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Storage integration created and configured
 - ✅ External stage pointing to S3 bucket
 - ✅ File formats defined (JSON and CSV)
@@ -132,9 +144,11 @@ FROM @s3_sensor_stage/test_sensor.json
 ---
 
 ### Task 2: Create Target Table (15 min)
+
 Design and create the target table for sensor data with appropriate schema.
 
 **Create Sensor Data Table**:
+
 ```sql
 CREATE OR REPLACE TABLE sensor_data (
     -- Extracted fields
@@ -154,18 +168,20 @@ CREATE OR REPLACE TABLE sensor_data (
     -- Constraints
     PRIMARY KEY (sensor_id, reading_timestamp)
 );
-```
+```text
 
 **Create Staging/Raw Table** (optional, for ELT pattern):
+
 ```sql
 CREATE OR REPLACE TABLE sensor_data_raw (
     raw_json VARIANT,
     file_name VARCHAR(500),
     load_timestamp TIMESTAMP DEFAULT current_timestamp()
 );
-```
+```text
 
 **Test Manual COPY**:
+
 ```sql
 -- Copy from stage to table (to verify schema mapping)
 COPY INTO sensor_data (sensor_id, reading_timestamp, temperature, humidity, location, file_name)
@@ -197,6 +213,7 @@ LIMIT 10;
 ```
 
 **Success Criteria**:
+
 - ✅ `sensor_data` table created with appropriate schema
 - ✅ Table includes metadata columns (file_name, load_timestamp)
 - ✅ Semi-structured VARIANT column for location
@@ -206,9 +223,11 @@ LIMIT 10;
 ---
 
 ### Task 3: Create Snowpipe (25 min)
+
 Configure Snowpipe to automatically load new files as they arrive.
 
 **Create Snowpipe**:
+
 ```sql
 CREATE OR REPLACE PIPE sensor_data_pipe
     AUTO_INGEST = TRUE
@@ -231,9 +250,10 @@ ON_ERROR = 'CONTINUE';  -- Skip bad files, don't fail entire load
 
 -- Get pipe notification channel (for S3 event configuration)
 DESC PIPE sensor_data_pipe;
-```
+```text
 
 **Important Pipe Details**:
+
 ```sql
 -- Show pipes
 SHOW PIPES LIKE 'sensor_data_pipe';
@@ -244,9 +264,10 @@ SELECT SYSTEM$PIPE_STATUS('sensor_data_pipe');
 -- Pipe properties from DESC output:
 -- notification_channel: SQS queue ARN for S3 to send events
 -- Copy these values for AWS S3 event notification setup
-```
+```text
 
 **Pause/Resume Pipe**:
+
 ```sql
 -- Pause pipe (stops processing)
 ALTER PIPE sensor_data_pipe SET PIPE_EXECUTION_PAUSED = TRUE;
@@ -255,9 +276,10 @@ ALTER PIPE sensor_data_pipe SET PIPE_EXECUTION_PAUSED = TRUE;
 ALTER PIPE sensor_data_pipe SET PIPE_EXECUTION_PAUSED = FALSE;
 
 -- Note: Pipes start in active state by default
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Snowpipe created with AUTO_INGEST=TRUE
 - ✅ COPY statement properly maps JSON fields to table columns
 - ✅ ON_ERROR='CONTINUE' configured for resilience
@@ -267,14 +289,17 @@ ALTER PIPE sensor_data_pipe SET PIPE_EXECUTION_PAUSED = FALSE;
 ---
 
 ### Task 4: S3 Event Notification (20 min)
+
 Configure S3 bucket to send events to Snowpipe via SNS/SQS.
 
 **AWS Setup Overview**:
+
 1. Create SNS Topic
 2. Subscribe Snowpipe SQS queue to SNS topic
 3. Configure S3 bucket event notification to publish to SNS
 
 **Step 1: Create SNS Topic** (AWS Console or CLI):
+
 ```bash
 # AWS CLI
 aws sns create-topic \
@@ -283,6 +308,7 @@ aws sns create-topic \
 ```
 
 **Step 2: Subscribe Snowpipe SQS to SNS**:
+
 ```bash
 # Get SQS ARN from DESC PIPE output (notification_channel)
 # Example: arn:aws:sqs:us-east-1:123456789012:sf-snowpipe-AIDAJKLMNOPQRSTUVWXYZ-abcd1234
@@ -291,9 +317,10 @@ aws sns subscribe \
     --topic-arn arn:aws:sns:us-east-1:123456789012:snowflake-s3-events \
     --protocol sqs \
     --notification-endpoint arn:aws:sqs:us-east-1:123456789012:sf-snowpipe-AIDAJKLMNOPQRSTUVWXYZ-abcd1234
-```
+```text
 
 **Step 3: Configure S3 Event Notification**:
+
 ```xml
 <!-- In S3 Console: Bucket Properties -> Event Notifications -->
 <EventNotification>
@@ -302,16 +329,18 @@ aws sns subscribe \
   <Event>s3:ObjectCreated:*</Event>
   <Topic>arn:aws:sns:us-east-1:123456789012:snowflake-s3-events</Topic>
 </EventNotification>
-```
+```text
 
 **Alternative: CLI**:
+
 ```bash
 aws s3api put-bucket-notification-configuration \
     --bucket your-iot-bucket \
     --notification-configuration file://notification.json
-```
+```text
 
 **notification.json**:
+
 ```json
 {
   "TopicConfigurations": [
@@ -336,6 +365,7 @@ aws s3api put-bucket-notification-configuration \
 
 **Document Setup Steps**:
 Create `aws-setup-guide.md` documenting:
+
 - Storage Integration setup
 - IAM role/policy configuration
 - SNS topic creation
@@ -344,6 +374,7 @@ Create `aws-setup-guide.md` documenting:
 - Troubleshooting common issues
 
 **Success Criteria**:
+
 - ✅ SNS topic created for S3 events
 - ✅ Snowpipe SQS queue subscribed to SNS
 - ✅ S3 bucket configured to send ObjectCreated events
@@ -353,9 +384,11 @@ Create `aws-setup-guide.md` documenting:
 ---
 
 ### Task 5: Manual Testing (20 min)
+
 Test Snowpipe ingestion both manually and automatically.
 
 **Generate Test JSON Files**:
+
 ```python
 # generate_sensor_data.py
 import json
@@ -386,18 +419,20 @@ for i in range(10):
         json.dump(generate_sensor_file(sensor_id, timestamp), f)
 
     print(f"Generated: {filename}")
-```
+```text
 
 **Upload Files to S3**:
+
 ```bash
 # Upload test files
 aws s3 cp sensor-data/ s3://your-iot-bucket/sensor-data/ --recursive
 
 # Verify upload
 aws s3 ls s3://your-iot-bucket/sensor-data/
-```
+```text
 
 **Manual Pipe Refresh** (for testing without event notification):
+
 ```sql
 -- Manually trigger pipe to check for new files
 ALTER PIPE sensor_data_pipe REFRESH;
@@ -410,9 +445,10 @@ FROM table(information_schema.copy_history(
     START_TIME => DATEADD(hours, -1, current_timestamp())
 ))
 ORDER BY last_load_time DESC;
-```
+```text
 
 **Verify Data Loaded**:
+
 ```sql
 -- Check row count
 SELECT COUNT(*) as total_records FROM sensor_data;
@@ -440,6 +476,7 @@ ORDER BY load_time DESC;
 ```
 
 **Query COPY_HISTORY**:
+
 ```sql
 -- Detailed copy history
 SELECT
@@ -463,9 +500,10 @@ FROM table(information_schema.copy_history(
     START_TIME => DATEADD(hours, -24, current_timestamp())
 ))
 ORDER BY last_load_time DESC;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Generated and uploaded 10 test JSON files to S3
 - ✅ Manual REFRESH triggered Snowpipe ingestion
 - ✅ All files loaded successfully (status='LOADED')
@@ -476,9 +514,11 @@ ORDER BY last_load_time DESC;
 ---
 
 ### Task 6: Monitoring & Costs (20 min)
+
 Implement monitoring queries and calculate Snowpipe costs.
 
 **Monitor Pipe Usage**:
+
 ```sql
 -- Snowpipe credit usage
 SELECT
@@ -506,9 +546,10 @@ FROM table(information_schema.copy_history(
 WHERE status = 'LOADED'
 GROUP BY load_date
 ORDER BY load_date DESC;
-```
+```text
 
 **Calculate Snowpipe Costs**:
+
 ```sql
 -- Snowpipe pricing: 0.06 credits per 1,000 files loaded
 -- Compute costs: Based on data loaded (serverless compute)
@@ -539,9 +580,10 @@ SELECT
     total_credits as monthly_credits,
     (total_credits * 2.00) as monthly_cost_usd
 FROM pipe_stats;
-```
+```text
 
 **Error Tracking**:
+
 ```sql
 -- Failed file loads
 SELECT
@@ -573,6 +615,7 @@ ORDER BY error_date DESC;
 ```
 
 **Validate Data Quality**:
+
 ```sql
 -- Use VALIDATE function to check files without loading
 SELECT
@@ -594,9 +637,10 @@ FROM sensor_data
 GROUP BY file_name
 HAVING COUNT(*) > 1
 ORDER BY load_count DESC;
-```
+```text
 
 **Create Monitoring Dashboard View**:
+
 ```sql
 CREATE OR REPLACE VIEW v_snowpipe_dashboard AS
 SELECT
@@ -624,9 +668,10 @@ SELECT
 
 -- Query dashboard
 SELECT * FROM v_snowpipe_dashboard;
-```
+```text
 
 **Set Up Alerts** (document as SQL, implement with scheduler):
+
 ```sql
 -- Alert: No data loaded in 30 minutes
 SELECT
@@ -652,9 +697,10 @@ FROM (
     ))
 )
 WHERE error_rate_pct > 5;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Pipe usage query shows credit consumption
 - ✅ Cost calculation: ~0.06 credits per 1K files
 - ✅ Error tracking queries identify failed loads
@@ -690,6 +736,7 @@ DESC STORAGE INTEGRATION s3_integration;
 -- Grant usage to role
 GRANT USAGE ON INTEGRATION s3_integration TO ROLE SYSADMIN;
 ```
+
 </details>
 
 <details>
@@ -712,7 +759,8 @@ SELECT SYSTEM$PIPE_STATUS('test_pipe');
 ALTER PIPE test_pipe SET PIPE_EXECUTION_PAUSED = TRUE;
 -- Update AWS S3 event notification
 ALTER PIPE test_pipe SET PIPE_EXECUTION_PAUSED = FALSE;
-```
+```text
+
 </details>
 
 <details>
@@ -740,7 +788,8 @@ SELECT
     COALESCE($1:temperature::FLOAT, -999.0) as temperature,  -- Default for nulls
     TRY_CAST($1:humidity AS FLOAT) as humidity  -- NULL if cast fails
 FROM @stage_name;
-```
+```text
+
 </details>
 
 <details>
@@ -771,7 +820,8 @@ CREATE OR REPLACE PIPE sensor_data_pipe ...;
 
 -- Drop pipe
 DROP PIPE sensor_data_pipe;
-```
+```text
+
 </details>
 
 <details>
@@ -814,20 +864,23 @@ SELECT $1 FROM @s3_sensor_stage/problem_file.json;
 -- 3. Use ON_ERROR='CONTINUE' to skip bad files
 CREATE PIPE ... AS COPY INTO ... ON_ERROR='CONTINUE';
 ```
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
 cd exercises/exercise-05-snowpipe-ingestion
 bash validate.sh
-```
+```text
 
 **Expected Output**:
-```
+
+```text
 ✅ Task 1: S3 stage and file formats configured
 ✅ Task 2: Target table sensor_data created with schema
 ✅ Task 3: Snowpipe sensor_data_pipe created
@@ -836,12 +889,14 @@ bash validate.sh
 ✅ Task 6: Monitoring queries working, cost: ~0.06 credits/1K files
 
 🎉 Exercise 05 Complete! Snowpipe auto-ingestion operational.
-```
+```text
 
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.sql` - All stage, format, table, and pipe creation commands
 2. `aws-setup-guide.md` - Complete AWS configuration steps
 3. `monitoring-queries.sql` - Saved monitoring and alerting queries
@@ -851,6 +906,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - Snowflake Documentation: [Snowpipe](https://docs.snowflake.com/en/user-guide/data-load-snowpipe)
 - Snowflake Documentation: [External Stages](https://docs.snowflake.com/en/user-guide/data-load-s3)
 - AWS Documentation: [S3 Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/userguide/NotificationHowTo.html)
@@ -861,7 +917,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Exercise 06: Secure Data Sharing (partner data distribution)
 - Explore Snowpipe Streaming API (for sub-minute latency)
 - Implement dead letter queue for failed files

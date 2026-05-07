@@ -17,6 +17,7 @@
 Learn to optimize cloud costs without sacrificing performance or reliability. Master AWS cost management tools, implement FinOps practices, and build cost-aware data architectures. This module covers Reserved Instances, Savings Plans, S3 storage optimization, right-sizing, serverless economics, and automated cost governance.
 
 **AWS Services Covered:**
+
 - 💰 AWS Cost Explorer & Cost and Usage Reports (CUR)
 - 🎫 Reserved Instances (RI) & Savings Plans
 - 📦 S3 Storage Classes & Intelligent-Tiering
@@ -56,11 +57,13 @@ By the end of this module, you will be able to:
 ## Getting Started
 
 1. **Read theory documentation** (1-2 hours)
+
    ```bash
    cat theory/concepts.md theory/architecture.md
-   ```
+   ```text
 
 2. **Set up environment** (15 minutes)
+
    ```bash
    bash scripts/setup.sh
    ```
@@ -74,73 +77,86 @@ By the end of this module, you will be able to:
    - Exercise 06: Automated cost governance
 
 4. **Validate learning**
+
    ```bash
    bash scripts/validate.sh
-   ```
+   ```text
 
 ## Exercises
 
 ### Exercise 01: Cost Analysis with Cost Explorer & CUR
+
 ⏱️ **Duration:** 2.5 hours | 🎯 **Difficulty:** ⭐⭐⭐
 
 Analyze AWS costs using Cost Explorer API and Cost and Usage Reports (CUR). Create custom cost reports, identify top spenders, and build cost dashboards.
 
 **Key Skills:**
+
 - Query Cost Explorer API for granular cost data
 - Set up Cost and Usage Reports (CUR) with Athena
 - Create cost allocation tags
 - Build cost anomaly detection queries
 
 ### Exercise 02: S3 Storage Cost Optimization
+
 ⏱️ **Duration:** 2.5 hours | 🎯 **Difficulty:** ⭐⭐⭐
 
 Optimize S3 storage costs with storage classes, lifecycle policies, and Intelligent-Tiering. Implement data retention policies and archive strategies.
 
 **Key Skills:**
+
 - Analyze S3 storage patterns with S3 Storage Lens
 - Implement lifecycle transitions (Standard → IA → Glacier)
 - Configure S3 Intelligent-Tiering
 - Calculate storage cost savings
 
 ### Exercise 03: Compute Purchasing Options
+
 ⏱️ **Duration:** 2.5 hours | 🎯 **Difficulty:** ⭐⭐⭐⭐
 
 Compare On-Demand, Reserved Instances, Savings Plans, and Spot Instances. Build cost models to determine optimal purchasing strategy.
 
 **Key Skills:**
+
 - Calculate RI vs Savings Plans ROI
 - Implement Spot Instance strategies for EMR
 - Create RI/SP recommendations with Cost Explorer
 - Build capacity reservation policies
 
 ### Exercise 04: Right-Sizing and Auto Scaling
+
 ⏱️ **Duration:** 2.5 hours | 🎯 **Difficulty:** ⭐⭐⭐
 
 Right-size EC2, RDS, and Redshift resources based on actual utilization. Implement auto-scaling policies to match capacity with demand.
 
 **Key Skills:**
+
 - Use AWS Compute Optimizer for recommendations
 - Analyze CloudWatch metrics for utilization
 - Implement EC2 Auto Scaling
 - Right-size RDS and Redshift clusters
 
 ### Exercise 05: Serverless vs Traditional Cost Analysis
+
 ⏱️ **Duration:** 2.5 hours | 🎯 **Difficulty:** ⭐⭐⭐⭐
 
 Compare costs between serverless (Lambda, Fargate, Athena) and traditional (EC2, ECS, EMR) architectures. Build TCO models.
 
 **Key Skills:**
+
 - Calculate Lambda costs (requests + duration)
 - Compare Fargate vs EC2 for containers
 - Analyze Athena vs EMR costs
 - Build TCO calculators in Python
 
 ### Exercise 06: Automated Cost Governance
+
 ⏱️ **Duration:** 2.5 hours | 🎯 **Difficulty:** ⭐⭐⭐⭐
 
 Implement automated cost controls with AWS Budgets, cost anomaly detection, and automatic resource cleanup. Build FinOps dashboards.
 
 **Key Skills:**
+
 - Create AWS Budgets with SNS alerts
 - Set up Cost Anomaly Detection
 - Implement automated resource tagging
@@ -180,6 +196,7 @@ Implement automated cost controls with AWS Budgets, cost anomaly detection, and 
 ## Cost Optimization Strategies
 
 ### Immediate Wins (0-30 days)
+
 - ✅ Delete unused EBS volumes and snapshots
 - ✅ Stop non-production instances during off-hours
 - ✅ Enable S3 Intelligent-Tiering
@@ -187,6 +204,7 @@ Implement automated cost controls with AWS Budgets, cost anomaly detection, and 
 - ✅ Remove unattached Elastic IPs
 
 ### Short-term (1-3 months)
+
 - ✅ Purchase Reserved Instances for steady workloads
 - ✅ Implement S3 lifecycle policies
 - ✅ Right-size EC2 and RDS instances
@@ -194,6 +212,7 @@ Implement automated cost controls with AWS Budgets, cost anomaly detection, and 
 - ✅ Implement auto-scaling
 
 ### Long-term (3-12 months)
+
 - ✅ Adopt serverless architectures
 - ✅ Implement FinOps culture
 - ✅ Build cost-aware CI/CD pipelines

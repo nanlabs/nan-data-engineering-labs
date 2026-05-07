@@ -9,6 +9,7 @@
 ## 🎯 Objectives
 
 Master Apache Kafka fundamentals:
+
 - **Setup**: Run Kafka cluster locally with Docker
 - **Producers**: Send events to Kafka topics
 - **Consumers**: Read events from topics
@@ -21,14 +22,14 @@ Master Apache Kafka fundamentals:
 
 ### Kafka Architecture
 
-```
+```text
 Producers → [Kafka Cluster] → Consumers
               ↓
            Topics
            ├─ Partition 0
            ├─ Partition 1
            └─ Partition 2
-```
+```text
 
 ### Key Concepts
 
@@ -58,9 +59,10 @@ docker-compose logs kafka
 
 # Access Kafka UI
 open http://localhost:8080
-```
+```text
 
 **Expected**:
+
 - ✅ All containers running
 - ✅ Kafka UI accessible
 - ✅ No errors in logs
@@ -88,6 +90,7 @@ docker exec kafka kafka-topics --describe \
 ```
 
 **Create**:
+
 - `user-events` (3 partitions)
 - `sensor-readings` (6 partitions)
 - `transactions` (4 partitions)
@@ -121,9 +124,10 @@ class SimpleProducer:
     def close(self):
         self.producer.flush()
         self.producer.close()
-```
+```text
 
 **Test**:
+
 ```python
 producer = SimpleProducer()
 
@@ -139,7 +143,7 @@ for i in range(100):
     time.sleep(0.1)
 
 producer.close()
-```
+```text
 
 ### Part 4: Simple Consumer (45 min)
 
@@ -169,9 +173,10 @@ class SimpleConsumer:
 
     def close(self):
         self.consumer.close()
-```
+```text
 
 **Test**:
+
 ```python
 def print_event(event):
     print(f"Received: {event['event_id']} - {event['event_type']}")
@@ -200,9 +205,10 @@ python simple_consumer.py --group analytics --id consumer-C
 
 # Terminal 4: Producer (send 300 events)
 python simple_producer.py --count 300
-```
+```text
 
 **Expected**:
+
 - Each consumer processes ~100 events (300 / 3)
 - Partitions distributed among consumers
 - No duplicate processing
@@ -229,18 +235,20 @@ for message in consumer:
     except Exception as e:
         logger.error(f"Processing failed: {e}")
         # Don't commit, will retry
-```
+```text
 
 ---
 
 ## ✅ Validation
 
 **Run tests**:
+
 ```bash
 pytest test_kafka_basics.py -v
-```
+```text
 
 **Expected Results**:
+
 - ✅ Producer sends events to correct topic
 - ✅ Consumer receives all events
 - ✅ Consumer groups distribute load

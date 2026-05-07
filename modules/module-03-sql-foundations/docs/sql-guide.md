@@ -32,13 +32,13 @@ FROM <table>
 [HAVING <group_filter>]
 [ORDER BY <sort_columns>]
 [LIMIT <n> OFFSET <m>];
-```
+```text
 
 ### Execution Order
 
 Logical order SQL processes a query:
 
-```
+```text
 1. FROM & JOIN     -- Determine data sources
 2. WHERE           -- Filter rows
 3. GROUP BY        -- Group rows
@@ -47,7 +47,7 @@ Logical order SQL processes a query:
 6. DISTINCT        -- Remove duplicates
 7. ORDER BY        -- Sort results
 8. LIMIT/OFFSET    -- Paginate
-```
+```text
 
 ---
 
@@ -86,7 +86,7 @@ TEXT                -- Variable unlimited length
 name VARCHAR(100)   -- Max 100 characters
 description TEXT    -- No limit
 code CHAR(5)        -- Exactly 5 characters
-```
+```text
 
 ### Date/Time Types
 
@@ -101,7 +101,7 @@ INTERVAL            -- Time interval: '2 days', '3 hours'
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 expires_at TIMESTAMPTZ
 duration INTERVAL
-```
+```text
 
 ### Boolean
 
@@ -111,7 +111,7 @@ BOOLEAN             -- TRUE, FALSE, NULL
 -- Examples
 is_active BOOLEAN DEFAULT TRUE
 has_orders BOOLEAN
-```
+```text
 
 ### JSON Types
 
@@ -135,7 +135,7 @@ VARCHAR(50)[]       -- Array of varchar
 -- Examples
 tags TEXT[]
 scores INTEGER[]
-```
+```text
 
 ---
 
@@ -172,7 +172,7 @@ CREATE TABLE orders (
         status IN ('pending', 'processing', 'shipped', 'delivered', 'cancelled')
     )
 );
-```
+```text
 
 ### ALTER TABLE
 
@@ -206,7 +206,7 @@ ALTER TABLE users ADD CONSTRAINT unique_email UNIQUE (email);
 
 -- Drop constraint
 ALTER TABLE users DROP CONSTRAINT unique_email;
-```
+```text
 
 ### DROP TABLE
 
@@ -241,7 +241,7 @@ CREATE INDEX idx_lower_email ON users(LOWER(email));
 
 -- Drop index
 DROP INDEX idx_users_email;
-```
+```text
 
 ---
 
@@ -272,7 +272,7 @@ RETURNING user_id, username, created_at;
 INSERT INTO users (username, email)
 VALUES ('user', 'user@example.com')
 ON CONFLICT (email) DO NOTHING;
-```
+```text
 
 ### UPDATE
 
@@ -304,7 +304,7 @@ UPDATE users
 SET is_active = FALSE
 WHERE last_login < '2023-01-01'
 RETURNING user_id, username;
-```
+```text
 
 ### DELETE
 
@@ -364,7 +364,7 @@ SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM users;
 -- DISTINCT
 SELECT DISTINCT country FROM users;
 SELECT DISTINCT category, is_available FROM products;
-```
+```text
 
 ### WHERE
 
@@ -405,7 +405,7 @@ WHERE phone IS NOT NULL
 -- Regular expressions (PostgreSQL)
 WHERE email ~ '^[a-z]+@[a-z]+\.[a-z]{2,}$'
 WHERE email !~ 'spam'
-```
+```text
 
 ### ORDER BY
 
@@ -428,7 +428,7 @@ ORDER BY phone NULLS FIRST
 
 -- By column position (not recommended)
 SELECT username, email FROM users ORDER BY 1;  -- Orders by first column
-```
+```text
 
 ### LIMIT & OFFSET
 
@@ -478,7 +478,7 @@ SELECT u.username, o.order_id
 FROM users u
 INNER JOIN orders o ON u.user_id = o.user_id
 WHERE o.status = 'delivered';
-```
+```text
 
 ### LEFT JOIN (LEFT OUTER JOIN)
 
@@ -501,7 +501,7 @@ SELECT
 FROM users u
 LEFT JOIN orders o ON u.user_id = o.user_id
 GROUP BY u.user_id, u.username;
-```
+```text
 
 ### RIGHT JOIN (RIGHT OUTER JOIN)
 
@@ -516,7 +516,7 @@ SELECT o.order_id
 FROM users u
 RIGHT JOIN orders o ON u.user_id = o.user_id
 WHERE u.user_id IS NULL;
-```
+```text
 
 ### FULL OUTER JOIN
 
@@ -550,7 +550,7 @@ SELECT
     s.shift_name
 FROM days d
 CROSS JOIN shifts s;
-```
+```text
 
 ### SELF JOIN
 
@@ -570,7 +570,7 @@ SELECT
 FROM users u1
 INNER JOIN users u2 ON u1.country = u2.country
 WHERE u1.user_id < u2.user_id;  -- Avoid duplicates
-```
+```text
 
 ---
 
@@ -604,7 +604,7 @@ SELECT
     MIN(total_amount) AS min_order,
     MAX(total_amount) AS max_order
 FROM orders;
-```
+```text
 
 ### GROUP BY
 
@@ -683,7 +683,7 @@ WHERE is_active = TRUE          -- Filter rows before grouping
 GROUP BY country
 HAVING COUNT(*) > 50           -- Filter groups after aggregation
 ORDER BY active_user_count DESC;
-```
+```text
 
 ### String Aggregation
 
@@ -703,7 +703,7 @@ SELECT
     ARRAY_AGG(product_name ORDER BY price DESC) AS products
 FROM products
 GROUP BY category;
-```
+```text
 
 ---
 
@@ -747,7 +747,7 @@ SELECT
     price,
     RANK() OVER (PARTITION BY category ORDER BY price DESC) AS rank_in_category
 FROM products;
-```
+```text
 
 ### Analytical Functions
 
@@ -830,7 +830,7 @@ SELECT
     AVG(price) OVER (PARTITION BY category) AS avg_category_price,
     price - AVG(price) OVER (PARTITION BY category) AS diff_from_avg
 FROM products;
-```
+```text
 
 ---
 
@@ -873,7 +873,7 @@ WHERE NOT EXISTS (
     SELECT 1 FROM order_items oi
     WHERE oi.product_id = p.product_id
 );
-```
+```text
 
 ### Subqueries in SELECT
 
@@ -893,7 +893,7 @@ SELECT
     (SELECT AVG(price) FROM products) AS avg_price,
     price - (SELECT AVG(price) FROM products) AS diff
 FROM products;
-```
+```text
 
 ### Subqueries in FROM
 
@@ -960,7 +960,7 @@ WITH RECURSIVE org_chart AS (
     INNER JOIN org_chart oc ON e.manager_id = oc.employee_id
 )
 SELECT * FROM org_chart ORDER BY level, name;
-```
+```text
 
 ---
 
@@ -996,7 +996,7 @@ ORDER BY
         WHEN 'shipped' THEN 3
         ELSE 4
     END;
-```
+```text
 
 ### COALESCE & NULLIF
 
@@ -1014,7 +1014,7 @@ SELECT
     price,
     NULLIF(discount, 0) AS discount  -- NULL when discount is 0
 FROM products;
-```
+```text
 
 ### UNION, INTERSECT, EXCEPT
 
@@ -1065,7 +1065,7 @@ BEGIN;
     INSERT INTO users (username) VALUES ('user2');
     ROLLBACK TO sp1;  -- Undo user2, keep user1
 COMMIT;
-```
+```text
 
 ---
 
@@ -1092,7 +1092,7 @@ ANALYZE;  -- All tables
 
 -- Vacuum
 VACUUM ANALYZE users;
-```
+```text
 
 ---
 
@@ -1110,7 +1110,7 @@ SELECT tags @> ARRAY['sql']  -- Contains
 SELECT tags && ARRAY['sql', 'python']  -- Overlaps
 SELECT array_length(tags, 1)  -- Length
 SELECT unnest(tags)  -- Expand to rows
-```
+```text
 
 ### JSON/JSONB
 
@@ -1153,7 +1153,7 @@ SELECT
 FROM products
 WHERE search_vector @@ to_tsquery('laptop')
 ORDER BY rank DESC;
-```
+```text
 
 ---
 
@@ -1202,6 +1202,7 @@ ORDER BY rank DESC;
 ---
 
 This guide covers the most common SQL patterns used in data engineering. For more specific topics, see:
+
 - [SQL Basics Cheatsheet](../assets/cheatsheets/sql-basics.md)
 - [Window Functions Cheatsheet](../assets/cheatsheets/window-functions.md)
 - [Optimization Cheatsheet](../assets/cheatsheets/optimization.md)

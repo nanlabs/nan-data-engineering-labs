@@ -103,18 +103,21 @@ If you're within 12 months of AWS account creation:
 #### Storage Costs
 
 **Pricing:**
+
 - **S3 Standard:** $0.023 per GB/month (first 50TB)
 - **S3 Standard-IA:** $0.0125 per GB/month (infrequent access)
 - **S3 Glacier:** $0.004 per GB/month (archive)
 
 **Data Volume (Month 1):**
+
 - Raw (Bronze): 110GB JSON/CSV (gzip compressed)
 - Processed (Silver): 35GB Parquet (3:1 compression ratio)
 - Curated (Gold): 5GB Parquet (pre-aggregated)
 - **Total:** 150GB
 
 **Storage Cost Calculation:**
-```
+
+```text
 Free Tier: 5GB (first 12 months)
 Paid Storage: 145GB
 
@@ -122,20 +125,23 @@ Standard Storage (80%): 116GB × $0.023 = $2.67
 Standard-IA (20%): 29GB × $0.0125 = $0.36
 
 Total Storage Cost: $3.03/month
-```
+```text
 
 #### Request Costs
 
 **Pricing:**
+
 - **PUT/POST:** $0.005 per 1,000 requests
 - **GET/SELECT:** $0.0004 per 1,000 requests
 
 **Monthly Requests:**
+
 - PUT (data ingestion): 1,000 files/day × 30 days = 30,000 requests
 - GET (Glue/Athena reads): 10,000 requests/month
 
 **Request Cost Calculation:**
-```
+
+```text
 PUT: (30,000 - 2,000 free) / 1,000 × $0.005 = $0.14
 GET: (10,000 - 20,000 free) / 1,000 × $0.0004 = $0.00 (covered by Free Tier)
 
@@ -147,21 +153,25 @@ Total Request Cost: $0.14/month
 **Pricing:** $0.01 per 1,000 transition requests
 
 **Transitions:**
+
 - Raw data to Glacier after 90 days: ~30 transitions/month
 
 **Transition Cost:**
-```
+
+```text
 30 / 1,000 × $0.01 = $0.00 (negligible)
-```
+```text
 
 #### Data Transfer
 
 **Pricing:**
+
 - Data Transfer IN: Free
 - Data Transfer OUT to Internet: $0.09 per GB (after 15GB free)
 - Transfer within AWS (S3 → Glue/Lambda): Free
 
 **Monthly Transfers:**
+
 - Internet OUT: <1GB (Athena results download)
 
 **Transfer Cost:** $0.00 (within Free Tier)
@@ -177,16 +187,19 @@ Total Request Cost: $0.14/month
 #### Compute Costs
 
 **Pricing:**
+
 - **Requests:** $0.20 per 1M requests
 - **Duration:** $0.0000166667 per GB-second
 
 **Lambda Configuration:**
+
 - **Memory:** 512MB (0.5GB)
 - **Avg Duration:** 2 seconds per invocation
 - **Invocations:** 1,000 files/day × 30 days = 30,000/month
 
 **Compute Cost Calculation:**
-```
+
+```text
 Requests:
   30,000 requests (within 1M free) = $0.00
 
@@ -209,11 +222,13 @@ Total Compute Cost: $0.00 (fully covered by Free Tier)
 #### Glue Data Catalog
 
 **Pricing:**
+
 - **First 1M objects stored:** Free
 - **First 1M requests:** Free
 - **Over 1M:** $1.00 per 100,000 objects
 
 **Our Usage:**
+
 - Objects: ~100 tables/partitions (well within Free Tier)
 
 **Catalog Cost:** $0.00
@@ -223,23 +238,26 @@ Total Compute Cost: $0.00 (fully covered by Free Tier)
 **Pricing:** $0.44 per DPU-hour
 
 **Crawler Configuration:**
+
 - **DPUs:** 2 (default)
 - **Runtime:** 5 minutes per crawl
 - **Frequency:** 3 times/day (Raw, Processed, Curated crawlers)
 
 **Crawler Cost Calculation:**
-```
+
+```text
 Daily Runtime: 3 crawls × 5 minutes = 15 minutes = 0.25 hours
 Monthly Runtime: 0.25 hours × 30 days = 7.5 DPU-hours
 
 Cost: 7.5 DPU-hours × $0.44 = $3.30/month
-```
+```text
 
 #### Glue ETL Jobs
 
 **Pricing:** $0.44 per DPU-hour
 
 **Job Configuration:**
+
 - **Bronze → Silver Job:**
   - Workers: 2 (G.1X = 1 DPU each)
   - Runtime: 10 minutes
@@ -251,7 +269,8 @@ Cost: 7.5 DPU-hours × $0.44 = $3.30/month
   - Frequency: Daily
 
 **ETL Cost Calculation:**
-```
+
+```text
 Bronze → Silver:
   Daily: 2 DPUs × (10/60) hours = 0.33 DPU-hours
   Monthly: 0.33 × 30 = 10 DPU-hours × $0.44 = $4.40
@@ -276,14 +295,16 @@ Total ETL Cost: $6.60/month
 **Pricing:** $5.00 per TB of data scanned
 
 **Query Patterns:**
+
 - **Development/Testing:** 50 queries/week scanning 500MB avg = 25GB/month
 - **Business Queries:** 100 queries/week scanning 100MB avg = 10GB/month
 - **Total Scanned:** 35GB/month = 0.035TB
 
 **Query Cost Calculation:**
-```
+
+```text
 Data Scanned: 0.035TB × $5.00 = $0.175 ≈ $0.18/month
-```
+```text
 
 **Note:** Parquet columnar format and partitioning drastically reduce data scanned compared to CSV/JSON.
 
@@ -298,11 +319,13 @@ Data Scanned: 0.035TB × $5.00 = $0.175 ≈ $0.18/month
 #### CloudWatch Logs
 
 **Pricing:**
+
 - **Ingestion:** $0.50 per GB
 - **Storage:** $0.03 per GB/month
 - **Free Tier:** 5GB ingestion/month
 
 **Log Volume:**
+
 - Lambda logs: 1GB/month
 - Glue logs: 0.5GB/month
 - **Total:** 1.5GB/month (within Free Tier)
@@ -312,6 +335,7 @@ Data Scanned: 0.035TB × $5.00 = $0.175 ≈ $0.18/month
 #### CloudWatch Metrics
 
 **Pricing:**
+
 - **Custom Metrics:** $0.30 per metric/month
 - **Free Tier:** 10 custom metrics
 
@@ -350,6 +374,7 @@ Data Scanned: 0.035TB × $5.00 = $0.175 ≈ $0.18/month
 **Purpose:** Alert notifications
 
 **Pricing:**
+
 - **First 1,000 notifications:** Free
 - **Email delivery:** $0.00
 
@@ -362,6 +387,7 @@ Data Scanned: 0.035TB × $5.00 = $0.175 ≈ $0.18/month
 ### 8. AWS CloudTrail (Audit Logging)
 
 **Pricing:**
+
 - **First trail:** Free (management events)
 - **Additional trails:** $2.00/trail/month
 
@@ -374,6 +400,7 @@ Data Scanned: 0.035TB × $5.00 = $0.175 ≈ $0.18/month
 ### 9. Data Transfer
 
 **Pricing:**
+
 - **IN:** Free
 - **OUT (first 15GB):** Free (12-month Free Tier)
 - **OUT (over 15GB):** $0.09/GB
@@ -421,6 +448,7 @@ Data Scanned: 0.035TB × $5.00 = $0.175 ≈ $0.18/month
 #### Strategy: Leverage Storage Classes
 
 **Implementation:**
+
 ```yaml
 LifecyclePolicy:
   Rules:
@@ -431,9 +459,10 @@ LifecyclePolicy:
           StorageClass: STANDARD_IA  # For older data
         - Days: 90
           StorageClass: GLACIER       # For archival
-```
+```text
 
 **Savings:**
+
 - Standard: $0.023/GB
 - Standard-IA: $0.0125/GB (46% savings)
 - Glacier: $0.004/GB (83% savings)
@@ -453,6 +482,7 @@ LifecyclePolicy:
 **Format:** Use gzip for JSON/CSV, Snappy for Parquet
 
 **Compression Ratios:**
+
 - JSON: 5-10x compression
 - CSV: 3-5x compression
 - Parquet: 3-5x additional compression
@@ -470,6 +500,7 @@ LifecyclePolicy:
 **Solution:** Use AWS Lambda Power Tuning tool
 
 **Optimal Configuration:**
+
 - Orders ingestion: 512MB (not 1024MB)
 - Clickstream: 256MB (simple validation)
 
@@ -478,6 +509,7 @@ LifecyclePolicy:
 #### Strategy: Reuse Connections
 
 **Implementation:**
+
 ```python
 import boto3
 
@@ -503,10 +535,11 @@ def lambda_handler(event, context):
 **Optimization:** Monitor job metrics, reduce to 1 DPU if possible
 
 **Calculation:**
-```
+
+```text
 Current: 2 DPUs × 15 min/day × 30 days × $0.44/DPU-hour = $6.60
 Optimized: 1 DPU × 30 min/day × 30 days × $0.44/DPU-hour = $6.60 (same total time)
-```
+```text
 
 **Note:** Fewer workers = longer runtime. Find balance.
 
@@ -515,10 +548,11 @@ Optimized: 1 DPU × 30 min/day × 30 days × $0.44/DPU-hour = $6.60 (same total 
 **Benefit:** Process only new data (incremental), not full dataset
 
 **Implementation:**
+
 ```python
 job.init(args['JOB_NAME'], args)
 job.commit()  # Track processed data
-```
+```text
 
 **Savings:** 50-90% reduction in job runtime (process only delta)
 
@@ -527,6 +561,7 @@ job.commit()  # Track processed data
 #### Strategy: Optimize Spark Code
 
 **Tips:**
+
 - Use predicate pushdown (filter early)
 - Avoid `collect()` (pulls all data to driver)
 - Partition data appropriately
@@ -540,6 +575,7 @@ job.commit()  # Track processed data
 **Optimization:** Combine jobs if possible
 
 **Example:**
+
 ```python
 # Instead of 3 separate jobs, create 1 job with 3 scripts
 # Saves 2 × 2-minute startup overhead per day
@@ -554,6 +590,7 @@ job.commit()  # Track processed data
 **Problem:** Full table scans are expensive
 
 **Solution:**
+
 ```sql
 -- Bad (scans 1TB)
 SELECT * FROM orders;
@@ -562,7 +599,7 @@ SELECT * FROM orders;
 SELECT * FROM orders
 WHERE year = '2026' AND month = '03'
   AND day IN ('07', '08', '09');
-```
+```text
 
 **Savings:** 90%+ reduction in data scanned
 
@@ -573,13 +610,14 @@ WHERE year = '2026' AND month = '03'
 **Problem:** `SELECT *` scans all columns
 
 **Solution:**
+
 ```sql
 -- Bad (scans 100GB)
 SELECT * FROM orders;
 
 -- Good (scans 10GB for 2 columns)
 SELECT order_id, total_amount FROM orders;
-```
+```text
 
 **Savings:** 90% in this example
 
@@ -592,6 +630,7 @@ SELECT order_id, total_amount FROM orders;
 #### Strategy: Create Views for Common Queries
 
 **Implementation:**
+
 ```sql
 CREATE VIEW daily_revenue AS
 SELECT
@@ -603,7 +642,7 @@ GROUP BY year, month, day;
 -- Users query view (pre-aggregated, tiny scan)
 SELECT * FROM daily_revenue
 WHERE year = '2026' AND month = '03';
-```
+```text
 
 **Savings:** Users query 1MB instead of 10GB
 
@@ -617,6 +656,7 @@ WHERE year = '2026' AND month = '03';
 **Optimization:** Reduce to 7 days for verbose logs
 
 **Implementation:**
+
 ```bash
 aws logs put-retention-policy \
   --log-group-name /aws/lambda/cloudmart-ingest-orders \
@@ -647,6 +687,7 @@ aws logs put-retention-policy \
 #### Strategy: Set Up AWS Budgets
 
 **Implementation:**
+
 ```yaml
 Budget:
   Name: CloudMart-Monthly-Budget
@@ -658,7 +699,7 @@ Budget:
       NotificationType: EMAIL
       Subscribers:
         - your-email@example.com
-```
+```text
 
 **Benefit:** Proactive cost awareness
 
@@ -667,6 +708,7 @@ Budget:
 **Tool:** AWS Cost Explorer
 
 **Actions:**
+
 - Review daily costs
 - Identify unexpected spikes
 - Investigate anomalies immediately
@@ -678,10 +720,12 @@ Budget:
 ### 1. AWS Cost Explorer
 
 **Enable:**
+
 1. AWS Console → Billing → Cost Explorer
 2. Enable Cost Explorer (free)
 
 **Views to Monitor:**
+
 - **Daily Costs:** Identify spikes
 - **Service Breakdown:** Which service is expensive?
 - **Forecasted Costs:** Project end-of-month total
@@ -689,14 +733,16 @@ Budget:
 ### 2. AWS Budgets
 
 **Setup:**
+
 ```bash
 aws budgets create-budget \
   --account-id 123456789012 \
   --budget file://budget.json \
   --notifications-with-subscribers file://notifications.json
-```
+```text
 
 **budget.json:**
+
 ```json
 {
   "BudgetName": "CloudMart-DataLake-Monthly",
@@ -707,9 +753,10 @@ aws budgets create-budget \
   "TimeUnit": "MONTHLY",
   "BudgetType": "COST"
 }
-```
+```text
 
 **notifications.json:**
+
 ```json
 [
   {
@@ -731,6 +778,7 @@ aws budgets create-budget \
 ### 3. CloudWatch Billing Alarms
 
 **Setup:**
+
 ```yaml
 BillingAlarm:
   Type: AWS::CloudWatch::Alarm
@@ -748,11 +796,12 @@ BillingAlarm:
     Dimensions:
       - Name: Currency
         Value: USD
-```
+```text
 
 ### 4. Tag-Based Cost Allocation
 
 **Implementation:**
+
 ```yaml
 Tags:
   - Key: Project
@@ -761,11 +810,12 @@ Tags:
     Value: dev
   - Key: Owner
     Value: data-engineering
-```
+```text
 
 **Benefit:** Track costs by project, environment, owner
 
 **Activate:**
+
 1. AWS Console → Billing → Cost Allocation Tags
 2. Activate tags (takes 24 hours to appear)
 
@@ -888,6 +938,7 @@ Tags:
 ### 1. Delete Resources When Not in Use
 
 **Development:**
+
 - Disable crawlers when not needed
 - Stop Glue jobs during testing breaks
 - Delete test S3 objects regularly
@@ -895,11 +946,13 @@ Tags:
 ### 2. Avoid Runaway Costs
 
 **Lambda:**
+
 - Set reserved concurrency (max 10 functions)
 - Configure dead letter queues (prevent retry loops)
 - Set maximum event age (1 hour)
 
 **Glue:**
+
 - Set job timeout (30 minutes max)
 - Monitor job failures (stop expensive failures)
 - Use job bookmarks (don't reprocess all data)
@@ -927,7 +980,7 @@ aws s3 rb s3://cloudmart-test-bucket
 
 # Delete unused Lambda functions
 aws lambda delete-function --function-name test-function
-```
+```text
 
 ---
 

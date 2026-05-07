@@ -24,7 +24,7 @@
 
 Construirás un **sistema de procesamiento distribuido** con Apache Spark en Kubernetes:
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────┐
 │                     EKS Cluster                               │
 │                                                               │
@@ -68,7 +68,7 @@ Construirás un **sistema de procesamiento distribuido** con Apache Spark en Kub
                     │  /raw/          │
                     │  /processed/    │
                     └─────────────────┘
-```
+```text
 
 ---
 
@@ -94,7 +94,7 @@ helm install spark-operator spark-operator/spark-operator \
 # Verify installation
 kubectl get pods -n spark-operator
 kubectl get crd | grep spark
-```
+```text
 
 ### Step 1.2: Create Spark Jobs Namespace
 
@@ -136,13 +136,13 @@ roleRef:
   kind: Role
   name: spark-role
   apiGroup: rbac.authorization.k8s.io
-```
+```text
 
 Apply:
 
 ```bash
 kubectl apply -f k8s/spark-rbac.yaml
-```
+```text
 
 ---
 
@@ -187,7 +187,7 @@ resource "aws_iam_policy" "spark_s3_access" {
 output "spark_s3_policy_arn" {
   value = aws_iam_policy.spark_s3_access.arn
 }
-```
+```text
 
 ### Step 2.2: Create IRSA (IAM Roles for Service Accounts)
 
@@ -308,7 +308,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     main()
-```
+```text
 
 ### Step 3.2: Build Custom Spark Image
 
@@ -330,7 +330,7 @@ COPY etl_large_dataset.py /opt/spark/work-dir/
 USER 185
 
 CMD ["python3", "/opt/spark/work-dir/etl_large_dataset.py"]
-```
+```text
 
 Build and push:
 
@@ -342,7 +342,7 @@ docker build -t spark-etl:3.4.1 spark-jobs/
 ECR_URL=$(terraform output -raw ecr_url)
 docker tag spark-etl:3.4.1 $ECR_URL/spark-etl:3.4.1
 docker push $ECR_URL/spark-etl:3.4.1
-```
+```text
 
 ---
 
@@ -441,7 +441,7 @@ kubectl logs sales-etl-driver -n spark-jobs -f
 
 # View executor logs
 kubectl logs -l spark-role=executor -n spark-jobs -f
-```
+```text
 
 ---
 
@@ -510,13 +510,13 @@ def main():
 
 if __name__ == '__main__':
     main()
-```
+```text
 
 Run:
 
 ```bash
 python scripts/generate_sales_data.py
-```
+```text
 
 ---
 
@@ -602,7 +602,7 @@ spec:
     port: 18080
     targetPort: 18080
   type: LoadBalancer
-```
+```text
 
 Deploy:
 
@@ -611,7 +611,7 @@ kubectl apply -f k8s/spark-history-server.yaml
 
 # Get LoadBalancer URL
 kubectl get svc spark-history-server -n spark-jobs
-```
+```text
 
 ### Step 6.3: CloudWatch Logs
 
@@ -624,7 +624,7 @@ spec:
       enabled: true
       logGroupName: /aws/eks/spark-jobs
       logStreamNamePrefix: spark-
-```
+```text
 
 ---
 
@@ -677,7 +677,7 @@ kubectl apply -f k8s/scheduled-spark-application.yaml
 
 # View schedule
 kubectl get scheduledsparkapplication -n spark-jobs
-```
+```text
 
 ---
 
@@ -688,14 +688,14 @@ kubectl get scheduledsparkapplication -n spark-jobs
 ```bash
 kubectl get sparkapplication sales-etl -n spark-jobs
 # STATUS should be "COMPLETED"
-```
+```text
 
 ### 2. Verify Driver Pod
 
 ```bash
 kubectl get pods -l spark-role=driver -n spark-jobs
 kubectl logs sales-etl-driver -n spark-jobs | grep "ETL completed"
-```
+```text
 
 ### 3. Check Executors
 
@@ -708,7 +708,7 @@ kubectl get pods -l spark-role=executor -n spark-jobs
 
 ```bash
 aws s3 ls s3://YOUR_BUCKET/processed/sales_summary/ --recursive --human-readable
-```
+```text
 
 ### 5. Check Spark UI
 
@@ -716,7 +716,7 @@ aws s3 ls s3://YOUR_BUCKET/processed/sales_summary/ --recursive --human-readable
 kubectl port-forward sales-etl-driver 4040:4040 -n spark-jobs
 # Open http://localhost:4040
 # Verify stages, tasks, storage
-```
+```text
 
 ---
 
@@ -733,7 +733,7 @@ kubectl delete namespace spark-jobs
 # Uninstall operator
 helm uninstall spark-operator -n spark-operator
 kubectl delete namespace spark-operator
-```
+```text
 
 ---
 

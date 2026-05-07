@@ -22,6 +22,7 @@ Good architecture is essential to building maintainable, scalable and robust dat
 ### Architectural Principles
 
 **SOLID in Data Engineering**:
+
 - **S**ingle Responsibility: Each module/function has a responsibility
 - **O**pen/Closed: Open for extension, closed for modification
 - **L**iskov Substitution: Interchangeable implementations
@@ -29,6 +30,7 @@ Good architecture is essential to building maintainable, scalable and robust dat
 - **D**ependency Inversion: Depend on abstractions, not implementations
 
 **Data Specific Principles**:
+
 - **Idempotencia**: Mismos inputs → mismos outputs siempre
 - **Atomicidad**: Operaciones completas o rollback completo
 - **Incrementalidad**: Procesar solo data nuevos/modificados
@@ -83,7 +85,7 @@ class ETLPipeline:
         except Exception as e:
             self.logger.error(f"Error en pipeline ETL: {e}")
             raise
-```
+```text
 
 #### ELT (Extract, Load, Transform)
 
@@ -123,7 +125,7 @@ class ELTPipeline:
         except Exception as e:
             self.logger.error(f"Error en pipeline ELT: {e}")
             raise
-```
+```text
 
 ### pipeline Pattern: Composition of Transformations
 
@@ -181,7 +183,7 @@ pipeline \
     .add_step(load_target, "Load")
 
 resultado = pipeline.run(data_iniciales)
-```
+```text
 
 ### Batch vs Streaming
 
@@ -262,7 +264,7 @@ class MicroBatchProcessor:
         
         self.buffer = []
         self.last_flush = time.time()
-```
+```text
 
 ---
 
@@ -318,7 +320,7 @@ config = {
 
 extractor = ExtractorFactory.crear_extractor(config['type'])
 data = extractor.extraer(config)
-```
+```text
 
 ### Strategy Pattern
 
@@ -374,7 +376,7 @@ df_limpio = transformer.run(df)
 
 transformer.set_strategy(NormalizationStrategy())
 df_normalizado = transformer.run(df_limpio)
-```
+```text
 
 ### Builder Pattern
 
@@ -539,7 +541,7 @@ class VentasService:
 ventas_service = VentasService(PostgresRepository(conn_str, 'ventas'))
 # O cambiar a S3
 ventas_service = VentasService(S3Repository('bucket', 'ventas'))
-```
+```text
 
 ---
 
@@ -547,7 +549,7 @@ ventas_service = VentasService(S3Repository('bucket', 'ventas'))
 
 ### Structure Recomendada
 
-```
+```text
 mi_data_pipeline/
 ├── README.md                   # Documentation del proyecto
 ├── requirements.txt            # Dependencias (pip)
@@ -621,7 +623,7 @@ mi_data_pipeline/
 │
 └── logs/                      # Logs (git-ignored)
     └── .gitkeep
-```
+```text
 
 ### Configuration with YAML files
 
@@ -715,7 +717,7 @@ pip freeze > requirements.txt
 
 # Desactivar
 deactivate
-```
+```text
 
 ### Poetry (Recomendado)
 
@@ -742,9 +744,10 @@ poetry update
 
 # Generar requirements.txt (si es necesario)
 poetry export -f requirements.txt --output requirements.txt
-```
+```text
 
 **pyproject.toml**:
+
 ```toml
 [tool.poetry]
 name = "mi-data-pipeline"
@@ -769,7 +772,7 @@ mypy = "^1.8.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-```
+```text
 
 ### Docker para ambientes reproducibles
 
@@ -825,7 +828,7 @@ services:
 
 volumes:
   postgres_data:
-```
+```text
 
 ---
 
@@ -833,7 +836,7 @@ volumes:
 
 ### Testing Pyramid
 
-```
+```text
         /\
        /  \  E2E Tests (5%)
       /────\
@@ -841,7 +844,7 @@ volumes:
     /────────\
    /          \ Unit Tests (80%)
   /────────────\
-```
+```text
 
 ### Unit Tests
 
@@ -929,7 +932,7 @@ class TestPipelineIntegration:
         # Verificar
         assert resultado['registros_procesados'] == 2
         assert (tmp_path / "output.parquet").exists()
-```
+```text
 
 ### Mocking
 
@@ -953,7 +956,7 @@ def test_extractor_con_api_mock():
         # Verificar
         assert len(resultado) == 3
         mock_get.assert_called_once_with('http://api.example.com')
-```
+```text
 
 ---
 
@@ -1038,7 +1041,7 @@ jobs:
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
         docker tag mi-pipeline:${{ github.sha }} usuario/mi-pipeline:latest
         docker push usuario/mi-pipeline:latest
-```
+```text
 
 ---
 
@@ -1135,7 +1138,7 @@ def medir_tiempo(func):
 def procesar_data(df):
     # procesamiento
     return df
-```
+```text
 
 ---
 
@@ -1161,7 +1164,7 @@ def procesar_files_paralelo(files: List[str]) -> List[pd.DataFrame]:
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
         resultados = list(executor.map(procesar_file, files))
     return resultados
-```
+```text
 
 ### Chunking para grandes datasets
 
@@ -1177,7 +1180,7 @@ def procesar_csv_grande(file: str, chunk_size: int = 10000):
     
     # Combinar resultados
     return pd.concat(resultados, ignore_index=True)
-```
+```text
 
 ---
 
@@ -1220,7 +1223,7 @@ def obtener_secret(secret_name: str, region: str = 'us-east-1') -> Dict:
 # Uso
 db_credentials = obtener_secret('prod/database/credentials')
 connection_string = f"postgresql://{db_credentials['username']}:{db_credentials['password']}@{db_credentials['host']}"
-```
+```text
 
 ---
 

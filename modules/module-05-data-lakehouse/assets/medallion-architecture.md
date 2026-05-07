@@ -2,7 +2,7 @@
 
 ## 📊 Diagrama
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                     data SOURCES                            │
 │   JSON Files │ APIs │ Databases │ Streams │ CSV Files      │
@@ -68,7 +68,7 @@
 │                   CONSUMPTION                               │
 │   Tableau │ Power BI │ Jupyter │ Dashboards │ ML Models    │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## 🎯 features of Cada Layer
 
@@ -132,7 +132,7 @@ aggregated_data.write.format("delta") \
     .mode("overwrite") \
     .option("replaceWhere", "date = '2024-01-15'") \
     .save(gold_path)
-```
+```text
 
 ## 📈 Key Metrics
 

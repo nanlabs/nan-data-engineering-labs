@@ -20,7 +20,7 @@ Your team needs to build an end-to-end data pIPeline to process e-commerce trans
 
 ### Flow of Datas
 
-```
+```text
 RAW JSON FILES
      ↓
 🥉 BRONZE (s3a://bronze/transactions)
@@ -41,13 +41,13 @@ RAW JSON FILES
   - Métricas diarias
   - KPIs of negocio
   - Listo for BI tools
-```
+```text
 
 ---
 
 ## 🗂️ Structure of the Exercise
 
-```
+```text
 02-medallion-architecture/
 ├── README.md (this archivo)
 ├── hints.md
@@ -85,7 +85,7 @@ docker-compose logs -f spark-master
 # 4. UI of Spark for monitorear jobs
 # HTTP://localhost:8080 (Spark Master)
 # HTTP://localhost:4040 (Spark Application UI, when am corriendo)
-```
+```text
 
 ---
 
@@ -98,6 +98,7 @@ docker-compose logs -f spark-master
 **Objective**: Ingestar datas crudos desde JSON to table Delta Bronze.
 
 **Requisitos**:
+
 1. Leer `data/raw/transactions.json` (TODOS los records)
 2. Add ingestion metadata:
    - `ingestion_timestamp` (timestamp of carga)
@@ -107,12 +108,14 @@ docker-compose logs -f spark-master
 5. Particionar by `ingestion_date` (derivado of ingestion_timestamp)
 
 **features Bronze**:
+
 - ✅ Append-only (nunca sobrescribir)
 - ✅ Inmutable (preservar datas tal cual)
 - ✅ Full lineage (metadata of origen)
 - ✅ Incluir TODOS los datas (incluso errores)
 
 **Expectativas**:
+
 - ~614K records in Bronze
 - Todos los records originales presentes
 - Aggregated ingestion metadata
@@ -127,6 +130,7 @@ docker-compose logs -f spark-master
 **Objective**: Transformar datas Bronze in datas Silver limpios and confiables.
 
 **Requisitos**:
+
 1. Leer table Bronze
 2. Aplicar limpieza:
    - Remover duplicados basados in `transaction_id`
@@ -136,13 +140,14 @@ docker-compose logs -f spark-master
    - Convertir `currency`to uppercase3. Add validation column:
    - `is_valid` (boolean)
    - `validation_errors` (array of strings with errores encontrados)
-4. Convertir tIPos:
+3. Convertir tIPos:
    - `amount` → DecimalType(10,2)
    - `timestamp` → TimestampType
-5. Guardar in `s3a://silver/transactions_clean`
-6. Particionar by `country` and `date` (of the timestamp)
+4. Guardar in `s3a://silver/transactions_clean`
+5. Particionar by `country` and `date` (of the timestamp)
 
 **features Silver**:
+
 - ✅ Deduplicated
 - ✅ Validated
 - ✅ Strongly typed
@@ -150,6 +155,7 @@ docker-compose logs -f spark-master
 - ✅ Suitable for analytics
 
 **Expectativas**:
+
 - ~540K records in Silver (after filtering out ~12% with issues)
 - without duplicados
 - not nulls in critical fields
@@ -164,8 +170,10 @@ docker-compose logs -f spark-master
 **Goal**: Create aggregated business metrics for dashboards.
 
 **Requisitos**:
+
 1. Leer table Silver
 2. Add daily metrics by country:
+
    ```python
    - date
    - country
@@ -178,7 +186,8 @@ docker-compose logs -f spark-master
    - completion_rate (%)
    - unique_users
    - unique_products
-   ```
+   ```text
+
 3. Calcular percentiles:
    - `p50_amount` (mediana)
    - `p90_amount`
@@ -187,12 +196,14 @@ docker-compose logs -f spark-master
 5. Particionar by `country`
 
 **features Gold**:
+
 - ✅ Business-friendly (columns with nombres claros)
 - ✅ Denormalized (everything in una table)
 - ✅ Pre-aggregated (quick queries)
 - ✅ BI-ready (conectar directamente to Tableau, PowerBI, etc.)
 
 **Expectativas**:
+
 - rows networkuced to ~100-500 (per country-day)
 - Instant queries
 - Ready for viewing
@@ -206,12 +217,14 @@ docker-compose logs -f spark-master
 **Objective**: Orquestar el pIPeline completo Bronze → Silver → Gold.
 
 **Requisitos**:
+
 1. Run Bronze ingestion
 2. Ejecutar limpieza Silver
 3. Run Gold Aggregation
 4. Implementar checkpoints entre stages
 5. Manejar errores and logging
 6. Generar reporte of resumen:
+
    ```
    📊 PIPELINE EXECUTION SUMMARY
    =============================
@@ -226,9 +239,10 @@ docker-compose logs -f spark-master
    
    Execution Time: 124.5s
    Status: ✅ SUCCESS
-   ```
+   ```text
 
 **features pIPeline**:
+
 - ✅ Idempotent (can run multIPle times)
 - ✅ Incremental (procesar only nuevos datas)
 - ✅ Monitonetwork (metrics and logs)
@@ -239,12 +253,14 @@ docker-compose logs -f spark-master
 ## ✅ Success Criteria
 
 ### Bronze Layer
+
 - [ ] ~614K records in `s3a://bronze/transactions`
 - [ ] Ingestion metadata (`ingestion_timestamp`, `source_file`)
 - [ ] Particionado by `ingestion_date`
 - [ ] Todos los datas originales preservados
 
 ### Silver Layer
+
 - [ ] ~540K records in `s3a://silver/transactions_clean` (88% of the original)
 - [ ] without duplicados
 - [ ] not nulls in critical fields
@@ -252,12 +268,14 @@ docker-compose logs -f spark-master
 - [ ] validation columns (`is_valid`, `validation_errors`)
 
 ### Gold Layer
+
 - [ ] ~300-500 rows in `s3a://gold/transactions_metrics`
 - [ ] Metrics aggregated by country-day
 - [ ] Percentiles calculados
 - [ ] Conversion/completion rates
 
 ### pIPeline Completo
+
 - [ ] Ejecuta end-to-end without errores
 - [ ] Genera reporte of resumen
 - [ ] Execution time < 3 minutes
@@ -296,23 +314,26 @@ docker-compose logs -f spark-master
 │ Retention: Weeks to months                                  │
 │ Quality: Business-validated, domain-specific                │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### When to Use Each Layer
 
 **Bronze**:
+
 - data sources variadas (APIs, archivos, streams)
 - Audit and compliance
 - Reprocessing after changes in logic
 - ML feature engineering sobre datas crudos
 
 **Silver**:
+
 - Analytics ad-hoc
 - ML training datasets
 - Join between multIPle sources
 - Exploratory data analysis
 
 **Gold**:
+
 - Dashboards of C-level
 - Reportes operacionales
 - Alerts and monitoring
@@ -333,9 +354,10 @@ docker-compose logs -f spark-master
 ### "Table already exists" in Bronze
 
 Bronze is append-only. Usa `.mode("append")` siempre:
+
 ```python
 df.write.format("delta").mode("append").save(path)
-```
+```text
 
 ### pIPeline muy lento
 
@@ -346,16 +368,18 @@ df.write.format("delta").mode("append").save(path)
 ### Incorrect metrics in Gold
 
 Verify that Silver is properly clean:
+
 ```python
 silver_df = spark.read.format("delta").load("s3a://silver/transactions_clean")
 silver_df.groupBy("is_valid").count().show()  # Debe ser 100% valid
-```
+```text
 
 ---
 
 ## 🎯 Next Steps
 
 Una vez completado:
+
 1. ✅ Continuar with **Exercise 03: Time Travel**
 2. Explorar MERGE for updates incrementales
 3. Implementar SCD Type 2 for slowly changing dimensions

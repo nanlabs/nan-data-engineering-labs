@@ -21,7 +21,7 @@
 
 **Recommended Production Setup:**
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │                    Load Balancer                         │
 └────────────┬──────────────────────────────┬──────────────┘
@@ -56,7 +56,7 @@
 │ Worker  │ │ Worker │ │ Worker │
 │  Pool   │ │  Pool  │ │  Pool  │
 └─────────┘ └────────┘ └────────┘
-```
+```text
 
 ### Infrastructure as Code
 
@@ -226,7 +226,7 @@ services:
 
 volumes:
   postgres-db-volume:
-```
+```text
 
 **Kubernetes (Large Production):**
 
@@ -303,7 +303,7 @@ workers:
     requests:
       cpu: 1000m
       memory: 2Gi
-```
+```text
 
 ---
 
@@ -344,7 +344,7 @@ spec:
         - name: postgres
           image: postgres:13
           # Patroni configuration for automatic failover
-```
+```text
 
 ### Scheduler HA
 
@@ -358,7 +358,7 @@ scheduler_health_check_threshold = 30
 # Multiple schedulers (Airflow 2.0+)
 # Run multiple scheduler instances
 # They coordinate via database locks
-```
+```text
 
 ```bash
 # Start multiple schedulers
@@ -395,7 +395,7 @@ spec:
       component: webserver
   template:
     # ...webserver pod spec
-```
+```text
 
 ---
 
@@ -411,7 +411,7 @@ airflow celery worker --queues default,high_priority
 
 # Start worker on different machine
 airflow celery worker --hostname worker-02
-```
+```text
 
 **Queue-Based Routing:**
 
@@ -430,7 +430,7 @@ low_priority_task = PythonOperator(
     queue='low_priority',
     priority_weight=1,
 )
-```
+```text
 
 **Worker Pools:**
 
@@ -472,7 +472,7 @@ spec:
         target:
           type: Utilization
           averageUtilization: 80
-```
+```text
 
 ### KubernetesExecutor Auto-Scaling
 
@@ -496,7 +496,7 @@ task = KubernetesPodOperator(
     # Pod auto-created and auto-deleted
     is_delete_operator_pod=True,
 )
-```
+```text
 
 ---
 
@@ -511,7 +511,7 @@ AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://user:pass@host/db
 AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
 API_KEY=your_api_key
 DB_PASSWORD=your_db_password
-```
+```text
 
 ```python
 # Use in DAG
@@ -530,7 +530,7 @@ airflow variables set api_key "your_secret_key"
 from airflow.models import Variable
 
 api_key = Variable.get('api_key')
-```
+```text
 
 ### Airflow Connections (Encrypted)
 
@@ -543,7 +543,7 @@ airflow connections add 'my_db' \
     --conn-login 'user' \
     --conn-password 'password' \
     --conn-port '5432'
-```
+```text
 
 ### Secrets Backend
 
@@ -554,7 +554,7 @@ airflow connections add 'my_db' \
 [secrets]
 backend = airflow.providers.amazon.aws.secrets.secrets_manager.SecretsManagerBackend
 backend_kwargs = {"connections_prefix": "airflow/connections", "variables_prefix": "airflow/variables"}
-```
+```text
 
 ```python
 # Store in AWS Secrets Manager
@@ -578,7 +578,7 @@ backend_kwargs = {
     "connections_path": "airflow/connections",
     "variables_path": "airflow/variables"
 }
-```
+```text
 
 **Google Secret Manager:**
 
@@ -587,7 +587,7 @@ backend_kwargs = {
 [secrets]
 backend = airflow.providers.google.cloud.secrets.secret_manager.CloudSecretManagerBackend
 backend_kwargs = {"connections_prefix": "airflow-connections", "variables_prefix": "airflow-variables", "sep": "-"}
-```
+```text
 
 ### Fernet Key
 
@@ -598,7 +598,7 @@ python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().d
 # Set in airflow.cfg
 [core]
 fernet_key = YOUR_GENERATED_KEY
-```
+```text
 
 ---
 
@@ -644,7 +644,7 @@ def my_function():
     with task_duration.time():
         # Task logic
         pass
-```
+```text
 
 ### Logging
 
@@ -660,7 +660,7 @@ remote_log_conn_id = aws_default
 # Or Google Cloud Storage
 # remote_base_log_folder = gs://my-airflow-logs
 # remote_log_conn_id = google_cloud_default
-```
+```text
 
 **Structured Logging:**
 
@@ -674,7 +674,7 @@ def my_function(**context):
         'task_id': context['task'].task_id,
         'execution_date': str(context['execution_date']),
     })
-```
+```text
 
 **Log Aggregation (ELK Stack):**
 
@@ -708,14 +708,14 @@ output {
 ```bash
 # Check scheduler is running
 airflow jobs check --job-type SchedulerJob --hostname "$HOSTNAME"
-```
+```text
 
 **Web Server Health:**
 
 ```bash
 # Health endpoint
 curl http://localhost:8080/health
-```
+```text
 
 **Database Connection Pool:**
 
@@ -725,7 +725,7 @@ curl http://localhost:8080/health
 sql_alchemy_pool_size = 5
 sql_alchemy_max_overflow = 10
 sql_alchemy_pool_recycle = 3600
-```
+```text
 
 ---
 
@@ -774,7 +774,7 @@ default_args = {
     'email_on_failure': True,
     'email_on_retry': False,
 }
-```
+```text
 
 ### Custom Callbacks
 
@@ -806,7 +806,7 @@ dag = DAG(
     on_failure_callback=task_failure_callback,
     ...
 )
-```
+```text
 
 ### Slack Integration
 
@@ -839,7 +839,7 @@ task = PythonOperator(
     python_callable=my_function,
     on_failure_callback=notify_slack,
 )
-```
+```text
 
 ### PagerDuty Integration
 
@@ -886,17 +886,17 @@ def fetch_data():
 
 dag = DAG('my_dag', ...)
 task = PythonOperator(task_id='fetch', python_callable=fetch_data)
-```
+```text
 
 **Use `.airflowignore`:**
 
-```
+```text
 # .airflowignore
 __pycache__
 *.pyc
 tests/
 docs/
-```
+```text
 
 ### Database Optimization
 
@@ -928,7 +928,7 @@ def get_db_engine():
         pool_recycle=3600,
     )
     return engine
-```
+```text
 
 ### Task Parallelism
 
@@ -946,7 +946,7 @@ dag = DAG(
     concurrency=32,
     ...
 )
-```
+```text
 
 ### Resource Management
 
@@ -962,7 +962,7 @@ task = PythonOperator(
     python_callable=query_database,
     pool='db_pool',  # Limited to 5 concurrent
 )
-```
+```text
 
 **Task Priority:**
 
@@ -997,7 +997,7 @@ auth_backend = airflow.contrib.auth.backends.password_auth
 
 # Or use OAuth/LDAP
 # auth_backend = airflow.contrib.auth.backends.google_auth
-```
+```text
 
 **Create Roles:**
 
@@ -1010,7 +1010,7 @@ airflow roles add-perms DataScientist \
     can_read on DAGs \
     can_edit on DAG:my_dag \
     can_read on Task Instances
-```
+```text
 
 ### Network Security
 
@@ -1023,7 +1023,7 @@ web_server_host = 127.0.0.1  # Localhost only
 web_server_port = 8080
 
 # Use reverse proxy (nginx) for external access
-```
+```text
 
 **SSL/TLS:**
 
@@ -1060,7 +1060,7 @@ rotate_task = PythonOperator(
     task_id='rotate_secrets',
     python_callable=rotate_api_key,
 )
-```
+```text
 
 ### Audit Logging
 
@@ -1073,7 +1073,7 @@ expose_config = False  # Don't expose config in UI
 # Log all API calls
 [api]
 auth_backend = airflow.api.auth.backend.basic_auth
-```
+```text
 
 ---
 
@@ -1113,7 +1113,7 @@ def test_specific_dag():
     assert dag is not None
     assert len(dag.tasks) == 5
     assert 'extract' in dag.task_ids
-```
+```text
 
 ### Integration Testing
 
@@ -1192,7 +1192,7 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           file: ./coverage.xml
-```
+```text
 
 ### CD Pipeline
 
@@ -1227,7 +1227,7 @@ jobs:
             {
               "text": "DAGs deployed to production successfully"
             }
-```
+```text
 
 ---
 
@@ -1245,7 +1245,7 @@ df = pd.read_csv('large_file.csv')  # Don't do this
 processed = df.groupby('col').sum()
 
 dag = DAG('my_dag', ...)
-```
+```text
 
 **Good:**
 
@@ -1270,7 +1270,7 @@ dag = DAG(
     dag_id=f'my_dag_{random.randint(1, 100)}',  # Different every time!
     ...
 )
-```
+```text
 
 **Good:**
 
@@ -1279,7 +1279,7 @@ dag = DAG(
     dag_id='my_dag',  # Static ID
     ...
 )
-```
+```text
 
 ### ❌ Anti-Pattern 3: Large XComs
 
@@ -1289,7 +1289,7 @@ dag = DAG(
 def extract():
     data = fetch_100mb_dataset()
     return data  # XCom stores in DB!
-```
+```text
 
 **Good:**
 
@@ -1307,13 +1307,13 @@ def extract():
 
 ```python
 task1 >> task2 >> task3 >> task4  # All sequential
-```
+```text
 
 **Good:**
 
 ```python
 start >> [task1, task2, task3, task4] >> end  # Parallel
-```
+```text
 
 ### ❌ Anti-Pattern 5: No Error Handling
 
@@ -1323,7 +1323,7 @@ start >> [task1, task2, task3, task4] >> end  # Parallel
 def my_function():
     result = api_call()  # No error handling
     return result
-```
+```text
 
 **Good:**
 
@@ -1344,6 +1344,7 @@ def my_function():
 **Production Checklist:**
 
 ✅ **Deployment**
+
 - [ ] Use Docker Compose or Kubernetes
 - [ ] PostgreSQL for metadata DB
 - [ ] Redis for Celery broker
@@ -1351,42 +1352,49 @@ def my_function():
 - [ ] Multiple schedulers (HA)
 
 ✅ **Scaling**
+
 - [ ] Celery workers or KubernetesExecutor
 - [ ] Queue-based task routing
 - [ ] Auto-scaling for workers
 - [ ] Connection pools
 
 ✅ **Secrets**
+
 - [ ] Environment variables for config
 - [ ] Secrets backend (AWS/Vault/GCP)
 - [ ] Encrypted Variables/Connections
 - [ ] Fernet key rotation
 
 ✅ **Monitoring**
+
 - [ ] StatsD/Prometheus metrics
 - [ ] Centralized logging (S3/GCS/ELK)
 - [ ] Health checks
 - [ ] Dashboards (Grafana)
 
 ✅ **Alerting**
+
 - [ ] SLA monitoring
 - [ ] Email/Slack notifications
 - [ ] Custom callbacks
 - [ ] PagerDuty for critical
 
 ✅ **Performance**
+
 - [ ] Optimized DAG files
 - [ ] Database tuning
 - [ ] Task parallelism
 - [ ] Resource pools
 
 ✅ **Security**
+
 - [ ] RBAC enabled
 - [ ] SSL/TLS for web server
 - [ ] Network restrictions
 - [ ] Audit logging
 
 ✅ **CI/CD**
+
 - [ ] DAG tests
 - [ ] Linting
 - [ ] Automated deployment

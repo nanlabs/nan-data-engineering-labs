@@ -21,6 +21,7 @@
 ## 📚 Context
 
 Construirás un **ETL Pipeline completo** que:
+
 1. **Extract**: Descarga datos de múltiples fuentes (S3, APIs)
 2. **Transform**: Procesa datos en paralelo (3 transformations)
 3. **Validate**: Validate calidad de datos
@@ -29,7 +30,7 @@ Construirás un **ETL Pipeline completo** que:
 
 **Arquitectura**:
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │             Step Functions ETL Pipeline                       │
 ├──────────────────────────────────────────────────────────────┤
@@ -71,7 +72,7 @@ Construirás un **ETL Pipeline completo** que:
 │         │  Report  │                                         │
 │         └──────────┘                                        │
 └──────────────────────────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -146,7 +147,7 @@ def main():
 if __name__ == '__main__':
     result = main()
     print(json.dumps(result))
-```
+```text
 
 Dockerfile:
 
@@ -223,7 +224,7 @@ if __name__ == '__main__':
     import json
     result = main()
     print(json.dumps(result))
-```
+```text
 
 Similar files: `transform_customers.py`, `transform_products.py`
 
@@ -320,7 +321,7 @@ if __name__ == '__main__':
     from datetime import datetime
     result = main()
     print(json.dumps(result))
-```
+```text
 
 ### Step 1.4: Load Container
 
@@ -415,7 +416,7 @@ if __name__ == '__main__':
     from datetime import datetime
     result = main()
     print(json.dumps(result))
-```
+```text
 
 ---
 
@@ -793,7 +794,7 @@ resource "aws_iam_role_policy" "eventbridge_stepfunctions" {
     }]
   })
 }
-```
+```text
 
 ---
 
@@ -808,7 +809,7 @@ for dir in extract transform_sales transform_customers transform_products valida
   docker tag etl-$dir:latest $(terraform output -raw ecr_url)/etl-$dir:latest
   docker push $(terraform output -raw ecr_url)/etl-$dir:latest
 done
-```
+```text
 
 ### Step 3.2: Deploy Infrastructure
 
@@ -816,7 +817,7 @@ done
 cd terraform
 terraform init
 terraform apply
-```
+```text
 
 ### Step 3.3: Manual Trigger
 
@@ -847,7 +848,7 @@ aws stepfunctions get-execution-history \
 ```bash
 # Get console URL
 echo "https://console.aws.amazon.com/states/home?region=us-east-1#/statemachines/view/$(terraform output -raw state_machine_arn)"
-```
+```text
 
 ---
 
@@ -860,14 +861,14 @@ aws stepfunctions describe-execution \
   --execution-arn $EXECUTION_ARN \
   | jq '.status'
 # Should return "SUCCEEDED"
-```
+```text
 
 ### 2. All ECS Tasks Complete
 
 ```bash
 # Check CloudWatch Logs for each task
 aws logs tail /ecs/data-pipeline --follow --filter-pattern "completed successfully"
-```
+```text
 
 ### 3. Data Loaded to Redshift
 

@@ -1,6 +1,7 @@
 # Exercise 01: Delta Lake Fundamentals
 
 ## Overview
+
 Master Delta Lake basics by creating tables, demonstrating ACID transactions, using time travel, and optimizing performance.
 
 **Estimated Time**: 2 hours
@@ -10,7 +11,9 @@ Master Delta Lake basics by creating tables, demonstrating ACID transactions, us
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Create Delta tables from CSV and DataFrames
 - Demonstrate ACID transaction properties
 - Query historical versions with time travel
@@ -21,7 +24,9 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 You're building a customer data platform. You need to:
+
 1. Load customer data from CSV into a Delta table
 2. Demonstrate data reliability with ACID properties
 3. Track historical changes with time travel
@@ -33,7 +38,9 @@ You're building a customer data platform. You need to:
 ## Requirements
 
 ### Task 1: Create Delta Table (15 min)
+
 Create a Delta table named `customers` with this schema:
+
 - `customer_id` (INT) - Primary key
 - `name` (STRING)
 - `email` (STRING)
@@ -44,6 +51,7 @@ Create a Delta table named `customers` with this schema:
 **Data Source**: Generate 1,000 sample customer records
 
 **Success Criteria**:
+
 - ✅ Table exists in database `exercise_01_db`
 - ✅ Exactly 1,000 rows
 - ✅ Schema matches specification
@@ -52,6 +60,7 @@ Create a Delta table named `customers` with this schema:
 ---
 
 ### Task 2: ACID Transactions (20 min)
+
 Demonstrate ACID properties:
 
 1. **Atomicity**: Write 500 new customers in a single transaction
@@ -68,6 +77,7 @@ Demonstrate ACID properties:
    - Verify it persists after "crash" (restart Spark session)
 
 **Success Criteria**:
+
 - ✅ Demonstrate each ACID property with working code
 - ✅ Add 500 customers atomically
 - ✅ Show isolation between concurrent writes
@@ -75,6 +85,7 @@ Demonstrate ACID properties:
 ---
 
 ### Task 3: Time Travel (20 min)
+
 Implement time travel capabilities:
 
 1. Capture initial state (version 0)
@@ -83,16 +94,19 @@ Implement time travel capabilities:
 4. Add 200 new customers (version 3)
 
 **Query Requirements**:
+
 - Query version 0 (initial state, 1,000 customers)
 - Query version 2 (after delete, 950 customers)
 - Query as of yesterday's timestamp
 - Show DESCRIBE HISTORY output
 
 **Restore Operation**:
+
 - Restore table to version 1
 - Verify row count matches version 1
 
 **Success Criteria**:
+
 - ✅ Can query 4 different versions
 - ✅ DESCRIBE HISTORY shows all operations
 - ✅ RESTORE works correctly
@@ -100,6 +114,7 @@ Implement time travel capabilities:
 ---
 
 ### Task 4: Schema Evolution (15 min)
+
 Handle evolving schema:
 
 1. Add new column `loyalty_tier` (STRING)
@@ -107,6 +122,7 @@ Handle evolving schema:
 3. Write data with these new columns using `mergeSchema` option
 
 **Success Criteria**:
+
 - ✅ Original 1,000 customers have NULL for new columns
 - ✅ New customers have values for new columns
 - ✅ Schema includes both old and new columns
@@ -114,27 +130,32 @@ Handle evolving schema:
 ---
 
 ### Task 5: MERGE Operations (25 min)
+
 Implement UPSERT with MERGE:
 
 **Scenario**: Daily customer updates arrive:
+
 - 100 existing customers with updated `total_purchases`
 - 50 new customers
 - Must be idempotent (can run multiple times safely)
 
 **MERGE Logic**:
+
 ```sql
 MERGE INTO customers AS target
 USING updates AS source
 ON target.customer_id = source.customer_id
 WHEN MATCHED THEN UPDATE SET *
 WHEN NOT MATCHED THEN INSERT *
-```
+```text
 
 **Test Idempotency**:
+
 - Run MERGE twice with same data
 - Verify row count stays same (no duplicates)
 
 **Success Criteria**:
+
 - ✅ 100 customers updated correctly
 - ✅ 50 new customers inserted
 - ✅ No duplicates after running MERGE twice
@@ -143,6 +164,7 @@ WHEN NOT MATCHED THEN INSERT *
 ---
 
 ### Task 6: Optimize Performance (25 min)
+
 Optimize table for query performance:
 
 1. **OPTIMIZE**: Compact small files
@@ -158,6 +180,7 @@ Optimize table for query performance:
    - Verify old versions are deleted
 
 **Performance Test**:
+
 ```sql
 -- Before OPTIMIZE
 SELECT COUNT(*) FROM customers WHERE country = 'USA'
@@ -166,9 +189,10 @@ SELECT COUNT(*) FROM customers WHERE country = 'USA'
 -- After OPTIMIZE + ZORDER
 SELECT COUNT(*) FROM customers WHERE country = 'USA'
 -- Compare execution times (should be faster)
-```
+```text
 
 **Success Criteria**:
+
 - ✅ OPTIMIZE reduces file count by at least 50%
 - ✅ ZORDER improves query time by at least 20%
 - ✅ VACUUM deletes files older than retention period
@@ -193,7 +217,8 @@ customers_df = spark.range(0, 1000).select(
 
 # Write as Delta
 customers_df.write.format("delta").mode("overwrite").saveAsTable("customers")
-```
+```text
+
 </details>
 
 <details>
@@ -209,6 +234,7 @@ spark.read.format("delta").option("timestampAsOf", "2024-03-09").table("customer
 # Show history
 spark.sql("DESCRIBE HISTORY customers")
 ```
+
 </details>
 
 <details>
@@ -225,7 +251,8 @@ delta_table.alias("target").merge(
 ).whenMatchedUpdateAll() \
  .whenNotMatchedInsertAll() \
  .execute()
-```
+```text
+
 </details>
 
 <details>
@@ -240,20 +267,23 @@ OPTIMIZE customers ZORDER BY (country);
 
 -- Clean old versions
 VACUUM customers RETAIN 0 HOURS;
-```
+```text
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
 cd exercises/exercise-01-delta-lake-basics
 python validate.py
-```
+```text
 
 **Expected Output**:
+
 ```
 ✅ Task 1: Delta table created (1,000 rows)
 ✅ Task 2: ACID transactions demonstrated
@@ -263,12 +293,14 @@ python validate.py
 ✅ Task 6: Optimizations applied (60% file reduction, 35% query speedup)
 
 🎉 Exercise 01 Complete! Total Score: 100/100
-```
+```text
 
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.py` - Complete solution with all tasks
 2. Screenshot of DESCRIBE HISTORY output
 3. Performance comparison table (before/after OPTIMIZE)
@@ -276,6 +308,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - [Delta Lake documentation](https://docs.delta.io/)
 - [Databricks Delta Lake guide](https://docs.databricks.com/delta/)
 - Notebook: `notebooks/01-delta-lake-basics.py`
@@ -284,6 +317,8 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Exercise 02: Production ETL Pipelines (Medallion Architecture)
 - Module 06: ETL Fundamentals (review if needed)

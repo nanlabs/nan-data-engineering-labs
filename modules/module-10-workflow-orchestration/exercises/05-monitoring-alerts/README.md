@@ -22,6 +22,7 @@ Create a DAG with SLA tracking:
 3. SLA tracking report
 
 **Requirements:**
+
 - Set SLA per task
 - Global SLA miss callback
 - Log SLA violations
@@ -37,6 +38,7 @@ Implement all callback types:
 4. **sla_miss_callback**: Escalate to manager
 
 **Requirements:**
+
 - Task-level and DAG-level callbacks
 - Different notification channels
 - Context information in alerts
@@ -52,6 +54,7 @@ Integrate Slack notifications:
 4. Daily summary report
 
 **Requirements:**
+
 - Use SlackWebhookOperator
 - Rich message formatting
 - Include DAG/task details
@@ -67,6 +70,7 @@ Monitor DAG/task performance:
 4. Generate performance report
 
 **Requirements:**
+
 - Store metrics in database
 - Calculate p50, p95, p99
 - Trend analysis
@@ -83,6 +87,7 @@ Implement pre-flight checks:
 5. Skip pipeline if checks fail
 
 **Requirements:**
+
 - Multiple health check tasks
 - ShortCircuitOperator for early exit
 - Detailed health report
@@ -184,7 +189,7 @@ with DAG(
     )
 
     monitored_task >> notify
-```
+```text
 
 ---
 
@@ -199,7 +204,7 @@ airflow db check
 
 # View logs
 airflow tasks logs ex05_monitoring monitored_task 2024-01-01
-```
+```text
 
 ---
 

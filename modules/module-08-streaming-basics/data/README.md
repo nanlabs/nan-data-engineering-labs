@@ -17,7 +17,7 @@ python stream_generator.py --type sensor --mode stream --rate 100 --duration 60
 
 # Transactions at 5 events/second to file
 python stream_generator.py --type transaction --mode stream --rate 5 --output transactions.jsonl
-```
+```text
 
 ### Batch Mode
 
@@ -32,11 +32,12 @@ python stream_generator.py --type sensor --mode batch --count 50000 --output sen
 
 # Generate 5,000 transactions
 python stream_generator.py --type transaction --mode batch --count 5000 --output transactions.jsonl
-```
+```text
 
 ## Event Types
 
 ### User Events
+
 - `PAGE_VIEW`: User views a page
 - `CLICK`: User clicks on element
 - `PURCHASE`: User completes purchase
@@ -45,30 +46,35 @@ python stream_generator.py --type transaction --mode batch --count 5000 --output
 - `LOGIN`: User logs in
 
 Fields:
+
 - event_id, event_type, timestamp
 - user_id, session_id
 - page_url, product_id, amount, search_query
 - country, device_type
 
 ### Sensor Readings
+
 - `TEMPERATURE`: Temperature sensor (celsius)
 - `HUMIDITY`: Humidity sensor (percent)
 - `PRESSURE`: Pressure sensor (hPa)
 - `MOTION`: Motion detector (boolean)
 
 Fields:
+
 - sensor_id, device_id, timestamp
 - sensor_type, value, unit
 - quality, battery_level
 - location (optional)
 
 ### Transactions
+
 - `PURCHASE`: Purchase transaction
 - `REFUND`: Refund transaction
 - `DEPOSIT`: Deposit to account
 - `WITHDRAWAL`: Withdrawal from account
 
 Fields:
+
 - transaction_id, timestamp
 - user_id, account_id
 - amount, currency, payment_method
@@ -98,7 +104,7 @@ proc = subprocess.Popen(
 for line in proc.stdout:
     event = json.loads(line)
     producer.send('user-events', event)
-```
+```text
 
 ### Direct Kafka Producer Script
 
@@ -125,11 +131,11 @@ python stream_generator.py --type user --mode stream --rate 50 --duration 3600 -
 ```bash
 # Generate sensor readings (1000 sensors, 1 reading/sec each)
 python stream_generator.py --type sensor --mode stream --rate 1000 --duration 600
-```
+```text
 
 ### Fraud Detection
 
 ```bash
 # Generate transactions with varying risk scores
 python stream_generator.py --type transaction --mode stream --rate 20 --output fraud_detection.jsonl
-```
+```text

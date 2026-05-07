@@ -16,7 +16,7 @@ By completing this exercise, you will:
 
 ## Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    Event Stream                              │
 │         (Kinesis: 365-day retention)                        │
@@ -42,9 +42,10 @@ By completing this exercise, you will:
                      ↓
               Blue-Green Swap
            (Switch API to v2)
-```
+```text
 
 **Key Difference from Lambda Architecture**:
+
 - ❌ No separate batch layer
 - ✅ Single stream processing logic
 - ✅ Reprocessing = replay stream with new code
@@ -61,12 +62,14 @@ By completing this exercise, you will:
 | **Cost (10M events/day)** | $1,335/month | $890/month (33% cheaper) |
 
 **When to Use Kappa**:
+
 - ✅ Simple aggregations (count, sum, average)
 - ✅ Small team (<5 engineers)
 - ✅ Frequent reprocessing (change metrics often)
 - ✅ Cost-sensitive (no separate batch layer)
 
 **When NOT to Use Kappa**:
+
 - ❌ Complex batch analytics (multi-table joins, ML training)
 - ❌ Stream retention insufficient (<365 days history needed)
 - ❌ Interactive queries (Kappa = write path, not ad-hoc SQL)
@@ -76,12 +79,14 @@ By completing this exercise, you will:
 **Business Question**: "What are current sales by category?"
 
 **Kappa Solution**:
+
 1. **Event Stream**: All orders → Kinesis (365-day retention)
 2. **Stream Processor**: Flink job → aggregate by category
 3. **Materialized View**: DynamoDB table (category metrics)
 4. **API**: Query DynamoDB for dashboard
 
 **Reprocessing Example** (add new metric):
+
 1. Write new Flink job (add average_discount column)
 2. Deploy to new DynamoDB table (`category_metrics_v2`)
 3. Replay last 365 days from Kinesis
@@ -113,7 +118,7 @@ By completing this exercise, you will:
 
 ```bash
 pip install boto3 pandas kafka-python
-```
+```text
 
 ### 2. Start LocalStack with Kinesis
 
@@ -136,7 +141,7 @@ aws --endpoint-url=http://localhost:4566 kinesis increase-stream-retention-perio
 
 ```bash
 python stream_processor.py --mode setup
-```
+```text
 
 ---
 
@@ -165,7 +170,7 @@ FROM TABLE(
     TUMBLE(TABLE orders, DESCRIPTOR(order_timestamp), INTERVAL '5' MINUTES)
 )
 GROUP BY window_start, window_end, category;
-```
+```text
 
 #### **Output to DynamoDB** (Sink Connector)
 
@@ -198,7 +203,7 @@ def write_to_dynamodb_sink(window_result):
             ':now': datetime.now().isoformat()
         }
     )
-```
+```text
 
 ### Running Stream Processor
 
@@ -215,7 +220,7 @@ python stream_processor.py --mode query --category Electronics
 
 ### Expected Output
 
-```
+```text
 === Kappa Stream Processor ===
 📊 Mode: Continuous Processing
 ⏱️  Window Size: 5 minutes (tumbling)
@@ -239,7 +244,7 @@ python stream_processor.py --mode query --category Electronics
 ✅ Metrics written to DynamoDB
 ⏱️  Processing Latency: <5 seconds (event → visible)
 💰 Cost: $15.30/day (Kinesis + Flink)
-```
+```text
 
 ---
 
@@ -309,7 +314,7 @@ class MaterializedViewManager:
         # Delete old view
         dynamodb.delete_table(TableName=f"category_metrics_v{old_version}")
         logger.info(f"🗑️  Deleted old view: v{old_version}")
-```
+```text
 
 ### Blue-Green Deployment Flow
 
@@ -332,7 +337,7 @@ Step 4: Swap Active View
 Step 5: Clean Up
    API → category_metrics_v2 (production)
    category_metrics_v1 (deleted)
-```
+```text
 
 ---
 
@@ -426,11 +431,12 @@ def replay_stream(
     logger.info(f"✅ Replayed {total_replayed:,} events")
 
     return {'replayed_events': total_replayed}
-```
+```text
 
 ### Reprocessing Scenario
 
 **Initial Deployment** (v1):
+
 ```python
 # v1: Calculate simple metrics
 flink_sql_v1 = """
@@ -441,9 +447,10 @@ SELECT
 FROM orders
 GROUP BY category
 """
-```
+```text
 
 **Add New Metric** (v2):
+
 ```python
 # v2: Add average discount
 flink_sql_v2 = """
@@ -458,6 +465,7 @@ GROUP BY category
 ```
 
 **Reprocessing Steps**:
+
 1. Deploy v2 code (writes to `category_metrics_v2`)
 2. Replay last 365 days from Kinesis
 3. Validate v2 results (spot check numbers)
@@ -478,11 +486,11 @@ python replay_handler.py \
   --start "2026-03-09T00:00:00" \
   --end "2026-03-09T12:00:00" \
   --target-table category_metrics_v2
-```
+```text
 
 ### Expected Output
 
-```
+```text
 === Stream Replay Handler ===
 📅 Time Range: 2026-03-02 00:00:00 to 2026-03-09 23:59:59
    └─ Duration: 7 days (168 hours)
@@ -510,7 +518,7 @@ python replay_handler.py \
 
 ✅ Replay Complete
    Next: Validate v2, then swap active view
-```
+```text
 
 ---
 
@@ -519,11 +527,13 @@ python replay_handler.py \
 ### Task 1: Compare Kappa vs Lambda Complexity
 
 **Metrics**:
+
 - Lines of code (LoC)
 - Number of services
 - Operational overhead (monitoring dashboards, alerts)
 
 **Expected**:
+
 ```
 Lambda Architecture:
   ├─ Batch Layer: 500 LoC
@@ -538,7 +548,7 @@ Kappa Architecture:
   └─ Total: 1,200 LoC, 2 services (Kinesis, DynamoDB)
 
 ✅ Kappa: 60% fewer services (operational simplicity)
-```
+```text
 
 ### Task 2: Validate Reprocessing
 
@@ -558,7 +568,7 @@ python replay_handler.py --start "1 hour ago" --target-table category_metrics_v2
 python materialized_views.py --table category_metrics_v2 --validate
 
 # ✅ Expected: v2 includes avg_discount column
-```
+```text
 
 ### Task 3: Measure Replay Time
 
@@ -574,7 +584,7 @@ python replay_handler.py --start "30 days ago" --benchmark
 # Expected: ~3 hours
 
 # Rule of thumb: 10M events/day × 30 days = 300M events → ~3 hours replay
-```
+```text
 
 ---
 
@@ -587,6 +597,7 @@ python replay_handler.py --start "30 days ago" --benchmark
 **Task**: Calculate replay time for 1TB of data.
 
 **Solution**:
+
 ```python
 # Data: 1 TB = 1,048,576 MB
 # Shards: 10 (each 2 MB/sec read capacity)
@@ -605,6 +616,7 @@ python replay_handler.py --start "30 days ago" --benchmark
 **Task**: Implement gradual rollout (canary deployment).
 
 **Solution**:
+
 ```python
 # Phase 1: Route 10% traffic to v2
 if random.random() < 0.10:
@@ -617,7 +629,7 @@ else:
 
 # Phase 3: Full rollout (100% to v2)
 # Phase 4: Delete v1
-```
+```text
 
 ### Challenge 3: Schema Evolution
 
@@ -626,6 +638,7 @@ else:
 **Task**: Support both old and new schemas during transition.
 
 **Solution**:
+
 ```python
 def process_event(event):
     # Old schema (legacy events)
@@ -637,7 +650,7 @@ def process_event(event):
 
     # Process unified schema
     update_metrics(event)
-```
+```text
 
 ---
 
@@ -646,21 +659,25 @@ def process_event(event):
 ### Kappa Architecture (10M events/day)
 
 **Kinesis Stream** (365-day retention):
+
 - Shards: 2 (2 MB/sec capacity)
 - Cost: 2 shards × $0.015/hour × 24 hours × 30 days = $21.60/month
 - PUT cost: 10M events/day × 30 days × $0.000014/25 KB = $168/month
 - **Total**: $189.60/month
 
 **Kinesis Analytics** (Flink):
+
 - KPUs: 2 (2 GB memory, 1 vCPU each)
 - Cost: 2 KPUs × $0.11/hour × 24 hours × 30 days = $158.40/month
 
 **DynamoDB** (materialized views):
+
 - Write: 500 writes/sec (window updates)
 - Read: 100 reads/sec (API queries)
 - Cost: ~$320/month (auto-scaling)
 
 **Lambda** (replay orchestration):
+
 - Negligible (<$1/month)
 
 **Total**: $668/month
@@ -677,15 +694,18 @@ def process_event(event):
 **Event Stream**: Kafka (7-day retention originally, now 30 days)
 
 **Stream Processors**:
+
 - Samza jobs (LinkedIn's stream processing framework)
 - Materialized views: Espresso (NoSQL database)
 
 **Reprocessing**:
+
 - Replay Kafka topic from offset
 - Run new Samza job version
 - Blue-green deployment
 
 **Scale**:
+
 - 1 trillion messages/day
 - 1,400 Kafka brokers
 - <100ms latency
@@ -695,10 +715,12 @@ def process_event(event):
 **Event Stream**: Kafka (ride requests, GPS updates)
 
 **Stream Processors**:
+
 - Flink jobs (demand calculation)
 - Materialized views: Cassandra (current pricing by area)
 
 **Reprocessing** (ML model updates):
+
 - Train new pricing model
 - Replay last 24 hours
 - A/B test new model (10% traffic)
@@ -713,15 +735,17 @@ def process_event(event):
 ### 1. Simpler Codebase
 
 **Lambda** (2 implementations):
+
 ```python
 # batch_layer.py (Spark)
 df.groupBy("category").sum("amount")
 
 # speed_layer.py (Kinesis)
 UPDATE metrics SET revenue = revenue + amount
-```
+```text
 
 **Kappa** (1 implementation):
+
 ```python
 # stream_processor.py (Flink)
 SELECT category, SUM(amount) FROM orders GROUP BY category
@@ -732,10 +756,12 @@ SELECT category, SUM(amount) FROM orders GROUP BY category
 ### 2. Faster Reprocessing
 
 **Lambda**:
+
 - Reprocess: Run batch job on all S3 data (4 hours)
 - Cost: $50 (Glue DPUs)
 
 **Kappa**:
+
 - Reprocess: Replay Kinesis stream (42 minutes for 7 days)
 - Cost: $0 (no additional Kinesis read cost)
 
@@ -744,11 +770,13 @@ SELECT category, SUM(amount) FROM orders GROUP BY category
 ### 3. No Data Synchronization
 
 **Lambda**:
+
 - Batch writes to Redshift
 - Speed writes to DynamoDB
 - Serving merges (complex logic)
 
 **Kappa**:
+
 - Stream writes to DynamoDB (single source)
 - API reads from DynamoDB (simple)
 
@@ -792,7 +820,7 @@ SELECT category, SUM(amount) FROM orders GROUP BY category
 
 ## When to Choose Kappa Over Lambda
 
-### ✅ Choose Kappa When:
+### ✅ Choose Kappa When
 
 1. **Simple Aggregations**: Count, sum, average (no complex batch analytics)
 2. **Small Team**: <5 engineers (can't maintain 2 systems)
@@ -800,7 +828,7 @@ SELECT category, SUM(amount) FROM orders GROUP BY category
 4. **Cost-Sensitive**: 50% cheaper than Lambda
 5. **Recent Data**: 365-day history sufficient
 
-### ❌ Choose Lambda When:
+### ❌ Choose Lambda When
 
 1. **Complex Batch**: ML training, multi-table joins, historical analysis
 2. **Long History**: Need >1 year of data
@@ -830,6 +858,7 @@ After completing Exercise 02:
 **Symptom**: Replaying 30 days takes >12 hours.
 
 **Solutions**:
+
 1. **Increase shards**: Scale from 2 → 20 shards (10x parallelism)
 2. **Batch reads**: Use `GetRecords(Limit=10000)` instead of 100
 3. **Parallel replay**: Run multiple replay jobs (each handles subset of time)
@@ -839,6 +868,7 @@ After completing Exercise 02:
 **Symptom**: v2 has different numbers than v1 (for same time period).
 
 **Solutions**:
+
 1. **Check event ordering**: Ensure events processed in order (partition key)
 2. **Idempotency**: Deduplicate events (event_id)
 3. **Window alignment**: Ensure same window boundaries (tumbling 5 min)
@@ -848,6 +878,7 @@ After completing Exercise 02:
 **Symptom**: DynamoDB writes cost $500/month.
 
 **Solutions**:
+
 1. **Aggregate more**: 1-minute windows → 5-minute windows (5x fewer writes)
 2. **Downsample**: Only write if value changed >1% (skip writes)
 3. **Use On-Demand**: Pay per request instead of provisioned capacity
@@ -857,13 +888,16 @@ After completing Exercise 02:
 ## References
 
 **Research Papers**:
+
 - [Questioning the Lambda Architecture](https://www.oreilly.com/radar/questioning-the-lambda-architecture/) (Jay Kreps, 2014)
 
 **AWS Docs**:
+
 - [Kinesis Data Analytics - Flink SQL](https://docs.aws.amazon.com/kinesisanalytics/latest/java/how-it-works.html)
 - [Kinesis Extended Retention](https://aws.amazon.com/blogs/aws/amazon-kinesis-update-retain-data-for-up-to-one-year/)
 
 **Case Studies**:
+
 - [LinkedIn's Kappa Architecture](https://engineering.linkedin.com/blog/2016/04/kafka-ecosystem-at-linkedin)
 
 ---

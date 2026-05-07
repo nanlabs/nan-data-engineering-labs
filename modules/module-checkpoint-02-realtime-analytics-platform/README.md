@@ -34,11 +34,11 @@ Run acceptance tests from this module:
 
 ```bash
 bash validation/run-tests.sh
-```
+```text
 
 Also validate module contracts from repository root:
 
 ```bash
 PYTHON=python
 $PYTHON scripts/validate_learning_labs.py --module module-checkpoint-02-realtime-analytics-platform --strict-core --strict-headings
-```
+```text

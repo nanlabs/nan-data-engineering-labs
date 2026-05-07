@@ -14,14 +14,16 @@ def pipeline():
     df = enrich(df)
     df = validate(df)
     load(df)
-```
+```text
 
 **features**:
+
 - Linear and easy to understand
 - Cada paso depende del anterior
 - Easy to debug
 
 **When to use**:
+
 - Transformaciones simples
 - Dependencies claras
 - Processs batch
@@ -40,14 +42,16 @@ def fan_out():
         executor.submit(load_warehouse, df)
         executor.submit(load_cache, df)
         executor.submit(load_search, df)
-```
+```text
 
 **features**:
+
 - Parallelization
 - Multiple consumers
 - Mejor performance
 
 **When to use**:
+
 - Multiple destiNATions
 - Destinos independientes
 - High throughput necesario
@@ -72,14 +76,16 @@ def fan_in():
     ])
 
     transform_and_load(df)
-```
+```text
 
 **features**:
+
 - Multiple sources
 - Data consolidation
 - Parallel extraction
 
 **When to use**:
+
 - Data from multiple systems
 - Necessary consolidation
 - Extract es cuello de botella
@@ -106,11 +112,13 @@ def process_file(file):
 ```
 
 **features**:
+
 - Divide y conquista
 - Massive parallelization
 - Final aggregation
 
 **When to use**:
+
 - Large volumes
 - Procesamiento independiente
 - Agregaciones necesarias
@@ -135,14 +143,16 @@ def delta_import():
 
     # Update watermark
     set_watermark(datetime.now())
-```
+```text
 
 **features**:
+
 - Eficiente
 - Incremental
 - Requiere timestamp column
 
 **When to use**:
+
 - tables grandes
 - Updates frecuentes
 - Tiempos de ventana limitados
@@ -161,7 +171,7 @@ def scd_type1(new_record):
         name=new_record['name'],
         address=new_record['address']
     )
-```
+```text
 
 #### Type 2: Add Row
 
@@ -183,7 +193,7 @@ def scd_type2(new_record):
         ({new_record['id']}, '{new_record['name']}', '{new_record['address']}',
          CURRENT_DATE, '9999-12-31', true)
     """)
-```
+```text
 
 #### Type 3: Add Column
 
@@ -201,6 +211,7 @@ def scd_type3(new_record):
 ```
 
 **When to use each type**:
+
 - **Type 1**: Correcciones, datas que no necesitan historia
 - **Type 2**: Complete audit trail, historical reporting
 - **Type 3**: Limited history, specific columns
@@ -234,7 +245,7 @@ destiNATion:
   type: s3
   bucket: data-lake
   prefix: users/
-```
+```text
 
 ```python
 # etl.py
@@ -250,9 +261,10 @@ def run_etl(config):
     # Load dinámico
     destiNATion = DestiNATionFactory.create(config['destiNATion'])
     destiNATion.load(df)
-```
+```text
 
 **Ventajas**:
+
 - Reutilizable
 - No code changes para nuevos pipelines
 - Easy to test
@@ -304,7 +316,7 @@ class UserETL(ETLPipeline):
 
     def load(self, data):
         data.to_parquet('users.parquet')
-```
+```text
 
 ### Strategy Pattern
 
@@ -358,7 +370,7 @@ def extract_from_api():
     response = requests.get(API_URL)
     response.raise_for_status()
     return response.json()
-```
+```text
 
 ### Circuit Breaker Pattern
 
@@ -378,7 +390,7 @@ try:
 except CircuitBreakerError:
     # Usar fallback o cached data
     data = get_cached_data()
-```
+```text
 
 ### Dead Letter Queue Pattern
 
@@ -405,7 +417,7 @@ def process_records(records):
 
     # Save failed to DLQ
     save_to_dlq(failed)
-```
+```text
 
 ### Graceful Degradation
 
@@ -453,7 +465,7 @@ def validate_and_load(records):
             invalid.append({'record': record, 'errors': e.errors()})
 
     return valid, invalid
-```
+```text
 
 ### Data Profiling Pattern
 
@@ -477,7 +489,7 @@ def profile_data(df):
         raise DataQualityError("Too many null emails")
 
     return profile
-```
+```text
 
 ### Reconciliation Pattern
 
@@ -501,7 +513,7 @@ def reconcile():
 
     if not samples_match(source_sample, dest_sample):
         alert("Sample data mismatch")
-```
+```text
 
 ---
 
@@ -562,7 +574,7 @@ def staged_load(df):
 
     # Step 4: Cleanup staging
     conn.execute("DROP TABLE staging_users")
-```
+```text
 
 ---
 
@@ -593,7 +605,7 @@ class UserBuilder:
 
 # Uso
 user = UserBuilder().with_id(123).with_invalid_email().build()
-```
+```text
 
 ### Assertions Pattern
 
@@ -610,7 +622,7 @@ def test_etl():
     assert result['email'].notnull().all()
     assert result['age'].between(0, 120).all()
     assert not result.duplicated('id').any()
-```
+```text
 
 ### Mock Pattern
 
@@ -646,7 +658,7 @@ def chunked_processing(file, chunk_size=10000):
     for chunk in pd.read_csv(file, chunksize=chunk_size):
         transformed = transform(chunk)
         load(transformed)
-```
+```text
 
 ### Parallel Processing Pattern
 
@@ -663,7 +675,7 @@ def parallel_load(dfs, workers=4):
         # Wait for all
         for future in futures:
             future.result()
-```
+```text
 
 ### Caching Pattern
 
@@ -674,7 +686,7 @@ from functools import lru_cache
 def get_lookup_value(key):
     """Cache lookup table en memory"""
     return db.query(f"SELECT value FROM lookup WHERE key='{key}'")
-```
+```text
 
 ---
 

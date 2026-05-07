@@ -68,11 +68,11 @@ python solution/01_create_table.py
 # 4. Validar everything
 cd ../..
 ./scrIPts/validate.sh
-```
+```text
 
 ## 📂 Structure Final
 
-```
+```text
 module-05-data-lakehouse/
 ├── theory/                          # Teoría (22,000 palabras)
 │   ├── 01-lakehouse-intro.md
@@ -111,16 +111,16 @@ module-05-data-lakehouse/
 └── docs/
     ├── TROUBLESHOOTING.md
     └── MODULE-COMPLETION.md
-```
+```text
 
 ## 🚀 URLs Disponibles
 
 | service | URL | Cnetworkenciales |
 |----------|-----|--------------|
-| MinIO Console | HTTP://localhost:9001 | admin / password123 |
-| Spark Master UI | HTTP://localhost:8080 | - |
-| Spark Worker UI | HTTP://localhost:8081 | - |
-| Jupyter Lab | HTTP://localhost:8888 | - |
+| MinIO Console | <HTTP://localhost:9001> | admin / password123 |
+| Spark Master UI | <HTTP://localhost:8080> | - |
+| Spark Worker UI | <HTTP://localhost:8081> | - |
+| Jupyter Lab | <HTTP://localhost:8888> | - |
 | Hive Metastore | thrift://localhost:9083 | - |
 
 ## 💡 Useful Commands
@@ -151,17 +151,20 @@ pytest --cov=exercises --cov-report=html
 ## 📚 Additional Resources
 
 ### Documentation
+
 - [Delta Lake Official Docs](HTTPs://docs.delta.io/)
 - [Apache Iceberg Documentation](HTTPs://iceberg.apache.org/docs/latest/)
 - [Databricks Lakehouse Platform](HTTPs://www.databricks.com/product/data-lakehouse)
 - [The data Lakehouse (or'Reilly Book)](HTTPs://www.databricks.com/resources/ebook/the-data-lakehouse)
 
 ### Tutoriales
+
 - [Delta Lake Quickstart](HTTPs://docs.delta.io/latest/quick-start.html)
 - [Medallion Architecture Guide](HTTPs://www.databricks.com/glossary/medallion-architecture)
 - [Lakehouse Best Practices](HTTPs://www.databricks.com/blog/2020/01/30/what-is-to-data-lakehouse.html)
 
 ### Videos
+
 - [data Lakehouse Explained](HTTPs://www.youtube.com/watch?v=iXqPDfuWvRs)
 - [Delta Lake Deep Dive](HTTPs://www.youtube.com/watch?v=LJtShrQqYZY)
 - [Apache Spark + Delta Lake Tutorial](HTTPs://www.youtube.com/watch?v=BMO90DI82Xc)
@@ -176,6 +179,7 @@ pytest --cov=exercises --cov-report=html
 ## 🔄 Suggested Next Steps
 
 ### Ampliar Conocimientos
+
 1. **Streaming with Delta Lake**: readStream/writeStream
 2. **Delta Lake on AWS Glue**: Integration with AWS
 3. **Unity Catalog**: Governance and security
@@ -183,6 +187,7 @@ pytest --cov=exercises --cov-report=html
 5. **Photon Engine**: Query acceleration
 
 ### Practical Projects
+
 1. **Real-time Analytics**: Streaming pIPeline with Kafka + Delta
 2. **ML pIPeline**: Bronze→Silver→Gold for feature engineering
 3. **data Quality Framework**: Automated data validation
@@ -190,6 +195,7 @@ pytest --cov=exercises --cov-report=html
 5. **Multi-cloud Lakehouse**: Delta Lake in AWS + Azure
 
 ### Explorar AlterNATivas
+
 1. **Apache Hudi**: Otro formato Lakehouse
 2. **Databricks Lakehouse Platform**: Managed service
 3. **AWS Lake Formation**: AWS-NATive lakehouse
@@ -197,7 +203,7 @@ pytest --cov=exercises --cov-report=html
 
 ## 📊 Progress Dashboard
 
-```
+```text
 =============================================================
            MODULE 05 - COMPLETION REPORT
 =============================================================
@@ -229,9 +235,9 @@ Estimated Study Time: 10-12 horas
 Practical Work Time:  6-8 horas
 Total Module Time:    16-20 horas
 
-```
+```text
 
-## 🎉 Congratulations!
+## 🎉 Congratulations
 
 You have completed one of the most important modules of the training:
 

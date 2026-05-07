@@ -25,7 +25,7 @@ flowchart TB
     style P4 fill:#E1F5FF
     style P5 fill:#F3E5F5
     style P6 fill:#FFF9C4
-```
+```text
 
 ## Sequential Processing Pattern
 
@@ -55,7 +55,7 @@ stateDiagram-v2
         Memory: 2048 MB
         Timeout: 10 min
     end note
-```
+```text
 
 ## Parallel Processing Pattern
 
@@ -93,7 +93,7 @@ flowchart TD
     style Parallel fill:#FFD700
     style Join fill:#87CEEB
     style ErrorHandler fill:#FF6347
-```
+```text
 
 ## Map State Pattern - Dynamic Parallelism
 
@@ -172,7 +172,7 @@ flowchart TD
     style Small fill:#E8F5E9
     style Medium fill:#FFF3E0
     style Large fill:#FFE1E1
-```
+```text
 
 ## Wait State Pattern - Delays & Callbacks
 
@@ -209,7 +209,7 @@ sequenceDiagram
     Note over SF: Continue Execution
     SF->>Lambda: 11. Load Data
     Note over SF: End Execution
-```
+```text
 
 ## Saga Pattern - Distributed Transactions
 
@@ -244,7 +244,7 @@ flowchart TB
     style Compensate1 fill:#FFE1E1
     style Compensate2 fill:#FFE1E1
     style Success fill:#90EE90
-```
+```text
 
 ## Error Handling & Retry Pattern
 
@@ -326,7 +326,7 @@ flowchart TB
     Express -.-> Note1
     Standard -.-> Note2
     Scheduled -.-> Note3
-```
+```text
 
 ## Human Approval Pattern
 
@@ -367,7 +367,7 @@ sequenceDiagram
     end
 
     Note over SF: End Workflow
-```
+```text
 
 ## Comparison: Express vs Standard Workflows
 
@@ -406,11 +406,12 @@ graph TB
 
     style Express fill:#E8F5E9
     style Standard fill:#E1F5FF
-```
+```text
 
 ## Uso
 
 Estos diagramas muestran:
+
 1. Patrones comunes de orquestación con Step Functions
 2. Sequential processing para workflows lineales
 3. Parallel processing para tareas independientes

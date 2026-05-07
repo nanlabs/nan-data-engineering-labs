@@ -1,6 +1,7 @@
 # Terraform Advanced: Técnicas y Patrones Avanzados
 
 ## Tabla de Contenidos
+
 1. [Modules de Terraform](#modules-de-terraform)
 2. [Composición de Modules](#composición-de-modules)
 3. [Module Registry](#module-registry)
@@ -53,7 +54,7 @@ resource "aws_subnet" "staging_subnet_1" {
 
 # Y para producción...
 # Más duplicación...
-```
+```text
 
 #### Solution con Modules
 
@@ -79,11 +80,11 @@ module "prod_vpc" {
   environment = "prod"
   cidr_block  = "10.2.0.0/16"
 }
-```
+```text
 
 ### Estructura de un Module
 
-```
+```text
 modules/
 └── vpc/
     ├── main.tf        # Recursos principales
@@ -153,7 +154,7 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-```
+```text
 
 #### modules/vpc/main.tf
 
@@ -340,7 +341,7 @@ resource "aws_vpn_gateway" "main" {
     }
   )
 }
-```
+```text
 
 #### modules/vpc/outputs.tf
 
@@ -392,7 +393,7 @@ output "availability_zones" {
     aws_subnet.private[*].availability_zone
   ))
 }
-```
+```text
 
 #### modules/vpc/versions.tf
 
@@ -460,14 +461,15 @@ output "vpc_id" {
 output "private_subnet_ids" {
   value = module.vpc.private_subnet_ids
 }
-```
+```text
 
 ### Best Practices para Modules
 
 #### 1. Estructura Consistente
 
 ✅ **DO:**
-```
+
+```text
 module/
 ├── main.tf        # Recursos principales
 ├── variables.tf   # Variables input
@@ -475,7 +477,7 @@ module/
 ├── versions.tf    # Provider requirements
 ├── locals.tf      # (opcional) Valores locales complejos
 └── README.md      # Documentación
-```
+```text
 
 #### 2. Documentación Clara
 
@@ -513,7 +515,7 @@ output "private_subnet_ids" {
 output "vpc" {
   value = aws_vpc.main
 }
-```
+```text
 
 #### 4. Variables con Defaults Razonables
 
@@ -531,7 +533,7 @@ variable "enable_encryption" {
   type        = bool
   # Sin default obliga al usuario a especificar
 }
-```
+```text
 
 #### 5. Validation de Variables
 
@@ -555,7 +557,7 @@ variable "instance_count" {
     error_message = "Instance count must be between 1 and 10."
   }
 }
-```
+```text
 
 ---
 
@@ -578,7 +580,7 @@ root/
     ├── dev/
     ├── staging/
     └── prod/
-```
+```text
 
 ### Module de Networking
 
@@ -645,7 +647,7 @@ output "public_subnet_ids" {
 output "alb_security_group_id" {
   value = aws_security_group.alb.id
 }
-```
+```text
 
 ### Module de Compute
 
@@ -769,7 +771,7 @@ resource "aws_lb_listener" "app" {
     target_group_arn = aws_lb_target_group.app.arn
   }
 }
-```
+```text
 
 ### Module de Database
 
@@ -1016,7 +1018,7 @@ output "database_endpoint" {
 output "storage_bucket_names" {
   value = module.storage.bucket_names
 }
-```
+```text
 
 ---
 
@@ -1047,7 +1049,7 @@ module "vpc" {
     Environment = "dev"
   }
 }
-```
+```text
 
 ### Modules Populares de AWS
 
@@ -1157,7 +1159,7 @@ module "alb" {
     }
   ]
 }
-```
+```text
 
 ### Versiones de Modules
 
@@ -1219,7 +1221,7 @@ module "vpc" {
 module "vpc" {
   source = "s3::https://s3-us-west-2.amazonaws.com/my-modules/vpc.zip"
 }
-```
+```text
 
 ---
 
@@ -1252,7 +1254,7 @@ output "all_bucket_ids" {
 output "first_bucket_id" {
   value = aws_s3_bucket.example[0].id
 }
-```
+```text
 
 #### Count con Condicional
 
@@ -1267,7 +1269,7 @@ resource "aws_eip" "nat" {
 output "nat_eip" {
   value = length(aws_eip.nat) > 0 ? aws_eip.nat[0].public_ip : null
 }
-```
+```text
 
 #### Count con Variable
 
@@ -1319,7 +1321,7 @@ output "bucket_arns" {
     k => bucket.arn
   }
 }
-```
+```text
 
 #### For Each con Map
 
@@ -1365,7 +1367,7 @@ output "instance_ips" {
     name => instance.private_ip
   }
 }
-```
+```text
 
 #### For Each con Data Source
 
@@ -1391,7 +1393,7 @@ resource "aws_subnet" "private" {
     AZ   = each.value
   }
 }
-```
+```text
 
 ### Count vs For Each: ¿Cuándo Usar?
 
@@ -1438,7 +1440,7 @@ resource "aws_iam_user" "user" {
 # Si eliminas "bob":
 # Terraform solo elimina user["bob"]
 # ✅ Correcto!
-```
+```text
 
 ---
 
@@ -1468,7 +1470,7 @@ resource "aws_eip" "nat" {
   count  = var.environment == "prod" ? 3 : 1
   domain = "vpc"
 }
-```
+```text
 
 ### For Expressions
 
@@ -1515,7 +1517,7 @@ locals {
   ])
   # Resultado: ["dev-us-east-1", "dev-us-west-2", "staging-us-east-1", ...]
 }
-```
+```text
 
 #### Map Comprehension
 
@@ -1585,7 +1587,7 @@ locals {
   }
   # Resultado: { prod = [{web-1}, {web-2}], dev = [{app-1}] }
 }
-```
+```text
 
 ### Splat Expressions
 
@@ -1619,7 +1621,7 @@ resource "aws_s3_bucket" "data" {
 output "bucket_arns" {
   value = [for bucket in aws_s3_bucket.data : bucket.arn]
 }
-```
+```text
 
 ---
 
@@ -1664,7 +1666,7 @@ locals {
   resource_prefix = lower(replace("${var.environment}-${var.region}", "_", "-"))
   # Resultado: "production-us-east-1"
 }
-```
+```text
 
 ### Collection Functions
 
@@ -1764,7 +1766,7 @@ locals {
   instance_count = lookup(local.tier_multiplier, var.tier, 1) * 2
   storage_size   = lookup(local.tier_multiplier, var.tier, 1) * 50
 }
-```
+```text
 
 ### Filesystem Functions
 
@@ -1808,7 +1810,7 @@ resource "aws_instance" "web" {
 # echo "Environment: ${environment}"
 # echo "App Port: ${app_port}"
 # echo "DB Host: ${db_host}"
-```
+```text
 
 ### Date/Time Functions
 
@@ -1831,7 +1833,7 @@ resource "aws_db_snapshot" "backup" {
   db_instance_identifier = aws_db_instance.main.id
   db_snapshot_identifier = "backup-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
 }
-```
+```text
 
 ### Encoding Functions
 
@@ -1908,7 +1910,7 @@ locals {
     cidrsubnet(var.vpc_cidr, 8, i + 10)
   ]
 }
-```
+```text
 
 ### Type Conversion Functions
 
@@ -1943,7 +1945,7 @@ locals {
   # Validar que puerto está en rango válido
   valid_port = local.port_number >= 1 && local.port_number <= 65535
 }
-```
+```text
 
 ---
 
@@ -1977,18 +1979,20 @@ resource "aws_instance" "web" {
   vpc_security_group_ids = [aws_security_group.web.id]  # ← Dependency implícita
   # ...
 }
-```
+```text
 
 **Orden de creación automático:**
+
 ```
 1. aws_vpc.main
 2. aws_subnet.public, aws_security_group.web (parallelo)
 3. aws_instance.web
-```
+```text
 
 ### Dependencies Explícitas con depends_on
 
 Usa `depends_on` cuando:
+
 - La dependency no es obvia de las referencias
 - Necesitas ordenar recursos sin referencias directas
 - Resources en diferentes providers
@@ -2018,7 +2022,7 @@ resource "aws_s3_bucket_policy" "data" {
   # Debe esperar a que public access block esté configurado
   depends_on = [aws_s3_bucket_public_access_block.data]
 }
-```
+```text
 
 ```hcl
 # Ejemplo: IAM role debe existir antes de usarlo
@@ -2050,7 +2054,7 @@ resource "aws_lambda_function" "processor" {
   # Asegurar que policies estén attached antes de create función
   depends_on = [aws_iam_role_policy_attachment.lambda_basic]
 }
-```
+```text
 
 ```hcl
 # Ejemplo: Multiple dependencies
@@ -2077,7 +2081,7 @@ terraform graph | dot -Tpng > graph.png
 
 # O formato SVG
 terraform graph | dot -Tsvg > graph.svg
-```
+```text
 
 ---
 
@@ -2103,7 +2107,7 @@ resource "aws_launch_template" "app" {
 # Útil cuando:
 # - Resource es usado por otro que no puede tener downtime
 # - Necesitas zero-downtime deployment
-```
+```text
 
 **Ejemplo con ASG:**
 
@@ -2134,7 +2138,7 @@ resource "aws_autoscaling_group" "app" {
     create_before_destroy = true
   }
 }
-```
+```text
 
 ### prevent_destroy
 
@@ -2156,6 +2160,7 @@ resource "aws_db_instance" "production" {
 ```
 
 **Casos deuso:**
+
 - Databases de producción
 - S3 buckets con datos críticos
 - State files
@@ -2173,7 +2178,7 @@ resource "aws_s3_bucket" "terraform_state" {
     prevent_destroy = true
   }
 }
-```
+```text
 
 ### ignore_changes
 
@@ -2193,7 +2198,7 @@ resource "aws_instance" "web" {
     ignore_changes = [tags]
   }
 }
-```
+```text
 
 **Ignorar múltiples atributos:**
 
@@ -2210,7 +2215,7 @@ resource "aws_instance" "web" {
     ]
   }
 }
-```
+```text
 
 **Ignorar todos los cambios:**
 
@@ -2239,7 +2244,7 @@ resource "aws_autoscaling_group" "app" {
     ignore_changes = [desired_capacity]
   }
 }
-```
+```text
 
 ### replace_triggered_by
 
@@ -2263,7 +2268,7 @@ resource "aws_instance" "app" {
     ]
   }
 }
-```
+```text
 
 ### Combinando Lifecycle Rules
 
@@ -2288,7 +2293,7 @@ resource "aws_db_instance" "main" {
     ignore_changes = [tags]
   }
 }
-```
+```text
 
 ---
 
@@ -2351,7 +2356,7 @@ resource "aws_instance" "web" {
     }
   }
 }
-```
+```text
 
 **Ejemplo: Cleanup al destruir:**
 
@@ -2365,7 +2370,7 @@ resource "aws_instance" "web" {
     command = "./scripts/deregister-from-monitoring.sh ${self.id}"
   }
 }
-```
+```text
 
 #### remote-exec
 
@@ -2395,7 +2400,7 @@ resource "aws_instance" "web" {
 
   # ⚠️ MEJOR: Usar user_data para esto
 }
-```
+```text
 
 **Mejor alternativa - User Data:**
 
@@ -2443,7 +2448,7 @@ resource "aws_instance" "web" {
     ]
   }
 }
-```
+```text
 
 ### Provisioner Failure Behavior
 
@@ -2459,7 +2464,7 @@ resource "aws_instance" "web" {
     on_failure = continue  # continue = continuar, fail = abortar (default)
   }
 }
-```
+```text
 
 ### null_resource con Provisioners
 
@@ -2481,7 +2486,7 @@ resource "null_resource" "configure_monitoring" {
     }
   }
 }
-```
+```text
 
 ### Best Practices
 
@@ -2531,7 +2536,7 @@ terraform {
     kms_key_id = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
   }
 }
-```
+```text
 
 ### Setup Inicial
 
@@ -2578,7 +2583,7 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-```
+```text
 
 #### 2. Crear DynamoDB Table para Locking
 
@@ -2598,7 +2603,7 @@ resource "aws_dynamodb_table" "terraform_state_lock" {
     ManagedBy = "Terraform"
   }
 }
-```
+```text
 
 ### Migrar de Local a Remote State
 
@@ -2649,13 +2654,13 @@ terraform apply
 #   Operation: OperationTypeApply
 #   Who:       user1@machine1
 #   Created:   2024-03-07 12:34:56
- ```
+ ```text
 
 **Force unlock (⚠️ usar con cuidado):**
 
 ```bash
 terraform force-unlock <LOCK_ID>
-```
+```text
 
 ### Backend per Environment
 
@@ -2670,9 +2675,10 @@ environments/
 └── prod/
     ├── backend.tf
     └── main.tf
-```
+```text
 
 **environments/dev/backend.tf:**
+
 ```hcl
 terraform {
   backend "s3" {
@@ -2683,9 +2689,10 @@ terraform {
     dynamodb_table = "terraform-state-lock"
   }
 }
-```
+```text
 
 **environments/prod/backend.tf:**
+
 ```hcl
 terraform {
   backend "s3" {
@@ -2696,7 +2703,7 @@ terraform {
     dynamodb_table = "terraform-state-lock"
   }
 }
-```
+```text
 
 ### Partial Backend Configuration
 
@@ -2716,12 +2723,12 @@ key            = "dev/terraform.tfstate"
 region         = "us-east-1"
 encrypt        = true
 dynamodb_table = "terraform-state-lock"
-```
+```text
 
 ```bash
 # Inicializar con config file
 terraform init -backend-config=backend-dev.hcl
-```
+```text
 
 O con CLI flags:
 
@@ -2730,7 +2737,7 @@ terraform init \
   -backend-config="bucket=mycompany-terraform-state" \
   -backend-config="key=dev/terraform.tfstate" \
   -backend-config="region=us-east-1"
-```
+```text
 
 ### Remote State Data Source
 
@@ -2769,7 +2776,7 @@ resource "aws_instance" "app" {
 
   # ...
 }
-```
+```text
 
 ---
 
@@ -2792,7 +2799,7 @@ aws_instance.web[0]
 aws_instance.web[1]
 module.database.aws_db_instance.main
 module.database.aws_security_group.rds
-```
+```text
 
 ### terraform state show
 
@@ -2811,7 +2818,7 @@ resource "aws_instance" "web" {
     vpc_security_group_ids       = ["sg-xyz789"]
     ...
 }
-```
+```text
 
 ### terraform state mv
 
@@ -2853,14 +2860,14 @@ resource "aws_instance" "server" {
   for_each = var.servers
   # ...
 }
-```
+```text
 
 ```bash
 # Migrar state
 terraform state mv 'aws_instance.server[0]' 'aws_instance.server["web"]'
 terraform state mv 'aws_instance.server[1]' 'aws_instance.server["app"]'
 terraform state mv 'aws_instance.server[2]' 'aws_instance.server["worker"]'
-```
+```text
 
 ### terraform state rm
 
@@ -2875,9 +2882,10 @@ terraform state rm aws_instance.web[0] aws_instance.web[1]
 
 # Remover todo un module
 terraform state rm module.networking
-```
+```text
 
 **Cuándo usar:**
+
 - Resource fue eliminado manualmente en console
 - Quieres que Terraform deje de gestionar un resource
 - Moviendo resource a otro state
@@ -2896,7 +2904,7 @@ Sube state local a remote (⚠️ peligroso):
 
 ```bash
 terraform state push terraform.tfstate
-```
+```text
 
 ### terraform state replace-provider
 
@@ -2907,7 +2915,7 @@ Cambia provider de resources existentes:
 terraform state replace-provider \
   registry.terraform.io/-/aws \
   registry.terraform.io/hashicorp/aws
-```
+```text
 
 ---
 
@@ -2934,7 +2942,7 @@ terraform workspace show
 
 # Eliminar workspace
 terraform workspace delete dev
-```
+```text
 
 ### Usar Workspaces en Configuration
 
@@ -2982,7 +2990,7 @@ resource "aws_instance" "web" {
 
 S3 backend crea diferentes state files por workspace:
 
-```
+```text
 s3://mycompany-terraform-state/
 ├── env:/
 │   ├── dev/
@@ -2992,7 +3000,7 @@ s3://mycompany-terraform-state/
 │   └── prod/
 │       └── terraform.tfstate
 └── terraform.tfstate  # default workspace
-```
+```text
 
 ### Workspaces vs Directorios Separados
 
@@ -3009,7 +3017,7 @@ s3://mycompany-terraform-state/
 
 Para production, preferir directorios separados:
 
-```
+```text
 environments/
 ├── dev/
 │   ├── backend.tf
@@ -3029,6 +3037,7 @@ environments/
 ```
 
 **Beneficios:**
+
 - Mejor isolation (diferentes S3 buckets)
 - Config diferente por environment
 - Menos riesgo de aplicar cambios al env equivocado
@@ -3054,7 +3063,7 @@ terraform import aws_s3_bucket.data my-existing-bucket
 
 # Ejemplo: Importar VPC
 terraform import aws_vpc.main vpc-abc123
-```
+```text
 
 ### Process de Import
 
@@ -3063,7 +3072,7 @@ terraform import aws_vpc.main vpc-abc123
 resource "aws_instance" "imported" {
   # Solo necesario para import, llenar después
 }
-```
+```text
 
 ```bash
 # 2. Importa el resource
@@ -3073,7 +3082,7 @@ terraform import aws_instance.imported i-1234567890abcdef0
 # aws_instance.imported: Importing from ID "i-1234567890abcdef0"...
 # aws_instance.imported: Import complete!
 #   Imported aws_instance (ID: i-1234567890abcdef0)
-```
+```text
 
 ```bash
 # 3. Ver detalles del resource importado
@@ -3093,14 +3102,14 @@ resource "aws_instance" "imported" {
     Name = "Imported Instance"
   }
 }
-```
+```text
 
 ```bash
 # 5. Plan para verify (no debe haber cambios)
 terraform plan
 
 # Debería mostrar: No changes. Infrastructure is up-to-date.
-```
+```text
 
 ### Import con Count/For_Each
 
@@ -3112,7 +3121,7 @@ terraform import 'aws_instance.web[1]' i-0abcdef1234567890
 # Con for_each
 terraform import 'aws_instance.web["web-1"]' i-1234567890abcdef0
 terraform import 'aws_instance.web["app-1"]' i-0abcdef1234567890
-```
+```text
 
 ### Import deModule Resources
 
@@ -3140,7 +3149,7 @@ for instance in "${INSTANCES[@]}"; do
   echo "Importing $NAME ($ID)..."
   terraform import "aws_instance.servers[\"$NAME\"]" "$ID"
 done
-```
+```text
 
 ### Import Block (Terraform 1.5+)
 
@@ -3156,7 +3165,7 @@ import {
 resource "aws_instance" "web" {
   # Configuration...
 }
-```
+```text
 
 ```bash
 # Plan muestra que importará
@@ -3166,7 +3175,7 @@ terraform plan
 
 # Apply importa el resource
 terraform apply
-```
+```text
 
 ### Common Resources y sus IDs
 
@@ -3218,7 +3227,7 @@ resource "aws_cloudwatch_dashboard" "main" {
   dashboard_name = "my-dashboard"
   # ...
 }
-```
+```text
 
 ### for_each
 
@@ -3251,7 +3260,7 @@ resource "aws_s3_bucket" "buckets" {
     Versioning = each.value.versioning
   }
 }
-```
+```text
 
 ### provider
 
@@ -3276,7 +3285,7 @@ resource "aws_s3_bucket" "backup" {
   provider = aws.backup
   bucket   = "backup-bucket"
 }
-```
+```text
 
 ### lifecycle
 
@@ -3349,7 +3358,7 @@ resource "aws_security_group" "web" {
     }
   }
 }
-```
+```text
 
 ### Ejemplo Realista: Security Group
 
@@ -3419,7 +3428,7 @@ resource "aws_security_group" "web" {
     }
   }
 }
-```
+```text
 
 ### Dynamic con Nested Blocks
 
@@ -3471,7 +3480,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
     }
   }
 }
-```
+```text
 
 ---
 
@@ -3592,7 +3601,7 @@ resource "aws_autoscaling_group" "app" {
   max_size         = local.current_asg_config.max
   desired_capacity = local.current_asg_config.desired
 }
-```
+```text
 
 ### Blue-Green Deployment Pattern
 
@@ -3666,7 +3675,7 @@ resource "aws_lb_listener_rule" "blue" {
     }
   }
 }
-```
+```text
 
 ### Complete Data Pipeline Infrastructure
 
@@ -3791,7 +3800,7 @@ output "emr_cluster_id" {
 output "athena_workgroup_arn" {
   value = module.athena_workgroup.workgroup_arns.analytics
 }
-```
+```text
 
 ---
 
@@ -3828,7 +3837,7 @@ module "app" {
   subnet_ids = module.networking.private_subnet_ids
   db_endpoint = module.database.endpoint
 }
-```
+```text
 
 ### 3. Input Validation
 
@@ -3859,7 +3868,7 @@ variable "cidr_block" {
     error_message = "Must be valid IPv4 CIDR block."
   }
 }
-```
+```text
 
 ### 4. Sensitive Data Handling
 
@@ -3879,7 +3888,7 @@ output "db_password" {
   value     = aws_db_instance.main.password
   sensitive = true
 }
-```
+```text
 
 ### 5. Resource Tagging Strategy
 

@@ -23,6 +23,7 @@ Create a complete ETL pipeline:
 3. **Load**: Insert into PostgreSQL tables
 
 **Requirements:**
+
 - Extract from 2 API endpoints
 - Transform: Join users with posts, calculate post count per user
 - Load: Create tables if not exist, insert/update data
@@ -30,6 +31,7 @@ Create a complete ETL pipeline:
 - Log record counts at each stage
 
 **Expected Tables:**
+
 ```sql
 -- users table
 CREATE TABLE users (
@@ -56,7 +58,7 @@ CREATE TABLE user_stats (
     avg_post_length FLOAT,
     last_updated TIMESTAMP DEFAULT NOW()
 );
-```
+```text
 
 ---
 
@@ -74,6 +76,7 @@ Create an ETL pipeline for CSV files:
 5. **Load**: Insert into staging and final tables
 
 **Requirements:**
+
 - Use FileSensor (5 min timeout)
 - Pandas validation checks
 - Staging → Final table pattern
@@ -81,12 +84,13 @@ Create an ETL pipeline for CSV files:
 - Error handling for bad data
 
 **Sample CSV** (`/tmp/data/sales.csv`):
+
 ```csv
 order_id,customer_id,product,amount,order_date
 1001,C001,Laptop,1200.50,2024-01-15
 1002,C002,Mouse,25.00,2024-01-15
 1003,C001,Keyboard,75.00,2024-01-16
-```
+```text
 
 ---
 
@@ -100,6 +104,7 @@ Create a pipeline exporting database to S3:
 4. **Load**: Upload to S3 with partitioning
 
 **Requirements:**
+
 - Use PostgresHook for extraction
 - Pandas to Parquet conversion
 - S3Hook for upload
@@ -122,6 +127,7 @@ Create a pipeline integrating multiple sources:
 3. **Load**: Create analytics table
 
 **Requirements:**
+
 - Parallel extraction (all sources at once)
 - Complex join logic
 - Error handling per source
@@ -140,6 +146,7 @@ Create an incremental ETL pipeline:
 4. **Checkpoint**: Store last processed timestamp
 
 **Requirements:**
+
 - Use Airflow Variables for checkpoint
 - Incremental extraction (`WHERE modified_at > last_checkpoint`)
 - Upsert logic (PostgreSQL `ON CONFLICT`)
@@ -162,6 +169,7 @@ Complete production pipeline:
 8. **Notify**: Send success/failure notifications
 
 **Requirements:**
+
 - Use Great Expectations for validation
 - Multiple transformation stages
 - Rollback on failure
@@ -412,7 +420,7 @@ with DAG(
 
     # Dependencies
     [extract_users_task, extract_posts_task] >> transform_task >> load_task >> cleanup_task
-```
+```text
 
 ---
 
@@ -615,7 +623,7 @@ SELECT COUNT(*) FROM users;
 SELECT COUNT(*) FROM posts;
 SELECT * FROM user_stats LIMIT 5;
 EOF
-```
+```text
 
 ### Test CSV Pipeline
 
@@ -630,7 +638,7 @@ echo "order_id,customer_id,product,amount,order_date
 airflow dags trigger ex04_csv_to_warehouse
 
 # Monitor in UI
-```
+```text
 
 ---
 

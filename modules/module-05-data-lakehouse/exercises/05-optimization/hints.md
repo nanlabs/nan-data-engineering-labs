@@ -3,17 +3,21 @@
 ## 🎯 Conceptos Key
 
 ### Optimization in Delta Lake
+
 Delta Lake provides several techniques to optimize performance:
+
 - **OPTIMIZE**: Compact small files (networkuce small file problem)
 - **Z-ORDERING**: Co-localiza datas relacionados (improvement data skIPping)
 - **VACUUM**: Limpia archivos antiguos not referencedos
 - **data SkIPping**: Automatic based on statistics
 
 ### Small File Problem
+
 Many small files → Metadata overhead → Slow queries
 **Fix**: OPTIMIZE compacts files into larger files
 
 ### Z-Ordering
+
 Co-locates related data based on multIPle columns
 **Benefit**: Networkuce data read in queries with multIPle filters
 
@@ -22,6 +26,7 @@ Co-locates related data based on multIPle columns
 ## 📝 optimization.py
 
 ### 1. to see estado actual
+
 ```python
 from delta.tables import DeltaTable
 
@@ -42,9 +47,10 @@ detail.select(
     "minReaderVersion",   # Version mínima reader
     "minWriterVersion"    # Version mínima writer
 ).show(truncate=False)
-```
+```text
 
 ### 2. OPTIMIZE - Compaction
+
 ```python
 # Compactar todos los archivos
 delta_table.optimize().executeCompaction()
@@ -57,19 +63,22 @@ print(f"Files compacted: {metrics.metrics}")
 delta_table.optimize() \
     .where("date = '2024-01-15'") \
     .executeCompaction()
-```
+```text
 
 **How ​​it works:**
+
 - Read small files from the same partition
 - Combines them into larger files (target: 1GB)
 - Create new version (old files removable with VACUUM)
 
 **When to use:**
+
 - After many small appends
 - After streaming with micro-batches
 - Antes of queries heavy of analytics
 
 ### 3. Z-ORDER
+
 ```python
 # Z-ORDER by una column
 delta_table.optimize().executeZOrderBy("country")
@@ -81,15 +90,17 @@ delta_table.optimize().executeZOrderBy("country", "date", "customer_id")
 delta_table.optimize() \
     .where("year = '2024' AND month = '01'") \
     .executeZOrderBy("country", "product_id")
-```
+```text
 
 **When to use Z-ORDER:**
+
 - columns usadas frecuentemente in WHERE
 - columns with alta cardinalidad
 - MultIPle filter columns in queries
 - not in columns ya particionadas (networkundante)
 
 **Example:**
+
 ```python
 # Query: SELECT * FROM table WHERE country = 'USA' AND date = '2024-01-15'
 # Z-ORDER by: country, date
@@ -100,6 +111,7 @@ delta_table.optimize().executeZOrderBy("country", "date")
 ```
 
 ### 4. Verificar improvements
+
 ```python
 # Comparar antes/después
 print("ANTES:")
@@ -119,9 +131,10 @@ files_before = detail_before.select("numFiles").collect()[0][0]
 files_after = detail_after.select("numFiles").collect()[0][0]
 networkuction = (1 - files_after/files_before) * 100
 print(f"📉 Networkucción of archivos: {networkuction:.1f}%")
-```
+```text
 
 ### 5. Test of performance
+
 ```python
 import time
 
@@ -144,9 +157,10 @@ time2 = time.time() - start
 # Comparar
 speedup = time1 / time2
 print(f"⚡ Speedup: {speedup:.2f}x ({time1:.3f}s → {time2:.3f}s)")
-```
+```text
 
 ### 6. VACUUM
+
 ```python
 from delta.tables import DeltaTable
 
@@ -169,14 +183,16 @@ delta_table.vacuum(0)  # Borra everything not referencedo in version actual
 
 # Re-habilitar check
 spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "true")
-```
+```text
 
 **⚠️ CAUTION with VACUUM:**
+
 - Delete physical files → You CANNOT Time Travel vacuumed versions
 - he/she can romper operaciones concurrentes (usa retention adecuado)
 - In production: NEVER use vacuum(0), use 168+ hours
 
 **Example seguro:**
+
 ```python
 # Retener 30 días of history
 delta_table.vacuum(24 * 30)
@@ -193,15 +209,19 @@ spark.conf.set(
 ## 🚨 Errores Comunes
 
 ### Error 1: VACUUM muy agresivo
-```
+
+```text
 AnalysisException: Are you sure you want to vacuum files with such to low retention period?
-```
+```text
+
 **Solution:** Disable check (for testing only):
+
 ```python
 spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false")
-```
+```text
 
 ### Error 2: Z-ORDER in column particionada
+
 ```python
 # ❌ MAL - date ya is partition column
 delta_table.optimize().executeZOrderBy("date")
@@ -211,10 +231,13 @@ delta_table.optimize().executeZOrderBy("country", "customer_id")
 ```
 
 ### Error 3: OPTIMIZE without suficiente memory
-```
+
+```text
 OutOfMemory: Not enough memory to execute compaction
-```
+```text
+
 **Solution:** Optimize by partition:
+
 ```python
 # in lugar of
 delta_table.optimize().executeCompaction()
@@ -224,9 +247,10 @@ for partition in partitions:
     delta_table.optimize() \
         .where(f"date = '{partition}'") \
         .executeCompaction()
-```
+```text
 
 ### Error 4: data skIPping not funciona
+
 ```python
 # ❌ MAL - column string without Z-ORDER
 df.filter("descrIPtion LIKE '%keyword%'")  # Full scan
@@ -240,6 +264,7 @@ df.filter("country = 'USA'")  # data skIPping works
 ## 📚 Conceptos Avanzados
 
 ### Auto Optimize
+
 ```python
 # Habilitar auto OPTIMIZE in table
 spark.sql(f"""
@@ -253,9 +278,10 @@ spark.sql(f"""
 # Ahora cada write automáticamente optimiza
 df.write.format("delta").mode("append").save(path)
 # → Auto-compacta files pequeños
-```
+```text
 
 ### Optimized Writes
+
 ```python
 # Optimiza tamaño of archivos to the escribir
 df.write.format("delta") \
@@ -264,9 +290,10 @@ df.write.format("delta") \
     .save(path)
 
 # Result: Archivos more grandes desde el princIPio
-```
+```text
 
 ### data SkIPping Statistics
+
 ```python
 # to see statistics usadas for skIPping
 detail = delta_table.detail()
@@ -279,9 +306,10 @@ detail.select("numFiles", "statistics").show(truncate=False)
 # - nullCount: Conteo of nulls
 
 # Querying usa are stats for skIP archivos completos
-```
+```text
 
 ### Partition Pruning vs data SkIPping
+
 ```python
 # Partition Pruning: Elimina particiones completas
 # - Basado in structure of directorios
@@ -300,6 +328,7 @@ df.filter("year = 2024 AND country = 'USA'")
 ```
 
 ### Bloom Filters (Advanced)
+
 ```python
 # for columns of alta cardinalidad (IDs, emails)
 spark.sql(f"""
@@ -313,13 +342,14 @@ spark.sql(f"""
 
 # Queries by customer_id ahora usan Bloom Filter
 df.filter("customer_id = '12345'")  # Muy rápido
-```
+```text
 
 ---
 
 ## 📊 Monitoring and Metrics
 
 ### View OPTIMIZE metrics
+
 ```python
 result = delta_table.optimize().executeCompaction()
 
@@ -329,9 +359,10 @@ print(f"Files added: {metrics.get('numFilesAdded', 0)}")
 print(f"Files removed: {metrics.get('numFilesRemoved', 0)}")
 print(f"Bytes added: {metrics.get('numBytesAdded', 0)}")
 print(f"Bytes removed: {metrics.get('numBytesRemoved', 0)}")
-```
+```text
 
 ### View Z-ORDER metrics
+
 ```python
 result = delta_table.optimize().executeZOrderBy("country", "date")
 metrics = result.metrics
@@ -339,9 +370,10 @@ metrics = result.metrics
 print(f"Z-ORDER statistics:")
 print(f"  Files rewritten: {metrics.get('numFilesRemoved', 0)}")
 print(f"  Bytes rewritten: {metrics.get('numBytesAdded', 0)}")
-```
+```text
 
 ### Query Metrics
+
 ```python
 # to see what archivos se leyeron
 df = spark.read.format("delta").load(path)

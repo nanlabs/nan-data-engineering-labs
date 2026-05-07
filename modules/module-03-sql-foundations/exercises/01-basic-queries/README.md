@@ -16,6 +16,7 @@ By completing this exercise, you will be able to:
 ## 📚 Conceptos Cubiertos
 
 ### 1. SELECT and Projection
+
 ```sql
 -- Seleccionar todas las columnas
 SELECT * FROM users;
@@ -25,9 +26,10 @@ SELECT first_name, last_name, email FROM users;
 
 -- Usar alias
 SELECT first_name AS nombre, last_name AS apellido FROM users;
-```
+```text
 
 ### 2. WHERE and Filtering
+
 ```sql
 -- Simple condition
 SELECT * FROM users WHERE country = 'US';
@@ -40,9 +42,10 @@ SELECT * FROM users WHERE country = 'US' OR country = 'GB';
 
 -- Negation with NOT
 SELECT * FROM users WHERE NOT country = 'US';
-```
+```text
 
 ### 3. Comparison Operators
+
 ```sql
 -- Igualdad y desigualdad
 WHERE price = 100
@@ -54,9 +57,10 @@ WHERE loyalty_points > 100
 WHERE loyalty_points >= 100
 WHERE price < 50
 WHERE price <= 50
-```
+```text
 
 ### 4. Operadores Especiales
+
 ```sql
 -- IN (lista de valores)
 SELECT * FROM users WHERE country IN ('US', 'GB', 'CA');
@@ -74,6 +78,7 @@ SELECT * FROM orders WHERE tracking_number IS NOT NULL;
 ```
 
 ### 5. ORDER BY
+
 ```sql
 -- Orden ascendente (por defecto)
 SELECT * FROM users ORDER BY registration_date;
@@ -84,9 +89,10 @@ SELECT * FROM products ORDER BY price DESC;
 
 -- Sort by multiple columns
 SELECT * FROM users ORDER BY country ASC, loyalty_points DESC;
-```
+```text
 
 ### 6. LIMIT y OFFSET
+
 ```sql
 -- Limitar resultados
 SELECT * FROM users LIMIT 10;
@@ -94,34 +100,41 @@ SELECT * FROM users LIMIT 10;
 -- Pagination
 SELECT * FROM users ORDER BY user_id LIMIT 10 OFFSET 0;  -- Page 1
 SELECT * FROM users ORDER BY user_id LIMIT 10 OFFSET 10; -- Page 2
-```
+```text
 
 ## 🎓 Exercises
 
 ### Setup
+
 1. Make sure you have the database running:
+
 ```bash
 cd infrastructure
 docker-compose up -d
-```
+```text
 
-2. Navigate to the exercise directory:
+1. Navigate to the exercise directory:
+
 ```bash
 cd exercises/01-basic-queries
 ```
 
 ### Exercise 1: Basic Projection
+
 **Archivo**: `starter/01_projection.sql`
 
 Escribe queries para:
+
 - Obtener todos los usuarios con solo nombre, apellido y email
 - Obtain products with name and price, using descriptive aliases in Spanish
 - Get the first 5 orders with id, date and total
 
 ### Exercise 2: Filtering with WHERE
+
 **Archivo**: `starter/02_filtering.sql`
 
 Escribe queries para:
+
 - Usuarios activos de Estados Unidos
 - Productos con precio menor a $50
 - Orders with status 'delivered' or 'shipped'
@@ -129,9 +142,11 @@ Escribe queries para:
 - Productos sin stock (stock_quantity = 0)
 
 ### Exercise 3: Pattern Matching
+
 **Archivo**: `starter/03_patterns.sql`
 
 Escribe queries para:
+
 - Usuarios con email de Gmail
 - Productos que contienen "Laptop" en el nombre
 - Usuarios cuyo nombre comienza con 'J'
@@ -139,9 +154,11 @@ Escribe queries para:
 - Orders in a specific date range
 
 ### Exercise 4: Ordenamiento
+
 **Archivo**: `starter/04_sorting.sql`
 
 Escribe queries para:
+
 - Usuarios ordenados por puntos de lealtad (mayor a menor)
 - Productos ordenados por precio (menor a mayor)
 - Most recent orders first
@@ -149,18 +166,22 @@ Escribe queries para:
 - Users by country and then by registration date
 
 ### Exercise 5: Pagination
+
 **Archivo**: `starter/05_pagination.sql`
 
 Escribe queries para:
+
 - Primeros 10 usuarios
 - Page 3 Users (records 21-30)
 - Top 5 most expensive products
 - Last 20 registered users
 
 ### Exercise 6: Combination of Techniques
+
 **Archivo**: `starter/06_combined.sql`
 
 queries complejas combinando todo lo aprendido:
+
 - Active US or GB users with 100+ points, sorted by points
 - Productos disponibles entre $20 y $100, ordenados por precio
 - Last 10 orders completed with total > $100
@@ -169,6 +190,7 @@ queries complejas combinando todo lo aprendido:
 ## ✅ Success Criteria
 
 Para cada query:
+
 - ✓ Returns correct data
 - ✓ Use valid SQL syntax
 - ✓ Includes comments explaining the logic
@@ -178,6 +200,7 @@ Para cada query:
 ## 🔍 Testing
 
 Ejecuta tus queries:
+
 ```bash
 # Run individual file
 psql -h localhost -U dataengineer -d ecommerce -f starter/01_projection.sql
@@ -187,7 +210,7 @@ for f in starter/*.sql; do
     echo "=== Ejecutando $f ==="
     psql -h localhost -U dataengineer -d ecommerce -f "$f"
 done
-```
+```text
 
 ## 💡 Hints
 
@@ -212,6 +235,7 @@ The complete solutions are in`solution/`. Try to solve the exercises on your own
 ## 🎯 Next Steps
 
 Once you complete this exercise, continue with:
+
 - **Exercise 02**: Joins - Combine data from multiple tables
 
 ---

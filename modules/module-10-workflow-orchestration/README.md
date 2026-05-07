@@ -7,6 +7,7 @@ Domina la orquestación de workflows y automatización de pipelines de datos usa
 Este module proporciona entrenamiento integral en Apache Airflow 2.8, cubriendo desde conceptos básicos hasta patrones de despliegue en producción. You will learn a diseñar, implement, probar y desplegar pipelines de datos robustos que pueden orquestar workflows complejos a través de múltiples sistemas.
 
 **¿Por qué orquestación de workflows?** Los pipelines de datos modernos involucran múltiples steps, dependencias e integraciones. Airflow proporciona:
+
 - **Gestión de dependencias**: Define el orden y relaciones de las tareas
 - **Programación**: Ejecución automatizada en intervalos especificados
 - **Monitoreo**: Rastrea la salud y rendimiento del pipeline
@@ -61,12 +62,14 @@ Al completar este module, podrás:
 ## 📚 Prerequisites
 
 ### Requeridos
+
 - **Module 06**: Fundamentos de ETL (completed)
 - **Docker**: 20.10+ con Docker Compose
 - **Python**: 3.8 o superior (3.11 recomendado)
 - **Sistema**: 8GB RAM, 20GB espacio en disco
 
 ### Recomendados
+
 - Cliente PostgreSQL (para exercises de base de datos)
 - AWS CLI (para exercises de S3 con LocalStack)
 - Comprensión básica de SQL
@@ -95,12 +98,12 @@ cd module-10-workflow-orchestration
 
 # Ejecutar setup automatizado (instala e inicia todos los servicios)
 ./scripts/setup.sh
-```
+```text
 
 ### 2. Acceder a la UI de Airflow
 
-- **Airflow Webserver**: http://localhost:8080 (airflow/airflow)
-- **Flower (Monitoreo de Celery)**: http://localhost:5555
+- **Airflow Webserver**: <http://localhost:8080> (airflow/airflow)
+- **Flower (Monitoreo de Celery)**: <http://localhost:5555>
 
 ### 3. Completar Exercises
 
@@ -110,7 +113,7 @@ Navega a través de los exercises en orden (01-06)
 
 ```bash
 ./scripts/validate.sh
-```
+```text
 
 ## 📖 Resumen de Exercises
 
@@ -132,7 +135,7 @@ pytest . -v
 # Ejecutar categorías específicas
 pytest -m dag_validation
 pytest -m integration
-```
+```text
 
 ## 📚 Recursos Adicionales
 

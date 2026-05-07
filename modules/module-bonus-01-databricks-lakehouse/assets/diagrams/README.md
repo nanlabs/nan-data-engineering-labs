@@ -5,9 +5,11 @@ This directory contains Mermaid diagrams illustrating key concepts and architect
 ## 📊 Available Diagrams
 
 ### 1. [Databricks Platform Architecture](databricks-architecture.mmd)
+
 **Purpose**: Overall platform architecture showing Control Plane, Data Plane, and cloud storage integration.
 
 **Key Concepts**:
+
 - Control Plane (Databricks-managed services)
 - Data Plane (customer cloud account)
 - Integration with AWS/Azure/GCP
@@ -18,9 +20,11 @@ This directory contains Mermaid diagrams illustrating key concepts and architect
 ---
 
 ### 2. [Delta Lake Internals](delta-lake-internals.mmd)
+
 **Purpose**: Deep dive into Delta Lake's transaction log and file structure.
 
 **Key Concepts**:
+
 - Transaction log (`_delta_log/`)
 - Parquet data files
 - ACID transaction flow
@@ -32,9 +36,11 @@ This directory contains Mermaid diagrams illustrating key concepts and architect
 ---
 
 ### 3. [Unity Catalog Namespace](unity-catalog-namespace.mmd)
+
 **Purpose**: Three-level namespace hierarchy and permission inheritance.
 
 **Key Concepts**:
+
 - Metastore (root)
 - Catalog → Schema → Table hierarchy
 - Permission inheritance
@@ -45,9 +51,11 @@ This directory contains Mermaid diagrams illustrating key concepts and architect
 ---
 
 ### 4. [Medallion Architecture](medallion-architecture.mmd)
+
 **Purpose**: Bronze → Silver → Gold data processing layers.
 
 **Key Concepts**:
+
 - Bronze: Raw data ingestion
 - Silver: Cleaned and validated
 - Gold: Business aggregations
@@ -59,9 +67,11 @@ This directory contains Mermaid diagrams illustrating key concepts and architect
 ---
 
 ### 5. [Databricks vs AWS Native](databricks-vs-aws.mmd)
+
 **Purpose**: Feature comparison between Databricks and AWS native services.
 
 **Key Concepts**:
+
 - Compute: Databricks Clusters vs EMR/Glue
 - Storage: Delta Lake vs Parquet/Iceberg
 - Data Warehouse: Databricks SQL vs Redshift/Athena
@@ -74,9 +84,11 @@ This directory contains Mermaid diagrams illustrating key concepts and architect
 ---
 
 ### 6. [MLflow Workflow](mlflow-workflow.mmd)
+
 **Purpose**: End-to-end machine learning workflow with MLflow.
 
 **Key Concepts**:
+
 - Experiment tracking
 - Model training and tuning
 - Model registry (Staging/Production)
@@ -90,22 +102,27 @@ This directory contains Mermaid diagrams illustrating key concepts and architect
 ## 🎨 How to View Diagrams
 
 ### 1. **VS Code** (Recommended)
+
 Install Mermaid extension:
+
 ```bash
 code --install-extension bierner.markdown-mermaid
-```
+```text
 
 Then open any `.mmd` file or this README.
 
 ### 2. **Mermaid Live Editor**
+
 1. Copy diagram code
-2. Open: https://mermaid.live
+2. Open: <https://mermaid.live>
 3. Paste and preview
 
 ### 3. **GitHub/GitLab**
+
 Diagrams render automatically in Markdown files on GitHub/GitLab.
 
 ### 4. **Documentation Tools**
+
 - MkDocs: Use `mkdocs-mermaid2-plugin`
 - Docusaurus: Native Mermaid support
 - Sphinx: Use `sphinxcontrib-mermaid`
@@ -132,6 +149,7 @@ All diagrams use [Mermaid](https://mermaid.js.org/) syntax:
 ### Common Mermaid Elements
 
 **Flowchart**:
+
 ```mermaid
 graph TD
     A[Start] --> B{Decision}
@@ -139,18 +157,20 @@ graph TD
     B -->|No| D[Alternative]
     C --> E[End]
     D --> E
-```
+```text
 
 **Sequence Diagram**:
+
 ```mermaid
 sequenceDiagram
     participant Client
     participant Server
     Client->>Server: Request
     Server-->>Client: Response
-```
+```text
 
 **Class Diagram**:
+
 ```mermaid
 classDiagram
     class DeltaTable {
@@ -171,19 +191,20 @@ To modify diagrams:
 2. **Preview changes** in VS Code or Mermaid Live
 3. **Update documentation** if concepts change
 4. **Regenerate images** (optional) with `mmdc` CLI:
+
    ```bash
    npm install -g @mermaid-js/mermaid-cli
    mmdc -i diagram.mmd -o diagram.png
-   ```
+   ```text
 
 ---
 
 ## 📚 Additional Resources
 
-- **Mermaid Documentation**: https://mermaid.js.org/
-- **Databricks Architecture Docs**: https://docs.databricks.com/architecture/index.html
-- **Delta Lake Internals**: https://delta.io/
-- **Unity Catalog Docs**: https://docs.databricks.com/data-governance/unity-catalog/index.html
+- **Mermaid Documentation**: <https://mermaid.js.org/>
+- **Databricks Architecture Docs**: <https://docs.databricks.com/architecture/index.html>
+- **Delta Lake Internals**: <https://delta.io/>
+- **Unity Catalog Docs**: <https://docs.databricks.com/data-governance/unity-catalog/index.html>
 
 ---
 

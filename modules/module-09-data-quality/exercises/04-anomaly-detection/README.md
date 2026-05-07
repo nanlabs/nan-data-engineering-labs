@@ -57,7 +57,7 @@ def detect_outliers_iqr(df: pd.DataFrame, column: str, multiplier: float = 1.5) 
 
 # Uso
 outliers = detect_outliers_iqr(transactions, 'amount', multiplier=1.5)
-```
+```text
 
 **Task 1.2: Z-Score Method**
 
@@ -85,7 +85,7 @@ def detect_outliers_zscore(df: pd.DataFrame, column: str, threshold: float = 3) 
 
 # Uso
 outliers = detect_outliers_zscore(transactions, 'amount', threshold=3)
-```
+```text
 
 **Task 1.3: Visualizar Outliers**
 
@@ -114,7 +114,7 @@ def visualize_outliers(df: pd.DataFrame, column: str):
     plt.show()
 
 visualize_outliers(transactions, 'amount')
-```
+```text
 
 ---
 
@@ -218,7 +218,7 @@ anomalies = detect_anomalies_lof(
     features=['amount', 'quantity', 'total'],
     n_neighbors=20
 )
-```
+```text
 
 **Task 2.3: PyOD Library (multiple algorithms)**
 
@@ -293,7 +293,7 @@ detector.print_summary()
 # Obtener anomalías de consenso
 consensus_mask = detector.get_consensus(threshold=2)
 anomalies = transactions.loc[X.index][consensus_mask]
-```
+```text
 
 ---
 
@@ -363,7 +363,7 @@ anomalies = detect_anomalies_moving_average(
     window=7,
     std_threshold=3
 )
-```
+```text
 
 **Task 3.2: Seasonal Decomposition**
 
@@ -538,7 +538,7 @@ print(summary)
 high_risk = pipeline.get_high_risk_anomalies(flagged_transactions, min_flags=2)
 print(f"\nHigh-risk anomalies (flagged by 2+ rules): {len(high_risk)}")
 print(high_risk[['transaction_id', 'amount', 'quantity', 'anomaly_count', 'anomaly_flags']].head(10))
-```
+```text
 
 ---
 
@@ -562,9 +562,9 @@ print(high_risk[['transaction_id', 'amount', 'quantity', 'anomaly_count', 'anoma
 
 ## 📚 resources
 
-- **PyOD**: https://pyod.readthedocs.io/
-- **Scikit-learn Outlier Detection**: https://scikit-learn.org/stable/modules/outlier_detection.html
-- **Time Series Anomaly Detection**: https://neptune.ai/blog/anomaly-detection-in-time-series
+- **PyOD**: <https://pyod.readthedocs.io/>
+- **Scikit-learn Outlier Detection**: <https://scikit-learn.org/stable/modules/outlier_detection.html>
+- **Time Series Anomaly Detection**: <https://neptune.ai/blog/anomaly-detection-in-time-series>
 
 ## ➡️ Next Exercise
 

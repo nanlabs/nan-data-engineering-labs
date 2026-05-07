@@ -7,27 +7,32 @@ This document presents reference architectures designed for cost optimization wh
 ## Architecture Principles for Cost Optimization
 
 ### 1. Serverless-First Design
+
 - Use Lambda, Fargate, Athena for variable workloads
 - Eliminate idle capacity costs
 - Auto-scale without management overhead
 
 ### 2. Multi-Tier Storage Strategy
+
 - Hot data: S3 Standard or EBS gp3
 - Warm data: S3 IA or Glacier Instant Retrieval
 - Cold data: Glacier Deep Archive
 - Automated lifecycle transitions
 
 ### 3. Commitment-Based Baseline
+
 - Cover 60-70% of steady load with RIs/Savings Plans
 - Use On-Demand for remaining 20-30% variable capacity
 - Spot for batch/fault-tolerant (10% of workload)
 
 ### 4. Right-Sized from Day 1
+
 - Start with smallest viable instance
 - Scale up based on actual metrics
 - Avoid "future-proofing" over-provisioning
 
 ### 5. Network Optimization
+
 - VPC endpoints to avoid NAT Gateway ($0.045/hour)
 - CloudFront for static assets (reduce S3 egress)
 - Keep data in same region (avoid cross-region transfer)
@@ -36,7 +41,7 @@ This document presents reference architectures designed for cost optimization wh
 
 ### Architecture Diagram
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │             Cost-Optimized Data Lake                         │
 │                                                              │
@@ -69,7 +74,7 @@ This document presents reference architectures designed for cost optimization wh
 │  vs Traditional (EMR 24/7): $13,000                         │
 │  Savings: 92%                                               │
 └──────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### Cost Breakdown
 
@@ -87,6 +92,7 @@ This document presents reference architectures designed for cost optimization wh
 **Savings**: $11,900/month (91.5%)
 
 ### Implementation Checklist
+
 - [ ] Use Kinesis Firehose for automatic Parquet conversion
 - [ ] Partition S3 by date (year/month/day) for Athena efficiency
 - [ ] EMR Auto Scaling (2-10 task nodes based on load)
@@ -98,7 +104,7 @@ This document presents reference architectures designed for cost optimization wh
 
 ### Architecture Diagram
 
-```
+```text
 ┌────────────────────────────────────────────────────────┐
 │          Cost-Optimized API Platform                   │
 │                                                        │
@@ -125,6 +131,7 @@ This document presents reference architectures designed for cost optimization wh
 ### Cost Comparison
 
 **Serverless Option** (Lambda + API Gateway):
+
 - CloudFront: $80 (10 TB transfer)
 - API Gateway: $3.50 per M requests * 10 = $35
 - Lambda: $0.20 per M requests + duration = $200
@@ -132,6 +139,7 @@ This document presents reference architectures designed for cost optimization wh
 - **Total**: $365/month
 
 **Traditional Option** (EC2 + ALB):
+
 - ALB: $22.50 base + LCU processing = $45
 - EC2 (2x t3.medium 24/7): $60
 - RDS (db.t3.medium): $60
@@ -144,6 +152,7 @@ This document presents reference architectures designed for cost optimization wh
 **Break-Even**: At >100M requests/month, EC2 + ALB becomes cheaper on infrastructure alone, but serverless still wins on total cost (including ops).
 
 ### When to Use EC2 Instead
+
 - \>50M requests/month with steady traffic
 - Long-running connections (WebSockets)
 - GPU requirements
@@ -153,7 +162,7 @@ This document presents reference architectures designed for cost optimization wh
 
 ### Architecture Diagram
 
-```
+```text
 ┌────────────────────────────────────────────────────────────┐
 │           Cost-Optimized ETL Pipeline                      │
 │                                                            │
@@ -181,7 +190,7 @@ This document presents reference architectures designed for cost optimization wh
 │  vs EMR 24/7: $5,200/month                                │
 │  Savings: 87%                                             │
 └────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### Cost Optimization Techniques
 
@@ -194,6 +203,7 @@ This document presents reference architectures designed for cost optimization wh
 ### Alternative: Ultra-Low-Cost ETL
 
 For smaller workloads (<100 GB/day):
+
 - Replace Glue with Lambda ($50/month vs $264/month)
 - Replace Athena with DuckDB on Lambda (query Parquet directly, $0 query cost)
 - **Total**: <$100/month (86% savings vs Glue)
@@ -202,7 +212,7 @@ For smaller workloads (<100 GB/day):
 
 ### Architecture Diagram
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │          AWS Organizations: Cost Allocation                  │
 │                                                              │
@@ -275,7 +285,7 @@ allocations = allocate_shared_costs(shared_services_cost, team_usage)
 print("\n💰 Shared Cost Allocation:")
 for team, cost in allocations.items():
     print(f"  {team}: ${cost:,.2f}")
-```
+```text
 
 ### Tagging Strategy for Multi-Account
 
@@ -301,13 +311,13 @@ def apply_account_default_tags(resource_arn, account_tags):
     """Apply default tags from account/OU to new resources"""
     # This would be triggered by EventBridge on resource creation
     pass
-```
+```text
 
 ## Reference Architecture 5: Cost-Optimized ML Training
 
 ### Architecture Diagram
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │        Cost-Optimized ML Training Pipeline               │
 │                                                          │
@@ -361,7 +371,7 @@ def apply_account_default_tags(resource_arn, account_tags):
 
 ### Architecture Diagram
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │       Cost-Optimized Streaming Analytics                 │
 │                                                          │
@@ -390,16 +400,18 @@ def apply_account_default_tags(resource_arn, account_tags):
 │  vs Kafka on EC2: $1,500/month                          │
 │  Savings: 79%                                           │
 └──────────────────────────────────────────────────────────┘
-```
+```text
 
 ### Cost Optimization Decisions
 
 **Kinesis vs Kafka (self-managed)**:
+
 - Kinesis: $50/month (2 shards, 2 MB/s) - Managed
 - Kafka on EC2: $500/month (3x m5.large 24/7) - Self-managed
 - **Winner**: Kinesis for <10 MB/s (saves ops time)
 
 **Kinesis Data Analytics vs Lambda**:
+
 - Analytics: $0.11 per KPU-hour (Kinesis Processing Unit)
 - Lambda: $0.20 per 1M requests + duration
 - **Winner**: Lambda for simple transforms (<1 sec processing)
@@ -409,7 +421,7 @@ def apply_account_default_tags(resource_arn, account_tags):
 
 ### Portfolio Approach
 
-```
+```text
 ┌────────────────────────────────────────────────────────┐
 │         Hybrid Commitment Portfolio                    │
 │                                                        │
@@ -450,11 +462,13 @@ def apply_account_default_tags(resource_arn, account_tags):
 **Goal**: Maximize savings while maintaining flexibility
 
 **60-30-10 Rule**:
+
 - 60% commitments (RIs/SPs) - Steady baseline
 - 30% On-Demand - Variable capacity
 - 10% Spot - Batch workloads
 
 **Quarterly Review**:
+
 - Are commitments >85% utilized?
 - Is On-Demand coverage >70%?
 - Adjust ratios based on growth
@@ -494,7 +508,7 @@ print(f"\n💰 Schedule-Based Auto Scaling:")
 print(f"  24/7 (10 instances): ${always_on_cost:.2f}/month")
 print(f"  Scheduled (10 → 2): ${total_cost:.2f}/month")
 print(f"  Savings: ${savings:.2f}/month ({savings_pct:.1f}%)")
-```
+```text
 
 ### Metric-Based Scaling
 
@@ -526,13 +540,13 @@ print(f"\n💰 Metric-Based Auto Scaling:")
 print(f"  Fixed (10 instances): ${fixed_cost:.2f}/month")
 print(f"  Dynamic (2-10 based on CPU): ${dynamic_cost:.2f}/month")
 print(f"  Savings: ${fixed_cost - dynamic_cost:.2f}/month")
-```
+```text
 
 ## Architecture Pattern: Data Lake Tiering
 
 ### Hot-Warm-Cold Storage Strategy
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │              Data Lake Storage Tiers                     │
 │                                                          │
@@ -609,7 +623,7 @@ lifecycle_policy = {
         }
     ]
 }
-```
+```text
 
 ## Architecture Pattern: Reserved Capacity Planning
 
@@ -661,26 +675,30 @@ print(f"\n💡 RI Coverage Recommendation:")
 print(f"  Purchase {recommendation['recommended_ri_count']} RIs")
 print(f"  Coverage: {recommendation['coverage_pct']:.1f}% of peak")
 print(f"  Monthly Savings: ${recommendation['monthly_savings']:.2f} ({recommendation['savings_pct']:.1f}%)")
-```
+```text
 
 ## Cost-Aware Application Design
 
 ### Design Pattern 1: Lazy Loading
+
 - Don't load all data upfront (reduces Lambda memory/duration)
 - Load from S3 only when needed
 - Cache frequently accessed data in Lambda /tmp (512 MB available)
 
 ### Design Pattern 2: Bulk Processing
+
 - Batch API calls (reduce per-request overhead)
 - Process S3 files in chunks (reduce Lambda invocations)
 - Use SQS batching (10 messages per receive = 90% reduction)
 
 ### Design Pattern 3: Caching Strategy
+
 - CloudFront for static assets (90% cache hit = 90% cost reduction)
 - ElastiCache/DynamoDB DAX for database queries
 - Lambda response caching in API Gateway
 
 ### Design Pattern 4: Async Processing
+
 - Use SQS instead of synchronous Lambda (cheaper, more reliable)
 - Decouple components (reduce idle waiting time)
 - Step Functions Express for high-volume workflows
@@ -688,7 +706,8 @@ print(f"  Monthly Savings: ${recommendation['monthly_savings']:.2f} ({recommenda
 ## Cost Optimization Decision Trees
 
 ### Storage Decision
-```
+
+```text
 Data access pattern?
     ├─ Frequent (daily) → S3 Standard
     ├─ Occasional (weekly) → S3 Standard-IA
@@ -703,7 +722,8 @@ Data format?
 ```
 
 ### Compute Decision
-```
+
+```text
 Usage pattern?
     ├─ 24/7 predictable → Reserved Instances (60% savings)
     ├─ Variable compute → Compute Savings Plan (60% savings)
@@ -714,11 +734,12 @@ Usage pattern?
 Fault tolerance?
     ├─ Tolerant → Spot (70-90% savings)
     └─ Critical → On-Demand + RIs
-```
+```text
 
 ## Summary
 
 This architecture guide covered:
+
 - 7 cost-optimized reference architectures
 - Real-world cost breakdowns with alternatives
 - Multi-account cost allocation strategies

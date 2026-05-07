@@ -19,7 +19,7 @@ This directory contains the infrastructure configuration for the SQL Fundamental
 ### Required Software
 
 1. **Docker Desktop** (or Docker Engine + Docker Compose)
-   - Download: https://www.docker.com/products/docker-desktop
+   - Download: <https://www.docker.com/products/docker-desktop>
    - Version: 20.10+ recommended
 
 2. **Optional: PostgreSQL Client**
@@ -48,9 +48,10 @@ cp .env.example .env
 
 # Editar .env si necesitas cambiar valores por defecto
 nano .env  # o tu editor preferido
-```
+```text
 
 **Valores por defecto**:
+
 - database: `ecommerce`
 - Usuario: `dataengineer`
 - Password:`training123`
@@ -66,9 +67,10 @@ docker-compose up -d
 docker-compose logs -f postgres
 
 # Esperar por "database system is ready to accept connections"
-```
+```text
 
 **What happens**:
+
 1. Descarga imagen PostgreSQL 15 Alpine (~80MB)
 2. Crea contenedor llamado `sql-foundations-postgres`
 3. Crea volumen persistente para datos
@@ -89,7 +91,7 @@ psql -h localhost -p 5432 -U dataengineer -d ecommerce
 \dt  # List tables
 SELECT COUNT(*) FROM users;  # Should return 50
 \q   # Salir
-```
+```text
 
 ### 4. Opcional: Iniciar pgAdmin GUI
 
@@ -103,6 +105,7 @@ docker-compose --profile gui up -d
 ```
 
 **Agregar server en pgAdmin**:
+
 1. Click derecho "Servers" → "Register" → "Server"
 2. Nombre: `SQL Foundations`
 3. Connection tab:
@@ -120,6 +123,7 @@ docker-compose --profile gui up -d
 ### Tables
 
 #### 1. **users**
+
 User account information.
 
 | Column | Type | Description |
@@ -138,6 +142,7 @@ User account information.
 **Sample size**: 50 users
 
 #### 2. **products**
+
 Product catalog.
 
 | columns | Type | Description |
@@ -156,6 +161,7 @@ Product catalog.
 **Categories**: Electronics, Books, Furniture, Sports, Home, Accessories
 
 #### 3. **orders**
+
 Customer orders.
 
 | columns | Type | Description |
@@ -172,6 +178,7 @@ Customer orders.
 **Estados**: pending, processing, shipped, delivered, cancelled
 
 #### 4. **order_items**
+
 Products in each order (union table).
 
 | columns | Type | Description |
@@ -186,6 +193,7 @@ Products in each order (union table).
 **Sample size**: ~600 order items (2-5 per order)
 
 #### 5. **user_activity**
+
 Registro de actividad de usuarios.
 
 | columns | Type | Description |
@@ -203,22 +211,28 @@ Registro de actividad de usuarios.
 ### Vistas
 
 #### v_order_summary
+
 Order details with user information.
+
 ```sql
 SELECT * FROM v_order_summary LIMIT 10;
-```
+```text
 
 #### v_product_sales
+
 Agregados de ventas de productos.
+
 ```sql
 SELECT * FROM v_product_sales ORDER BY total_revenue DESC;
-```
+```text
 
 #### v_user_summary
+
 Resumen de historial de compras de usuario.
+
 ```sql
 SELECT * FROM v_user_summary WHERE total_orders > 5;
-```
+```text
 
 ### indexes
 
@@ -231,16 +245,20 @@ SELECT * FROM v_user_summary WHERE total_orders > 5;
 ### Funciones
 
 #### calculate_loyalty_points(amount)
+
 Calcular puntos de lealtad para monto de orden.
+
 ```sql
 SELECT calculate_loyalty_points(150.00);  -- Retorna 15
 ```
 
 #### get_top_products_by_category(category, limit)
+
 Get best-selling products by category.
+
 ```sql
 SELECT * FROM get_top_products_by_category('Electronics', 5);
-```
+```text
 
 ---
 
@@ -261,7 +279,7 @@ POSTGRES_PORT=5432              # Host port
 PGADMIN_EMAIL=admin@training.local
 PGADMIN_PASSWORD=admin123
 PGADMIN_PORT=5050
-```
+```text
 
 ### Performance Tuning
 
@@ -273,9 +291,10 @@ effective_cache_size: 1GB    # OS cache estimate
 work_mem: 8MB                # Memory per operation
 maintenance_work_mem: 128MB  # Memory for maintenance
 max_connections: 100         # Connection limit
-```
+```text
 
 **Adjust for your system**:
+
 - **8GB RAM**: Double the values
 - **16GB+ RAM**: Quadruple the values
 - **SSD**: Set `random_page_cost=1.1` (already set)
@@ -287,14 +306,17 @@ Para usar `postgresql.conf` personalizado:
 
 1. Crear `postgresql.conf` en infrastructure/
 2. Descomentar volumen en `docker-compose.yml`:
+
    ```yaml
    - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
    ```
+
 3. Agregar al comando:
+
    ```yaml
    - "-c"
    - "config_file=/etc/postgresql/postgresql.conf"
-   ```
+   ```text
 
 ---
 
@@ -349,7 +371,7 @@ print(cursor.fetchone())
 
 cursor.close()
 conn.close()
-```
+```text
 
 #### Usando SQLAlchemy
 
@@ -362,7 +384,7 @@ engine = create_engine('postgresql://dataengineer:training123@localhost:5432/eco
 # Consulta a DataFrame
 df = pd.read_sql("SELECT * FROM users LIMIT 10", engine)
 print(df)
-```
+```text
 
 ### Connect from Command Line
 
@@ -375,7 +397,7 @@ PGPASSWORD=training123 psql -h localhost -p 5432 -U dataengineer -d ecommerce
 
 # Connection string
 psql "postgresql://dataengineer:training123@localhost:5432/ecommerce"
-```
+```text
 
 ### Useful psql commands
 
@@ -425,28 +447,36 @@ psql "postgresql://dataengineer:training123@localhost:5432/ecommerce"
 **Error**: `Bind for 0.0.0.0:5432 failed: port is already allocated`
 
 **Solution**:
+
 1. Change port in `.env`:
+
    ```bash
    POSTGRES_PORT=5433
-   ```
+   ```text
+
 2. Restart:
+
    ```bash
    docker-compose down
    docker-compose up -d
    ```
+
 3. Connect using new port:
+
    ```bash
    psql -h localhost -p 5433 -U dataengineer -d ecommerce
-   ```
+   ```text
 
 ### Container Won't Start
 
 **Check logs**:
+
 ```bash
 docker-compose logs postgres
-```
+```text
 
 **Common issues**:
+
 - Insufficient memory (increase Docker RAM)
 - Corrupted data volume (remove with `docker-compose down -v`)
 - Permission problems (run `docker-compose down -v` and try again)
@@ -454,21 +484,25 @@ docker-compose logs postgres
 ### Cannot Connect
 
 **Verify which container is running**:
+
 ```bash
 docker-compose ps
 ```
 
 **Verify health**:
+
 ```bash
 docker inspect sql-foundations-postgres | grep Health
-```
+```text
 
 **Test from inside the container**:
+
 ```bash
 docker exec -it sql-foundations-postgres psql -U dataengineer -d ecommerce -c "SELECT 1"
-```
+```text
 
 **Firewall issues**:
+
 - Ensure Docker has firewall exceptions
 - On Linux, check `ufw` or `iptables`
 
@@ -477,24 +511,28 @@ docker exec -it sql-foundations-postgres psql -U dataengineer -d ecommerce -c "S
 If tables are missing:
 
 1. Verify whether `init.sql` was executed:
+
    ```bash
    docker-compose logs postgres | grep "initialization"
    ```
 
 2. Reinitialize:
+
    ```bash
    docker-compose down -v  # Deletes volumes!
    docker-compose up -d
-   ```
+   ```text
 
 ### queries Lentas
 
 **Run ANALYZE**:
+
 ```sql
 ANALYZE;
-```
+```text
 
 **Verificar plan de query**:
+
 ```sql
 EXPLAIN ANALYZE SELECT * FROM users WHERE country = 'US';
 ```
@@ -511,18 +549,20 @@ Editar `docker-compose.yml` y aumentar `shared_buffers` y `effective_cache_size`
 Data is stored in Docker volume: `sql-foundations-postgres-data`
 
 **Find volume location**:
+
 ```bash
 docker volume inspect sql-foundations-postgres-data
-```
+```text
 
 **Back up data**:
+
 ```bash
 # Dump database
 docker exec -t sql-foundations-postgres pg_dump -U dataengineer ecommerce > backup.sql
 
 # Restore database
 docker exec -i sql-foundations-postgres psql -U dataengineer -d ecommerce < backup.sql
-```
+```text
 
 ### Multiple Environments
 
@@ -534,13 +574,14 @@ docker-compose --env-file .env.dev up -d
 
 # Production (do not commit!)
 docker-compose --env-file .env.prod up -d
-```
+```text
 
 ### Connection Pooling
 
 For production, use **pgBouncer**:
 
 Agregar a `docker-compose.yml`:
+
 ```yaml
 pgbouncer:
   image: pgbouncer/pgbouncer:latest
@@ -568,7 +609,8 @@ For production, enable SSL:
 1. Generar certificados
 2. Montar en contenedor
 3. Agregar a `postgresql.conf`:
-   ```
+
+   ```text
    ssl = on
    ssl_cert_file = '/path/to/server.crt'
    ssl_key_file = '/path/to/server.key'
@@ -577,6 +619,7 @@ For production, enable SSL:
 ### Monitoreo
 
 **Check statistics**:
+
 ```sql
 -- Table sizes
 SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename))
@@ -592,16 +635,16 @@ FROM pg_statio_user_tables;
 
 -- Conexiones activas
 SELECT count(*) FROM pg_stat_activity;
-```
+```text
 
 ---
 
 ## resources Adicionales
 
-- **PostgreSQL Documentation**: https://www.postgresql.org/docs/15/
-- **Referencia Docker Compose**: https://docs.docker.com/compose/
-- **Referencia de Comandos psql**: https://www.postgresql.org/docs/15/app-psql.html
-- **Ajuste de performance**: https://wiki.postgresql.org/wiki/Performance_Optimization
+- **PostgreSQL Documentation**: <https://www.postgresql.org/docs/15/>
+- **Referencia Docker Compose**: <https://docs.docker.com/compose/>
+- **Referencia de Comandos psql**: <https://www.postgresql.org/docs/15/app-psql.html>
+- **Ajuste de performance**: <https://wiki.postgresql.org/wiki/Performance_Optimization>
 
 ---
 

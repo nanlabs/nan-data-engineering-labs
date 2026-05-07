@@ -23,7 +23,7 @@
 
 **Best Practice**: Evolution path
 
-```
+```text
 Phase 1 (MVP): Simple CRUD
 - RDS PostgreSQL
 - Monolithic application
@@ -51,7 +51,7 @@ Phase 4 (Advanced): Lambda architecture
 - Batch (Spark) + Speed (Kinesis)
 - Cost: $15K/month
 - Team: 10 engineers
-```
+```text
 
 **Key Insight**: Each phase justified by actual pain points, not speculation.
 
@@ -70,7 +70,7 @@ def place_order(order):
 
     # If any service is down, entire order fails
     # If add new service (fraud detection), must modify this code
-```
+```text
 
 **Good**: Event-driven via EventBridge
 
@@ -98,6 +98,7 @@ def on_order_placed_fraud(event):
 ```
 
 **Benefits**:
+
 - Order service doesn't know about consumers
 - Add consumers without modifying producer
 - Services can fail independently
@@ -116,7 +117,7 @@ s3.put_object(
 )
 
 # Problem: Can't time travel ("show orders from last week")
-```
+```text
 
 **Good**: Immutable partition keys
 
@@ -133,9 +134,10 @@ athena.execute("""
 SELECT * FROM orders
 WHERE year=2026 AND month=03 AND day=01
 """)
-```
+```text
 
 **Benefits**:
+
 - Time travel queries
 - Reproducible analytics
 - Audit trail
@@ -152,7 +154,7 @@ def process_order(order):
     db.insert(order_id, order)
 
 # Result: Retries create duplicate orders
-```
+```text
 
 **Solution 1**: Deterministic IDs
 
@@ -180,13 +182,13 @@ def process_order(order):
         if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
             return dynamodb.get_item(TableName='orders', Key={'order_id': order_id})
         raise
-```
+```text
 
 ### 5. Circuit Breaker for Resilience
 
 **Problem**: Cascading failures
 
-```
+```text
 Service A calls Service B (slow/failing)
   ↓
 Service A waits 30 seconds per call
@@ -196,7 +198,7 @@ Service A thread pool exhausted
 Service A crashes
   ↓
 All upstream services fail
-```
+```text
 
 **Solution**: Circuit breaker pattern
 
@@ -255,7 +257,7 @@ def reserve_inventory(items):
 
 **Anti-pattern**: Microservices with tight coupling
 
-```
+```text
 Order Service → calls → Inventory Service (sync HTTP)
               → calls → Payment Service (sync HTTP)
               → calls → Shipping Service (sync HTTP)
@@ -264,11 +266,11 @@ Result:
 - All services must be up (no resilience)
 - Slow (sequential calls: 50ms + 50ms + 50ms = 150ms)
 - Changes require coordinated deploys
-```
+```text
 
 **Fix**: Event-driven async communication
 
-```
+```text
 Order Service → publishes event → EventBridge
                                       ↓
                      ┌────────────────┼────────────────┐
@@ -293,7 +295,7 @@ for order_id in user['order_ids']:
     order = get_order(order_id)  # 10 calls
 
 # 11 × 50ms = 550ms total latency
-```
+```text
 
 **Fix**: Batch API or denormalization
 
@@ -303,7 +305,7 @@ orders = get_orders_batch(user['order_ids'])  # 1 call, 50ms
 
 # Option 2: Denormalize (store orders with user)
 user_with_orders = get_user_denormalized(user_id)  # 1 call, 50ms
-```
+```text
 
 ### 3. No Schema Versioning
 
@@ -317,7 +319,7 @@ user_with_orders = get_user_denormalized(user_id)  # 1 call, 50ms
 {"email_address": "john@example.com"}
 
 # Result: Old consumers crash
-```
+```text
 
 **Fix**: Schema registry + compatibility rules
 
@@ -349,7 +351,7 @@ JOIN table1 ON stream.id = table1.id
 JOIN table2 ON table1.id = table2.id
 JOIN table3 ON table2.id = table3.id
 ... (7 more joins)
-```
+```text
 
 **Fix**: Denormalize into wide stream
 
@@ -367,7 +369,7 @@ enriched_stream = {
 SELECT order_id, user_name, SUM(amount)
 FROM enriched_stream
 GROUP BY order_id, user_name
-```
+```text
 
 **Trade-off**: More storage (duplicated data), but 10x faster queries.
 
@@ -375,7 +377,7 @@ GROUP BY order_id, user_name
 
 **Anti-pattern**: Producer faster than consumer
 
-```
+```text
 Kinesis (1 MB/sec) → Lambda (0.1 MB/sec processing)
 
 Result:
@@ -402,7 +404,7 @@ kinesis.create_event_source_mapping(
     BatchSize=100,  # Process in batches
     MaximumBatchingWindowInSeconds=5  # Wait up to 5 sec
 )
-```
+```text
 
 ---
 
@@ -428,7 +430,7 @@ kinesis.create_event_source_mapping(
   "phone": "string",
   "default": ""  # Old readers ignore this field
 }
-```
+```text
 
 ✅ **Old reader reads v2 data**: Works (ignores "phone")
 ✅ **New reader reads v1 data**: Works (uses default for "phone")
@@ -449,7 +451,7 @@ kinesis.create_event_source_mapping(
   "email": "string",
   "deprecated_field": "string"  # Mark as deprecated, remove in v3
 }
-```
+```text
 
 **Migration Path**: v1 → v2 (both fields) → v3 (remove deprecated)
 
@@ -460,6 +462,7 @@ kinesis.create_event_source_mapping(
 **Goal**: Distribute load evenly, enable efficient queries.
 
 **Bad** (Hot Partition):
+
 ```python
 # All writes go to same partition
 partition_key = "status"  # Only 3 values: pending, completed, cancelled
@@ -468,14 +471,16 @@ partition_key = "status"  # Only 3 values: pending, completed, cancelled
 ```
 
 **Good** (High Cardinality):
+
 ```python
 # Unique partition key
 partition_key = f"ORDER#{order_id}"  # Millions of unique values
 
 # Result: Load distributed across thousands of partitions
-```
+```text
 
 **Best** (Composite with Sort Key):
+
 ```python
 # Access pattern: Get orders by user + date range
 partition_key = f"USER#{user_id}"
@@ -490,12 +495,13 @@ dynamodb.query(
         ':end': 'ORDER#2026-03-31'
     }
 )
-```
+```text
 
 #### **S3 / Data Lake**
 
 **Bad** (No Partitioning):
-```
+
+```text
 s3://data-lake/orders/data.parquet  # Single file (100 GB)
 
 # Athena scans entire file for any query ($5/TB × 0.1 = $0.50 per query)
@@ -503,16 +509,18 @@ SELECT * FROM orders WHERE date = '2026-03-09'  # Scans 100 GB
 ```
 
 **Good** (Date Partitioning - Hive Style):
-```
+
+```text
 s3://data-lake/orders/year=2026/month=03/day=09/data.parquet
 
 # Athena only scans 1 day (100 MB, not 100 GB)
 SELECT * FROM orders WHERE year=2026 AND month=03 AND day=09
 # Cost: $5/TB × 0.0001 = $0.0005 per query (1000x cheaper)
-```
+```text
 
 **Best** (Multi-Dimensional Partitioning):
-```
+
+```text
 s3://data-lake/orders/
   region=us/date=2026-03-09/hour=10/data.parquet
   region=eu/date=2026-03-09/hour=10/data.parquet
@@ -524,17 +532,18 @@ WHERE region='eu' AND date='2026-03-09'
 ```
 
 **Avoid Over-Partitioning**:
-```
+
+```text
 ❌ Too granular: year/month/day/hour/minute/second
    (10M partitions, slow to list)
 
 ✅ Right balance: year/month/day or date/hour
    (~1,000 partitions, fast queries)
-```
+```text
 
 ### 3. Event Design
 
-#### **Events Should Be**:
+#### **Events Should Be**
 
 ✅ **Immutable**: Never modify published events
 ✅ **Self-Contained**: All context needed to process
@@ -570,7 +579,7 @@ WHERE region='eu' AND date='2026-03-09'
     }
   }
 }
-```
+```text
 
 ### 4. Separation of Concerns
 
@@ -605,7 +614,7 @@ class OrderService:
 # PaymentService: Payment logic (400 lines)
 # TaxService: Tax calculation (250 lines)
 # Each service focused on single domain
-```
+```text
 
 ---
 
@@ -639,7 +648,7 @@ def call_external_api():
     return requests.get("https://api.example.com/data")
 
 # Retry schedule: 2s, 4s, 8s, 16s, 32s (5 attempts)
-```
+```text
 
 #### **Dead Letter Queue (DLQ)**
 
@@ -663,7 +672,7 @@ def handle_failed_events(event):
 
     # Optional: Retry with different strategy
     reprocess_with_fallback(event)
-```
+```text
 
 ### 2. Graceful Degradation
 
@@ -704,9 +713,10 @@ lambda_function.update_function_configuration(
     FunctionName='api-caller',
     Timeout=10  # Kill after 10 seconds
 )
-```
+```text
 
 **Timeout Tuning**:
+
 - **API calls**: 5-10 seconds (fail fast)
 - **Database queries**: 30 seconds (complex analytics)
 - **Lambda**: 5 minutes (batch processing)
@@ -745,7 +755,7 @@ alarm = cloudwatch.put_metric_alarm(
     Threshold=1000,
     ComparisonOperator='GreaterThanThreshold'
 )
-```
+```text
 
 #### **Traffic** (Requests per Second)
 
@@ -769,7 +779,7 @@ alarm = cloudwatch.put_metric_alarm(
     Threshold=10000,
     ComparisonOperator='GreaterThanThreshold'
 )
-```
+```text
 
 #### **Errors** (Error Rate)
 
@@ -823,16 +833,16 @@ alarm = cloudwatch.put_metric_alarm(
     AlarmName='DynamoDBHighSaturation',
     Threshold=80.0
 )
-```
+```text
 
 ### 2. Distributed Tracing
 
 **Problem**: Request spans 10 microservices, where is slowdown?
 
-```
+```text
 User Request → API Gateway → Order Service → Inventory → Payment → Shipping
 (1000ms total, which service is slow?)
-```
+```text
 
 **Solution**: AWS X-Ray
 
@@ -890,7 +900,7 @@ logs_insights.start_query(
     | limit 10
     """
 )
-```
+```text
 
 ---
 
@@ -900,13 +910,13 @@ logs_insights.start_query(
 
 **Anti-pattern**: Over-provisioned RDS
 
-```
+```text
 RDS: db.r5.8xlarge (32 vCPUs, 256 GB RAM)
 Cost: $5,800/month
 Actual usage: 10% CPU, 20% RAM
 
 Waste: $4,600/month
-```
+```text
 
 **Solution**: Use CloudWatch metrics
 
@@ -935,10 +945,10 @@ if avg_cpu < 30:
 
 **Anti-pattern**: All data in S3 Standard forever
 
-```
+```text
 Raw data: 100 TB × $0.023/GB = $2,300/month
 (90% of data not accessed after 30 days)
-```
+```text
 
 **Solution**: Tiered storage
 
@@ -979,7 +989,7 @@ s3.put_bucket_lifecycle_configuration(
 # 90-365 days (30 TB): 30 TB × $0.004 = $120
 # 365+ days (40 TB): 40 TB × $0.00099 = $40
 # Total: $640/month (vs $2,300) → 72% savings
-```
+```text
 
 ### 3. Lambda Memory Optimization
 
@@ -1008,7 +1018,7 @@ s3.put_bucket_lifecycle_configuration(
 
 **Layers**:
 
-```
+```text
 1. Encryption at Rest (S3, EBS, RDS)
    - S3: AES-256 (SSE-S3 or SSE-KMS)
    - RDS: Transparent Data Encryption (TDE)
@@ -1019,7 +1029,7 @@ s3.put_bucket_lifecycle_configuration(
 
 3. Encryption in Use (Future: AWS Nitro Enclaves)
    - Process data in secure enclave
-```
+```text
 
 **Implementation**:
 
@@ -1049,7 +1059,7 @@ rds.create_db_instance(
     StorageEncrypted=True,
     KmsKeyId=kms_key_id
 )
-```
+```text
 
 ### 2. Least Privilege Access (Lake Formation)
 
@@ -1092,7 +1102,7 @@ lakeformation.grant_permissions(
 )
 
 # Result: Analysts can read customer_id, name, email (no SSN, no EU customers)
-```
+```text
 
 ### 3. PII Tokenization
 
@@ -1106,7 +1116,7 @@ lakeformation.grant_permissions(
   "ssn": "123-45-6789",  # ⚠️ GDPR violation
   "credit_card": "4111-1111-1111-1111"  # ⚠️ PCI-DSS violation
 }
-```
+```text
 
 **Best Practice**: Tokenization
 
@@ -1135,7 +1145,7 @@ def detokenize_pii(token, reason):
 # Usage: 99% of analytics work on tokens, not PII
 SELECT ssn_token, COUNT(*) FROM users GROUP BY ssn_token
 # No PII exposed, still useful for deduplication
-```
+```text
 
 ---
 
@@ -1193,7 +1203,7 @@ def test_end_to_end_order_flow():
 
     # Cleanup
     cleanup_test_data(order['order_id'])
-```
+```text
 
 ### 3. Chaos Engineering (Resilience Testing)
 
@@ -1215,7 +1225,7 @@ def test_dynamodb_failure_resilience():
 
     finally:
         chaos.restore_service('dynamodb.amazonaws.com')
-```
+```text
 
 ---
 
@@ -1225,7 +1235,7 @@ def test_dynamodb_failure_resilience():
 
 **Goal**: Migrate from monolith to microservices gradually.
 
-```
+```text
 Phase 1: Monolith (100% traffic)
 Phase 2: 90% monolith, 10% new service (test)
 Phase 3: 50% monolith, 50% new service (validate)
@@ -1247,19 +1257,19 @@ if random.random() < (rollout_percentage / 100):
     response = new_order_service.place_order(order)
 else:
     response = legacy_monolith.place_order(order)
-```
+```text
 
 ### 2. Dual Writes
 
 **Goal**: Migrate from Database A to Database B without downtime.
 
-```
+```text
 Phase 1: Read from A, Write to A
 Phase 2: Read from A, Write to A + B (dual write)
 Phase 3: Backfill B with historical data
 Phase 4: Read from B, Write to A + B (validate)
 Phase 5: Read from B, Write to B only (complete)
-```
+```text
 
 **Example**: PostgreSQL → DynamoDB
 
@@ -1312,6 +1322,7 @@ def backfill_dynamodb():
 #### **Example: Should we add caching?**
 
 **Current State**:
+
 - Database query: 200ms
 - Query frequency: 100 req/sec
 - Database cost: $500/month
@@ -1345,11 +1356,12 @@ if savings > 0 or improvement > 0.5:
     decision = "ADD_CACHE"  # ✅ Justified (save $150 + 79% faster)
 else:
     decision = "SKIP_CACHE"
-```
+```text
 
 #### **Example: Should we migrate to multi-region?**
 
 **Current State**:
+
 - Single region (us-east-1)
 - EU users: 40% of traffic
 - Latency (EU): 150ms
@@ -1382,7 +1394,7 @@ net_benefit = revenue_gain - extra_cost
 decision = "SKIP_MULTI_REGION"  # ❌ Not justified (losing $10K/month)
 
 # Revisit when revenue 3x higher ($300K/month)
-```
+```text
 
 ---
 
@@ -1398,7 +1410,7 @@ def process_order(order):
     payment.charge(order['amount'])  # What if payment fails?
     inventory.decrement(order['items'])  # What if inventory service down?
     shipping.create(order)  # What if address invalid?
-```
+```text
 
 **Fix**: Saga pattern with compensation
 
@@ -1443,7 +1455,7 @@ def process_order_with_saga(order):
 def calculate_revenue(orders_df):
     return orders_df['amount'].sum()
 # What if 'amount' has nulls? Negative values? Strings?
-```
+```text
 
 **Fix**: Great Expectations
 
@@ -1461,7 +1473,7 @@ def calculate_revenue(orders_df):
 
     # Now safe to calculate
     return df['amount'].sum()
-```
+```text
 
 ### 3. No Monitoring
 
@@ -1487,7 +1499,7 @@ cloudwatch.put_metric_alarm(
     ActionsEnabled=True,
     AlarmActions=[sns_topic_arn]  # Page on-call engineer
 )
-```
+```text
 
 ---
 

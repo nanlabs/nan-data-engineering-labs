@@ -55,7 +55,7 @@ awslocal iam attach-role-policy \
 awslocal iam attach-role-policy \
     --role-name AWSGlueServiceRole-DataLake \
     --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
-```
+```text
 
 ### Task 2: Create Bronze Layer Crawler
 
@@ -109,7 +109,7 @@ awslocal glue create-crawler \
 
 # Verify crawler creation
 awslocal glue get-crawler --name sales-bronze-crawler
-```
+```text
 
 ### Task 3: Create Silver Layer Crawler
 
@@ -155,7 +155,7 @@ awslocal glue create-crawler \
         "DataDomain": "Sales",
         "Layer": "Silver"
     }'
-```
+```text
 
 ### Task 4: Add Crawler Schedule
 
@@ -200,7 +200,7 @@ done
 
 # Get crawler metrics
 awslocal glue get-crawler-metrics --crawler-name-list sales-bronze-crawler
-```
+```text
 
 ### Task 6: Analyze Crawler Results
 
@@ -221,7 +221,7 @@ awslocal glue get-partitions \
 # Check crawler statistics
 awslocal glue get-crawler --name sales-bronze-crawler \
     --query 'Crawler.LastCrawl.{Status:Status,TablesCreated:TablesCreated,TablesUpdated:TablesUpdated,TablesDeleted:TablesDeleted}'
-```
+```text
 
 ### Task 7: Handle Schema Changes
 
@@ -293,9 +293,10 @@ versions = glue.get_table_versions(
 print(f"\n=== Table has {len(versions['TableVersions'])} versions ===")
 for i, version in enumerate(versions['TableVersions'][:3]):
     print(f"Version {version['VersionId']}: {len(version['Table']['StorageDescriptor']['Columns'])} columns")
-```
+```text
 
 Run the schema evolution test:
+
 ```bash
 python schema_evolution_test.py
 ```
@@ -331,7 +332,7 @@ awslocal glue get-classifiers
 awslocal glue update-crawler \
     --name sales-bronze-crawler \
     --classifiers "custom-sales-csv"
-```
+```text
 
 ### Task 9: Event-Driven Crawler Execution
 
@@ -393,9 +394,10 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps('No crawler matched for this path')
     }
-```
+```text
 
 EventBridge rule configuration:
+
 ```json
 {
   "source": ["aws.s3"],
@@ -409,7 +411,7 @@ EventBridge rule configuration:
     }
   }
 }
-```
+```text
 
 ### Task 10: Monitor and Optimize Crawler Performance
 
@@ -491,9 +493,10 @@ print("6. Enable lineage tracking for data governance")
 ```
 
 Run monitoring:
+
 ```bash
 python crawler_monitor.py
-```
+```text
 
 ## Validation
 
@@ -502,9 +505,10 @@ Test your crawler configuration:
 ```bash
 # Run validation script
 python validation_02.py
-```
+```text
 
 Expected results:
+
 - ✅ 2 crawlers created (bronze, silver)
 - ✅ Crawlers have proper IAM role configured
 - ✅ Schema change policy is UPDATE_IN_DATABASE

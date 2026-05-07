@@ -125,7 +125,7 @@ consistency_score = metrics.consistency(
     lambda row: abs(row['total'] - row['amount'] * row['quantity']) < 0.01
 )
 print(f"Consistency (total): {consistency_score:.2f}%")
-```
+```text
 
 **Task 1.2: Quality Score Agregado**
 
@@ -196,7 +196,7 @@ scorer.add_score('validity', 94.8)
 scorer.add_score('consistency', 96.1)
 scorer.add_score('timeliness', 89.3)
 scorer.print_report()
-```
+```text
 
 ---
 
@@ -315,7 +315,7 @@ for i in range(5):
 print("\n--- Monitor History ---")
 print(f"Total checks: {len(monitor.history)}")
 print(f"Active alerts: {len(monitor.get_active_alerts())}")
-```
+```text
 
 **Task 2.2: Detectar Quality Drift**
 
@@ -451,7 +451,7 @@ alert_manager.send_alert(
     "Multiple quality dimensions failing",
     metadata={'failed_dimensions': ['completeness', 'validity']}
 )
-```
+```text
 
 ---
 
@@ -576,7 +576,7 @@ def generate_quality_dashboard(monitor: QualityMonitor, output_file: str = 'qual
 
 # Uso
 generate_quality_dashboard(monitor, 'quality_dashboard.html')
-```
+```text
 
 ---
 
@@ -600,9 +600,9 @@ generate_quality_dashboard(monitor, 'quality_dashboard.html')
 
 ## 📚 resources
 
-- **Prometheus**: https://prometheus.io/
-- **Grafana**: https://grafana.com/
-- **DataDog Data Quality**: https://www.datadoghq.com/
+- **Prometheus**: <https://prometheus.io/>
+- **Grafana**: <https://grafana.com/>
+- **DataDog Data Quality**: <https://www.datadoghq.com/>
 
 ## ➡️ Next Exercise
 

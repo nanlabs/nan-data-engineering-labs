@@ -24,6 +24,7 @@
 ## 📚 Context
 
 Construirás un **Real-Time Analytics Pipeline** completo y production-ready que:
+
 - Ingesta logs de aplicaciones en tiempo real
 - Procesa y agrega métricas
 - Almacena en Data Lake particionado
@@ -33,7 +34,7 @@ Construirás un **Real-Time Analytics Pipeline** completo y production-ready que
 
 **Arquitectura**:
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │                    PRODUCTION PIPELINE                        │
 ├──────────────────────────────────────────────────────────────┤
@@ -76,7 +77,7 @@ Construirás un **Real-Time Analytics Pipeline** completo y production-ready que
 │  │  - X-Ray tracing                       │                 │
 │  └────────────────────────────────────────┘                 │
 └──────────────────────────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -186,7 +187,7 @@ def response_error(status_code: int, message: str):
         'headers': {'Content-Type': 'application/json'},
         'body': json.dumps({'error': message})
     }
-```
+```text
 
 ---
 
@@ -611,7 +612,7 @@ output "kinesis_stream_name" {
 output "data_lake_bucket" {
   value = aws_s3_bucket.data_lake.id
 }
-```
+```text
 
 ---
 
@@ -706,13 +707,14 @@ jobs:
 
       - name: Run smoke tests
         run: ./scripts/smoke-tests.sh
-```
+```text
 
 ---
 
 ## ✅ Checklist de Producción
 
 ### Security
+
 - [ ] IAM roles con least privilege
 - [ ] Secrets en AWS Secrets Manager
 - [ ] VPC endpoints configurados
@@ -721,6 +723,7 @@ jobs:
 - [ ] WAF rules configuradas
 
 ### Observability
+
 - [ ] X-Ray tracing habilitado
 - [ ] Structured logging (JSON)
 - [ ] CloudWatch Dashboard
@@ -729,6 +732,7 @@ jobs:
 - [ ] SNS notifications
 
 ### Reliability
+
 - [ ] Multi-AZ deployment
 - [ ] Dead Letter Queues
 - [ ] Retry logic con exponential backoff
@@ -736,6 +740,7 @@ jobs:
 - [ ] Idempotencia garantizada
 
 ### Performance
+
 - [ ] Lambda memory tuning
 - [ ] Reserved concurrency configurado
 - [ ] Kinesis shards adecuados
@@ -743,6 +748,7 @@ jobs:
 - [ ] Compression habilitada
 
 ### Cost Optimization
+
 - [ ] S3 Intelligent Tiering
 - [ ] DynamoDB on-demand billing
 - [ ] Lambda timeout optimizado
@@ -750,6 +756,7 @@ jobs:
 - [ ] Resource tagging completo
 
 ### CI/CD
+
 - [ ] Automated tests (>80% coverage)
 - [ ] Multi-environment deployment
 - [ ] Smoke tests post-deployment

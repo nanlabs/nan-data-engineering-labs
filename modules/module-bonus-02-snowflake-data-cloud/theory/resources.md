@@ -19,14 +19,16 @@
 ### Core Documentation
 
 **Snowflake Documentation Hub**:
-- **URL**: https://docs.snowflake.com/
+
+- **URL**: <https://docs.snowflake.com/>
 - **Content**: Comprehensive reference for all Snowflake features
 - **Best For**: In-depth technical details, syntax reference
 
 ### Key Documentation Sections
 
 **1. Getting Started**:
-- **URL**: https://docs.snowflake.com/en/user-guide-getting-started
+
+- **URL**: <https://docs.snowflake.com/en/user-guide-getting-started>
 - **Topics**:
   - Trial signup and setup
   - First queries and databases
@@ -34,7 +36,8 @@
   - Basic SQL operations
 
 **2. Virtual Warehouses**:
-- **URL**: https://docs.snowflake.com/en/user-guide/warehouses
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/warehouses>
 - **Topics**:
   - Warehouse sizing and scaling
   - Multi-cluster warehouses
@@ -42,14 +45,16 @@
   - Warehouse monitoring
 
 **3. Zero-Copy Cloning**:
-- **URL**: https://docs.snowflake.com/en/user-guide/tables-storage-considerations#label-cloning-tables
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/tables-storage-considerations#label-cloning-tables>
 - **Topics**:
   - Cloning databases, schemas, tables
   - Storage implications
   - Use cases and best practices
 
 **4. Time Travel**:
-- **URL**: https://docs.snowflake.com/en/user-guide/data-time-travel
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/data-time-travel>
 - **Topics**:
   - Querying historical data
   - Restoring dropped objects (UNDROP)
@@ -57,7 +62,8 @@
   - Fail-safe period
 
 **5. Secure Data Sharing**:
-- **URL**: https://docs.snowflake.com/en/user-guide/data-sharing-intro
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/data-sharing-intro>
 - **Topics**:
   - Creating and managing shares
   - Provider and consumer workflows
@@ -65,14 +71,16 @@
   - Snowflake Marketplace
 
 **6. Streams and Change Data Capture (CDC)**:
-- **URL**: https://docs.snowflake.com/en/user-guide/streams
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/streams>
 - **Topics**:
   - Stream types (standard, append-only)
   - Consuming streams
   - Use cases for incremental processing
 
 **7. Tasks and Scheduling**:
-- **URL**: https://docs.snowflake.com/en/user-guide/tasks-intro
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/tasks-intro>
 - **Topics**:
   - Creating scheduled tasks
   - Task dependencies (DAGs)
@@ -80,7 +88,8 @@
   - Monitoring task execution
 
 **8. Snowpipe (Continuous Data Loading)**:
-- **URL**: https://docs.snowflake.com/en/user-guide/data-load-snowpipe
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/data-load-snowpipe>
 - **Topics**:
   - Auto-ingest from cloud storage
   - Event notifications (S3, Azure, GCS)
@@ -88,7 +97,8 @@
   - Cost model and optimization
 
 **9. External Tables**:
-- **URL**: https://docs.snowflake.com/en/user-guide/tables-external-intro
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/tables-external-intro>
 - **Topics**:
   - Querying data in S3/Azure/GCS without loading
   - Creating external tables
@@ -96,7 +106,8 @@
   - Materialized views on external tables
 
 **10. Performance Optimization**:
-- **URL**: https://docs.snowflake.com/en/user-guide/performance-query-optimization
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/performance-query-optimization>
 - **Topics**:
   - Clustering keys
   - Materialized views
@@ -104,7 +115,8 @@
   - Search optimization service
 
 **11. Security**:
-- **URL**: https://docs.snowflake.com/en/user-guide/security
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/security>
 - **Topics**:
   - Role-based access control (RBAC)
   - Network policies
@@ -113,7 +125,8 @@
   - Data encryption
 
 **12. Cost Management**:
-- **URL**: https://docs.snowflake.com/en/user-guide/cost-understanding
+
+- **URL**: <https://docs.snowflake.com/en/user-guide/cost-understanding>
 - **Topics**:
   - Understanding credit consumption
   - Resource monitors
@@ -127,6 +140,7 @@
 ### SnowPro Core Certification
 
 **Overview**:
+
 - **Level**: Foundation
 - **Target Audience**: Anyone working with Snowflake (analysts, engineers, architects)
 - **Exam Cost**: $175 USD
@@ -135,7 +149,8 @@
 - **Validity**: 2 years
 
 **Exam Topics**:
-```
+
+```text
 1. Snowflake Overview (10%)
    - Architecture (storage, compute, cloud services)
    - Cloud platform comparison (AWS, Azure, GCP)
@@ -181,16 +196,18 @@
    - Resource monitors
    - Credit consumption tracking
    - Account usage views
-```
+```text
 
 **Study Resources**:
-- **Official Study Guide**: https://learn.snowflake.com/snowpro-core-certification-study-guide
-- **Hands-On Labs**: https://learn.snowflake.com/
+
+- **Official Study Guide**: <https://learn.snowflake.com/snowpro-core-certification-study-guide>
+- **Hands-On Labs**: <https://learn.snowflake.com/>
 - **Practice Exams**: Available via Snowflake University
 - **This Module**: Exercises 01-10 cover 80% of exam topics
 
 **Registration**:
-- **URL**: https://www.snowflake.com/certifications/
+
+- **URL**: <https://www.snowflake.com/certifications/>
 
 ---
 
@@ -199,6 +216,7 @@
 #### Data Engineer (Advanced)
 
 **Overview**:
+
 - **Prerequisite**: SnowPro Core Certification
 - **Exam Cost**: $375 USD
 - **Format**: 65 multiple-choice questions, 2 hours
@@ -206,7 +224,8 @@
 - **Target Audience**: Data engineers building pipelines
 
 **Exam Topics**:
-```
+
+```text
 - Data ingestion and transformation at scale
 - Streams and Tasks for CDC
 - Performance tuning (clustering, materialized views)
@@ -216,34 +235,39 @@
 ```
 
 **Study Resources**:
-- **Study Guide**: https://learn.snowflake.com/snowpro-advanced-data-engineer
-- **Badge**: https://www.credly.com/
+
+- **Study Guide**: <https://learn.snowflake.com/snowpro-advanced-data-engineer>
+- **Badge**: <https://www.credly.com/>
 
 #### Data Scientist (Advanced)
 
 **Overview**:
+
 - **Prerequisite**: SnowPro Core Certification
 - **Exam Cost**: $375 USD
 - **Target Audience**: Data scientists and ML practitioners
 
 **Exam Topics**:
-```
+
+```text
 - Feature engineering in Snowflake
 - Integration with ML tools (Python, R, Spark)
 - Snowpark for data science
 - User-Defined Functions (UDFs)
 - ML model deployment patterns
-```
+```text
 
 #### Architect (Advanced)
 
 **Overview**:
+
 - **Prerequisite**: SnowPro Core Certification
 - **Exam Cost**: $375 USD
 - **Target Audience**: Solution architects
 
 **Exam Topics**:
-```
+
+```text
 - Multi-account architectures
 - Database replication and failover
 - Data governance at scale
@@ -259,7 +283,8 @@
 ### Snowflake University
 
 **Overview**:
-- **URL**: https://learn.snowflake.com/
+
+- **URL**: <https://learn.snowflake.com/>
 - **Cost**: FREE
 - **Content**: Self-paced courses, hands-on labs, webinars
 
@@ -288,12 +313,14 @@
 ### Quick Starts
 
 **Overview**:
-- **URL**: https://quickstarts.snowflake.com/
+
+- **URL**: <https://quickstarts.snowflake.com/>
 - **Format**: Guided tutorials (30-90 minutes each)
 - **Cost**: FREE (requires Snowflake account)
 
 **Popular Quick Starts**:
-```
+
+```text
 ├─ Getting Started with Snowflake (30 min)
 ├─ Data Engineering with Snowflake (60 min)
 ├─ Snowpipe Continuous Loading (45 min)
@@ -301,12 +328,13 @@
 ├─ Secure Data Sharing (45 min)
 ├─ Snowpark for Python (90 min)
 └─ Cost Optimization (60 min)
-```
+```text
 
 ### YouTube Channel
 
 **Official Snowflake YouTube**:
-- **URL**: https://www.youtube.com/snowflakeinc
+
+- **URL**: <https://www.youtube.com/snowflakeinc>
 - **Content**:
   - Product demos and deep dives
   - Customer success stories
@@ -314,7 +342,8 @@
   - "Snowflake Essentials" series
 
 **Recommended Playlists**:
-```
+
+```text
 ├─ Snowflake Essentials (20+ videos)
 ├─ Data Loading & Pipelines
 ├─ Performance Tuning
@@ -341,7 +370,8 @@
 ### Snowflake Community
 
 **Community Forum**:
-- **URL**: https://community.snowflake.com/
+
+- **URL**: <https://community.snowflake.com/>
 - **Purpose**: Ask questions, share knowledge, network
 - **Topics**:
   - General questions
@@ -350,6 +380,7 @@
   - Integration help
 
 **How to Get Help**:
+
 1. Search existing posts (many questions already answered)
 2. Post clear, detailed questions with code examples
 3. Tag appropriately (e.g., #sql, #snowpipe, #performance)
@@ -358,7 +389,8 @@
 ### Snowflake Support
 
 **Support Portal**:
-- **URL**: https://support.snowflake.com/
+
+- **URL**: <https://support.snowflake.com/>
 - **Access**: Via Snowflake Web UI (top-right → Support)
 - **Response Time**:
   - Severity 1 (production down): <1 hour
@@ -367,21 +399,25 @@
   - Severity 4 (general question): <48 hours
 
 **Trial Account Support**:
+
 - Limited support (primarily through community)
 - Full support available after converting to paid account
 
 ### Social Media
 
 **Twitter/X**:
+
 - **@SnowflakeDB**: Official account for news and updates
 - **#Snowflake**: Community discussions
 - **#SnowPro**: Certification discussions
 
 **LinkedIn**:
+
 - **Snowflake Computing**: Company page
 - **Groups**: "Snowflake Users" group for networking
 
 **Reddit**:
+
 - **r/snowflake**: Community-driven discussions
 
 ---
@@ -391,67 +427,80 @@
 ### BI & Visualization Tools
 
 **Tableau**:
+
 - **Integration**: Native Snowflake connector
-- **Docs**: https://help.tableau.com/current/pro/desktop/en-us/examples_snowflake.htm
+- **Docs**: <https://help.tableau.com/current/pro/desktop/en-us/examples_snowflake.htm>
 - **Benefits**: Optimized queries, live or extract modes
 
 **Power BI**:
+
 - **Integration**: DirectQuery and Import modes
-- **Docs**: https://learn.microsoft.com/en-us/power-bi/connect-data/desktop-connect-snowflake
+- **Docs**: <https://learn.microsoft.com/en-us/power-bi/connect-data/desktop-connect-snowflake>
 - **Benefits**: Single Sign-On (SSO), OAuth support
 
 **Looker**:
+
 - **Integration**: Snowflake dialect support
-- **Docs**: https://cloud.google.com/looker/docs/db-config-snowflake
+- **Docs**: <https://cloud.google.com/looker/docs/db-config-snowflake>
 - **Benefits**: PDTs (Persistent Derived Tables), caching
 
 ### ETL/ELT Tools
 
 **dbt (Data Build Tool)**:
+
 - **Integration**: `dbt-snowflake` adapter
-- **URL**: https://docs.getdbt.com/reference/warehouse-setups/snowflake-setup
+- **URL**: <https://docs.getdbt.com/reference/warehouse-setups/snowflake-setup>
 - **Use Case**: SQL-based transformations, version control, testing
 
 **Fivetran**:
+
 - **Integration**: Pre-built connectors (150+ sources)
-- **URL**: https://fivetran.com/connectors/snowflake
+- **URL**: <https://fivetran.com/connectors/snowflake>
 - **Use Case**: Automated ELT from SaaS, databases, files
 
 **Matillion**:
+
 - **Integration**: Native Snowflake ETL
-- **URL**: https://www.matillion.com/snowflake/
+- **URL**: <https://www.matillion.com/snowflake/>
 - **Use Case**: GUI-based data pipelines
 
 **Apache Airflow**:
+
 - **Integration**: `SnowflakeOperator`
-- **Docs**: https://airflow.apache.org/docs/apache-airflow-providers-snowflake/
+- **Docs**: <https://airflow.apache.org/docs/apache-airflow-providers-snowflake/>
 - **Use Case**: Complex workflow orchestration
 
 ### Data Science & ML
 
 **Snowpark (Python/Scala/Java)**:
-- **Docs**: https://docs.snowflake.com/en/developer-guide/snowpark/index
+
+- **Docs**: <https://docs.snowflake.com/en/developer-guide/snowpark/index>
 - **Use Case**: DataFrame API, push-down computation, UDFs
 
 **Jupyter Notebooks**:
+
 - **Integration**: `snowflake-connector-python`
 - **Use Case**: Interactive analysis, prototyping
 
 **MLflow**:
+
 - **Integration**: Model registry with Snowflake backend
 - **Use Case**: ML experiment tracking and deployment
 
 ### IDE & Developer Tools
 
 **Visual Studio Code**:
+
 - **Extension**: "Snowflake" extension by Snowflake Inc.
 - **Features**: IntelliSense, query execution, object browser
 
 **DataGrip**:
+
 - **Integration**: JDBC driver support
 - **Features**: Schema visualization, SQL auto-complete
 
 **DBeaver**:
+
 - **Integration**: Snowflake driver
 - **Features**: Free, open-source, cross-platform
 
@@ -481,7 +530,7 @@ This module includes 10 hands-on exercises covering all major Snowflake concepts
 
 ### Module Repository Structure
 
-```
+```text
 module-bonus-02-snowflake-data-cloud/
 ├── COST-ALERT.md               ← Cost warnings and trial info
 ├── README.md                    ← Module overview
@@ -504,7 +553,7 @@ module-bonus-02-snowflake-data-cloud/
 ├── data/                        ← Sample datasets
 ├── scripts/                     ← Utility scripts
 └── validation/                  ← Exercise validation
-```
+```text
 
 ---
 
@@ -515,26 +564,31 @@ module-bonus-02-snowflake-data-cloud/
 After completing this module, consider exploring:
 
 **1. Snowpark**:
+
 - Python/Scala/Java DataFrame API
 - User-Defined Functions (UDFs)
 - Machine learning in Snowflake
 
 **2. Data Governance**:
+
 - Object tagging and lineage
 - Data Classification
 - Governance dashboards
 
 **3. Multi-Cloud Strategies**:
+
 - Cross-cloud data sharing
 - Database replication across regions
 - Disaster recovery planning
 
 **4. Advanced Security**:
+
 - OAuth integration
 - SCIM (System for Cross-domain Identity Management)
 - Tri-Secret Secure (Business Critical edition)
 
 **5. Real-World Projects**:
+
 - Build a data lakehouse on Snowflake
 - Implement medallion architecture (bronze/silver/gold)
 - Create a real-time analytics pipeline
@@ -542,7 +596,8 @@ After completing this module, consider exploring:
 ### Suggested Learning Path
 
 **Phase 1: Foundation (This Module)** ✅
-```
+
+```text
 Week 1-2:
   ├─ Complete all 10 exercises
   ├─ Read theory documentation
@@ -550,15 +605,17 @@ Week 1-2:
 ```
 
 **Phase 2: Intermediate (1-2 months)**:
-```
+
+```text
   ├─ Snowflake University courses
   ├─ Build personal project (portfolio)
   ├─ Prepare for SnowPro Core exam
   └─ Join community, answer questions
-```
+```text
 
 **Phase 3: Advanced (3-6 months)**:
-```
+
+```text
   ├─ Advanced certification (Data Engineer/Architect)
   ├─ Contribute to open-source integrations
   ├─ Optimize production workloads
@@ -572,16 +629,18 @@ Week 1-2:
 ### Troubleshooting Resources
 
 **Order of Operations**:
+
 1. **Search This Module**: Check exercise solution files, theory docs
-2. **Official Docs**: https://docs.snowflake.com/ (comprehensive)
-3. **Community Forum**: https://community.snowflake.com/ (fast responses)
+2. **Official Docs**: <https://docs.snowflake.com/> (comprehensive)
+3. **Community Forum**: <https://community.snowflake.com/> (fast responses)
 4. **Stack Overflow**: Tag `[snowflake-cloud-data-platform]`
 5. **Snowflake Support**: Via Web UI (for account-specific issues)
 
 ### Useful Search Queries
 
 When searching for help, use specific terms:
-```
+
+```text
 ❌ Generic: "snowflake error"
 ✅ Specific: "snowflake zero-copy clone time travel retention"
 
@@ -590,7 +649,7 @@ When searching for help, use specific terms:
 
 ❌ Ambiguous: "can't load data"
 ✅ Clear: "snowflake copy into parquet s3 external stage error parsing"
-```
+```text
 
 ---
 
@@ -600,7 +659,7 @@ Track your Snowflake learning progress:
 
 ### Knowledge Checkpoints
 
-```
+```text
 ✅ Level 1 - Beginner:
   - Can write basic SQL queries
   - Understand warehouse sizing
@@ -633,7 +692,8 @@ Track your Snowflake learning progress:
 ### Portfolio Projects
 
 Build these to demonstrate mastery:
-```
+
+```text
 1. Real-Time Analytics Dashboard
    - Snowpipe ingestion from S3
    - Streams + Tasks for transformations
@@ -651,7 +711,7 @@ Build these to demonstrate mastery:
    - Secure data sharing with customers
    - Cost attribution per tenant
    - Automated provisioning
-```
+```text
 
 ---
 
@@ -659,7 +719,7 @@ Build these to demonstrate mastery:
 
 ### Most-Used Documentation Pages
 
-```
+```text
 Architecture:        https://docs.snowflake.com/en/user-guide/intro-key-concepts
 Virtual Warehouses:  https://docs.snowflake.com/en/user-guide/warehouses
 Zero-Copy Cloning:   https://docs.snowflake.com/en/user-guide/tables-storage-considerations
@@ -676,14 +736,14 @@ SQL Reference:       https://docs.snowflake.com/en/sql-reference
 
 ### Community & Support
 
-```
+```text
 Community Forum:     https://community.snowflake.com/
 Snowflake University: https://learn.snowflake.com/
 Quick Starts:        https://quickstarts.snowflake.com/
 Certification:       https://www.snowflake.com/certifications/
 Support Portal:      https://support.snowflake.com/
 YouTube:             https://www.youtube.com/snowflakeinc
-```
+```text
 
 ---
 

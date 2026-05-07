@@ -3,13 +3,16 @@
 ## 🎯 Conceptos Key
 
 ### Schema Evolution
+
 Delta Lake permite evolucionar el schema of una table without romper pIPelines existentes:
+
 - **Add columns**: Agregar nuevas columns
 - **Remove columns**: Eliminar columns (reading ignora columns inexistentes)
 - **Change types**: Cambiar tIPos of datas (requiere overwriteSchema)
 - **Rename columns**: Renombrar (complejo, requiere mapping)
 
 ### Opciones Importantes
+
 - `mergeSchema=true`: Automatic merge of schemas when writing
 - `overwriteSchema=true`: Permite changes incompatibles (change of tIPos, orden)
 
@@ -18,15 +21,17 @@ Delta Lake permite evolucionar el schema of una table without romper pIPelines e
 ## 📝 schema_evolution.py
 
 ### 1. Crear table inicial
+
 ```python
 df = spark.read.json("../../../data/raw/transactions.json").limit(1000)
 df.write.format("delta").mode("overwrite").save(path)
 
 # to see schema
 spark.read.format("delta").load(path).printSchema()
-```
+```text
 
 ### 2. Agregar column with mergeSchema
+
 ```python
 # Opción to: Agregar column calculada
 df_with_segment = df.withColumn(
@@ -44,16 +49,18 @@ df_with_segment.write.format("delta") \
 
 # Opción B: Agregar column with valor constante
 df_with_col = df.withColumn("is_validated", lit(False))
-```
+```text
 
 **⚠️ without mergeSchema:**
+
 ```python
 # ❌ Error: Schema mismatch
 df_with_segment.write.format("delta").mode("append").save(path)
 # AnalysisException: to schema mismatch detected when writing to the Delta table
-```
+```text
 
 **✅ with mergeSchema:**
+
 ```python
 # ✅ Funciona
 df_with_segment.write.format("delta") \
@@ -63,6 +70,7 @@ df_with_segment.write.format("delta") \
 ```
 
 ### 3. Cambiar tIPo of column
+
 ```python
 from pyspark.sql.types import DecimalType, StringType, TimestampType
 
@@ -92,14 +100,16 @@ df_retyped.write.format("delta") \
     .mode("overwrite") \
     .option("overwriteSchema", "true") \
     .save(path)
-```
+```text
 
 **⚠️ Importante:**
+
 - Changes of tIPo requieren `overwriteSchema=true`
 - Some changes may cause data loss (ex: String → Int)
 - Always check after change
 
 ### 4. Eliminar columns (Projection)
+
 ```python
 # Delta Lake not he/she has "drop column" físico
 # in su lugar, proyecta only las columns deseadas
@@ -115,9 +125,10 @@ df_filtenetwork.write.format("delta") \
     .save(path)
 
 # ⚠️ Los datas antiguos of las columns eliminadas permanecen hasta VACUUM
-```
+```text
 
 ### 5. to see historial of changes
+
 ```python
 from delta.tables import DeltaTable
 
@@ -136,25 +147,30 @@ history.select(
 # to see details with schema completo
 details = spark.sql(f"DESCRIBE DETAIL delta.`{path}`")
 details.select("name", "location", "numFiles", "sizeInBytes").show(truncate=False)
-```
+```text
 
 ---
 
 ## 🚨 Errores Comunes
 
 ### Error 1: Schema mismatch without mergeSchema
+
 ```
 AnalysisException: to schema mismatch detected when writing to the Delta table
-```
+```text
+
 **Solution:** Add`.option("mergeSchema", "true")`
 
 ### Error 2: Change of tIPo without overwriteSchema
-```
+
+```text
 AnalysisException: Cannot change data type: amount
-```
+```text
+
 **Solution:** Add`.option("overwriteSchema", "true")`
 
 ### Error 3: Incompatibilidad in orden of columns
+
 ```python
 # ❌ MAL - diferentes órdenes
 df1 = spark.createDataFrame([(1, "to")], ["id", "name"])
@@ -168,19 +184,21 @@ df2.write.format("delta").mode("append").option("mergeSchema", "true").save(path
 ```
 
 ### Error 4: data loss in cast
+
 ```python
 # ⚠️ PRECAUCIÓN
 df.withColumn("text_field", col("text_field").cast("int"))  # Nulls if not is numérico
 
 # ✅ MEJOR - validar primero
 df.filter(col("text_field").cast("int").isNotNull())
-```
+```text
 
 ---
 
 ## 📚 Patterns Avanzados
 
 ### Pattern 1: Add multIPle columns
+
 ```python
 df_enhanced = df \
     .withColumn("created_date", current_date()) \
@@ -192,9 +210,10 @@ df_enhanced.write.format("delta") \
     .mode("append") \
     .option("mergeSchema", "true") \
     .save(path)
-```
+```text
 
 ### Pattern 2: Schema Evolution with Merge
+
 ```python
 from delta.tables import DeltaTable
 
@@ -215,9 +234,10 @@ new_df.write.format("delta") \
     .mode("append") \
     .option("mergeSchema", "true") \
     .save(path + "_temp")
-```
+```text
 
 ### Pattern 3: Backward Compatible Schema
+
 ```python
 # Asegurar que lectores antiguos funcionen
 # Usar valores by defecto for nuevas columns
@@ -228,6 +248,7 @@ df_compat = df.fillna({
 ```
 
 ### Pattern 4: Schema Validation
+
 ```python
 # Validar schema antes of escribir
 expected_cols = {"transaction_id", "amount", "timestamp", "status"}
@@ -248,13 +269,14 @@ expected_schema = StructType([
 
 # Aplicar schema
 df_typed = spark.read.schema(expected_schema).json("data.json")
-```
+```text
 
 ---
 
 ## 🎓 Conceptos Avanzados
 
 ### Column Mapping
+
 Delta Lake 2.0+ soporta column mapping for renombrar:
 
 ```python
@@ -271,9 +293,10 @@ spark.sql(f"""
     ALTER TABLE delta.`{path}`
     RENAME COLUMN old_name TO new_name
 """)
-```
+```text
 
 ### Schema Evolution Constraints
+
 ```python
 # Agregar constraints que evolucionan with el schema
 spark.sql(f"""
@@ -284,9 +307,10 @@ spark.sql(f"""
 # to see constraints
 spark.sql(f"DESCRIBE DETAIL delta.`{path}`") \
     .select("constraints").show(truncate=False)
-```
+```text
 
 ### Schema Fingerprinting
+
 ```python
 # Generar fingerprint of the schema for tracking
 import hashlib

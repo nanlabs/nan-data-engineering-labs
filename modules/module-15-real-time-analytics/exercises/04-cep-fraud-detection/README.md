@@ -1,6 +1,7 @@
 # Exercise 04: CEP Fraud Detection
 
 ## Overview
+
 Implement Complex Event Processing (CEP) using Apache Flink to detect fraud patterns in real-time transaction streams using pattern matching and sequence detection.
 
 **Difficulty**: ⭐⭐⭐ Advanced
@@ -27,7 +28,7 @@ Implement Complex Event Processing (CEP) using Apache Flink to detect fraud patt
 
 ## Architecture
 
-```
+```text
 ┌──────────────────┐     ┌────────────────────┐     ┌──────────────┐
 │  Kinesis Stream  │────>│   Flink CEP        │────>│     SNS      │
 │  (transactions)  │     │  Pattern Matcher   │     │ (fraud-alert)│
@@ -39,17 +40,20 @@ Implement Complex Event Processing (CEP) using Apache Flink to detect fraud patt
                          │   DynamoDB     │          │ (for review) │
                          │ fraud-detections│         └──────────────┘
                          └────────────────┘
-```
+```text
 
 ## Pattern Definitions
 
 ### Pattern 1: Failed Payment + Success
+
 Detect: 3-5 failed payments followed by 1 success within 10 minutes (potential card testing)
 
 ### Pattern 2: Rapid Geographic Movement
+
 Detect: Purchases from 3+ different countries within 1 hour (impossible travel)
 
 ### Pattern 3: Unusual Amount Spike
+
 Detect: Average transaction increases 10x suddenly (account takeover)
 
 ## Task 1: Setup CEP Environment (15 minutes)
@@ -187,7 +191,7 @@ if __name__ == '__main__':
     register_transaction_source(table_env)
     register_fraud_sink(table_env)
     print("✓ CEP environment ready")
-```
+```text
 
 ## Task 2: Pattern 1 - Card Testing Detection (25 minutes)
 
@@ -378,7 +382,7 @@ SELECT
     ARRAY[first_transaction, last_transaction] AS transaction_ids,
     CURRENT_TIMESTAMP AS detection_timestamp
 FROM geographic_fraud;
-```
+```text
 
 **Python wrapper**:
 
@@ -414,7 +418,7 @@ def run_geographic_anomaly_detection():
 
 if __name__ == '__main__':
     run_geographic_anomaly_detection()
-```
+```text
 
 ## Task 4: Pattern 3 - Amount Spike Detection (25 minutes)
 
@@ -548,7 +552,7 @@ def run_amount_spike_detection():
 
 if __name__ == '__main__':
     run_amount_spike_detection()
-```
+```text
 
 ## Task 5: Main Orchestrator (15 minutes)
 
@@ -804,7 +808,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-```
+```text
 
 ## Task 7: Deploy and Validate (15 minutes)
 
@@ -822,7 +826,7 @@ python main_cep.py --pattern all
 
 # In separate terminal: Generate test data
 python generate_fraud_data.py
-```
+```text
 
 **Validation**:
 
@@ -846,7 +850,7 @@ awslocal dynamodb scan \
 awslocal dynamodb scan \
     --table-name fraud-detections | \
     jq '.Items[] | .pattern_name.S' | sort | uniq -c
-```
+```text
 
 ## Validation Checklist
 
@@ -864,12 +868,14 @@ awslocal dynamodb scan \
 ## Expected Results
 
 **Fraud Distribution**:
+
 - card_testing: 5 detections
 - geographic_anomaly: 3 detections
 - amount_spike: 2 detections
 - Total: 10 fraud events detected
 
 **Sample Fraud Alert**:
+
 ```json
 {
   "fraud_id": "card_test_fraud_card_0_1704067200",
@@ -898,11 +904,12 @@ curl http://localhost:8081/jobs/<job-id>/metrics?get=watermark
 
 # Check state size
 curl http://localhost:8081/jobs/<job-id>/metrics?get=State.Size
-```
+```text
 
 ### Problem: False positives
 
 Adjust thresholds in detector code:
+
 - Card testing: Change required failures from 3 to 4
 - Geographic: Reduce time window from 1 hour to 30 minutes
 - Amount spike: Increase multiplier from 10x to 15x
@@ -915,7 +922,7 @@ awslocal kinesis describe-stream --stream-name transaction-stream
 
 # Check consumer lag
 awslocal kinesis get-records --shard-iterator ... --limit 5
-```
+```text
 
 ## Key Learnings
 

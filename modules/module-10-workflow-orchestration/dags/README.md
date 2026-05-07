@@ -4,7 +4,7 @@ Este directorio contiene DAGs de ejemplo para cada exercise del module. Estos ar
 
 ## 📁 Estructura
 
-```
+```text
 dags/
 ├── ex01_hello_world.py          # Exercise 01: Primer DAG básico
 ├── ex01_etl_pipeline.py          # Exercise 01: Pipeline ETL con XComs
@@ -12,14 +12,16 @@ dags/
 ├── ex03_branching.py             # Exercise 03: Branching condicional
 ├── ex04_api_pipeline.py          # Exercise 04: Pipeline API→DB
 └── ex05_monitoring.py            # Exercise 05: Monitoreo y alertas
-```
+```text
 
 ## 🎯 Description de DAGs
 
 ### 1. ex01_hello_world.py
+
 **Conceptos**: DAG básico, PythonOperator, BashOperator, dependencias simples
 
 Primer DAG de introducción que muestra:
+
 - Configuration básica de un DAG
 - PythonOperator para execute funciones Python
 - BashOperator para comandos shell
@@ -30,9 +32,11 @@ Primer DAG de introducción que muestra:
 **Tags**: `exercise`, `basico`, `ejemplo`
 
 ### 2. ex01_etl_pipeline.py
+
 **Conceptos**: Pipeline ETL, XComs, step de datos entre tasks
 
 Pipeline ETL completo que demuestra:
+
 - Extracción de datos (simulado)
 - Transformación con lógica de negocio
 - Carga de datos transformados
@@ -43,9 +47,11 @@ Pipeline ETL completo que demuestra:
 **Tags**: `exercise`, `etl`, `xcoms`
 
 ### 3. ex02_multi_operators.py
+
 **Conceptos**: Múltiples tipos de operadores, callbacks, trigger rules
 
 Demuestra el uso de varios operadores:
+
 - PythonOperator para procesamiento
 - BashOperator para comandos del sistema
 - Diferentes configuraciones de retry
@@ -56,9 +62,11 @@ Demuestra el uso de varios operadores:
 **Tags**: `exercise`, `operadores`
 
 ### 4. ex03_branching.py
+
 **Conceptos**: Branching condicional, BranchPythonOperator, trigger rules avanzados
 
 Pipeline con lógica condicional:
+
 - BranchPythonOperator para decisiones
 - Múltiples rutas de ejecución
 - Trigger rule `none_failed_min_one_success` para consolidación
@@ -68,9 +76,11 @@ Pipeline con lógica condicional:
 **Tags**: `exercise`, `branching`, `avanzado`
 
 ### 5. ex04_api_pipeline.py
+
 **Conceptos**: ETL real, integración con APIs, manejo de errores
 
 Pipeline ETL completo con API real:
+
 - Extracción desde JSONPlaceholder API
 - Transformación de datos (joins, agregaciones)
 - Simulación de carga a base de datos
@@ -81,9 +91,11 @@ Pipeline ETL completo con API real:
 **Tags**: `exercise`, `etl`, `api`, `pipeline`
 
 ### 6. ex05_monitoring.py
+
 **Conceptos**: Monitoreo, SLAs, callbacks, observabilidad
 
 DAG con monitoreo completo:
+
 - SLA tracking (5 minutes global, 3 minutes para task crítico)
 - Callbacks personalizados (success, failure, retry)
 - Callback de violación de SLA
@@ -105,7 +117,7 @@ cp dags/*.py $AIRFLOW_HOME/dags/
 
 # O copiar individualmente
 cp dags/ex01_hello_world.py $AIRFLOW_HOME/dags/
-```
+```text
 
 ### Opción 2: Usar con Docker Compose
 
@@ -135,15 +147,17 @@ airflow tasks list ex01_hello_world
 
 # Probar un task específico
 airflow tasks test ex01_hello_world hello_task 2024-01-01
-```
+```text
 
 ## 📊 Dependencias
 
 Todos los DAGs requieren:
+
 - **Apache Airflow**: 2.8.1+
 - **Python**: 3.8+
 
 DAGs específicos requieren:
+
 - `ex04_api_pipeline.py`: `requests` library
 - Pipeline con DB: `psycopg2-binary`, `apache-airflow-providers-postgres`
 - Pipeline con S3: `boto3`, `apache-airflow-providers-amazon`
@@ -152,7 +166,7 @@ Instalar todas las dependencias:
 
 ```bash
 pip install -r ../requirements.txt
-```
+```text
 
 ## 🧪 Testing
 
@@ -161,9 +175,10 @@ Ejecutar tests de validation de DAGs:
 ```bash
 cd ../validation
 pytest test_module.py -v
-```
+```text
 
 Tests incluyen:
+
 - ✅ No import errors
 - ✅ No cycles en DAGs
 - ✅ Todos los DAGs tienen tags
@@ -182,6 +197,7 @@ Tests incluyen:
 ## 💡 Tips
 
 ### Debugging
+
 ```bash
 # Ver logs de un task
 airflow tasks logs ex01_hello_world hello_task 2024-01-01
@@ -191,12 +207,14 @@ airflow dags delete ex01_hello_world
 ```
 
 ### Performance
+
 - Usa `catchup=False` para evitar backfilling
 - Define SLAs apropiados
 - Implement idempotencia en tasks
 - Usa pools para limitar concurrencia
 
 ### Producción
+
 - Siempre define `owner`
 - Configure `retries` y `retry_delay`
 - Implement callbacks de error
@@ -212,16 +230,19 @@ airflow dags delete ex01_hello_world
 ## ❓ Troubleshooting
 
 **DAG no aparece en la UI**
+
 - Verify que no hay errores de sintaxis: `python dags/tu_dag.py`
 - Revisa import errors en Admin → Import Errors
 - Asegúrate que el archivo está en `$AIRFLOW_HOME/dags/`
 
 **Task falla**
+
 - Revisa logs en la UI o con `airflow tasks logs`
 - Verify dependencias instaladas
 - Comprueba configuration de connections/variables
 
 **SLA violation**
+
 - Ajusta los tiempos de SLA según tu entorno
 - Revisa que tasks no están bloqueados
 - Verify recursos del sistema (CPU, memoria)

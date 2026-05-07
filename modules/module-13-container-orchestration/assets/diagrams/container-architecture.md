@@ -42,7 +42,7 @@ flowchart LR
     style VM fill:#FFF3E0
     style Containers fill:#E8F5E9
     style Orchestration fill:#E1F5FF
-```
+```text
 
 ## Arquitectura Completa: Docker + ECS + EKS
 
@@ -123,7 +123,7 @@ flowchart TB
     style ECS fill:#87CEEB
     style EKS fill:#E1F5FF
     style DataPlatform fill:#FFF3E0
-```
+```text
 
 ## Docker: Multi-Stage Build para Data Engineering
 
@@ -158,7 +158,7 @@ flowchart TB
     style Stage1 fill:#FFE1E1
     style Stage2 fill:#E8F5E9
     style Final fill:#90EE90
-```
+```text
 
 ## ECS Fargate: Arquitectura de Task y Service
 
@@ -279,7 +279,7 @@ flowchart TB
 
     style ControlPlane fill:#FFD700
     style DataPlane fill:#E8F5E9
-```
+```text
 
 ## Spark on Kubernetes con Spark Operator
 
@@ -343,7 +343,7 @@ flowchart TB
     style Operator fill:#FFD700
     style DriverPod fill:#87CEEB
     style ExecutorPods fill:#E8F5E9
-```
+```text
 
 ## Comparación: ECS vs EKS vs Lambda
 
@@ -389,7 +389,7 @@ flowchart TB
     style Lambda fill:#FFD700
     style ECS fill:#87CEEB
     style EKS fill:#E8F5E9
-```
+```text
 
 ## Monitoring Stack para Contenedores
 
@@ -460,6 +460,7 @@ flowchart TB
 ## Uso
 
 Estos diagramas muestran:
+
 1. Evolución de infraestructura: servidores → VMs → contenedores → orquestación
 2. Arquitectura completa con Docker, ECS y EKS
 3. Multi-stage builds para optimización de imágenes

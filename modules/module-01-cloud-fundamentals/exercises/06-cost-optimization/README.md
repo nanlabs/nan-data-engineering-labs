@@ -14,6 +14,7 @@
 ### AWS Cost Management
 
 **4 Pilares:**
+
 1. **Measure:** CloudWatch Metrics, Cost Explorer
 2. **Monitor:** Budgets, Alarms
 3. **Optimize:** Right-sizing, lifecycle policies
@@ -32,7 +33,7 @@ cloudwatch.put_metric_data(
         'Timestamp': datetime.utcnow()
     }]
 )
-```
+```text
 
 ### Cost Optimization Strategies
 
@@ -60,7 +61,7 @@ def create_storage_alarm(metric_name: str, threshold: int):
     # TODO: Create alarm when storage > threshold
     # TODO: Send SNS notification
     pass
-```
+```text
 
 ### Step 2: Implement Cost Budgets
 
@@ -71,7 +72,7 @@ def create_monthly_budget(amount: float):
     # TODO: Set alerts at 80%, 100%, 120%
     # TODO: Send email notifications
     pass
-```
+```text
 
 ### Step 3: Analizar Storage Patterns
 
@@ -100,7 +101,7 @@ python3 apply_lifecycle.py
 # ✓ 7,000 objects older than 30 days → STANDARD_IA (save $87/month)
 # ✓ 2,000 objects older than 90 days → GLACIER (save $46/month)
 # Total potential savings: $133/month (58%)
-```
+```text
 
 ### Step 5: Configure Dashboards
 
@@ -123,7 +124,7 @@ dashboard_body = {
         }
     ]
 }
-```
+```text
 
 ## 🧪 Validation
 
@@ -137,7 +138,7 @@ python3 test_cost_optimization.py
 # ✓ Budget created ($500/month with 80% alert)
 # ✓ Lifecycle policy applied (estimated savings: 58%)
 # ✓ Dashboard created with 4 widgets
-```
+```text
 
 ## 📊 Cost Analysis Report
 
@@ -155,7 +156,7 @@ After Optimization:
   Total: $115/month
 
 💰 Savings: $135/month (54% reduction)
-```
+```text
 
 ## 📚 Deliverables
 
@@ -168,6 +169,7 @@ After Optimization:
 ## 💡 Real-World Tips
 
 **Tagging Strategy:**
+
 ```python
 tags = [
     {'Key': 'Project', 'Value': 'DataLake'},
@@ -175,14 +177,15 @@ tags = [
     {'Key': 'CostCenter', 'Value': 'Engineering'},
     {'Key': 'Owner', 'Value': 'data-team@quickmart.com'}
 ]
-```
+```text
 
 **Compression Savings:**
+
 ```bash
 # Before: 10 GB raw JSON
 # After: 2 GB Parquet with Snappy
 # Savings: 80% storage + 80% scan costs (Athena)
-```
+```text
 
 ---
 

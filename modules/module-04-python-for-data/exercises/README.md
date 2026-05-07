@@ -4,7 +4,7 @@ This folder contains 6 progressive exercises designed to build Python skills app
 
 ## Structure de Exercises
 
-```
+```text
 exercises/
 ├── 01-python-basics/           # Fundamentos de Python
 ├── 02-data-structures/         # Listas, dicts, comprehensions
@@ -12,7 +12,7 @@ exercises/
 ├── 04-pandas-fundamentals/     # DataFrames y operaciones
 ├── 05-data-transformation/     # ETL, joins, aggregations
 └── 06-error-handling/          # Logging, excepciones, produccion
-```
+```text
 
 ## How to Use the Exercises
 
@@ -23,9 +23,11 @@ exercises/
    - Busca los comentarios `# TODO:`
    - Implementa las funciones marcadas
 3. **Run tests**: Verify your solution
+
    ```bash
    pytest exercises/01-python-basics/tests/ -v
    ```
+
 4. **Comparar con solution**: Si te atoras, revisa `solution/`
 5. **Repetir con ejemplos**: Explora `examples/` para casos avanzados
 
@@ -51,17 +53,20 @@ exercises/
 **Difficulty**: ⭐☆☆☆☆
 
 **Temas**:
+
 - Variables y tipos de data
 - Features and documentation
 - Control de flujo (if/else, loops)
 - Basic operations with strings and numbers
 
 **Objectives**:
+
 - Escribir funciones con type hints
 - Document code with docstrings
 - Handle edge cases (empty values, None)
 
 **Files**:
+
 - `README.md`- Theory
 - `starter/basics.py`- Your code here
 - `solution/basics.py`- Complete solution
@@ -75,6 +80,7 @@ exercises/
 **Difficulty**: ⭐⭐☆☆☆
 
 **Temas**:
+
 - Listas y tuplas
 - Diccionarios y sets
 - List comprehensions
@@ -82,11 +88,13 @@ exercises/
 - Nested structures
 
 **Objectives**:
+
 - Manipular estructuras de data eficientemente
 - Use comprehensions for concise code
 - Trabajar con data nested
 
 **Files**:
+
 - `README.md`- Theory
 - `starter/data_structures.py`- Your code here
 - `solution/data_structures.py`- Complete solution
@@ -101,6 +109,7 @@ exercises/
 **Difficulty**: ⭐⭐⭐☆☆
 
 **Temas**:
+
 - Leer/escribir files de texto
 - CSV con csv module
 - JSON con json module
@@ -108,12 +117,14 @@ exercises/
 - Context managers
 
 **Objectives**:
+
 - Handle multiple file formats
 - Usar encoding correcto (UTF-8)
 - Implementar error handling robusto
 - Work with real module data
 
 **Files**:
+
 - `README.md`- Theory
 - `starter/file_io.py`- Your code here
 - `solution/file_io.py`- Complete solution
@@ -127,6 +138,7 @@ exercises/
 **Difficulty**: ⭐⭐⭐☆☆
 
 **Temas**:
+
 - Crear DataFrames
 - Selection and filtering
 - Agregaciones y groupby
@@ -134,12 +146,14 @@ exercises/
 - Basic data cleaning
 
 **Objectives**:
+
 - Dominar operaciones core de pandas
 - Limpiar data sucios (nulls, duplicados)
 - Perform exploratory analysis
 - Use real data from the module
 
 **Files**:
+
 - `README.md`- Theory
 - `starter/pandas_basics.py`- Your code here
 - `solution/pandas_basics.py`- Complete solution
@@ -154,6 +168,7 @@ exercises/
 **Difficulty**: ⭐⭐⭐⭐☆
 
 **Temas**:
+
 - ETL pipelines
 - Flatten nested JSON
 - Joins complejos (inner, left, right, outer)
@@ -161,12 +176,14 @@ exercises/
 - Data validation
 
 **Objectives**:
+
 - Construir pipeline ETL completo
 - Normalizar estructuras nested
 - Integrate multiple datasets
 - Calculate business metrics
 
 **Files**:
+
 - `README.md`- Theory
 - `starter/transformation.py`- Your code here
 - `solution/transformation.py`- Complete solution
@@ -181,6 +198,7 @@ exercises/
 **Difficulty**: ⭐⭐⭐⭐☆
 
 **Temas**:
+
 - Try/except/finally
 - Excepciones personalizadas
 - Logging estructurado
@@ -188,12 +206,14 @@ exercises/
 - Retry logic
 
 **Objectives**:
+
 - Write production-ready code
 - Manejar errores elegantemente
 - Implement useful logging
 - Validate data con schemas
 
 **Files**:
+
 - `README.md`- Theory
 - `starter/error_handling.py`- Your code here
 - `solution/error_handling.py`- Complete solution
@@ -212,20 +232,20 @@ pytest exercises/ -v
 
 # Con coverage
 pytest exercises/ --cov=exercises --cov-report=html
-```
+```text
 
 ### Run tests for a specific exercise
 
 ```bash
 pytest exercises/01-python-basics/tests/ -v
 pytest exercises/04-pandas-fundamentals/tests/ -v
-```
+```text
 
 ### Run a specific test
 
 ```bash
 pytest exercises/01-python-basics/tests/test_basics.py::test_suma -v
-```
+```text
 
 ### Run tests con output detallado
 
@@ -238,15 +258,18 @@ pytest exercises/ -v -s  # -s muestra prints
 ## Progreso Sugerido
 
 ### Semana 1: Fundamentos
+
 - ✅ Day 1-2: Exercise 01 (Python Basics)
 - ✅ Day 3-4: Exercise 02 (Data Structures)
 - ✅ Day 5-6: Exercise 03 (File Operations)
 
 ### Semana 2: Pandas y ETL
+
 - ✅ Day 1-3: Exercise 04 (Pandas Fundamentals)
 - ✅ Day 4-6: Exercise 05 (Data Transformation)
 
 ### Semana 3: Production
+
 - ✅ Day 1-2: Exercise 06 (Error Handling)
 - ✅ Day 3-5: Final project (combine everything)
 
@@ -282,16 +305,19 @@ pytest exercises/ -v -s  # -s muestra prints
 ## resources Adicionales
 
 ### Official Documentation
+
 - [Python Tutorial](https://docs.python.org/3/tutorial/)
 - [Pandas User Guide](https://pandas.pydata.org/docs/user_guide/)
 - [pytest Documentation](https://docs.pytest.org/)
 
 ### Module Theory
+
 - `theory/concepts.md` - Fundamentos de Python
 - `theory/architecture.md`- Design patterns
 - `theory/resources.md` - 200+ resources externos
 
 ### Practice Data
+
 - `data/README.md`- Complete dataset documentation
 - `data/schemas/` - Schemas JSON con validaciones
 
@@ -307,7 +333,7 @@ pytest exercises/01-python-basics/tests/ -v -s
 
 # Ver que linea falla exactamente
 pytest exercises/01-python-basics/tests/ --tb=long
-```
+```text
 
 ### Import errors
 
@@ -317,7 +343,7 @@ cd /path/to/module-04-python-for-data
 
 # O ajustar PYTHONPATH
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-```
+```text
 
 ### Data no encontrados
 
@@ -327,7 +353,7 @@ ls -lh data/raw/
 
 # Regenerar si es necesario
 cd data && python3 generate_all_datasets.py
-```
+```text
 
 ### Pandas no instalado
 
@@ -376,6 +402,7 @@ After completing the 6 exercises, build a **complete ETL pipeline**:
 **Objective**: Procesar todos los datasets y generar un reporte de negocio
 
 **Requerimientos**:
+
 1. Leer los 5 datasets (CSV, JSON)
 2. Limpiar data (duplicados, nulls, inconsistencias)
 3. Integrar con joins (customers ← orders ← transactions)

@@ -7,7 +7,8 @@
 
 ```python
 df = spark.read.json("../../../data/raw/transactions.json")
-```
+```text
+
 </details>
 
 <details>
@@ -20,7 +21,8 @@ df_bronze = df \
     .withColumn("ingestion_timestamp", current_timestamp()) \
     .withColumn("source_file", lit("transactions.json")) \
     .withColumn("ingestion_date", to_date(col("ingestion_timestamp")))
-```
+```text
+
 </details>
 
 <details>
@@ -32,7 +34,8 @@ df_bronze.write \
     .mode("append") \
     .partitionBy("ingestion_date") \
     .save("s3a://bronze/transactions_medallion")
-```
+```text
+
 </details>
 
 ## Silver Layer
@@ -43,6 +46,7 @@ df_bronze.write \
 ```python
 df_dedup = df.dropDuplicates(["transaction_id"])
 ```
+
 </details>
 
 <details>
@@ -54,7 +58,8 @@ df_valid = df.filter(
     (col("amount") > 0) & 
     (col("timestamp").isNotNull())
 )
-```
+```text
+
 </details>
 
 <details>
@@ -64,7 +69,8 @@ df_valid = df.filter(
 df_normalized = df \
     .withColumn("status", lower(trim(col("status")))) \
     .withColumn("currency", upper(trim(col("currency"))))
-```
+```text
+
 </details>
 
 ## Gold Layer
@@ -78,7 +84,8 @@ df_gold = df.groupBy("date", "country").agg(
     sum("amount").alias("total_amount"),
     avg("amount").alias("avg_amount")
 )
-```
+```text
+
 </details>
 
 <details>
@@ -92,6 +99,7 @@ from pyspark.sql.functions import when
     count(when(col("status") == "failed", 1)).alias("num_failed")
 )
 ```
+
 </details>
 
 <details>
@@ -104,5 +112,6 @@ from pyspark.sql.functions import expr
     expr("percentile_approx(amount, 0.5)").alias("p50_amount"),
     expr("percentile_approx(amount, 0.9)").alias("p90_amount")
 )
-```
+```text
+
 </details>

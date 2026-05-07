@@ -18,6 +18,7 @@
 **Serverless computing** es un modelo de computación en la nube donde el proveedor gestiona automáticamente la infraestructura servers. El desarrollador solo se enfoca en el código.
 
 **⚠️ "Serverless" NO significa "sin servidores"**
+
 - Los servidores existen, pero NO los gestionas tú
 - El proveedor cloud se encarga de provisioning, scaling, patching
 - Pagas solo por el tiempo de ejecución real
@@ -62,6 +63,7 @@
 ### Casos de Uso Ideales
 
 ✅ **Perfecto para**:
+
 - APIs REST/GraphQL
 - Procesamiento de eventos (file uploads, DynamoDB streams)
 - ETL y data transformation jobs
@@ -73,6 +75,7 @@
 - IoT backends
 
 ❌ **No ideal para**:
+
 - Aplicaciones con tráfico constante 24/7 (más caro que EC2)
 - Procesos de larga duración (>15 minutes)
 - Aplicaciones con cold start crítico (<100ms latency required)
@@ -110,7 +113,7 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps(result)
     }
-```
+```text
 
 #### 2. Event (Evento)
 
@@ -125,7 +128,7 @@ JSON que contiene datos del trigger:
     }
   }]
 }
-```
+```text
 
 #### 3. Context
 
@@ -137,7 +140,7 @@ def lambda_handler(event, context):
     print(f"Function name: {context.function_name}")
     print(f"Memory: {context.memory_limit_in_mb} MB")
     print(f"Time remaining: {context.get_remaining_time_in_millis()} ms")
-```
+```text
 
 ### Runtimes Soportados
 
@@ -218,7 +221,7 @@ def lambda_handler(event, context):
 
 ### Lambda Lifecycle
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │  1. COLD START (Primera invocación)         │
 │     ├─ Descargar código                     │
@@ -247,7 +250,7 @@ def lambda_handler(event, context):
 │     └─ Container destruido                  │
 │        Próxima invocación = COLD START      │
 └─────────────────────────────────────────────┘
-```
+```text
 
 ### Optimizar Cold Starts
 
@@ -269,7 +272,7 @@ s3 = boto3.client('s3')  # Cliente reutilizado entre invocaciones
 def lambda_handler(event, context):
     # Solo lógica de negocio aquí
     # ...
-```
+```text
 
 ---
 
@@ -280,20 +283,22 @@ def lambda_handler(event, context):
 En arquitectura event-driven, los componentes reaccionan a **eventos** en lugar de llamarse directamente.
 
 **Ejemplo tradicional (synchronous)**:
+
 ```
 API Request → Lambda 1 → Lambda 2 → Lambda 3 → Response
 (Cada uno espera al siguiente)
-```
+```text
 
 **Event-driven (asynchronous)**:
-```
+
+```text
 API Request → SQS Queue
                  │
                  ├→ Lambda 1 (procesa async)
                  ├→ Lambda 2 (procesa async)
                  └→ Lambda 3 (procesa async)
 Response inmediato
-```
+```text
 
 ### Patrones de Invocación Lambda
 
@@ -317,6 +322,7 @@ print(result)
 ```
 
 **Casos de uso**:
+
 - API Gateway
 - Cognito triggers
 - SDK invocations
@@ -332,9 +338,10 @@ response = lambda_client.invoke(
     Payload=json.dumps({'key': 'value'})
 )
 # Retorna inmediatamente, Lambda se ejecuta después
-```
+```text
 
 **Casos de uso**:
+
 - S3 events
 - SNS messages
 - EventBridge events
@@ -345,11 +352,12 @@ response = lambda_client.invoke(
 
 Lambda hace polling de una cola/stream:
 
-```
+```text
 SQS Queue → [Lambda polls every second] → Lambda procesa batch
-```
+```text
 
 **Casos de uso**:
+
 - SQS queues
 - Kinesis streams
 - DynamoDB streams
@@ -392,7 +400,7 @@ SQS Queue → [Lambda polls every second] → Lambda procesa batch
 
 ```python
 # Si tu proceso toma 2 minutes, configure timeout de 2.5 minutes
-```
+```text
 
 #### Environment Variables
 
@@ -406,35 +414,39 @@ def lambda_handler(event, context):
     environment = os.environ['ENVIRONMENT']  # dev, staging, prod
 
     print(f"Conectando a {db_host} en entorno {environment}")
-```
+```text
 
 ### Networking
 
 #### Sin VPC (default)
 
-```
+```text
 Lambda → Internet → AWS Services (S3, DynamoDB, etc.)
 ```
 
 **Ventajas**:
+
 - ✅ No cold start adicional
 - ✅ Internet access por defecto
 - ✅ Acceso a servicios AWS públicos
 
 **Desventajas**:
+
 - ❌ No puede acceder a recursos en VPC (RDS, ElastiCache)
 
 #### Con VPC
 
-```
+```text
 Lambda → VPC → Private Subnet → RDS/ElastiCache
-```
+```text
 
 **Ventajas**:
+
 - ✅ Acceso a recursos privados (RDS, ElastiCache, EC2)
 - ✅ Mayor seguridad
 
 **Desventajas**:
+
 - ❌ Cold start más lento (~10 segundos adicionales antes)
 - ❌ Requiere NAT Gateway para internet ($$$)
 
@@ -477,7 +489,7 @@ Lambda necesita permisos para acceder a AWS services:
     }
   ]
 }
-```
+```text
 
 **Principio de least privilege**: Solo dar permisos mínimos necesarios.
 
@@ -494,9 +506,10 @@ Lambda necesita permisos para acceder a AWS services:
 │   Layer 2: pandas, numpy        │
 │   Layer 1: requests             │
 └─────────────────────────────────┘
-```
+```text
 
 **Ventajas**:
+
 - ✅ Reutilizar dependencias (pandas, numpy)
 - ✅ Reducir tamaño del deployment package
 - ✅ Separar código de negocio de dependencias
@@ -517,19 +530,20 @@ aws lambda publish-layer-version \
     --layer-name pandas-numpy \
     --zip-file fileb://pandas-layer.zip \
     --compatible-runtimes python3.11
-```
+```text
 
 ### Concurrency
 
 **Concurrent executions**: Número de invocaciones ejecutándose simultáneamente.
 
-```
+```text
 Request 1 → Lambda Instance 1  ┐
 Request 2 → Lambda Instance 2  ├─ 3 concurrent executions
 Request 3 → Lambda Instance 3  ┘
 ```
 
 **Límites**:
+
 - Default concurrency: 1000 por región
 - Puede solicitar aumento
 - Reserved concurrency: Garantizar X instancias para función crítica
@@ -557,7 +571,7 @@ def lambda_handler(event, context):
             process_csv(bucket, key)
         elif key.endswith('.json'):
             process_json(bucket, key)
-```
+```text
 
 **Configuration**: S3 Bucket → Properties → Event notifications → Lambda function
 
@@ -581,7 +595,7 @@ def lambda_handler(event, context):
     }
   }]
 }
-```
+```text
 
 ### SQS (Queue)
 
@@ -601,9 +615,10 @@ def lambda_handler(event, context):
             # Si falla, mensaje vuelve a la cola
             print(f"Error: {e}")
             raise e
-```
+```text
 
 **Ventajas**:
+
 - ✅ Retry automático
 - ✅ Dead Letter Queue (DLQ) para mensajes fallidos
 - ✅ Batch processing (hasta 10 mensajes por invocación)
@@ -621,13 +636,14 @@ def lambda_handler(event, context):
 ```
 
 **Cron expression**:
-```
+
+```text
 rate(5 minutes)           # Cada 5 minutes
 rate(1 hour)              # Cada hora
 rate(1 day)               # Cada día
 cron(0 9 * * ? *)         # Todos los days a las 9 AM UTC
 cron(0 18 ? * MON-FRI *)  # Lunes a viernes a las 6 PM
-```
+```text
 
 ### DynamoDB Streams
 
@@ -648,7 +664,7 @@ def lambda_handler(event, context):
         elif record['eventName'] == 'REMOVE':
             old_item = record['dynamodb']['OldImage']
             print(f"Eliminado: {old_item}")
-```
+```text
 
 ---
 
@@ -672,9 +688,10 @@ Duration: 1M × 0.5s × (1024/1024 GB) = 500,000 GB-s
           500,000 × $0.0000166667 = $8.33
 
 Total: $8.53/mes
-```
+```text
 
 **Free Tier (permanente)**:
+
 - 1 millón de requests gratis/mes
 - 400,000 GB-segundos gratis/mes
 
@@ -693,6 +710,7 @@ Total: $8.53/mes
 ### Best Practices
 
 ✅ **DO**:
+
 - Usar environment variables para configuration
 - Implementar idempotencia (misma entrada = mismo resultado)
 - Usar DLQ (Dead Letter Queue) para errores
@@ -702,6 +720,7 @@ Total: $8.53/mes
 - Usar async cuando sea posible
 
 ❌ **DON'T**:
+
 - No procesar más de 15 minutes (usar Step Functions)
 - No mantener estado en el código (usar DynamoDB/S3)
 - No hardcodear credenciales

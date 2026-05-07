@@ -4,7 +4,7 @@ This directory contains database schemas, sample data, and migration scripts for
 
 ## 📁 Estructura
 
-```
+```text
 data/
 ├── schemas/              # Definiciones DDL de tablas
 │   ├── 01_users.sql
@@ -20,31 +20,35 @@ data/
 │   ├── 002_add_product_ratings.sql
 │   └── 003_add_order_tracking.sql
 └── README.md            # Este archivo
-```
+```text
 
 ## 🗄️ Schemas
 
 Los archivos en `schemas/` contienen las definiciones DDL (Data Definition Language) de cada table:
 
 ### 01_users.sql
+
 **table**: `users`
 **Description**: User account information
 **columns clave**: user_id (PK), email (unique), country, loyalty_points
 **indexes**: email, country, registration_date, is_active
 
 ### 02_products.sql
+
 **table**: `products`
 **Description**: Product catalog with prices and inventory
 **columns clave**: product_id (PK), product_name, category, price, stock_quantity
 **indexes**: category, price, product_name (trigram for fuzzy search)
 
 ### 03_orders.sql
+
 **table**: `orders`
 **Description**: Customer orders with status and totals
 **columns clave**: order_id (PK), user_id (FK), order_date, total_amount, status
 **indexes**: user_id, order_date, status, composite (user_id, order_date)
 
 ### 04_order_items.sql
+
 **table**: `order_items`
 **Description**: Product lines in each order (union table)
 **columns clave**: order_item_id (PK), order_id (FK), product_id (FK), quantity, subtotal
@@ -52,6 +56,7 @@ Los archivos en `schemas/` contienen las definiciones DDL (Data Definition Langu
 **Unique constraint**: (order_id, product_id) to prevent duplicates
 
 ### 05_user_activity.sql
+
 **table**: `user_activity`
 **Description**: User event log for analytics
 **columns clave**: activity_id (PK), user_id (FK), activity_type, details (JSONB)
@@ -68,6 +73,7 @@ Los archivos CSV en `seeds/` contain sample data for testing and development:
 - **Formato**: CSV con headers
 
 ### products.csv
+
 - **Registros**: 10 productos de muestra
 - **Categories**: Electronics, Books, Furniture, Sports
 - **Use**: Testing aggregations, filters by category
@@ -80,7 +86,7 @@ psql -h localhost -U dataengineer -d ecommerce -c "\COPY users FROM 'data/seeds/
 
 # Cargar productos
 psql -h localhost -U dataengineer -d ecommerce -c "\COPY products FROM 'data/seeds/products.csv' CSV HEADER"
-```
+```text
 
 O usando Python:
 
@@ -145,7 +151,7 @@ for f in data/migrations/*.sql; do
     echo "Aplicando $f..."
     psql -h localhost -U dataengineer -d ecommerce -f "$f"
 done
-```
+```text
 
 ### Rollback Migrations
 
@@ -157,7 +163,7 @@ tail -n 10 data/migrations/001_add_user_preferences.sql
 
 # Execute rollback manually
 psql -h localhost -U dataengineer -d ecommerce -c "ALTER TABLE users DROP COLUMN IF EXISTS preferences;"
-```
+```text
 
 ## 🔧 Common Use
 
@@ -179,7 +185,7 @@ EOF
 for f in data/schemas/*.sql; do
     psql -h localhost -U dataengineer -d ecommerce -f "$f"
 done
-```
+```text
 
 ### Verificar Estructura
 
@@ -208,7 +214,7 @@ psql -h localhost -U dataengineer -d ecommerce -c "\COPY users TO 'users_export.
 
 # Exportar con query personalizado
 psql -h localhost -U dataengineer -d ecommerce -c "\COPY (SELECT * FROM users WHERE country = 'US') TO 'us_users.csv' CSV HEADER"
-```
+```text
 
 ## 📈 Data Metrics
 
@@ -223,7 +229,7 @@ SELECT
 FROM pg_tables
 WHERE schemaname = 'public'
 ORDER BY size_bytes DESC;
-```
+```text
 
 ### Conteo de Registros
 
@@ -238,7 +244,7 @@ UNION ALL
 SELECT 'order_items', COUNT(*) FROM order_items
 UNION ALL
 SELECT 'user_activity', COUNT(*) FROM user_activity;
-```
+```text
 
 ### Index statistics
 
@@ -303,7 +309,7 @@ ORDER BY idx_scan DESC;
 ```sql
 -- Usar IF NOT EXISTS en schemas
 CREATE TABLE IF NOT EXISTS users (...);
-```
+```text
 
 ### Error: Foreign key violation
 
@@ -313,7 +319,7 @@ CREATE TABLE IF NOT EXISTS users (...);
 -- 2. orders (FK a users)
 -- 3. order_items (FK a orders, products)
 -- 4. user_activity (FK a users, products)
-```
+```text
 
 ### Error: CSV import fallido
 
@@ -326,14 +332,14 @@ file -i data/seeds/users.csv  # debe ser utf-8
 
 # Usar opciones adicionales de COPY
 \COPY users FROM 'data/seeds/users.csv' CSV HEADER DELIMITER ',' NULL 'NULL'
-```
+```text
 
 ## 📚 Additional Resources
 
-- **PostgreSQL COPY**: https://www.postgresql.org/docs/current/sql-copy.html
-- **Data Types**: https://www.postgresql.org/docs/current/datatype.html
-- **Indexes**: https://www.postgresql.org/docs/current/indexes.html
-- **Constraints**: https://www.postgresql.org/docs/current/ddl-constraints.html
+- **PostgreSQL COPY**: <https://www.postgresql.org/docs/current/sql-copy.html>
+- **Data Types**: <https://www.postgresql.org/docs/current/datatype.html>
+- **Indexes**: <https://www.postgresql.org/docs/current/indexes.html>
+- **Constraints**: <https://www.postgresql.org/docs/current/ddl-constraints.html>
 - **Migrations Guide**: `../docs/migrations-guide.md`
 
 ---

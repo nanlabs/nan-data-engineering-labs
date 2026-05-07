@@ -3,15 +3,17 @@
 ## 📋 Import and Creation
 
 ### Importar Pandas
+
 ```python
 import pandas as pd
 import numpy as np
 
 # Verificar version
 pd.__version__
-```
+```text
 
 ### Crear DataFrames
+
 ```python
 # Desde diccionario
 df = pd.DataFrame({
@@ -36,11 +38,12 @@ df = pd.read_json('data.json', orient='records')
 
 # Desde Parquet
 df = pd.read_parquet('data.parquet')
-```
+```text
 
 ## 🔍 Initial Exploration
 
 ### Basic Information
+
 ```python
 # Primeras/ultimas filas
 df.head()           # 5 primeras filas
@@ -59,11 +62,12 @@ df.index            # Index
 df['columna'].unique()          # Array de unicos
 df['columna'].nunique()         # Cantidad de unicos
 df['columna'].value_counts()    # Frecuencia de valores
-```
+```text
 
 ## 🎯 Data Selection
 
 ### Column selection
+
 ```python
 # Una columna (Series)
 df['nombre']
@@ -79,6 +83,7 @@ df[['edad', 'nombre', 'ciudad']]
 ### Row selection
 
 #### By Position (iloc)
+
 ```python
 # Una fila
 df.iloc[0]              # Primera fila
@@ -90,9 +95,10 @@ df.iloc[[0, 2, 4]]      # Filas especificas
 # Filas y columnas
 df.iloc[0:5, 0:2]       # Filas 0-4, columnas 0-1
 df.iloc[:, [0, 2]]      # Todas las filas, columnas 0 y 2
-```
+```text
 
 #### Por Etiqueta (loc)
+
 ```python
 # Por index
 df.loc[0]               # Fila con index 0
@@ -104,9 +110,10 @@ df.loc[df['ciudad'] == 'Madrid']
 
 # Filas y columnas
 df.loc[df['edad'] > 25, ['nombre', 'edad']]
-```
+```text
 
 ### Filtrado (Boolean Indexing)
+
 ```python
 # Condicion simple
 df[df['edad'] > 25]
@@ -130,11 +137,12 @@ df[df['nombre'].str.contains('Ana')]
 
 # Between
 df[df['edad'].between(25, 30)]
-```
+```text
 
 ## 🔧 Transformaciones
 
 ### Crear/Modificar columns
+
 ```python
 # Nueva columna
 df['edad_doble'] = df['edad'] * 2
@@ -155,6 +163,7 @@ df.rename(columns={'nombre': 'name', 'edad': 'age'}, inplace=True)
 ```
 
 ### Ordenamiento
+
 ```python
 # Ordenar por columna
 df.sort_values('edad')                    # Ascendente
@@ -165,11 +174,12 @@ df.sort_values(['ciudad', 'edad'], ascending=[True, False])
 
 # Ordenar index
 df.sort_index()
-```
+```text
 
 ### Cleaning de Data
 
 #### Valores Nulos
+
 ```python
 # Detectar nulls
 df.isnull()                 # DataFrame de booleanos
@@ -187,9 +197,10 @@ df.fillna({'edad': 0, 'ciudad': 'N/A'})  # Por columna
 df.fillna(method='ffill')           # Forward fill
 df.fillna(method='bfill')           # Backward fill
 df['edad'].fillna(df['edad'].mean())  # Con media
-```
+```text
 
 #### Duplicados
+
 ```python
 # Detectar duplicados
 df.duplicated()                     # Boolean Series
@@ -201,9 +212,10 @@ df.drop_duplicates()                # Eliminar todas
 df.drop_duplicates(subset=['nombre'])  # Por columna
 df.drop_duplicates(keep='first')    # Mantener primera ocurrencia
 df.drop_duplicates(keep='last')     # Mantener ultima
-```
+```text
 
 ### Type Conversion
+
 ```python
 # Convertir tipo
 df['edad'] = df['edad'].astype(int)
@@ -217,6 +229,7 @@ df['ciudad'] = df['ciudad'].astype('category')
 ## 📊 Aggregation and Grouping
 
 ### Basic Statistics
+
 ```python
 # Por columna
 df['edad'].mean()       # Media
@@ -230,9 +243,10 @@ df['edad'].count()      # Conteo (no-null)
 # Percentiles
 df['edad'].quantile(0.25)   # Q1
 df['edad'].quantile(0.75)   # Q3
-```
+```text
 
 ### GroupBy (Agrupar)
+
 ```python
 # Agrupar y agregar
 df.groupby('ciudad')['edad'].mean()
@@ -253,9 +267,10 @@ df.groupby('ciudad').agg(
 
 # Reset index despues de groupby
 df.groupby('ciudad')['edad'].mean().reset_index()
-```
+```text
 
 ### Pivot Tables
+
 ```python
 # Tabla pivote basica
 pd.pivot_table(
@@ -273,11 +288,12 @@ pd.pivot_table(
     index='ciudad',
     aggfunc=['mean', 'count']
 )
-```
+```text
 
 ## 🔗 Combination of DataFrames
 
 ### Concat (Concatenar)
+
 ```python
 # Concatenar verticalmente (apilar)
 df_total = pd.concat([df1, df2], ignore_index=True)
@@ -287,6 +303,7 @@ df_total = pd.concat([df1, df2], axis=1)
 ```
 
 ### Merge (Join)
+
 ```python
 # Inner join (solo coincidencias)
 pd.merge(df1, df2, on='id', how='inner')
@@ -308,11 +325,12 @@ pd.merge(df1, df2, on=['id', 'fecha'])
 
 # Sufijos para columnas duplicadas
 pd.merge(df1, df2, on='id', suffixes=('_left', '_right'))
-```
+```text
 
 ## 📅 Manejo de Fechas
 
 ### Crear y Convertir
+
 ```python
 # Convertir a datetime
 df['fecha'] = pd.to_datetime(df['fecha'])
@@ -320,9 +338,10 @@ df['fecha'] = pd.to_datetime(df['fecha'], format='%Y-%m-%d')
 
 # Crear columna de fecha
 df['fecha'] = pd.date_range('2024-01-01', periods=100, freq='D')
-```
+```text
 
 ### Extraer Componentes
+
 ```python
 df['ano'] = df['fecha'].dt.year
 df['mes'] = df['fecha'].dt.month
@@ -330,9 +349,10 @@ df['dia'] = df['fecha'].dt.day
 df['dia_semana'] = df['fecha'].dt.dayofweek  # 0=Lunes
 df['nombre_dia'] = df['fecha'].dt.day_name()
 df['trimestre'] = df['fecha'].dt.quarter
-```
+```text
 
 ### Operaciones con Fechas
+
 ```python
 # Diferencia de fechas
 df['dias_transcurridos'] = (df['fecha_fin'] - df['fecha_inicio']).dt.days
@@ -348,6 +368,7 @@ df.set_index('fecha').resample('W').mean()  # Por semana
 ## 💾 Guardar Data
 
 ### Exportar
+
 ```python
 # CSV
 df.to_csv('data.csv', index=False)
@@ -361,11 +382,12 @@ df.to_parquet('data.parquet', compression='gzip')
 
 # Excel
 df.to_excel('data.xlsx', sheet_name='Hoja1', index=False)
-```
+```text
 
 ## ⚡ Optimization and Performance
 
 ### Memory Optimization
+
 ```python
 # Ver uso de memoria
 df.memory_usage(deep=True)
@@ -382,11 +404,12 @@ df = pd.read_csv('data.csv', usecols=['nombre', 'edad'])
 # Leer en chunks para files grandes
 for chunk in pd.read_csv('data.csv', chunksize=10000):
     process(chunk)
-```
+```text
 
 ## ⚠️ Errores Comunes
 
 ### 1. SettingWithCopyWarning
+
 ```python
 # ❌ Incorrect
 subset = df[df['edad'] > 25]
@@ -395,9 +418,10 @@ subset['nueva_col'] = 0  # Warning!
 # ✅ Correct
 subset = df[df['edad'] > 25].copy()
 subset['nueva_col'] = 0
-```
+```text
 
 ### 2. Modify During Iteration
+
 ```python
 # ❌ Slow e ineficiente
 for i in range(len(df)):
@@ -408,6 +432,7 @@ df['nueva'] = df['edad'] * 2
 ```
 
 ### 3. Olvidar inplace
+
 ```python
 # ❌ No modifica df
 df.dropna()
@@ -417,7 +442,7 @@ df.dropna(inplace=True)
 
 # ✅ O reasignar
 df = df.dropna()
-```
+```text
 
 ## 💡 Tips and Best Practices
 

@@ -24,7 +24,7 @@ This document covers fundamental concepts of data security, encryption, complian
 
 The foundation of information security:
 
-```
+```text
 ┌────────────────────────────────┐
 │         CIA TRIAD              │
 │                                │
@@ -49,7 +49,7 @@ The foundation of information security:
 │  │   - DDoS protection      │  │
 │  └──────────────────────────┘  │
 └────────────────────────────────┘
-```
+```text
 
 **Confidentiality**: Only authorized users can access data
 **Integrity**: Data accuracy and consistency maintained
@@ -71,11 +71,13 @@ Layered security approach:
 **Definition**: Grant minimum permissions necessary to perform a task
 
 **Benefits**:
+
 - Reduces attack surface
 - Limits blast radius of compromised credentials
 - Simplifies audit and compliance
 
 **Implementation**:
+
 ```python
 # Bad: Overly permissive
 {
@@ -101,13 +103,14 @@ Layered security approach:
         }
     }
 }
-```
+```text
 
 ### Zero Trust Security
 
 **Principle**: Never trust, always verify
 
 **Key Components**:
+
 - Verify explicitly (MFA, device health)
 - Least privilege access
 - Assume breach (microsegmentation, encryption everywhere)
@@ -120,12 +123,14 @@ Layered security approach:
 ### Authentication vs Authorization
 
 **Authentication**: Verify identity ("Who are you?")
+
 - Username/password
 - Multi-factor authentication (MFA)
 - Biometrics
 - SSO (SAML, OAuth, OIDC)
 
 **Authorization**: Control access ("What can you do?")
+
 - IAM policies
 - Resource-based policies
 - Permission boundaries
@@ -139,6 +144,7 @@ Layered security approach:
 **IAM Policy**: JSON document defining permissions
 
 **Policy Types**:
+
 1. **Identity-Based**: Attached to users, groups, roles
 2. **Resource-Based**: Attached to resources (S3 bucket policy)
 3. **Permission Boundaries**: Maximum permissions limit
@@ -161,6 +167,7 @@ Layered security approach:
 **AWS SSO**: Centralized access management
 
 **Benefits**:
+
 - Single source of truth for identities
 - No long-term AWS credentials
 - Audit trail in corporate IdP
@@ -172,11 +179,13 @@ Layered security approach:
 ### Types of Encryption
 
 **Symmetric Encryption**: Same key for encryption/decryption
+
 - Algorithms: AES-256, AES-128
 - Fast, suitable for large data
 - Key distribution challenge
 
 **Asymmetric Encryption**: Public/private key pair
+
 - Algorithms: RSA, ECC
 - Public key encrypts, private key decrypts
 - Slower, used for key exchange
@@ -184,12 +193,14 @@ Layered security approach:
 ### Encryption at Rest
 
 **S3 Encryption Options**:
+
 1. **SSE-S3**: S3-managed keys (AES-256)
 2. **SSE-KMS**: KMS-managed keys (CMK)
 3. **SSE-C**: Customer-provided keys
 4. **Client-Side**: Encrypt before upload
 
 **Database Encryption**:
+
 - RDS: KMS encryption, transparent data encryption (TDE)
 - DynamoDB: KMS encryption (default)
 - Redshift: KMS or CloudHSM
@@ -197,11 +208,13 @@ Layered security approach:
 ### Encryption in Transit
 
 **TLS/SSL**:
+
 - TLS 1.2+ required (TLS 1.0/1.1 deprecated)
 - Certificate management with ACM
 - HTTPS endpoints for all APIs
 
 **VPN/Direct Connect**:
+
 - IPsec tunnels
 - MACsec for Direct Connect
 
@@ -212,6 +225,7 @@ Layered security approach:
 **Envelope Encryption**: CMK encrypts data keys, data keys encrypt data
 
 **Key Types**:
+
 - **AWS Managed**: Created by AWS services
 - **Customer Managed**: You create and manage
 - **AWS Owned**: Used by AWS, not visible to you
@@ -223,11 +237,13 @@ Layered security approach:
 ### Key Rotation
 
 **Automatic Rotation**:
+
 - AWS KMS: Yearly (365 days)
 - Old key versions retained for decryption
 - Transparent to applications
 
 **Manual Rotation**:
+
 - Create new CMK
 - Update references in code
 - Decrypt with old key, re-encrypt with new key
@@ -241,6 +257,7 @@ Layered security approach:
 **Definition**: Information that identifies an individual
 
 **Examples**:
+
 - Direct identifiers: SSN, passport, driver's license
 - Indirect identifiers: Name, email, phone, IP address
 - Sensitive: Medical records, biometrics, financial data
@@ -255,39 +272,45 @@ Layered security approach:
 ### Data Masking Techniques
 
 **Static Masking**: Permanent replacement
+
 ```python
 # Original: john.smith@company.com
 # Masked:   j***.s****@company.com
 ```
 
 **Dynamic Masking**: Runtime masking based on user
+
 ```sql
 -- Data engineer sees:
 SELECT ssn FROM customers; -- '123-45-6789'
 
 -- Analyst sees:
 SELECT ssn FROM customers; -- 'XXX-XX-6789'
-```
+```text
 
 **Tokenization**: Reversible replacement
+
 ```python
 # Original: 4532-1234-5678-9010
 # Token:    TKN-CREDIT_CARD-abc123xyz
 # Stored in encrypted vault for reversal
-```
+```text
 
 ### Anonymization Techniques
 
 **K-Anonymity**:
+
 - Each record indistinguishable from k-1 others
 - Generalization: Age 27 → 20-30
 - Suppression: Remove identifying columns
 
 **L-Diversity**:
+
 - Each equivalence class has at least L distinct sensitive values
 - Prevents homogeneity attack
 
 **Differential Privacy**:
+
 - Add statistical noise to results
 - Mathematically proven privacy guarantee
 - Used by Apple, Google, US Census
@@ -302,6 +325,7 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 **Effective**: May 25, 2018
 
 **Key Requirements**:
+
 - **Lawful basis** for processing data
 - **Data subject rights**: Access, rectification, erasure ("right to be forgotten"), portability
 - **Privacy by design**: Build privacy into systems from start
@@ -312,6 +336,7 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 **Penalties**: Up to €20M or 4% of global revenue (whichever is higher)
 
 **AWS Tools**:
+
 - Data residency: Choose EU regions
 - Encryption: KMS, CloudHSM
 - Access logs: CloudTrail
@@ -322,17 +347,20 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 **Scope**: US healthcare data (PHI - Protected Health Information)
 
 **Rules**:
+
 - **Privacy Rule**: Standards for PHI use/disclosure
 - **Security Rule**: Administrative, physical, technical safeguards
 - **Breach Notification Rule**: Notify within 60 days
 
 **Required Safeguards**:
+
 - Access controls (unique user IDs, emergency access)
 - Audit controls (log access to PHI)
 - Integrity controls (detect unauthorized changes)
 - Transmission security (encrypt PHI in transit)
 
 **AWS HIPAA Eligibility**:
+
 - Sign BAA (Business Associate Agreement)
 - Use HIPAA-eligible services (EC2, S3, RDS, etc.)
 - Enable encryption, logging, access controls
@@ -342,6 +370,7 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 **Scope**: Credit card data (CHD - Cardholder Data)
 
 **12 Requirements**:
+
 1. Install and maintain firewall
 2. No default passwords
 3. Protect stored cardholder data (encrypt)
@@ -356,12 +385,14 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 12. Information security policy
 
 **Compliance Levels**:
+
 - **Level 1**: >6M transactions/year (annual on-site audit)
 - **Level 2-4**: Fewer transactions (self-assessment)
 
 ### SOC 2 (Service Organization Control 2)
 
 **Trust Service Criteria**:
+
 - **Security**: Protection against unauthorized access
 - **Availability**: System operational and usable
 - **Processing Integrity**: Complete, accurate, timely processing
@@ -369,6 +400,7 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 - **Privacy**: Personal information collected, used, retained, disclosed per commitments
 
 **Report Types**:
+
 - **SOC 2 Type I**: Design of controls at a point in time
 - **SOC 2 Type II**: Operating effectiveness over period (6-12 months)
 
@@ -389,11 +421,13 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 **Purpose**: API activity logging (who did what, when)
 
 **Logged Events**:
+
 - Management events: Control plane (CreateBucket, RunInstances)
 - Data events: Data plane (GetObject, PutObject)
 - Insights events: Unusual activity detection
 
 **Best Practices**:
+
 - Enable organization trail
 - Send to CloudWatch Logs
 - Enable log file validation
@@ -405,10 +439,12 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 **Purpose**: Resource configuration tracking and compliance
 
 **Config Rules**:
+
 - Managed rules: AWS-provided (s3-bucket-encryption-enabled)
 - Custom rules: Lambda-based
 
 **Remediation**:
+
 - Manual: Review and fix
 - Automatic: SSM automation documents, Lambda
 
@@ -421,6 +457,7 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 **Fields**: src IP, dst IP, src port, dst port, protocol, packets, bytes, action
 
 **Use Cases**:
+
 - Troubleshoot connectivity
 - Detect suspicious traffic
 - Analyze traffic patterns
@@ -430,12 +467,14 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 **Purpose**: ML-powered threat detection
 
 **Data Sources**:
+
 - VPC Flow Logs
 - DNS logs
 - CloudTrail event logs
 - S3 data events
 
 **Finding Types**:
+
 - Reconnaissance (port scanning)
 - Instance compromise (malware, C&C)
 - Account compromise (credential misuse)
@@ -447,7 +486,7 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 
 ### IR Lifecycle
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │    INCIDENT RESPONSE LIFECYCLE              │
 │                                             │
@@ -486,24 +525,29 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 ### Common Incident Types
 
 **1. Compromised Credentials**
+
 - Symptoms: Unusual API calls, resource creation
 - Response: Disable access keys, revoke sessions, rotate secrets
 
 **2. Data Exfiltration**
+
 - Symptoms: Large data transfers, unusual S3 access
 - Response: Block public access, isolate bucket, analyze logs
 
 **3. Malware/Ransomware**
+
 - Symptoms: CPU spikes, network activity, file encryption
 - Response: Quarantine instance, snapshot for forensics, rebuild
 
 **4. DDoS Attack**
+
 - Symptoms: Service unavailability, high traffic
 - Response: AWS Shield, CloudFront, WAF rules
 
 ### Forensics on AWS
 
 **Evidence Collection**:
+
 - EBS snapshots (disk images)
 - Memory dumps (EC2 instance metadata)
 - CloudTrail logs (API activity)
@@ -513,6 +557,7 @@ SELECT ssn FROM customers; -- 'XXX-XX-6789'
 **Chain of Custody**: Document who accessed evidence and when
 
 **Analysis Tools**:
+
 - Amazon Detective (graph-based investigation)
 - CloudWatch Logs Insights
 - Athena queries on CloudTrail

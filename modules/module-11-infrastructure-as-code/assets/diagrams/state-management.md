@@ -47,7 +47,7 @@ flowchart TB
     style DDB fill:#FF9800
     style S3 fill:#87CEEB
     style Wait fill:#FFB6C1
-```
+```text
 
 ## State File Structure
 
@@ -79,7 +79,7 @@ graph TB
     style State fill:#E1F5FF
     style Resources fill:#E8F5E9
     style Outputs fill:#FFF3E0
-```
+```text
 
 ## State File Versioning con S3
 
@@ -120,7 +120,7 @@ sequenceDiagram
     Note over S3: Estado Actual: v3 (restaurado)
 
     Note over Dev,Versions: ✅ Recuperación Exitosa
-```
+```text
 
 ## State Locking con DynamoDB
 
@@ -190,7 +190,7 @@ erDiagram
         string Created "2024-01-15T10:30:00Z"
         string Path "s3://bucket/terraform.tfstate"
     }
-```
+```text
 
 ## State Operations Workflow
 
@@ -234,7 +234,7 @@ flowchart TD
     style Remove fill:#FF6347
     style Import fill:#90EE90
     style Warning fill:#FF9800
-```
+```text
 
 ## State Backends Comparison
 
@@ -264,7 +264,7 @@ graph TB
     style Remote1 fill:#90EE90
     style Remote2 fill:#87CEEB
     style Local fill:#FFB6C1
-```
+```text
 
 ## State Backend Configuration
 
@@ -337,11 +337,12 @@ flowchart TD
     style Fix5 fill:#FF6347
     style Fix6 fill:#FF6347
     style Fix7 fill:#FF6347
-```
+```text
 
 ## Uso
 
 Estos diagramas muestran:
+
 1. Arquitectura completa del remote state con S3 y DynamoDB
 2. Estructura interna del state file
 3. Sistema de versionado automático con S3

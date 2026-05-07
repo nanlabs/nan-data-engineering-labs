@@ -4,7 +4,7 @@ This directory contains sample data with intentional quality issues to practice 
 
 ## 📁 Estructura
 
-```
+```text
 data/
 ├── schemas/              # JSON schemas para validation
 ├── scripts/
@@ -19,13 +19,14 @@ data/
     ├── products_poor.csv
     ├── products_medium.csv
     └── products_clean.csv
-```
+```text
 
 ## 🎯 Datasets
 
 ### 1. Customers (10,000 registros)
 
 **columns:**
+
 - `customer_id`(int): Unique ID of the client
 - `first_name` (string): Nombre
 - `last_name` (string): Apellido
@@ -39,6 +40,7 @@ data/
 - `account_status` (string): Estado de cuenta
 
 **Quality problems injected:**
+
 - ❌ Missing values ​​(5-15% depending on quality level)
 - ❌ Empty strings en nombres y ciudad
 - ❌ Duplicados exactos (2-8%)
@@ -51,6 +53,7 @@ data/
 ### 2. Transactions (50,000 registros)
 
 **columns:**
+
 - `transaction_id`(int): unique transaction ID
 - `customer_id` (int): Customer ID (foreign key)
 - `product_id` (int): Product ID (foreign key)
@@ -63,6 +66,7 @@ data/
 - `currency` (string): Moneda
 
 **Quality problems injected:**
+
 - ❌ Missing values ​​in critical fields (3-10%)
 - ❌ Orphan foreign keys (customer_id que no existe: 5-15%)
 - ❌ Amounts negativos (2%)
@@ -75,6 +79,7 @@ data/
 ### 3. Products (1,000 registros)
 
 **columns:**
+
 - `product_id`(int): Unique product ID
 - `product_name` (string): Nombre del producto
 - `category`(string): Category
@@ -86,6 +91,7 @@ data/
 - `is_active` (bool): Producto activo
 
 **Quality problems injected:**
+
 - ❌ Missing values (5-12%)
 - ❌ Precios negativos (2%)
 - ❌ Costo mayor que precio (8%)
@@ -99,7 +105,7 @@ data/
 
 ```bash
 pip install pandas numpy faker pyarrow
-```
+```text
 
 ### Generar datasets
 
@@ -120,6 +126,7 @@ python data/scripts/generate_data.py --quality poor --output data/samples
 ### Output
 
 El script genera:
+
 - Archivos CSV para facilidad de lectura
 - Archivos Parquet para mejor performance
 - Summary of quality problems found
@@ -127,18 +134,21 @@ El script genera:
 ## 📊 Quality Levels
 
 ### Clean (Sin problemas)
+
 - ✅ 0% missing values
 - ✅ 0% duplicates
 - ✅ 100% valid formats
 - ✅ 100% logical consistency
 
 ### Medium (Problemas moderados)
+
 - ⚠️ 5% missing values
 - ⚠️ 2% duplicates
 - ⚠️ 3% invalid formats
 - ⚠️ 5% orphan foreign keys
 
 ### Poor (Muchos problemas)
+
 - ❌ 10-15% missing values
 - ❌ 5-8% duplicates
 - ❌ 10% invalid formats
@@ -159,7 +169,7 @@ df = pd.read_csv('data/samples/customers_poor.csv')
 print(f"Total registros: {len(df)}")
 print(f"Nulls por columna:\n{df.isnull().sum()}")
 print(f"Duplicados: {df.duplicated().sum()}")
-```
+```text
 
 ### Exercise 02: Validation Rules
 
@@ -167,7 +177,7 @@ print(f"Duplicados: {df.duplicated().sum()}")
 # Validar reglas básicas
 assert df['customer_id'].notna().all(), "customer_id no puede ser null"
 assert (df['amount'] >= 0).all(), "amount debe ser positivo"
-```
+```text
 
 ### Exercise 03: Great Expectations
 
@@ -181,7 +191,7 @@ validator = context.sources.add_pandas("my_datasource").read_csv(
 
 validator.expect_column_values_to_not_be_null("transaction_id")
 validator.expect_column_values_to_be_between("amount", min_value=0)
-```
+```text
 
 ## 🔍 Exploring the Data
 
@@ -212,7 +222,7 @@ SELECT
     SUM(CASE WHEN customer_id IS NULL THEN 1 ELSE 0 END) as null_customer_id
 FROM 'data/samples/transactions_poor.parquet'
 "
-```
+```text
 
 ### Data Profiling
 
@@ -222,11 +232,12 @@ from ydata_profiling import ProfileReport
 df = pd.read_csv('data/samples/customers_poor.csv')
 profile = ProfileReport(df, title="Customer Data Quality Report")
 profile.to_file("customers_profile.html")
-```
+```text
 
 ## 📝 Esquemas Esperados
 
 Ver `data/schemas/` para los JSON schemas que definen:
+
 - columns requeridas
 - Data types
 - Valid ranges
@@ -236,6 +247,7 @@ Ver `data/schemas/` para los JSON schemas que definen:
 ## ⚠️ Note on Synthetic Data
 
 All data is **synthetic** generated with Faker:
+
 - Nombres, emails, direcciones son ficticios
 - They do not contain real or sensitive information
 - Designed exclusively for training

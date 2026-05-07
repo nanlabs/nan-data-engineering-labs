@@ -30,7 +30,7 @@ Un **container** es una unidad estándar de software que empaqueta código y tod
 
 ### Beneficios para Data Engineering
 
-```
+```text
 ✅ Reproducibilidad
    - Mismo entorno en dev, test, prod
    - Versiones específicas de librerías (pandas, spark)
@@ -50,7 +50,7 @@ Un **container** es una unidad estándar de software que empaqueta código y tod
 ✅ CI/CD
    - Build once, deploy anywhere
    - Deployment automation
-```
+```text
 
 ### Casos de Uso en Data Engineering
 
@@ -67,7 +67,7 @@ Un **container** es una unidad estándar de software que empaqueta código y tod
 
 ### Componentes Principales
 
-```
+```text
 ┌──────────────────────────────────────────┐
 │         Docker Architecture               │
 ├──────────────────────────────────────────┤
@@ -121,11 +121,11 @@ COPY . /app
 # Layer 5: Metadata
 WORKDIR /app
 CMD ["python", "app.py"]
-```
+```text
 
 Cada instrucción (`FROM`, `RUN`, `COPY`) crea una nueva layer:
 
-```
+```text
 Image ID: sha256:abc123...
 ├── Layer 5: CMD ["python", "app.py"]       (metadata)
 ├── Layer 4: COPY . /app                    (10 MB)
@@ -133,9 +133,10 @@ Image ID: sha256:abc123...
 ├── Layer 2: RUN apt-get install...         (50 MB)
 └── Layer 1: FROM python:3.11-slim          (150 MB)
                                     Total: ~510 MB
-```
+```text
 
 **Ventajas**:
+
 - **Cache**: Layers no cambiadas se reutilizan
 - **Sharing**: Múltiples images comparten base layers
 - **Efficiency**: Sólo capas modificadas se transfieren
@@ -223,15 +224,15 @@ RUN mkdir -p /output
 
 # Run ETL script
 CMD ["python", "etl_script.py"]
-```
+```text
 
 `requirements.txt`:
 
-```
+```text
 pandas==2.1.0
 psycopg2-binary==2.9.7
 sqlalchemy==2.0.20
-```
+```text
 
 ### Build y Run
 
@@ -300,9 +301,10 @@ COPY etl_script.py .
 ENV PATH=/root/.local/bin:$PATH
 
 CMD ["python", "etl_script.py"]
-```
+```text
 
 **Ventajas**:
+
 - Image builder: 1.2 GB
 - Image final: 350 MB (70% reducción)
 
@@ -320,7 +322,7 @@ COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
 CMD ["python", "app.py"]
-```
+```text
 
 ✅ **Bien**: Dependencies cached, solo code rebuilds
 
@@ -336,7 +338,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 CMD ["python", "app.py"]
-```
+```text
 
 ### 2. Minimize Layers
 
@@ -357,13 +359,13 @@ RUN apt-get update && apt-get install -y \
     wget \
     vim \
     && rm -rf /var/lib/apt/lists/*
-```
+```text
 
 ### 3. Use .dockerignore
 
 `.dockerignore`:
 
-```
+```text
 # Python
 __pycache__/
 *.pyc
@@ -393,7 +395,7 @@ logs/
 # Documentation
 README.md
 docs/
-```
+```text
 
 ### 4. Non-Root User (Security)
 
@@ -435,7 +437,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:5000/health || exit 1
 
 CMD ["python", "api.py"]
-```
+```text
 
 ### 6. ARG vs ENV
 
@@ -465,7 +467,7 @@ RUN if [ "$INSTALL_DEV_DEPS" = "true" ]; then \
 COPY . .
 
 CMD ["python", "app.py"]
-```
+```text
 
 Build with arguments:
 
@@ -477,7 +479,7 @@ docker build -t my-app:prod .
 docker build \
   --build-arg INSTALL_DEV_DEPS=true \
   -t my-app:dev .
-```
+```text
 
 ---
 
@@ -607,7 +609,7 @@ docker-compose build --no-cache
 
 # Execute command in running service
 docker-compose exec postgres psql -U dataeng analytics
-```
+```text
 
 ---
 
@@ -637,7 +639,7 @@ docker run -d --name app \
 
 # Containers can communicate by name:
 # postgresql://db:5432/mydb
-```
+```text
 
 ### Docker Volumes
 
@@ -669,7 +671,7 @@ docker volume ls
 
 # Remove unused volumes
 docker volume prune
-```
+```text
 
 ### Ejemplo: Data Pipeline con Volumes
 
@@ -705,7 +707,7 @@ docker scout cves my-app:latest
 
 # Scan with Trivy
 docker run aquasec/trivy image my-app:latest
-```
+```text
 
 ### 2. Non-Root User
 
@@ -728,7 +730,7 @@ COPY --chown=appuser:appuser . .
 USER appuser
 
 CMD ["python", "app.py"]
-```
+```text
 
 ### 3. Secrets Management
 
@@ -737,7 +739,7 @@ CMD ["python", "app.py"]
 ```dockerfile
 # BAD!
 ENV DATABASE_PASSWORD=supersecret123
-```
+```text
 
 ✅ **Use Docker secrets or external vault**:
 
@@ -756,7 +758,7 @@ docker run \
   --read-only \
   --tmpfs /tmp \
   my-app:latest
-```
+```text
 
 ### 5. Resource Limits
 
@@ -767,7 +769,7 @@ docker run \
   --cpus="1.5" \
   --pids-limit=100 \
   my-etl:latest
-```
+```text
 
 ### 6. Network Security
 
@@ -777,13 +779,14 @@ docker network create --internal secure-network
 
 # Run with no network
 docker run --network none my-app:latest
-```
+```text
 
 ---
 
 ## 🎯 Checklist de Docker para Data Engineering
 
 ### Development
+
 - [ ] Dockerfile optimizado con multi-stage builds
 - [ ] .dockerignore configurado
 - [ ] docker-compose.yml para local development
@@ -791,11 +794,13 @@ docker run --network none my-app:latest
 - [ ] Networks para service communication
 
 ### Testing
+
 - [ ] Unit tests en container
 - [ ] Integration tests con docker-compose
 - [ ] Performance tests con resource limits
 
 ### Production
+
 - [ ] Base images oficiales y actualizadas
 - [ ] Non-root user
 - [ ] Health checks
@@ -807,6 +812,7 @@ docker run --network none my-app:latest
 - [ ] Monitoring (Prometheus, CloudWatch)
 
 ### CI/CD
+
 - [ ] Automated builds
 - [ ] Image tagging (semver)
 - [ ] Registry (ECR, Docker Hub)

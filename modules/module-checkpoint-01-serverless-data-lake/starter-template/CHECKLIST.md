@@ -320,26 +320,34 @@ Track your progress through the project with this checklist. Check off items as 
 ## Self-Assessment
 
 ### Strengths
+
 What parts of the project went well?
-```
+
+```text
 [Your reflection here]
-```
+```text
 
 ### Challenges
+
 What was difficult? How did you overcome it?
-```
+
+```text
 [Your reflection here]
 ```
 
 ### Learnings
+
 What did you learn from this project?
-```
+
+```text
 [Your reflection here]
-```
+```text
 
 ### Improvements
+
 If you were to do it again, what would you do differently?
-```
+
+```text
 [Your reflection here]
 ```
 

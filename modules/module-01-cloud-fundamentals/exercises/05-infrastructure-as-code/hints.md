@@ -13,23 +13,26 @@ Description: What this template creates
 Parameters:  # Input values
 Resources:   # AWS resources (REQUIRED)
 Outputs:     # Values to export
-```
+```text
 
 ### Hint 1.2: Parameters vs. Hardcoding
 
 ❌ **Bad:**
+
 ```yaml
 BucketName: quickmart-data-lake-dev
-```
+```text
 
 ✅ **Good:**
+
 ```yaml
 BucketName: !Sub 'quickmart-data-lake-${Environment}'
-```
+```text
 
 ### Hint 1.3: Cross-Stack References
 
 Stack A exports:
+
 ```yaml
 Outputs:
   BucketName:
@@ -38,9 +41,10 @@ Outputs:
 ```
 
 Stack B imports:
+
 ```yaml
 BucketName: !ImportValue data-lake-stack-BucketName
-```
+```text
 
 ---
 
@@ -71,7 +75,7 @@ DataLakeBucket:
         - Id: DeleteOldVersions
           Status: Enabled
           NoncurrentVersionExpirationInDays: 90
-```
+```text
 
 ### Hint 2.2: Bucket Policy (Encryption Required)
 
@@ -101,7 +105,7 @@ DataLakeBucketPolicy:
           Condition:
             Bool:
               aws:SecureTransport: false
-```
+```text
 
 ### Hint 2.3: IAM Role with Inline Policy
 
@@ -156,7 +160,7 @@ Resources:
     Condition: EnableBackup
     Properties:
       BackupVaultName: !Sub 'data-lake-backup-${Environment}'
-```
+```text
 
 ### Hint 2.5: Deployment Script
 
@@ -184,7 +188,7 @@ aws --endpoint-url=$ENDPOINT_URL cloudformation deploy \
 # Wait for completion
 aws --endpoint-url=$ENDPOINT_URL cloudformation wait stack-create-complete \
   --stack-name $STACK_NAME-$ENVIRONMENT
-```
+```text
 
 ---
 
@@ -193,6 +197,7 @@ aws --endpoint-url=$ENDPOINT_URL cloudformation wait stack-create-complete \
 ### Hint 3.1: Complete Data Lake Stack
 
 See [solution/data-lake-stack.yaml](solution/data-lake-stack.yaml) for:
+
 - Parameterized bucket with lifecycle rules
 - Encryption-enforced bucket policy
 - IAM role with inline policies
@@ -263,7 +268,7 @@ Outputs:
     Value: !GetAtt ValidatorFunction.Arn
     Export:
       Name: !Sub '${AWS::StackName}-FunctionArn'
-```
+```text
 
 ### Hint 3.3: Stack Update Script
 
@@ -326,7 +331,7 @@ yamllint data-lake-stack.yaml
 # CloudFormation validation
 aws cloudformation validate-template \
   --template-body file://data-lake-stack.yaml
-```
+```text
 
 ### Test 2: Multi-Environment
 
@@ -339,7 +344,7 @@ done
 # Verify stacks
 aws cloudformation list-stacks \
   --query 'StackSummaries[?StackStatus==`CREATE_COMPLETE`].StackName'
-```
+```text
 
 ### Test 3: Rollback Testing
 
@@ -362,7 +367,7 @@ aws cloudformation update-stack \
 aws cloudformation describe-stack-events \
   --stack-name quickmart-data-lake-dev \
   --query 'StackEvents[?ResourceStatus==`ROLLBACK_IN_PROGRESS`]'
-```
+```text
 
 ### Test 4: Drift Detection
 
@@ -393,7 +398,7 @@ aws cloudformation describe-stack-resource-drifts \
 ```bash
 # Convert tabs to spaces
 expand -t 2 template.yaml > template-fixed.yaml
-```
+```text
 
 ### Error: "No updates are to be performed"
 
@@ -412,9 +417,10 @@ expand -t 2 template.yaml > template-fixed.yaml
 **Expected:** Data buckets are retained for safety
 
 **Fix:** Manually delete bucket if needed:
+
 ```bash
 aws s3 rb s3://quickmart-data-lake-dev --force
-```
+```text
 
 ---
 

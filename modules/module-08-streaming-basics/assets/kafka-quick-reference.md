@@ -34,7 +34,7 @@ kafka-topics --bootstrap-server localhost:9092 \
   --alter \
   --topic my-topic \
   --partitions 6
-```
+```text
 
 ### Producer/Consumer
 
@@ -61,7 +61,7 @@ kafka-console-consumer \
   --topic my-topic \
   --property print.key=true \
   --property key.separator=":"
-```
+```text
 
 ### Consumer Groups
 
@@ -89,7 +89,7 @@ kafka-consumer-groups --bootstrap-server localhost:9092 \
   --reset-offsets \
   --to-offset 100 \
   --execute
-```
+```text
 
 ---
 
@@ -127,7 +127,7 @@ consumer = KafkaConsumer(
 
 for message in consumer:
     print(message.value)
-```
+```text
 
 ### Producer with Key
 
@@ -137,7 +137,7 @@ producer.send(
     key='user_123'.encode('utf-8'),
     value={'event': 'purchase', 'amount': 99.99}
 )
-```
+```text
 
 ### Manual Commit
 
@@ -151,7 +151,7 @@ consumer = KafkaConsumer(
 for message in consumer:
     process(message.value)
     consumer.commit()  # Manual commit
-```
+```text
 
 ### Avro Producer (Confluent)
 
@@ -199,7 +199,7 @@ for tp in partitions:
     end = end_offsets.get(tp)
     lag = end - committed.offset if committed else 0
     print(f"Partition {tp.partition}: lag = {lag}")
-```
+```text
 
 ---
 
@@ -216,7 +216,7 @@ producer = KafkaProducer(
     linger_ms=10,           # Wait time to batch
     compression_type='gzip' # Compress messages
 )
-```
+```text
 
 ### Consumer Config
 
@@ -232,7 +232,7 @@ consumer = KafkaConsumer(
     session_timeout_ms=10000,
     heartbeat_interval_ms=3000
 )
-```
+```text
 
 ---
 
@@ -269,7 +269,7 @@ try:
     producer.commit_transaction()
 except Exception:
     producer.abort_transaction()
-```
+```text
 
 ### Batch Processing
 
@@ -282,7 +282,7 @@ for message in consumer:
         process_batch(batch)
         consumer.commit()
         batch = []
-```
+```text
 
 ---
 
@@ -296,7 +296,7 @@ from kafka import KafkaAdminClient
 admin = KafkaAdminClient(bootstrap_servers='localhost:9092')
 topics = admin.list_topics()
 print('my-topic' in topics)
-```
+```text
 
 ### Get partition info
 
@@ -324,4 +324,4 @@ for msg in consumer:
         break
 
 print(f"First 10 messages: {messages}")
-```
+```text

@@ -23,7 +23,7 @@
 
 ## Architecture
 
-```
+```text
 ┌───────────────────────────────────────────────────────────┐
 │              Compute Cost Optimization                    │
 │                                                           │
@@ -44,7 +44,7 @@
 │  │  • Lambda                                        │     │
 │  └─────────────────────────────────────────────────┘     │
 └───────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Tasks
 
@@ -91,9 +91,9 @@ for rec in response['Recommendations'][:5]:  # Top 5
 
 total_savings = float(response['Recommendations'][0]['RecommendationSummary']['SavingsPercentage'])
 print(f"📊 Total Potential Savings: {total_savings:.1f}%")
-```
+```text
 
-2. **Get Savings Plans recommendations**:
+1. **Get Savings Plans recommendations**:
 
 ```python
 # Get Savings Plans recommendations
@@ -240,7 +240,7 @@ print("\n💡 Recommendation:")
 print("  • Steady prod workload → RI 3Y All Upfront (63% savings)")
 print("  • Flexible compute → Compute Savings Plan (60% savings)")
 print("  • Batch processing → Spot Instances (70% savings)")
-```
+```text
 
 ### Task 3: Implement Spot Instance Strategy for EMR
 
@@ -310,9 +310,9 @@ print("\n💰 Cost Comparison:")
 print("  All On-Demand: $0.192 * 11 = $2.11/hour = $1,542/month")
 print("  Hybrid (3 On-Demand + 8 Spot): $0.58 + $0.38 = $0.96/hour = $701/month")
 print("  Savings: $841/month (54%)")
-```
+```text
 
-2. **Implement Spot interruption handling**:
+1. **Implement Spot interruption handling**:
 
 ```python
 # EMR step with checkpoint/retry logic
@@ -344,7 +344,7 @@ print("  • Speculative execution (detect slow tasks)")
 print("  • Dynamic allocation (adjust to spot availability)")
 print("  • Checkpoint to S3 (recover from interruptions)")
 print("  • Max 10 retries per task")
-```
+```text
 
 ### Task 2: Calculate ROI for Commitment Purchases
 
@@ -556,7 +556,7 @@ for period in ri_coverage['CoveragesByTime']:
     if covered_pct < 70:
         print(f"  💡 Opportunity: {100 - covered_pct:.1f}% still on On-Demand")
         print(f"     Potential savings: ${on_demand_cost * 0.6:.2f} with RIs")
-```
+```text
 
 ### Task 4: Build Purchase Decision Tool
 
@@ -670,7 +670,7 @@ for i, rec in enumerate(recommendations, 1):
     print(f"   Risk Level: {rec['risk']}")
     print(f"   Implementation: {rec['implementation']}")
     print()
-```
+```text
 
 ### Task 5: Monitor Savings Plans Performance
 
@@ -738,7 +738,7 @@ for period in sp_coverage['SavingsPlansCoverages']:
         print(f"\n  💡 Opportunity:")
         print(f"     Increase commitment by ${additional_commitment:.2f}/month")
         print(f"     Potential additional savings: ${potential_savings:.2f}/month")
-```
+```text
 
 ## Validation Checklist
 
@@ -754,22 +754,26 @@ for period in sp_coverage['SavingsPlansCoverages']:
 ## Troubleshooting
 
 **Issue**: No RI recommendations returned
+
 - **Solution**: Need at least 60 days of usage history
 - Ensure account has EC2 instances running consistently
 - Check if already have high RI coverage
 
 **Issue**: Spot Instances frequently interrupted
+
 - **Solution**: Use `capacity-optimized` allocation strategy
 - Diversify instance types (m5, m5a, m4)
 - Set max spot price at on-demand price
 - Implement checkpointing in Spark jobs
 
 **Issue**: Savings Plans utilization < 80%
+
 - **Solution**: Reduce commitment amount
 - Consider shorter term (1Y instead of 3Y)
 - Increase workload to match commitment
 
 **Issue**: Break-even calculation seems wrong
+
 - **Solution**: Factor in time value of money for upfront payments
 - Consider opportunity cost of upfront capital
 - Use Net Present Value (NPV) for accurate comparison
@@ -802,7 +806,7 @@ Is workload steady (24/7)?
     ├─ YES → Spot Instances (70-90% savings)
     │
     └─ NO → On-Demand + Savings Plan for baseline
-```
+```text
 
 ## Real-World ROI Example
 
@@ -811,10 +815,12 @@ Is workload steady (24/7)?
 **Workload**: 70% steady (data pipelines), 30% batch (ML training)
 
 **Optimization**:
+
 - 70% covered by Compute Savings Plan 3Y: $7,000 → $2,800/month (60% savings)
 - 30% batch moved to Spot: $3,000 → $750/month (75% savings)
 
 **Results**:
+
 - **New Monthly Cost**: $3,550
 - **Monthly Savings**: $6,450 (64.5% reduction)
 - **Annual Savings**: $77,400

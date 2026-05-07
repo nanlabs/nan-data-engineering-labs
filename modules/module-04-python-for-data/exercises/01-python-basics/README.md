@@ -32,9 +32,10 @@ def buscar_usuario(id: int) -> Optional[dict]:
     """Busca un usuario. Retorna None si no existe."""
     # ...
     return None  # o dict
-```
+```text
 
 **Why they are important**:
+
 - Improve code readability
 - Allow error detection with mypy
 - Facilitan autocompleted en IDEs
@@ -63,7 +64,7 @@ def calcular_promedio(numeros: list[float]) -> float:
     if not numeros:
         raise ValueError("La lista no puede estar vacia")
     return sum(numeros) / len(numeros)
-```
+```text
 
 ### Control de Flujo
 
@@ -89,7 +90,7 @@ contador = 0
 while contador < 5:
     print(contador)
     contador += 1
-```
+```text
 
 ### Manejo de None
 
@@ -124,7 +125,7 @@ Add two numbers.
 assert suma(2, 3) == 5
 assert suma(-1, 1) == 0
 assert suma(0, 0) == 0
-```
+```text
 
 ### 2. es_par(numero) ⭐
 
@@ -134,7 +135,7 @@ Determine if a number is even.
 assert es_par(4) == True
 assert es_par(7) == False
 assert es_par(0) == True
-```
+```text
 
 ### 3. mayor_de_tres(a, b, c) ⭐
 
@@ -144,7 +145,7 @@ Returns the largest of three numbers.
 assert mayor_de_tres(1, 2, 3) == 3
 assert mayor_de_tres(5, 5, 5) == 5
 assert mayor_de_tres(-1, -5, -3) == -1
-```
+```text
 
 ### 4. contar_vocales(texto) ⭐⭐
 
@@ -165,7 +166,7 @@ Revierte un string.
 assert revertir_string("hola") == "aloh"
 assert revertir_string("Python") == "nohtyP"
 assert revertir_string("") == ""
-```
+```text
 
 ### 6. es_palindromo(texto) ⭐⭐
 
@@ -176,7 +177,7 @@ assert es_palindromo("oso") == True
 assert es_palindromo("anita lava la tina") == True
 assert es_palindromo("hola") == False
 assert es_palindromo("") == True
-```
+```text
 
 ### 7. factorial(n) ⭐⭐
 
@@ -186,7 +187,7 @@ Calcula el factorial de n.
 assert factorial(0) == 1
 assert factorial(1) == 1
 assert factorial(5) == 120
-```
+```text
 
 ### 8. fibonacci(n) ⭐⭐⭐
 
@@ -208,7 +209,7 @@ assert validate_email("user@example.com") == True
 assert validate_email("invalid.email") == False
 assert validate_email("no@domain") == False
 assert validate_email(None) == False
-```
+```text
 
 ### 10. calcular_promedio(numeros) ⭐⭐
 
@@ -218,7 +219,7 @@ Calculates the average of a list of numbers.
 assert calcular_promedio([1, 2, 3, 4, 5]) == 3.0
 assert calcular_promedio([10]) == 10.0
 # Debe manejar lista vacia
-```
+```text
 
 ---
 
@@ -233,7 +234,7 @@ pytest exercises/01-python-basics/tests/ --cov=exercises.01-python-basics.starte
 
 # Run un test especifico
 pytest exercises/01-python-basics/tests/test_basics.py::test_suma -v
-```
+```text
 
 ---
 

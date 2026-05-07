@@ -29,6 +29,7 @@
 Welcome to **Checkpoint 01: Serverless Data Lake** - your first major integration project that combines everything you've learned in Modules 01-06. This is a hands-on capstone project where you'll build a complete, production-ready serverless data lake on AWS for a fictional e-commerce company.
 
 **This is NOT a quiz or assessment.** Instead, you'll:
+
 - Build real cloud infrastructure
 - Write production-quality code
 - Design scalable data pipelines
@@ -40,6 +41,7 @@ Welcome to **Checkpoint 01: Serverless Data Lake** - your first major integratio
 A complete **Serverless Data Lake** for **CloudMart**, an e-commerce company that needs to consolidate data from multiple sources and enable data-driven decision making across the organization.
 
 **Key Features:**
+
 - 📦 Multi-zone data lake (Raw → Processed → Curated)
 - ⚡ Event-driven data ingestion with AWS Lambda
 - 🔍 Automated data cataloging with AWS Glue
@@ -140,6 +142,7 @@ Before proceeding, ensure you can answer YES to these questions:
 ### The Company: CloudMart
 
 **CloudMart** is a rapidly growing e-commerce platform with:
+
 - 500K+ monthly active users
 - 50K+ daily transactions
 - 100K+ products across 50 categories
@@ -155,6 +158,7 @@ CloudMart's data is currently siloed across multiple systems:
 4. **Customer Service System:** Support tickets and satisfaction scores
 
 **Pain Points:**
+
 - ❌ No unified view of customer behavior
 - ❌ Business analysts can't access operational data
 - ❌ Manual data exports taking days
@@ -178,6 +182,7 @@ As the newly hired **Data Engineer**, you're tasked with:
 ### Business Impact
 
 Your solution will enable:
+
 - 📊 Real-time visibility into business metrics
 - 🎯 Data-driven decision making across teams
 - 🚀 Faster time-to-insight (days → minutes)
@@ -254,49 +259,49 @@ By completing this checkpoint, you will demonstrate mastery of:
 
 ### Professional Skills
 
-11. **Documentation**
+1. **Documentation**
     - Create architecture decision records (ADRs)
     - Write clear technical documentation
     - Document operational procedures
     - Maintain project runbooks
 
-12. **Problem Solving**
+2. **Problem Solving**
     - Debug distributed systems issues
     - Troubleshoot cloud infrastructure problems
     - Optimize for performance and cost
     - Handle edge cases and errors gracefully
 
-13. **Project Management**
+3. **Project Management**
     - Break down complex projects into phases
     - Set milestones and track progress
     - Manage project dependencies
     - Deliver complete solutions on time
 
-14. **Cost Optimization**
+4. **Cost Optimization**
     - Estimate cloud infrastructure costs
     - Implement cost-saving strategies
     - Monitor and control spending
     - Balance cost vs. performance trade-offs
 
-15. **Testing and Validation**
+5. **Testing and Validation**
     - Write automated tests for data pipelines
     - Validate data quality and accuracy
     - Perform end-to-end system testing
     - Create acceptance criteria
 
-16. **Communication**
+6. **Communication**
     - Present technical solutions to stakeholders
     - Explain architecture decisions
     - Create visual diagrams and documentation
     - Write clear commit messages and code comments
 
-17. **Best Practices**
+7. **Best Practices**
     - Follow AWS best practices
     - Apply security principles
     - Write maintainable code
     - Design for scalability and reliability
 
-18. **Integration**
+8. **Integration**
     - Connect multiple AWS services
     - Design service interfaces
     - Handle service limits and quotas
@@ -351,7 +356,7 @@ By completing this checkpoint, you will demonstrate mastery of:
 
 ### High-Level Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                         DATA SOURCES                            │
 ├─────────────────────────────────────────────────────────────────┤
@@ -401,7 +406,7 @@ By completing this checkpoint, you will demonstrate mastery of:
 │           MONITORING LAYER (CloudWatch + SNS)                   │
 │  Metrics  │  Logs  │  Dashboards  │  Alarms  │  Notifications  │
 └─────────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### Data Flow
 
@@ -561,7 +566,7 @@ aws sts get-caller-identity
 
 # Check AWS region
 aws configure get region
-```
+```text
 
 ### Step 4: Review Starter Template
 
@@ -593,7 +598,8 @@ tree -L 3
    - Document as you go
 
 3. **Create Your Project Plan:**
-   ```
+
+   ```text
    Day 1 (5-6 hours): Phase 1 - Infrastructure Setup
    Day 2 (5-6 hours): Phase 2 - Data Ingestion
    Day 3 (5-6 hours): Phase 3 - Cataloging + Phase 4 - ETL (start)
@@ -642,7 +648,7 @@ EOF
 # Make initial commit
 git add .
 git commit -m "Initial commit: Checkpoint 01 project structure"
-```
+```text
 
 ### Step 7: Begin Phase 1
 
@@ -657,6 +663,7 @@ Open `IMPLEMENTATION-GUIDE.md` and start with **Phase 1: Infrastructure Setup**.
 **Goal:** Provision all AWS infrastructure using Infrastructure as Code
 
 **Tasks:**
+
 - Create S3 buckets (raw, processed, curated, scripts, logs)
 - Configure bucket policies and encryption
 - Create IAM roles for Lambda, Glue, and Athena
@@ -665,12 +672,14 @@ Open `IMPLEMENTATION-GUIDE.md` and start with **Phase 1: Infrastructure Setup**.
 - Tag all resources
 
 **Deliverables:**
+
 - Infrastructure code (CloudFormation/Terraform)
 - S3 bucket structure documented
 - IAM policies documented
 - Successful deployment screenshot
 
 **Validation:**
+
 ```bash
 # All buckets exist
 aws s3 ls | grep cloudmart
@@ -680,13 +689,14 @@ aws iam list-roles | grep cloudmart
 
 # CloudFormation stack deployed
 aws cloudformation describe-stacks --stack-name cloudmart-data-lake
-```
+```text
 
 ### Phase 2: Data Ingestion (4-5 hours)
 
 **Goal:** Implement Lambda functions to ingest and validate data
 
 **Tasks:**
+
 - Write Lambda function for order data ingestion
 - Write Lambda function for clickstream data ingestion
 - Write Lambda function for product data ingestion
@@ -696,12 +706,14 @@ aws cloudformation describe-stacks --stack-name cloudmart-data-lake
 - Write unit tests
 
 **Deliverables:**
+
 - Lambda function code (Python)
 - Event trigger configurations
 - Unit tests
 - Sample data loaded to S3 raw zone
 
 **Validation:**
+
 ```bash
 # Upload test file
 aws s3 cp test-order.json s3://cloudmart-raw/orders/
@@ -711,13 +723,14 @@ aws logs tail /aws/lambda/cloudmart-ingest-orders --follow
 
 # Verify data in raw zone
 aws s3 ls s3://cloudmart-raw/orders/year=2024/month=03/
-```
+```text
 
 ### Phase 3: Data Cataloging (3-4 hours)
 
 **Goal:** Set up Glue Data Catalog and Crawlers
 
 **Tasks:**
+
 - Create Glue Database
 - Configure Glue Crawler for raw zone
 - Run crawler and verify tables
@@ -726,12 +739,14 @@ aws s3 ls s3://cloudmart-raw/orders/year=2024/month=03/
 - Verify schema in Data Catalog
 
 **Deliverables:**
+
 - Glue database and tables
 - Crawler configurations
 - Schedule definitions
 - Data Catalog screenshot
 
 **Validation:**
+
 ```bash
 # List databases
 aws glue get-databases
@@ -748,6 +763,7 @@ aws glue get-table --database-name cloudmart_raw --name orders
 **Goal:** Build ETL pipelines to transform data through lakehouse zones
 
 **Tasks:**
+
 - Implement Bronze → Silver transformation (cleansing)
 - Implement Silver → Gold transformation (aggregation)
 - Add data quality checks
@@ -757,6 +773,7 @@ aws glue get-table --database-name cloudmart_raw --name orders
 - Test with sample data
 
 **Deliverables:**
+
 - Glue ETL scripts (PySpark)
 - Data quality validation logic
 - Job configurations
@@ -764,6 +781,7 @@ aws glue get-table --database-name cloudmart_raw --name orders
 - Test results
 
 **Validation:**
+
 ```bash
 # Run Glue ETL job
 aws glue start-job-run --job-name cloudmart-bronze-to-silver
@@ -774,13 +792,14 @@ aws glue get-job-run --job-name cloudmart-bronze-to-silver --run-id <run-id>
 # Verify transformed data
 aws s3 ls s3://cloudmart-processed/orders/
 aws s3 ls s3://cloudmart-curated/orders_daily_summary/
-```
+```text
 
 ### Phase 5: Analytics (3-4 hours)
 
 **Goal:** Enable SQL analytics with Athena
 
 **Tasks:**
+
 - Create Athena workgroup
 - Write SQL queries for business insights
 - Create views for common queries
@@ -789,6 +808,7 @@ aws s3 ls s3://cloudmart-curated/orders_daily_summary/
 - Create sample dashboard visualization
 
 **Deliverables:**
+
 - Athena workgroup configuration
 - SQL queries (10+ business queries)
 - View definitions
@@ -796,6 +816,7 @@ aws s3 ls s3://cloudmart-curated/orders_daily_summary/
 - Sample query results
 
 **Validation:**
+
 ```bash
 # Run Athena query
 aws athena start-query-execution \
@@ -804,13 +825,13 @@ aws athena start-query-execution \
 
 # Get query results
 aws athena get-query-results --query-execution-id <execution-id>
-```
+```text
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 module-checkpoint-01-serverless-data-lake/
 │
 ├── README.md                          # This file
@@ -962,7 +983,7 @@ module-checkpoint-01-serverless-data-lake/
 
 ### Submission Format
 
-```
+```text
 checkpoint-01-submission/
 ├── README.md (your project documentation)
 ├── infrastructure/ (all IaC code)
@@ -982,7 +1003,7 @@ checkpoint-01-submission/
 │   ├── test-output.txt
 │   └── coverage-report.html
 └── SUBMISSION.md (summary and reflection)
-```
+```text
 
 ---
 
@@ -993,10 +1014,12 @@ checkpoint-01-submission/
 #### Issue 1: Lambda Functions Timing Out
 
 **Symptoms:**
+
 - Lambda execution exceeds 15-second timeout
 - Data not appearing in S3
 
 **Solutions:**
+
 ```python
 # Increase Lambda timeout in CloudFormation
 Timeout: 60  # seconds
@@ -1009,15 +1032,17 @@ def process_batch(records, batch_size=100):
 
 # Use Lambda Layers for dependencies
 # Don't bundle large libraries in deployment package
-```
+```text
 
 #### Issue 2: Glue Crawler Not Finding Data
 
 **Symptoms:**
+
 - Crawler completes but no tables created
 - Tables created with empty schemas
 
 **Solutions:**
+
 - Verify S3 path is exactly correct (case-sensitive)
 - Ensure data files exist in the S3 path
 - Check IAM permissions for Glue to read S3
@@ -1036,10 +1061,12 @@ aws iam get-role --role-name AWSGlueServiceRole-CloudMart
 #### Issue 3: Athena Query Fails with "Access Denied"
 
 **Symptoms:**
+
 - Query execution fails immediately
 - Error: "Access Denied" or "Insufficient permissions"
 
 **Solutions:**
+
 - Verify Athena has permissions to read S3 buckets
 - Check query results S3 location permissions
 - Ensure Glue Data Catalog permissions
@@ -1061,15 +1088,17 @@ aws iam get-role --role-name AWSGlueServiceRole-CloudMart
     }
   ]
 }
-```
+```text
 
 #### Issue 4: High AWS Costs
 
 **Symptoms:**
+
 - Costs exceeding $50/month budget
 - Unexpected charges
 
 **Solutions:**
+
 - Check S3 storage class (use Standard-IA for infrequent access)
 - Verify Glue jobs aren't running continuously
 - Review CloudWatch Logs retention period
@@ -1088,16 +1117,18 @@ aws cloudwatch get-metric-statistics --namespace AWS/S3 \
   --metric-name BucketSizeBytes --dimensions Name=BucketName,Value=YOUR_BUCKET \
   --statistics Average --start-time 2026-03-01T00:00:00Z \
   --end-time 2026-03-09T00:00:00Z --period 86400
-```
+```text
 
 #### Issue 5: Data Quality Issues
 
 **Symptoms:**
+
 - Duplicate records in Silver layer
 - Incorrect aggregations in Gold layer
 - Schema mismatches
 
 **Solutions:**
+
 - Implement deduplication logic
 - Add data validation checks
 - Test with small datasets first
@@ -1112,7 +1143,7 @@ window = Window.partitionBy("order_id").orderBy(col("timestamp").desc())
 deduped_df = df.withColumn("row_num", row_number().over(window)) \
                .filter(col("row_num") == 1) \
                .drop("row_num")
-```
+```text
 
 ### Getting Help
 
@@ -1188,6 +1219,7 @@ deduped_df = df.withColumn("row_num", row_number().over(window)) \
    - Note alternative implementations
 
 3. **Clean Up Resources**
+
    ```bash
    # Delete CloudFormation stack
    aws cloudformation delete-stack --stack-name cloudmart-data-lake

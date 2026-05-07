@@ -23,6 +23,7 @@
 ## 📚 Context
 
 Construirás un **Order Processing System** con:
+
 - SQS como message broker
 - Lambda processors (async)
 - DLQ para errores
@@ -30,7 +31,7 @@ Construirás un **Order Processing System** con:
 
 **Arquitectura**:
 
-```
+```text
 ┌──────────────┐
 │  API Gateway │
 └──────┬───────┘
@@ -61,7 +62,7 @@ Construirás un **Order Processing System** con:
 │ DLQ │  │ DynamoDB  │
 │     │  │ (orders)  │
 └─────┘  └───────────┘
-```
+```text
 
 ---
 
@@ -150,7 +151,7 @@ def generate_dedup_id(order: dict) -> str:
     """
     content = json.dumps(order, sort_keys=True)
     return hashlib.sha256(content.encode()).hexdigest()
-```
+```text
 
 ---
 
@@ -421,7 +422,7 @@ output "api_endpoint" {
 output "queue_url" {
   value = aws_sqs_queue.orders_fifo.url
 }
-```
+```text
 
 ---
 
@@ -450,7 +451,7 @@ curl -X POST "$API_URL/orders" \
 aws dynamodb get-item \
   --table-name orders-dev \
   --key '{"order_id": {"S": "ORD001"}}'
-```
+```text
 
 ### 4.2 Test Deduplication (Idempotencia)
 
@@ -468,7 +469,7 @@ for i in {1..2}; do
 done
 
 # Solo debe procesarse UNA vez (deduplication ID idéntico)
-```
+```text
 
 ### 4.3 Test DLQ (Simular fallo)
 
@@ -504,7 +505,7 @@ fields @timestamp, order_id, status
 fields @timestamp, error
 | filter @message like /Failed to process/
 | stats count() by error
-```
+```text
 
 ---
 

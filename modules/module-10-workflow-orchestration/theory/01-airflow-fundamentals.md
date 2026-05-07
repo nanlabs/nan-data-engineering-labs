@@ -30,6 +30,7 @@
 ### When to Use Airflow
 
 **✅ Use Airflow for:**
+
 - Batch data processing pipelines
 - ETL/ELT workflows
 - Machine Learning pipelines
@@ -38,6 +39,7 @@
 - Complex dependency management
 
 **❌ Don't use Airflow for:**
+
 - streaming data (use Kafka, Flink, Spark Streaming)
 - Event-driven workflows (consider AWS Step Functions, Temporal)
 - Simple cron jobs (overkill)
@@ -62,13 +64,14 @@
 Un **DAG** es la unidad fundamental en Airflow que representa un workflow.
 
 **Características:**
+
 - **Directed**: Tasks tienen orden específico
 - **Acyclic**: No loops/cycles
 - **Graph**: Conjunto de tasks y sus dependencias
 
 **Ejemplo Conceptual:**
 
-```
+```text
     start
       ↓
   extract_data
@@ -78,13 +81,14 @@ Un **DAG** es la unidad fundamental en Airflow que representa un workflow.
    load_data
       ↓
      end
-```
+```text
 
 ### Tasks
 
 **Task** es una unidad de trabajo dentro de un DAG.
 
 **Tipos:**
+
 - **Operator**: Realiza acción específica (PythonOperator, BashOperator)
 - **Sensor**: Espera por condición (FileSensor, HttpSensor)
 - **TaskFlow**: Decorador `@task` (Airflow 2.0+)
@@ -124,6 +128,7 @@ Un **DAG** es la unidad fundamental en Airflow que representa un workflow.
 4. Maneja backfilling
 
 **Execution Date vs Run Date:**
+
 - **Execution Date**: Fecha lógica del periodo de datos (ej: 2024-01-01)
 - **Run Date**: Fecha real cuando el DAG ejecuta (ej: 2024-01-02 00:05)
 
@@ -172,7 +177,7 @@ Un **DAG** es la unidad fundamental en Airflow que representa un workflow.
 
 ### High-Level Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                     Web Server (UI)                     │
 │                   (Flask Application)                   │
@@ -207,6 +212,7 @@ Un **DAG** es la unidad fundamental en Airflow que representa un workflow.
 ### Components Interaction
 
 **1. DAG Authoring:**
+
 ```python
 # Developer writes DAG in Python
 # File stored in: $AIRFLOW_HOME/dags/my_dag.py
@@ -216,15 +222,17 @@ from airflow.operators.python import PythonOperator
 
 dag = DAG('my_dag', schedule='@daily')
 task1 = PythonOperator(task_id='task1', python_callable=my_function, dag=dag)
-```
+```text
 
 **2. Scheduler Parsing:**
+
 - Scheduler scans `dags/` folder
 - Parses Python files to find DAGs
 - Stores DAG metadata in database
 - Creates DagRun instances based on schedule
 
 **3. Task Execution:**
+
 - Scheduler checks task dependencies
 - Submits task to Executor
 - Executor assigns task to Worker
@@ -232,6 +240,7 @@ task1 = PythonOperator(task_id='task1', python_callable=my_function, dag=dag)
 - Results stored in metadata DB
 
 **4. Monitoring:**
+
 - Web server reads metadata DB
 - Displays DAG runs, task states
 - Shows logs, metrics, graphs
@@ -241,39 +250,47 @@ task1 = PythonOperator(task_id='task1', python_callable=my_function, dag=dag)
 **Key Tables:**
 
 **`dag`**
+
 - DAG definitions
 - Schedule interval, default args
 
 **`dag_run`**
+
 - Instances of DAG executions
 - State: running, success, failed
 - Execution date
 
 **`task_instance`**
+
 - Instances of task executions
 - State: queued, running, success, failed, skipped
 - Start/end time, duration
 - Tries/retries
 
 **`task_fail`**
+
 - Failed task attempts details
 
 **`log`**
+
 - Task execution logs
 
 **`connection`**
+
 - External connection configs
 - Databases, APIs, cloud services
 
 **`variable`**
+
 - Key-value store for config
 
 **`xcom`**
+
 - Cross-communication between tasks
 
 ### DAG Processing Flow
 
-```
+```text
 1. DAG File Created
         ↓
 2. Scheduler Scans dags/ Folder
@@ -295,7 +312,7 @@ task1 = PythonOperator(task_id='task1', python_callable=my_function, dag=dag)
 10. Update Task States
         ↓
 11. Web UI Displays Status
-```
+```text
 
 ---
 
@@ -306,6 +323,7 @@ task1 = PythonOperator(task_id='task1', python_callable=my_function, dag=dag)
 **Purpose**: Provide UI for monitoring and managing DAGs.
 
 **Features:**
+
 - **DAG View**: List of all DAGs, states, schedules
 - **Tree View**: Hierarchical task execution view
 - **Graph View**: Visual DAG dependencies
@@ -316,6 +334,7 @@ task1 = PythonOperator(task_id='task1', python_callable=my_function, dag=dag)
 - **Admin Panel**: Users, roles, permissions
 
 **Technologies:**
+
 - Built on Flask
 - Gunicorn WSGI server
 - Authentication: LDAP, OAuth, Basic Auth, etc.
@@ -366,7 +385,7 @@ scheduler_heartbeat_sec = 5
 dag_dir_list_interval = 300  # 5 minutes
 max_threads = 2
 catchup_by_default = True
-```
+```text
 
 **Scheduler Loop:**
 
@@ -394,13 +413,14 @@ while True:
     process_executor_events()
 
     time.sleep(scheduler_heartbeat_sec)
-```
+```text
 
 ### Executor
 
 #### LocalExecutor
 
 **How it works:**
+
 - Uses Python `multiprocessing.Pool`
 - Each task = subprocess
 - Parallelism limited by CPU cores
@@ -417,20 +437,23 @@ max_active_runs_per_dag = 16
 
 [celery]
 # Not used with LocalExecutor
-```
+```text
 
 **Pros:**
+
 - Simple setup
 - Good for small/medium workloads
 - No additional services needed
 
 **Cons:**
+
 - Limited scaling (single machine)
 - No task isolation (shared resources)
 
 #### CeleryExecutor
 
 **How it works:**
+
 - Distributed task queue
 - Workers on multiple machines
 - Message broker (Redis/RabbitMQ) for task distribution
@@ -443,39 +466,45 @@ Scheduler → Celery Broker (Redis) → Celery Workers
         (Task Queue)
               ↓
    [Worker 1] [Worker 2] [Worker N]
-```
+```text
 
 **Setup:**
 
 1. **Install Celery:**
+
 ```bash
 pip install 'apache-airflow[celery]'
-```
+```text
 
-2. **Configure Broker:**
+1. **Configure Broker:**
+
 ```python
 # airflow.cfg
 [celery]
 broker_url = redis://localhost:6379/0
 result_backend = db+postgresql://user:pass@localhost/airflow
-```
+```text
 
-3. **Start Workers:**
+1. **Start Workers:**
+
 ```bash
 airflow celery worker
 ```
 
-4. **Monitor:**
+1. **Monitor:**
+
 ```bash
 airflow celery flower  # Web UI on port 5555
-```
+```text
 
 **Pros:**
+
 - Horizontal scaling
 - Good for large workloads
 - Task isolation
 
 **Cons:**
+
 - Complex setup
 - Additional services (Redis/RabbitMQ)
 - Network overhead
@@ -483,6 +512,7 @@ airflow celery flower  # Web UI on port 5555
 #### KubernetesExecutor
 
 **How it works:**
+
 - Each task = Kubernetes Pod
 - Pod created just-in-time
 - Pod deleted after task completes
@@ -497,7 +527,7 @@ kube_config = /path/to/kubeconfig
 worker_container_repository = apache/airflow
 worker_container_tag = 2.8.1
 delete_worker_pods = True
-```
+```text
 
 **Pod Template:**
 
@@ -518,15 +548,17 @@ spec:
         limits:
           memory: "2Gi"
           cpu: "2000m"
-```
+```text
 
 **Pros:**
+
 - Auto-scaling
 - Resource isolation
 - Cloud-native
 - No worker management
 
 **Cons:**
+
 - Kubernetes knowledge required
 - Pod startup overhead
 - Complex debugging
@@ -536,6 +568,7 @@ spec:
 **Worker** ejecuta las tareas.
 
 **LocalExecutor Worker:**
+
 ```python
 # Subprocess executing task
 import subprocess
@@ -547,6 +580,7 @@ subprocess.run([
 ```
 
 **Celery Worker:**
+
 ```bash
 # Start worker
 airflow celery worker --queues default,high_priority
@@ -554,9 +588,10 @@ airflow celery worker --queues default,high_priority
 # Worker polls broker for tasks
 # Executes task
 # Returns result to result_backend
-```
+```text
 
 **Kubernetes Worker:**
+
 ```yaml
 # Ephemeral pod created per task
 apiVersion: v1
@@ -569,7 +604,7 @@ spec:
       image: apache/airflow:2.8.1
       command: ['airflow', 'tasks', 'run', 'my_dag', 'my_task', '2024-01-01']
   restartPolicy: Never
-```
+```text
 
 ---
 
@@ -582,14 +617,16 @@ spec:
 **Formatos:**
 
 1. **Cron Expression:**
+
 ```python
 dag = DAG(
     'my_dag',
     schedule='0 0 * * *',  # Daily at midnight
 )
-```
+```text
 
-2. **Preset:**
+1. **Preset:**
+
 ```python
 from airflow.timetables.interval import CronDataIntervalTimetable
 
@@ -607,7 +644,8 @@ dag = DAG(
 # @yearly - 0 0 1 1 *
 ```
 
-3. **Timedelta:**
+1. **Timedelta:**
+
 ```python
 from datetime import timedelta
 
@@ -615,15 +653,16 @@ dag = DAG(
     'my_dag',
     schedule=timedelta(hours=2),  # Every 2 hours
 )
-```
+```text
 
-4. **None (Manual Trigger):**
+1. **None (Manual Trigger):**
+
 ```python
 dag = DAG(
     'my_dag',
     schedule=None,  # Manual only
 )
-```
+```text
 
 ### Execution Date
 
@@ -631,7 +670,7 @@ dag = DAG(
 
 **Example:**
 
-```
+```text
 Schedule: @daily
 Start Date: 2024-01-01
 
@@ -657,7 +696,7 @@ dag = DAG(
 
 # If today is 2024-01-10 and DAG never ran:
 # Will create 9 DagRuns (2024-01-01 through 2024-01-09)
-```
+```text
 
 **Backfilling** (manual):
 
@@ -667,13 +706,13 @@ airflow dags backfill \
     --start-date 2024-01-01 \
     --end-date 2024-01-10 \
     my_dag
-```
+```text
 
 ### Task States
 
 **Lifecycle:**
 
-```
+```text
 None (not created)
     ↓
 Scheduled (queued)
@@ -716,7 +755,7 @@ task = PythonOperator(
     retry_exponential_backoff=True,  # 5min, 10min, 20min
     max_retry_delay=timedelta(hours=1),  # Max delay
 )
-```
+```text
 
 ---
 
@@ -744,7 +783,7 @@ airflow users create \
     --lastname User \
     --role Admin \
     --email admin@example.com
-```
+```text
 
 #### Method 2: Docker Compose (Recommended)
 
@@ -796,7 +835,7 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
       AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
     command: celery worker
-```
+```text
 
 ```bash
 docker-compose up -d
@@ -804,7 +843,7 @@ docker-compose up -d
 
 ### Directory Structure
 
-```
+```text
 $AIRFLOW_HOME/
 ├── airflow.cfg           # Main configuration
 ├── airflow.db           # SQLite DB (dev only)
@@ -821,7 +860,7 @@ $AIRFLOW_HOME/
 │   ├── sensors/
 │   └── hooks/
 └── webserver_config.py  # Web server config
-```
+```text
 
 ### Key Configuration
 
@@ -862,7 +901,7 @@ smtp_user = your_email@gmail.com
 smtp_password = your_password
 smtp_port = 587
 smtp_mail_from = airflow@example.com
-```
+```text
 
 ---
 
@@ -956,7 +995,7 @@ airflow dags list
 # Pause/Unpause
 airflow dags pause hello_world
 airflow dags unpause hello_world
-```
+```text
 
 ### Access UI
 
@@ -966,9 +1005,10 @@ airflow webserver --port 8080
 
 # In browser: http://localhost:8080
 # Login with admin credentials
-```
+```text
 
 **UI Navigation:**
+
 1. **DAGs List**: See all DAGs, states, schedules
 2. **Click DAG**: View details
 3. **Graph View**: Visualize task dependencies
@@ -989,11 +1029,13 @@ airflow webserver --port 8080
 ✅ Web Server = UI for monitoring
 
 **Architecture:**
-```
+
+```text
 Web Server ⟷ Metadata DB ⟷ Scheduler → Executor → Workers
 ```
 
 **Next Steps:**
+
 - Learn DAGs and Operators in depth
 - Understand TaskFlow API
 - Explore production patterns

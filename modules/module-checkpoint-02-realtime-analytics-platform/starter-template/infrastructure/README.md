@@ -40,28 +40,31 @@ tags = {
   Team = "DataEngineering"
   Cost = "Training"
 }
-```
+```text
 
 ### 2. Initialize Terraform
 
 ```bash
 terraform init
-```
+```text
 
 ### 3. Complete TODOs
 
 Work through each TODO in `main.tf`:
 
 #### TODO 1-2: KMS Keys
+
 - Encryption keys are mostly complete
 - Verify deletion windows and key rotation settings
 
 #### TODO 3-4: Kinesis Streams
+
 - Set correct shard counts (high-volume streams need more shards)
 - Configure 24-hour retention
 - Enable KMS encryption
 
 **Example:**
+
 ```hcl
 resource "aws_kinesis_stream" "rides" {
   shard_count      = var.kinesis_shard_count  # 2 for high volume
@@ -69,14 +72,16 @@ resource "aws_kinesis_stream" "rides" {
   encryption_type  = "KMS"
   kms_key_id       = aws_kms_key.kinesis.key_id
 }
-```
+```text
 
 #### TODO 5-8: S3 Bucket
+
 - Enable versioning
 - Configure KMS encryption
 - Set lifecycle policies (IA at 30 days, Glacier at 90 days, expire at 365 days)
 
 **Example:**
+
 ```hcl
 transition {
   days          = 30
@@ -85,6 +90,7 @@ transition {
 ```
 
 #### TODO 9-12: DynamoDB Tables
+
 - Use PAY_PER_REQUEST billing mode
 - Add Global Secondary Indexes for querying patterns
 - Enable streams with NEW_AND_OLD_IMAGES
@@ -92,25 +98,29 @@ transition {
 - Configure KMS encryption
 
 **Key GSIs:**
+
 - Rides table: rider-index (by rider_id), driver-index (by driver_id)
 - Drivers table: city-index (by city)
 - Payments table: ride-index (by ride_id)
 
 #### TODO 13-14: IAM Roles
+
 - Lambda trust policy allowing lambda.amazonaws.com
 - Permissions for Kinesis read, DynamoDB write, S3 write
 - CloudWatch Logs write permissions
 
 **Example Policy:**
+
 ```json
 {
   "Effect": "Allow",
   "Action": ["kinesis:GetRecords", "kinesis:GetShardIterator"],
   "Resource": "arn:aws:kinesis:*:*:stream/*"
 }
-```
+```text
 
 #### TODO 15-16: Lambda Functions
+
 - Create 4 Lambda functions (rides, locations, payments, ratings processors)
 - Python 3.11 runtime
 - Memory: 512MB (256MB for locations/ratings)
@@ -120,6 +130,7 @@ transition {
 **Note:** Lambda code deployment is separate (see ../pipelines/lambda/)
 
 #### TODO 17: CloudWatch Log Groups
+
 - Create log groups for each Lambda function
 - Set retention period from variable
 - Pattern: `/aws/lambda/${project_name}-${environment}-{function_name}`
@@ -132,7 +143,7 @@ terraform validate
 
 # Preview changes
 terraform plan
-```
+```text
 
 ### 5. Deploy Infrastructure
 
@@ -142,7 +153,7 @@ terraform apply
 
 # Or deploy specific resources
 terraform apply -target=aws_kinesis_stream.rides
-```
+```text
 
 ### 6. Verify Deployment
 
@@ -160,11 +171,13 @@ aws s3 ls
 ## Resource Naming Convention
 
 All resources follow this pattern:
-```
+
+```text
 ${project_name}-${environment}-{resource_type}
-```
+```text
 
 Examples:
+
 - `rideshare-analytics-dev-rides-stream`
 - `rideshare-analytics-dev-rides` (DynamoDB table)
 - `rideshare-analytics-dev-data-us-east-1` (S3 bucket)
@@ -194,11 +207,12 @@ Estimated monthly costs (dev environment):
 ```bash
 # If state is locked
 terraform force-unlock <LOCK_ID>
-```
+```text
 
 ### Issue: Insufficient Permissions
 
 Check IAM user/role has these permissions:
+
 - kinesis:*
 - dynamodb:*
 - s3:*
@@ -210,6 +224,7 @@ Check IAM user/role has these permissions:
 ### Issue: Resource Already Exists
 
 If resources exist with same names:
+
 ```bash
 # Import existing resource
 terraform import aws_kinesis_stream.rides rideshare-analytics-dev-rides-stream
@@ -222,6 +237,7 @@ terraform apply -target=aws_kinesis_stream.rides
 ### Issue: KMS Key Deletion
 
 KMS keys have deletion windows. If you destroy and recreate:
+
 1. Wait for deletion window (30 days default)
 2. Or use different alias names
 3. Or cancel deletion: `aws kms cancel-key-deletion --key-id <ID>`
@@ -233,7 +249,7 @@ After deployment, run acceptance tests:
 ```bash
 cd ../../validation/acceptance-tests
 ./run_tests.sh infrastructure
-```
+```text
 
 ## Cleanup
 
@@ -248,7 +264,7 @@ terraform destroy
 
 # Or destroy specific resources
 terraform destroy -target=aws_kinesis_stream.rides
-```
+```text
 
 **Warning:** This will delete all data! Export important data first.
 
@@ -272,6 +288,7 @@ After completing infrastructure:
 ## Support
 
 If you get stuck:
+
 1. Review the TODO comments for hints
 2. Check the reference solution (for comparison only)
 3. Run `terraform plan` to see what's missing

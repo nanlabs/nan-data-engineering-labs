@@ -71,7 +71,7 @@ awslocal glue create-database \
 
 # Verify databases were created
 awslocal glue get-databases
-```
+```text
 
 ### Task 2: Create Bronze Table for Raw Data
 
@@ -135,7 +135,7 @@ awslocal glue create-table \
 awslocal glue get-table \
     --database-name dev_sales_bronze_db \
     --name sales_transactions
-```
+```text
 
 ### Task 3: Create Silver Table with Enhanced Schema
 
@@ -197,7 +197,7 @@ awslocal glue create-table \
             "StoredAsSubDirectories": false
         }
     }'
-```
+```text
 
 ### Task 4: Create Gold Aggregation Table
 
@@ -281,7 +281,7 @@ awslocal glue get-partition \
     --database-name dev_sales_bronze_db \
     --table-name sales_transactions \
     --partition-values "2024" "03" "08"
-```
+```text
 
 ### Task 6: Query the Catalog
 
@@ -343,12 +343,13 @@ for partition in partitions['Partitions']:
     values = '/'.join(partition['Values'])
     location = partition['StorageDescriptor']['Location']
     print(f"- {values}: {location}")
-```
+```text
 
 Run the query script:
+
 ```bash
 python catalog_query.py
-```
+```text
 
 ## Validation
 
@@ -360,6 +361,7 @@ python validation_01.py
 ```
 
 Expected results:
+
 - ✅ 3 databases created (bronze, silver, gold)
 - ✅ 3 tables created (one per layer)
 - ✅ Bronze table has 15 columns and 3 partition keys

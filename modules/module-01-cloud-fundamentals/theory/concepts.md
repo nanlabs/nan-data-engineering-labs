@@ -46,26 +46,31 @@ According to the NIST (National Institute of Standards and Technology), cloud co
 Cloud computing is especially relevant for Data Engineering for several reasons:
 
 **1. Scalability for Large Volumes of Data**
+
 - Process terabytes or petabytes without initial investment in hardware
 - Scale processing horizontally for Spark jobs or ETL pipelines
 - Virtually unlimited storage (S3 can store infinite objects)
 
 **2. Costo variable vs. Costo Fijo**
+
 - You don't pay for idle capacity
 - Process data in batch only when necessary
 - Example: A pipeline that runs 1 hour/day only costs 1/24 of the cost of a 24/7 server
 
 **3. Speed ​​and Agility**
+
 - Experiment with new technologies without procurement
 - Provision Spark clusters in minutes, not weeks
 - Quickly iterate on data architectures
 
 **4. Alcance Global**
+
 - Replicate Data close to your users in multiple regions
 - Low latency for global applications
 - Compliance with Data residency regulations
 
 **5. Serverless and Managed Services**
+
 - Reduce overhead operacional (no gestionar parches, backups, HA)
 - Focus on business logic, not infrastructure
 - Example: AWS Glue for ETL without managing Spark servers
@@ -81,6 +86,7 @@ There are three main cloud service models, forming an abstraction pyramid:
 **Definition:** Provision of critical IT infrastructure (computing, networking, storage) as a service.
 
 **What do you manage:**
+
 - Sistema operativo
 - Middleware
 - Runtime
@@ -88,29 +94,34 @@ There are three main cloud service models, forming an abstraction pyramid:
 - Aplicaciones
 
 **What the provider manages:**
+
 - Virtualization
 - Physical servers
 - Physical storage
 - Physical networking
 
 **Examples on AWS:**
+
 - **Amazon EC2:** Virtual machines
 - **Amazon EBS:** Block Storage
 - **Amazon VPC:** Redes virtuales privadas
 
 **Usage Case in Data Engineering:**
-```
+
+```text
 Necesitas instalar una versión específica de Apache Kafka con configuraciones
 custom que no están disponibles en servicios managed. Usas EC2 para desplegar
 tu cluster de Kafka con control total sobre la configuration.
-```
+```text
 
 **Ventajas:**
+
 - Full control over infrastructure
 - Maximum flexibility
 - Puedes instalar cualquier software
 
 **Desventajas:**
+
 - Mayor responsabilidad operacional
 - Debes gestionar OS, seguridad, patches
 - More complexity
@@ -120,10 +131,12 @@ tu cluster de Kafka con control total sobre la configuration.
 **Definition:** Provision of a development and deployment platform without managing underlying infrastructure.
 
 **What do you manage:**
+
 - Data
 - Aplicaciones
 
 **What the provider manages:**
+
 - Runtime
 - Middleware
 - Sistema operativo
@@ -133,24 +146,28 @@ tu cluster de Kafka con control total sobre la configuration.
 - Networking
 
 **Examples on AWS:**
+
 - **AWS Elastic Beanstalk:** Web Application Deployment
 - **AWS Lambda:** Functions serverless
 - **Amazon RDS:** Managed Relational Databases
 - **AWS Glue:** ETL managed with Spark
 
 **Usage Case in Data Engineering:**
-```
+
+```text
 Necesitas una base de datos PostgreSQL para tu data warehouse. En lugar de
 instalar y configurar PostgreSQL en EC2 (IaaS), usas Amazon RDS que gestiona
 automáticamente backups, patches, replicación y failover.
 ```
 
 **Ventajas:**
+
 - Menos overhead operacional
 - Focus on development, not infrastructure
 - Built-in scalability and high availability
 
 **Desventajas:**
+
 - Less control over configuration
 - Vendor lock-in potencial
 - Costs may be higher than IaaS
@@ -160,30 +177,36 @@ automáticamente backups, patches, replicación y failover.
 **Definition:** Provision of complete applications over the Internet.
 
 **What do you manage:**
+
 - You just use the app
 
 **What the provider manages:**
+
 - The entire technological stack
 
 **Examples:**
+
 - **Snowflake:** Data warehouse cloud-native
 - **Databricks:** Unified Data Platform
 - **Fivetran:** Data ingestion tool
 - **Looker:** Business intelligence
 
 **Usage Case in Data Engineering:**
-```
+
+```text
 Necesitas ingestar datos de 50 fuentes SaaS (Salesforce, Google Analytics, etc.)
 a tu data warehouse. Usar Fivetran (SaaS) te da conectores pre-built y
 mantenidos, sin escribir código.
-```
+```text
 
 **Ventajas:**
+
 - Zero infrastructure management
 - Automatic updates
 - Access inmediato
 
 **Desventajas:**
+
 - Menos flexibilidad
 - Total dependence on the vendor
 - Costs can escalate quickly
@@ -221,6 +244,7 @@ Understanding the global AWS infrastructure is critical to designing resilient a
 An **AWS Region** is a physical geographic location in the world where AWS has multiple data centers.
 
 **Features:**
+
 - AWS has **33+ regions** currently (and growing)
 - Each region is completely independent
 - Data in one region is NOT automatically replicated to other regions
@@ -245,7 +269,8 @@ An **AWS Region** is a physical geographic location in the world where AWS has m
    - `us-east-1`usually the cheapest, Asia-Pacific regions more expensive
 
 **Example for Data Engineering:**
-```
+
+```text
 Tienes usuarios en América del Norte y Europa. Decides:
 - Data Lake principal en us-east-1 (costo)
 - Réplica read-only en eu-west-1 (latencia para usuarios EU)
@@ -257,13 +282,15 @@ Tienes usuarios en América del Norte y Europa. Decides:
 An Availability Zone is one or more discrete data centers with redundant power, networking and connectivity within a region.
 
 **Features clave:**
+
 - Each region has **minimum 3 AZs** (some have 6+)
 - AZs are **physically separated** (different buildings)
 - Connected with **low latency networking** (<2ms between AZs)
 - Nombradas: `us-east-1a`, `us-east-1b`, `us-east-1c`, etc.
 
 **Visualization:**
-```
+
+```text
 Region: us-east-1
 ├── AZ: us-east-1a (Data Center 1, 2)
 ├── AZ: us-east-1b (Data Center 3, 4)
@@ -271,14 +298,15 @@ Region: us-east-1
 ├── AZ: us-east-1d (Data Center 7)
 ├── AZ: us-east-1e (Data Center 8)
 └── AZ: us-east-1f (Data Center 9)
-```
+```text
 
 **Why multiple AZs?**
 
 **High Availability:** If a data center fails (fire, power outage, natural disaster), your applications continue working in other AZs.
 
 **Multi-AZ architecture example for Data Engineering:**
-```
+
+```text
 Data Pipeline:
 - Kinesis Data Stream: Réplicas en 3 AZs (automático)
 - Lambda processors: Se despliegan en todas las AZs de la región
@@ -296,12 +324,14 @@ Si us-east-1a falla → Kinesis sigue escribiendo en 1b y 1c
 **Edge Locations** are globally distributed points of presence (PoP) to deliver Content with low latency.
 
 **Features:**
+
 - **450+ Edge Locations** in ~90 cities
 - Much more numerous than regions (33) or AZs (~100)
 - Mainly used by **CloudFront** (CDN) and **Route 53** (DNS)
 
 **Usage in Data Engineering:**
-```
+
+```text
 Scenario: Dashboard de BI consumido por 10,000 usuarios globales
 
 Sin Edge Locations:
@@ -312,7 +342,7 @@ Con CloudFront (Edge Locations):
 - Dashboard assets (JS, CSS, imágenes) cacheados en edge
 - Usuarios en Australia conectan a edge en Sydney: 20-30ms latency
 - 10x mejora en performance
-```
+```text
 
 ### Global Infrastructure Diagram
 
@@ -345,7 +375,7 @@ graph TB
     AZ1 -.->|CloudFront<br/>Distribution| Edge1
     AZ4 -.->|CloudFront<br/>Distribution| Edge2
     AZ7 -.->|CloudFront<br/>Distribution| Edge3
-```
+```text
 
 ### Design Principles for Data Engineering
 
@@ -367,20 +397,23 @@ IAM is the fundamental security service on AWS. **Everything in AWS requires aut
 An **IAM User** represents a person or application that interacts with AWS.
 
 **Features:**
+
 - Tiene credenciales permanentes (password o access keys)
 - Puede tener permisos asignados directamente (no recomendado)
 - Best Practice: Assign permissions via Groups
 
 **Example:**
+
 ```
 IAM User: john.doe@company.com
 - Password: Para AWS Console
 - Access Key ID: AKIAIOSFODNN7EXAMPLE
 - Secret Access Key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-```
+```text
 
 **For Data Engineering:**
-```
+
+```text
 Scenario: Tienes 5 data engineers en tu equipo
 
 ❌ MAL:
@@ -391,18 +424,20 @@ Scenario: Tienes 5 data engineers en tu equipo
 - Cada engineer tiene su propio IAM User
 - Logs de CloudTrail muestran quién ejecutó cada acción
 - Puedes revocar acceso individualmente
-```
+```text
 
 #### Groups (Grupos)
 
 An **IAM Group** is a collection of IAM Users.
 
 **Ventajas:**
+
 - Manage permissions at the group level, not user by user
 - A user can belong to multiple groups
 - Simplify administration at scale
 
 **Structure Example:**
+
 ```
 Group: DataEngineers
 ├── Permissions: S3 Full Access, Glue Full Access, Athena Full Access
@@ -416,56 +451,62 @@ Group: DataAnalysts
 ├── Members:
 │   ├── alice.johnson@company.com
 │   └── bob.wilson@company.com
-```
+```text
 
 #### Roles (Roles)
 
 An **IAM Role** is an identity with specific permissions that can be temporarily **assumed** by trusted entities.
 
 **Key difference with Users:**
+
 - **Users:** Credenciales permanentes
 - **Roles:** Credenciales temporales (15min - 12hrs)
 
 **Main Usage Cases:**
 
 **1. EC2 Instances (most common)**
-```
+
+```text
 EC2 Instance → Asume IAM Role → Obtiene credenciales temporales → Accede a S3
 
 Ventajas:
 - No necesitas hardcodear access keys en la instancia
 - Credenciales rotan automáticamente
 - Puedes revocar acceso sin tocar la instancia
-```
+```text
 
 **2. Cross-Account Access**
+
 ```
 Cuenta A (Producción) → Permite Cuenta B (Dev) → Asumir role
 
 Scenario: Developers en cuenta Dev necesitan leer datos de S3 en cuenta Prod
 Solution: Create role en Prod que Cuenta Dev puede asumir temporalmente
-```
+```text
 
 **3. Lambda Functions**
-```
+
+```text
 Lambda Function → Execution Role → Permisos para:
 ├── Leer de S3
 ├── Write a DynamoDB
 └── Enviar logs a CloudWatch
-```
+```text
 
 **4. Federated Access (SSO)**
+
 ```
 Employee → Autentica con Okta/Azure AD → Asume Role en AWS → Access temporal
 
 Ventaja: Single Sign-On, no gestionar passwords en AWS
-```
+```text
 
 #### Policies
 
 An **IAM Policy** is a JSON document that defines permissions.
 
 **Anatomy of a Policy:**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -485,9 +526,10 @@ An **IAM Policy** is a JSON document that defines permissions.
     }
   ]
 }
-```
+```text
 
 **Componentes:**
+
 - **Version:** Always "2012-10-17" (policy language version)
 - **Statement:** Array of permission statements
   - **Effect:** `Allow` o `Deny`
@@ -498,27 +540,32 @@ An **IAM Policy** is a JSON document that defines permissions.
 **Types of policies:**
 
 **1. Managed Policies (AWS-managed):**
-```
+
+```text
 - AmazonS3FullAccess
 - AWSGlueServiceRole
 - AmazonAthenaFullAccess
 ```
+
 Advantage: Maintained by AWS, good to start with
 Desventaja: Pueden ser muy permisivas
 
 **2. Customer-Managed Policies:**
-```
+
+```text
 Políticas custom que creas para tus necesidades específicas
 Ejemplo: "DataEngineerReadOnlyProduction"
-```
+```text
 
 **3. Inline Policies:**
-```
+
+```text
 Políticas embebidas directamente en un User/Group/Role
 Uso: Relaciones 1:1 estrictas
 ```
 
 **Example for Data Engineering - Restrictive Policy:**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -552,7 +599,7 @@ Uso: Relaciones 1:1 estrictas
     }
   ]
 }
-```
+```text
 
 ### IAM Best Practices
 
@@ -589,7 +636,7 @@ Uso: Relaciones 1:1 estrictas
 
 **Scenario:** Pipeline that reads from S3, processes with Lambda, writes to DynamoDB
 
-```
+```text
 Step 1: Create IAM Policy para Lambda
 {
   "Statement": [
@@ -624,7 +671,7 @@ Step 4: Lambda ejecuta con credenciales temporales
 - Obtiene credenciales temporales (1-6 hours según config)
 - SDK de AWS (boto3) usa credenciales automáticamente
 - Al expirar, Lambda solicita nuevas credenciales
-```
+```text
 
 ---
 
@@ -635,11 +682,13 @@ Step 4: Lambda ejecuta con credenciales temporales
 **What it is:** Scalable, durable and low-cost object storage.
 
 **Concepts clave:**
+
 - **Bucket:** Object container (globally unique names)
 - **Object:** File + metadata (up to 5TB per object)
 - **Key:** Path of the object (ex:`data/year=2024/month=01/file.parquet`)
 
 **Why it is essential for Data Engineering:**
+
 ```
 S3 es el "sistema de archivos" de la nube para datos
 
@@ -649,10 +698,11 @@ Usos típicos:
 ├── Backup y archivo: Retención de datos históricos
 ├── Logs y eventos: Almacenamiento de logs de aplicaciones
 └── Datasets para ML: Training data para modelos de machine learning
-```
+```text
 
 **Storage Classes:**
-```
+
+```text
 S3 Standard: Access frecuente, baja latencia
 └─→ S3 Intelligent-Tiering: Mueve datos automáticamente entre tiers
     └─→ S3 Standard-IA: Access infrecuente (backups mensuales)
@@ -664,9 +714,10 @@ Ejemplo de costos (us-east-1):
 - Standard-IA: $0.0125/GB/mes
 - Glacier: $0.004/GB/mes
 - Deep Archive: $0.00099/GB/mes
-```
+```text
 
 **Features esenciales:**
+
 - **Versioning:** Maintain multiple versions of objects
 - **Lifecycle Policies:** Automatic transition between storage classes
 - **Replication:** Cross-Region o Same-Region replication
@@ -677,12 +728,14 @@ Ejemplo de costos (us-east-1):
 **What it is:** Serverless computing service that executes code in response to events.
 
 **Features:**
+
 - No servers to manage
 - Automatic auto-scaling (0 to 1000s of concurrent executions)
 - Payment per millisecond of execution
 - 15 minute limit per invocation
 
 **Uses in Data Engineering:**
+
 ```
 1. ETL ligero y transformaciones
    S3 (CSV) → Lambda → S3 (Parquet)
@@ -698,9 +751,10 @@ Ejemplo de costos (us-east-1):
 
 5. Real-time processing
    Kinesis Stream → Lambda → DynamoDB/S3
-```
+```text
 
 **Limitaciones importantes:**
+
 - 15 min timeout (for long processes use Glue, EMR, Batch)
 - 10GB RAM maximum
 - 512MB /tmp storage
@@ -711,7 +765,8 @@ Ejemplo de costos (us-east-1):
 **What it is:** Virtual machines (instances) in the cloud with resizable computing capacity.
 
 **Instance Types relevant to Data:**
-```
+
+```text
 Compute Optimized (C-family):
 - c6i.xlarge: Para procesamiento batch intensivo
 - Ejemplo: Procesar millones de registros con Python
@@ -723,9 +778,10 @@ Memory Optimized (R-family):
 Storage Optimized (I-family):
 - i3.large: Para databases con alta I/O
 - Ejemplo: Elasticsearch cluster para búsqueda de logs
-```
+```text
 
 **When to use EC2 vs. Lambda:**
+
 ```
 Usa EC2 si:
 - Process run >15 minutes
@@ -738,14 +794,15 @@ Usa Lambda si:
 - Event-driven
 - Scaling automático es crítico
 - No quieres gestionar servidores
-```
+```text
 
 ### Amazon RDS (Relational Database Service)
 
 **What it is:** Managed relational databases (PostgreSQL, MySQL, SQL Server, Oracle).
 
 **Ventajas sobre EC2 + BD self-hosted:**
-```
+
+```text
 RDS Gestiona:
 ├── Backups automáticos (retention configurable)
 ├── Patches del motor de BD
@@ -758,9 +815,10 @@ Tú solo:
 ├── Diseñas esquema
 ├── Optimizas queries
 └── Gestionas usuarios y permisos
-```
+```text
 
 **Uses in Data Engineering:**
+
 ```
 1. Metadata Store
    - Airflow metadata database
@@ -773,10 +831,11 @@ Tú solo:
 3. Small Data Warehouses
    - Datasets <1TB con queries SQL
    - Alternativa a Redshift para casos simples
-```
+```text
 
 **Architecture example:**
-```
+
+```text
 Production App → RDS Primary (Multi-AZ)
                       ↓
                 Read Replica (para reporting/ETL)
@@ -784,7 +843,7 @@ Production App → RDS Primary (Multi-AZ)
                 ETL Job (Glue) → Extract data
                       ↓
                 S3 Data Lake
-```
+```text
 
 ---
 
@@ -797,20 +856,23 @@ Understanding the cost model is critical for optimization and avoiding invoice s
 **Model:** Payment by Usage, without commitments.
 
 **Features:**
+
 - Sin costos upfront
 - Sin contratos a largo plazo
 - Pay only for what you use
 
 **When to use:**
+
 ```
 ✅ Workloads impredecibles
 ✅ Desarrollo y testing
 ✅ Short-term projects
 ✅ Aplicaciones con tráfico spiky
-```
+```text
 
 **Cost example:**
-```
+
+```text
 Lambda:
 - $0.20 por 1M de requests
 - $0.0000166667 por GB-segundo
@@ -821,34 +883,37 @@ S3:
 
 RDS PostgreSQL (db.t3.medium):
 - $0.068 por hora = ~$50/mes
-```
+```text
 
 ### Reserved Instances (RIs)
 
 **Model:** 1 or 3 year commitment in exchange for a discount of up to 75%.
 
 **Types:**
+
 ```
 1. Standard RI: Máximo descuento, menos flexibilidad
 2. Convertible RI: Cambiar instance type, menor descuento
 3. Scheduled RI: Para workloads predecibles por horario
-```
+```text
 
 **Savings example:**
-```
+
+```text
 EC2 m5.xlarge On-Demand: $0.192/hora × 24 × 365 = $1,681/año
 
 EC2 m5.xlarge 3-year RI: $0.046/hora × 24 × 365 = $403/año
 
 Ahorro: $1,278/año (76% descuento)
-```
+```text
 
 **When to use:**
+
 ```
 ✅ Workloads de producción estables
 ✅ Databases que runn 24/7 (RDS, Redshift)
 ✅ Base layer de Auto Scaling Groups
-```
+```text
 
 ### Spot Instances
 
@@ -857,7 +922,8 @@ Ahorro: $1,278/año (76% descuento)
 **Catch:** AWS can terminate your instance with 2 minutes notice.
 
 **When to use:**
-```
+
+```text
 ✅ Batch processing tolerante a interrupciones
 ✅ Spark jobs que pueden reanudar desde checkpoint
 ✅ CI/CD test environments
@@ -866,9 +932,10 @@ Ahorro: $1,278/año (76% descuento)
 ❌ Databases de producción
 ❌ Aplicaciones stateful sin checkpoint
 ❌ Real-time processing crítico
-```
+```text
 
 **Example for Data Engineering:**
+
 ```
 EMR Cluster para procesamiento nocturno:
 - Core nodes: On-Demand (master + state)
@@ -879,18 +946,20 @@ Costo Spot (70% discount): = $9.22
 
 Ahorro por job: $21.50
 Ahorro mensual (30 jobs): $645
-```
+```text
 
 ### Savings Plans
 
 **Model:** Hourly spending commitment for 1 or 3 years.
 
 **Ventajas vs. RIs:**
+
 - More flexibility (any region, instance type, OS)
 - Automatically applies to Lambda, Fargate, EC2
 
 **Example:**
-```
+
+```text
 Te comprometes a gastar $10/hora por 1 año = $87,600
 
 AWS aplica descuento a:
@@ -898,11 +967,12 @@ AWS aplica descuento a:
 ├── Lambda invocations
 ├── Fargate containers
 └── Automatically al uso que más descuento genere
-```
+```text
 
 ### Free Tier
 
 **12 months free** from AWS account creation:
+
 ```
 EC2:
 - 750 hours/mes de t2.micro o t3.micro
@@ -928,18 +998,20 @@ Athena:
 
 Glue:
 - 1M objects stored en Data Catalog
-```
+```text
 
 **Always Free (perpetuo):**
-```
+
+```text
 Lambda: 1M requests + 400,000 GB-sec/mes
 DynamoDB: 25GB + 25 RCU/WCU
 CloudWatch: 10 custom metrics, 10 alarms
-```
+```text
 
 ### Cost Optimization Tips for Data Engineering
 
 **1. Use S3 Intelligent-Tiering**
+
 ```bash
 # Lifecycle policy automática para ahorrar en storage
 aws s3api put-bucket-lifecycle-configuration \
@@ -955,15 +1027,17 @@ aws s3api put-bucket-lifecycle-configuration \
 ```
 
 **2. Compress Data**
-```
+
+```text
 CSV sin comprimir: 100GB × $0.023 = $2.30/mes
 Parquet Snappy: 10GB × $0.023 = $0.23/mes
 
 Ahorro: 90% en storage + menor costo en queries Athena
-```
+```text
 
 **3. Partition Data in S3**
-```
+
+```text
 Sin particiones:
 s3://bucket/data/
 
@@ -978,6 +1052,7 @@ Athena escanea solo necesario = $0.05 per query
 ```
 
 **4. Use Spot for Batch Workloads**
+
 ```python
 # EMR con Spot instances
 emr_client.run_job_flow(
@@ -1001,7 +1076,7 @@ emr_client.run_job_flow(
         ]
     }
 )
-```
+```text
 
 ---
 
@@ -1014,7 +1089,8 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
 **Principle:** Execute and monitor systems to deliver business value.
 
 **For Data Engineering:**
-```
+
+```text
 1. Infrastructure as Code (IaC)
    - Todo en Terraform/CloudFormation
    - Versionado en Git
@@ -1029,13 +1105,14 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
    - Documentar procedimientos comunes
    - "Qué hacer si falla el pipeline nocturno"
    - Scripts de recovery automatizados
-```
+```text
 
 ### Pilar 2: Security
 
 **Principle:** Protect information, systems and assets.
 
 **For Data Engineering:**
+
 ```
 1. Encryption everywhere
    ├── At Rest: S3 con KMS, RDS encrypted
@@ -1057,14 +1134,15 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
    - GDPR: Right to deletion (S3 lifecycle delete)
    - HIPAA: Encryption + audit logging (CloudTrail)
    - SOC2: Access controls + monitoring
-```
+```text
 
 ### Pilar 3: Reliability
 
 **Principle:** Systems that function runctly and recover from failures.
 
 **For Data Engineering:**
-```
+
+```text
 1. Multi-AZ por defecto
    - RDS Multi-AZ para metadata stores
    - S3 replica automáticamente entre AZs
@@ -1084,13 +1162,14 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
    - Rerun de ETL produce mismo resultado
    - Upserts en lugar de inserts
    - Prevent duplicados con deduplication
-```
+```text
 
 ### Pilar 4: Performance Efficiency
 
 **Principle:** Use Resources efficiently to meet Requirements.
 
 **For Data Engineering:**
+
 ```
 1. Columnar Formats
    CSV → Parquet: 10x menos storage + 10x queries más rápidos
@@ -1108,14 +1187,15 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
    - Athena query results cache (24 hours)
    - Lambda con /tmp para datos reutilizables
    - CloudFront para dashboards
-```
+```text
 
 ### Pilar 5: Cost Optimization
 
 **Principio:** Evitar gastos innecesarios.
 
 **For Data Engineering:**
-```
+
+```text
 1. Lifecycle Policies
    Raw data: Delete después de 90 días
    Processed data: Move a Glacier después de 1 año
@@ -1133,7 +1213,7 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
 
 5. Reserved Capacity
    RDS, Redshift para workloads 24/7
-```
+```text
 
 ---
 
@@ -1142,6 +1222,7 @@ AWS best practices framework based on 5 pillars. **Essential for designing produ
 ### Mental Models Esenciales
 
 **1. Think in Services, not Servers**
+
 ```
 Mentalidad tradicional:
 "Necesito un servidor para procesar datos"
@@ -1153,9 +1234,10 @@ Ejemplo:
 - Process de 5 minutes → Lambda (serverless)
 - Process de 3 hours → Glue (managed Spark)
 - Process de 12 hours → EMR (cluster ephemeral)
-```
+```text
 
 **2. Everything is API-driven**
+
 ```python
 # No hay UI que hacer click manualmente
 # Todo es programático y reproducible
@@ -1168,10 +1250,11 @@ emr_client.run_job_flow(...)
 
 # Query con Athena
 athena_client.start_query_execution(...)
-```
+```text
 
 **3. Design for Cost**
-```
+
+```text
 Cada decisión arquitectónica tiene impacto en costos:
 
 Mala práctica:
@@ -1185,7 +1268,8 @@ Buena práctica:
 ```
 
 **4. Data Lakes como Fundamento**
-```
+
+```text
 Data Lake (S3):
 ├── Raw Zone: Datos originales inmutables
 ├── Processed Zone: Datos limpios y validados
@@ -1198,26 +1282,29 @@ Todo el ecosistema lee/escribe de/a S3:
 - EMR: S3 input/output
 - Lambda: Triggered por S3 events
 - SageMaker: Training data en S3
-```
+```text
 
 ### Common Patterns
 
 **Pattern 1: Event-Driven Processing**
-```
+
+```text
 S3 Upload Event → SNS → Lambda → Process → DynamoDB
                     ↓
                   SQS (for reliability)
 ```
 
 **Pattern 2: Batch Processing**
-```
+
+```text
 CloudWatch Event (cron) → Step Function → Glue Job → S3
                                               ↓
                                            SNS (alertas)
-```
+```text
 
 **Pattern 3: Streaming Processing**
-```
+
+```text
 Kinesis Data Stream → Lambda → S3 (partitioned)
                         ↓
                    DynamoDB (real-time queries)
@@ -1230,6 +1317,7 @@ Kinesis Data Stream → Lambda → S3 (partitioned)
 **Context:** Online store with 100K transactions/day needs analytics pipeline.
 
 **Requirements:**
+
 1. Ingest transactions in real time
 2. Process data and calculate daily metrics
 3. Store for Historical Analysis
@@ -1238,7 +1326,7 @@ Kinesis Data Stream → Lambda → S3 (partitioned)
 
 **Arquitectura AWS:**
 
-```
+```text
 1. Data Ingestion (Real-time)
    Website/Mobile App → API Gateway → Lambda → Kinesis Data Stream
 
@@ -1283,9 +1371,10 @@ Escalabilidad:
 - Lambda: Auto-scales
 - Glue: Increase DPUs
 - Estimated: ~$600/mes
-```
+```text
 
 **Advantages of this design:**
+
 - ✅ Serverless: No servers to manage
 - ✅ Auto-scaling: Handle traffic spikes
 - ✅ Cost-effective: Pay only for use
@@ -1299,7 +1388,8 @@ Escalabilidad:
 Answer these questions to validate your understanding:
 
 **1. Architecture Design**
-```
+
+```text
 Diseña una arquitectura AWS para:
 - Ingestar logs de 1000 servidores (10GB/día)
 - Procesar y almacenar para análisis
@@ -1313,7 +1403,8 @@ Considera:
 ```
 
 **2. IAM Scenario**
-```
+
+```text
 Tienes un data engineer que necesita:
 ✅ Leer todos los buckets S3
 ✅ Run Glue jobs existentes
@@ -1321,10 +1412,11 @@ Tienes un data engineer que necesita:
 ❌ NO debe poder crear nuevos Glue jobs
 
 Escribe la IAM Policy
-```
+```text
 
 **3. Cost Optimization**
-```
+
+```text
 Tu factura AWS es $5,000/mes:
 - RDS PostgreSQL db.m5.2xlarge 24/7: $2,400
 - EMR cluster 24/7 para batch jobs nocturnos: $1,800
@@ -1335,7 +1427,8 @@ Tu factura AWS es $5,000/mes:
 ```
 
 **4. Reliability**
-```
+
+```text
 Tu pipeline ETL falla cada 2-3 semanas con error:
 "Lambda timeout después de 15 minutes"
 
@@ -1345,10 +1438,11 @@ El process:
 - Escribe a Parquet
 
 ¿Qué arquitectura propondrías?
-```
+```text
 
 **5. Service Selection**
-```
+
+```text
 Necesitas procesar un dataset de 5GB diariamente:
 - Lectura de S3
 - Transformaciones (joins, aggregations)
@@ -1364,7 +1458,8 @@ D) EC2 con Spark
 ```
 
 **6. Multi-Region Strategy**
-```
+
+```text
 Aplicación con usuarios en:
 - 60% USA
 - 30% Europa
@@ -1374,7 +1469,7 @@ Data lake en us-east-1.
 Usuarios EU se quejan de lentitud en queries.
 
 ¿Cómo resolverías sin duplicar costos?
-```
+```text
 
 ---
 
@@ -1390,6 +1485,7 @@ Usuarios EU se quejan de lentitud en queries.
 6. **Exercise 06:** Cost optimization with lifecycle policies
 
 **Remember:**
+
 - Read the Theory completely before starting Exercises
 - Check out additional Resources at`theory/resources.md`
 - Usa hints progresivos si te atascas

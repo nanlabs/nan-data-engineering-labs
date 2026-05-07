@@ -3,6 +3,7 @@
 ## ✅ Completed Content
 
 ### Theory (100%)
+
 - ✅ `theory/concepts.md` - 4000+ words, 10 sections, AWS fundamentals
 - ✅ `theory/architecture.md` - 3500+ words, 10 Mermaid diagrams, design patterns
 - ✅ `theory/resources.md` - 27 curated resources
@@ -10,6 +11,7 @@
 ### Exercises
 
 #### Exercise 01: S3 Basics (100%)
+
 - ✅ README.md - 6-step path
 - ✅ starter/scenario.md - QuickMart startup context
 - ✅ starter/s3_operations.sh - 10 functions with TODOs
@@ -18,6 +20,7 @@
 - ✅ solution/s3_operations.sh - Complete working solution
 
 #### Exercise 02: IAM Policies (100%)
+
 - ✅ README.md - 5-step path, IAM concepts
 - ✅ starter/scenario.md - 5-person data team
 - ✅ starter/iam_setup.py - 8 boto3 functions with TODOs
@@ -26,6 +29,7 @@
 - ✅ solution/iam_setup.py - Complete working solution
 
 #### Exercise 03: S3 Advanced (70%)
+
 - ✅ README.md - Lifecycle, replication, events
 - ✅ starter/scenario.md - Cost optimization context
 - ✅ starter/s3_lifecycle.py - Versioning & lifecycle with TODOs
@@ -34,23 +38,28 @@
 - ⚠️ **PENDING:** hints.md, solution/ files
 
 #### Exercise 04: Lambda Functions (30%)
+
 - ✅ README.md - Lambda basics, event-driven processing
 - ⚠️ **PENDING:** starter/, hints.md, solution/
 
 #### Exercise 05: Infrastructure as Code (30%)
+
 - ✅ README.md - CloudFormation templates
 - ⚠️ **PENDING:** starter/, hints.md, solution/
 
 #### Exercise 06: Cost Optimization (30%)
+
 - ✅ README.md - CloudWatch, budgets, optimization
 - ⚠️ **PENDING:** starter/, hints.md, solution/
 
 ### Scripts & Validation
+
 - ✅ `scripts/setup.sh` - Environment setup automation
 - ✅ `scripts/validate.sh` - Module validation with tests
 - ⚠️ **PENDING:** `validation/` directory with pytest tests
 
 ### Module README
+
 - ✅ Updated with complete information, learning objectives, estimates
 
 ---
@@ -58,6 +67,7 @@
 ## 📊 Module 01 Completion: ~60%
 
 **What's Ready to Use:**
+
 - Theory content (complete - can start reading)
 - Exercise 01 (complete - can be done end-to-end)
 - Exercise 02 (complete - can be done end-to-end)
@@ -65,6 +75,7 @@
 - Setup & validation scripts (functional)
 
 **What's Still Needed:**
+
 - Exercise 03: hints.md + solution/
 - Exercises 04-06: starter/ + hints.md + solution/
 - Validation tests (pytest)
@@ -75,21 +86,26 @@
 ## 🎯 Next Steps for Content Population
 
 ### Priority 1: Complete Exercise 03 (15 min)
+
 - Create hints.md (lifecycle, replication, events debugging)
 - Create solution/ with 3 complete Python files
 
 ### Priority 2: Complete Exercises 04-06 (3-4 hours)
+
 For each exercise:
+
 - Create starter/ with Python/YAML files with TODOs
 - Create hints.md (3 levels)
 - Create solution/ with complete implementations
 
 ### Priority 3: Create Validation Tests (1-2 hours)
+
 - validation/test_exercise_01.py through test_exercise_06.py
 - pytest-based integration tests
 - Smoke tests for quick validation
 
 ### Priority 4: Sample Datasets (30 min)
+
 - data/sample-logs.json
 - data/sample-transactions.csv
 - data/sample-images/ (for Lambda thumbnail exercise)
@@ -99,6 +115,7 @@ For each exercise:
 ## 💡 Content Quality Notes
 
 **Strengths:**
+
 - Real-world scenarios (QuickMart startup)
 - Progressive hints prevent frustration
 - Production-quality solutions with error handling
@@ -106,7 +123,8 @@ For each exercise:
 - Estimated times for planning
 
 **Pattern Established:**
-```
+
+```text
 exercises/XX-name/
 ├── README.md          (Clear numbered steps)
 ├── starter/
@@ -116,9 +134,10 @@ exercises/XX-name/
 ├── hints.md           (3 levels: conceptual → technical → partial)
 ├── solution/          (Production-quality reference)
 └── my_solution/       (Student workspace - copy from starter/)
-```
+```text
 
 **LocalStack Compatibility:**
+
 - All exercises use free LocalStack Community edition
 - No AWS costs required
 - Realistic simulation of AWS services
@@ -146,6 +165,7 @@ exercises/XX-name/
 ## 🚀 When Module 01 is 100% Complete
 
 Students will be able to:
+
 1. Read theory (3-4 hours)
 2. Run `./scripts/setup.sh` (automatic environment)
 3. Complete 6 exercises sequentially (6-8 hours total)
@@ -153,6 +173,7 @@ Students will be able to:
 5. Receive "Ready for Module 02" confirmation
 
 **Module 01 = Foundation Template**
+
 - Pattern can be replicated for Modules 02-23
 - Quality bar established
 - Tooling and workflows proven

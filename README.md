@@ -46,7 +46,7 @@ PHASE 4: Advanced Tracks (Modules 15-18 + Checkpoint 03)
 
 PHASE 5: Bonus (Modules 22-23)
 └─ Databricks and Snowflake (optional)
-```
+```text
 
 ### 📚 Program Structure
 
@@ -60,7 +60,7 @@ nan-data-engineering-labs/
 ├── IMPLEMENTATION-STATUS.md     -> current implementation status
 ├── Makefile                     -> daily operating commands
 └── docker-compose.yml           -> local services stack
-```
+```text
 
 ### 🧩 Module Summary
 
@@ -181,7 +181,7 @@ cd nan-data-engineering-labs
 
 # Run automated setup (installs dependencies, creates venv, generates datasets)
 bash scripts/setup-environment.sh
-```
+```text
 
 **Setup time:** ~10-15 minutes
 
@@ -209,7 +209,7 @@ make progress
 # Start Module 01
 cd modules/module-01-cloud-fundamentals
 cat README.md
-```
+```text
 
 ### 4. Complete & Validate
 
@@ -219,7 +219,7 @@ make validate MODULE=module-01-cloud-fundamentals
 
 # Track overall progress
 make progress
-```
+```text
 
 ---
 
@@ -227,7 +227,7 @@ make progress
 
 ### Local Development Stack
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                   Docker Compose                         │
 │                                                          │
@@ -283,7 +283,7 @@ module-XX-topic-name/
 │   └── query-results/          # Expected outputs
 └── scripts/
     └── validate.sh             # Run all validations
-```
+```text
 
 ---
 
@@ -300,34 +300,34 @@ No prerequisites - complete in any order:
 
 ### Core Tier
 
-5. **Module 05:** Data Lakehouse Architecture *(requires 02)*
-6. **Module 06:** ETL Fundamentals *(requires 02, 04)*
-7. **🏁 Checkpoint 01:** Serverless Data Lake *(requires 01-06)*
-8. **Module 07:** Batch Processing *(requires 02, 04, 05)*
-9. **Module 08:** Streaming Basics *(requires 04, 06)*
-10. **Module 09:** Data Quality *(requires 04, 06)*
-11. **Module 10:** Workflow Orchestration *(requires 06)*
+1. **Module 05:** Data Lakehouse Architecture *(requires 02)*
+2. **Module 06:** ETL Fundamentals *(requires 02, 04)*
+3. **🏁 Checkpoint 01:** Serverless Data Lake *(requires 01-06)*
+4. **Module 07:** Batch Processing *(requires 02, 04, 05)*
+5. **Module 08:** Streaming Basics *(requires 04, 06)*
+6. **Module 09:** Data Quality *(requires 04, 06)*
+7. **Module 10:** Workflow Orchestration *(requires 06)*
 
 ### Cloud-Native Tier
 
-12. **Module 11:** Infrastructure as Code *(requires 01, 02)*
-13. **Module 12:** Serverless Processing *(requires 06, 11)*
-14. **🏁 Checkpoint 02:** Real-time Analytics Platform *(requires 07-12)*
-15. **Module 13:** Container Orchestration *(requires 11)*
-16. **Module 14:** Data Catalog & Governance *(requires 05, 09)*
+1. **Module 11:** Infrastructure as Code *(requires 01, 02)*
+2. **Module 12:** Serverless Processing *(requires 06, 11)*
+3. **🏁 Checkpoint 02:** Real-time Analytics Platform *(requires 07-12)*
+4. **Module 13:** Container Orchestration *(requires 11)*
+5. **Module 14:** Data Catalog & Governance *(requires 05, 09)*
 
 ### Advanced Tier
 
-17. **Module 15:** Real-time Analytics *(requires 08, 10)* - **Track A**
-18. **Module 16:** Data Security & Compliance *(requires 01, 14)* - **Track B**
-19. **Module 17:** Cost Optimization *(requires 11)* - **Track C**
-20. **Module 18:** Advanced Architectures *(requires 05, 07, 08, 14)*
-21. **🏁 Checkpoint 03:** Enterprise Data Lakehouse *(requires 13-18)*
+1. **Module 15:** Real-time Analytics *(requires 08, 10)* - **Track A**
+2. **Module 16:** Data Security & Compliance *(requires 01, 14)* - **Track B**
+3. **Module 17:** Cost Optimization *(requires 11)* - **Track C**
+4. **Module 18:** Advanced Architectures *(requires 05, 07, 08, 14)*
+5. **🏁 Checkpoint 03:** Enterprise Data Lakehouse *(requires 13-18)*
 
 ### Bonus (Optional)
 
-22. **Bonus 01:** Databricks Lakehouse *(requires 05, 07)*
-23. **Bonus 02:** Snowflake Data Cloud *(requires 03, 06)*
+1. **Bonus 01:** Databricks Lakehouse *(requires 05, 07)*
+2. **Bonus 02:** Snowflake Data Cloud *(requires 03, 06)*
 
 📖 **Detailed Path:** See [LEARNING-PATH.md](LEARNING-PATH.md) for dependency diagram and time estimates.
 
@@ -339,7 +339,7 @@ No prerequisites - complete in any order:
 
 ```bash
 make progress
-```
+```text
 
 **Example Output:**
 
@@ -357,7 +357,7 @@ make progress
 Legend:
 ✅ = Completed    🔄 = In Progress    ⬜ = Not Started
 🔓 = Ready        🔒 = Prerequisites Required
-```
+```text
 
 ### Validation
 
@@ -373,6 +373,7 @@ bash scripts/validate.sh
 ```
 
 **What's Validated:**
+
 - ✅ Data quality checks
 - ✅ Query result correctness
 - ✅ Infrastructure syntax
@@ -456,14 +457,14 @@ make down        # Stop all services
 make restart     # Restart all services
 make logs        # View service logs
 make clean       # Stop and remove all data
-```
+```text
 
 ### Learning
 
 ```bash
 make progress    # Show learning progress
 make validate MODULE=<name>  # Validate specific module
-```
+```text
 
 ### Development
 
@@ -471,7 +472,7 @@ make validate MODULE=<name>  # Validate specific module
 make setup       # Run initial setup
 make generate    # Regenerate module structure
 make test-localstack  # Test LocalStack connection
-```
+```text
 
 ---
 
@@ -484,6 +485,7 @@ make test-localstack  # Test LocalStack connection
 **Practice Questions:** Included in all 3 checkpoints.
 
 **Recommended Path:**
+
 1. Complete modules 01-14
 2. Pass Checkpoint 02
 3. Study security (16) and cost (17)
@@ -495,6 +497,7 @@ make test-localstack  # Test LocalStack connection
 **Coverage:** Bonus Module 01 + Core modules 05, 07, 10.
 
 **Recommended Path:**
+
 1. Complete modules 01-10
 2. Complete Bonus 01
 3. Practice with Databricks Community Edition

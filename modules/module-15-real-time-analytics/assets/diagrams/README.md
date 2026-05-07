@@ -5,14 +5,17 @@ This directory contains Mermaid diagrams illustrating real-time analytics patter
 ## Diagrams
 
 ### 1. Kinesis Analytics Architecture
+
 **File**: [kinesis-analytics-architecture.mmd](kinesis-analytics-architecture.mmd)
 
 Shows complete real-time analytics pipeline:
+
 - **Ingestion**: Kinesis Data Streams (shards, partitions)
 - **Processing**: Kinesis Data Analytics for Apache Flink
 - **Output**: Multiple sinks (S3, Redshift, Elasticsearch, DynamoDB)
 
 **Use Cases**:
+
 - Real-time metrics aggregation
 - Log analytics
 - IoT sensor data processing
@@ -22,14 +25,17 @@ Shows complete real-time analytics pipeline:
 ---
 
 ### 2. Flink Windowing Strategies
+
 **File**: [flink-windowing.mmd](flink-windowing.mmd)
 
 Shows 3 window types:
+
 - **Tumbling Windows**: Fixed-size, non-overlapping (5-minute intervals)
 - **Sliding Windows**: Overlapping (10-minute window, 5-minute slide)
 - **Session Windows**: Dynamic, inactivity-based (30-minute gap)
 
 **Use Cases**:
+
 - Page view counts per 5 minutes
 - Moving averages (1-hour sliding window)
 - User session analytics
@@ -39,14 +45,17 @@ Shows 3 window types:
 ---
 
 ### 3. Complex Event Processing (CEP)
+
 **File**: [complex-event-processing.mmd](complex-event-processing.mmd)
 
 Shows pattern detection with Flink CEP:
+
 - **Pattern**: Login → HighValuePurchase → Logout (within 10 minutes)
 - **MATCH_RECOGNIZE** SQL syntax
 - **Alerting**: Fraud detection, anomaly detection
 
 **Use Cases**:
+
 - Fraud detection (impossible travel, velocity checks)
 - Security monitoring (brute force attacks)
 - Customer journey analysis
@@ -56,15 +65,18 @@ Shows pattern detection with Flink CEP:
 ---
 
 ### 4. Real-Time ML Scoring
+
 **File**: [real-time-ml-scoring.mmd](real-time-ml-scoring.mmd)
 
 Shows ML inference pipeline:
+
 - **Stream**: Kinesis events → Flink
 - **Feature Engineering**: Real-time feature extraction
 - **Scoring**: SageMaker endpoint invocation (<100ms)
 - **Action**: Write results to DynamoDB
 
 **Use Cases**:
+
 - Fraud scoring (credit card transactions)
 - Product recommendations (personalized)
 - Predictive maintenance (IoT sensors)
@@ -74,15 +86,18 @@ Shows ML inference pipeline:
 ---
 
 ### 5. Streaming Aggregations
+
 **File**: [streaming-aggregations.mmd](streaming-aggregations.mmd)
 
 Shows aggregation patterns:
+
 - **Count**: Events per minute
 - **Sum**: Revenue per product
 - **Average**: Response time sliding average
 - **Top-N**: Popular products (last hour)
 
 **Use Cases**:
+
 - Real-time dashboards
 - KPI monitoring
 - Leaderboards
@@ -92,9 +107,11 @@ Shows aggregation patterns:
 ---
 
 ### 6. Real-Time Dashboard Pipeline
+
 **File**: [real-time-dashboard-pipeline.mmd](real-time-dashboard-pipeline.mmd)
 
 Shows end-to-end dashboard architecture:
+
 - **Ingestion**: Kinesis Data Streams
 - **Processing**: Flink SQL aggregations
 - **Storage**: ElastiCache + Redshift
@@ -102,6 +119,7 @@ Shows end-to-end dashboard architecture:
 - **Refresh**: Sub-second updates
 
 **Use Cases**:
+
 - Executive dashboards
 - NOC monitoring screens
 - Live metrics
@@ -115,21 +133,24 @@ Shows end-to-end dashboard architecture:
 ### Rendering Mermaid
 
 **VS Code** (with Mermaid extension):
+
 ```bash
 # Install extension
 code --install-extension bierner.markdown-mermaid
 
 # Open diagram file
 code kinesis-analytics-architecture.mmd
-```
+```text
 
 **Online**:
+
 - [Mermaid Live Editor](https://mermaid.live/)
 - Copy/paste diagram content
 
 ### Exporting to Image
 
 **Using Mermaid CLI**:
+
 ```bash
 # Install
 npm install -g @mermaid-js/mermaid-cli
@@ -139,7 +160,7 @@ mmdc -i kinesis-analytics-architecture.mmd -o kinesis-analytics-architecture.png
 
 # Export all diagrams
 for f in *.mmd; do mmdc -i "$f" -o "${f%.mmd}.png"; done
-```
+```text
 
 ---
 
@@ -157,7 +178,7 @@ for f in *.mmd; do mmdc -i "$f" -o "${f%.mmd}.png"; done
 
 ## Pattern Flow
 
-```
+```text
 Kinesis Data Streams (Ingestion)
     ↓
 Kinesis Data Analytics (Flink Processing)
@@ -180,6 +201,7 @@ QuickSight Dashboards
 ## Customization
 
 All diagrams use consistent styling:
+
 - **Blue**: Data sources/ingestion
 - **Green**: Processing/transformation
 - **Orange**: Storage/sinks
@@ -187,6 +209,7 @@ All diagrams use consistent styling:
 - **Red**: Alerts/anomalies
 
 Example:
+
 ```mermaid
 graph LR
     A[Kinesis Stream]:::source --> B[Flink SQL]:::process
@@ -197,22 +220,25 @@ graph LR
     classDef process fill:#7ED321,stroke:#333,stroke-width:2px,color:#fff
     classDef sink fill:#F5A623,stroke:#333,stroke-width:2px,color:#fff
     classDef viz fill:#BD10E0,stroke:#333,stroke-width:2px,color:#fff
-```
+```text
 
 ---
 
 ## Resources
 
 ### Flink Documentation
+
 - [Apache Flink Docs](https://nightlies.apache.org/flink/flink-docs-stable/)
 - [Flink SQL](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/table/sql/)
 - [Flink CEP](https://nightlies.apache.org/flink/flink-docs-stable/docs/libs/cep/)
 
 ### AWS Documentation
+
 - [Kinesis Data Analytics](https://docs.aws.amazon.com/kinesisanalytics/)
 - [Flink on AWS](https://aws.amazon.com/blogs/big-data/category/analytics/amazon-kinesis-data-analytics/)
 
 ### Real-World Examples
+
 - **Netflix**: Real-time viewing metrics (Keystone)
 - **Uber**: Surge pricing analytics
 - **Airbnb**: Fraud detection with Flink CEP

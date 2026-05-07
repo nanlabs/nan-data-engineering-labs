@@ -15,11 +15,11 @@ QuickMart's data platform needs **serverless event-driven processing** for:
 
 ## 🏗️ Architecture
 
-```
+```text
 S3 Upload → Event Notification → Lambda Function → Processed Output
    │                                    │
    └────────────────────────────────────┴─→ CloudWatch Logs
-```
+```text
 
 ## 🎯 Your Mission
 
@@ -30,12 +30,14 @@ Create 3 Lambda functions:
 **Input:** `s3://quickmart-data/uploads/transactions-2024-01-15.csv`
 
 **Validation Rules:**
+
 - Required columns: `transaction_id`, `user_id`, `product_id`, `amount`, `timestamp`
 - `amount` must be > 0 and < 10000
 - `timestamp` must be valid ISO 8601
 - No duplicate `transaction_id`
 
 **Output:**
+
 - Valid records → `s3://quickmart-data/validated/transactions-2024-01-15.csv`
 - Invalid records → `s3://quickmart-data/rejected/transactions-2024-01-15-errors.csv`
 - Summary to CloudWatch Logs
@@ -45,12 +47,14 @@ Create 3 Lambda functions:
 **Input:** `s3://quickmart-data/logs/app-2024-01-15.jsonl` (JSON Lines)
 
 **Transformations:**
+
 - Parse JSON
 - Add `processed_at` timestamp
 - Enrich with user metadata (lookup from DynamoDB if time permits)
 - Convert to structured format
 
 **Output:**
+
 - Transformed logs → `s3://quickmart-data/processed/app-2024-01-15.jsonl`
 
 ### 3. Anomaly Detector Function
@@ -58,17 +62,20 @@ Create 3 Lambda functions:
 **Input:** Transaction events from CSV validator
 
 **Detection Logic:**
+
 - Amount > $5000 (flag as high-value)
 - Multiple transactions from same IP in < 1 minute (flag as suspicious)
 - Foreign country transactions for domestic accounts (flag as unusual)
 
 **Output:**
+
 - Alerts to SNS topic
 - Flagged transactions to `s3://quickmart-data/alerts/`
 
 ## 📋 Acceptance Criteria
 
 ### Lambda Function Requirements
+
 - [x] Python 3.9+ runtime
 - [x] Memory: 256 MB (adjust if needed)
 - [x] Timeout: 30 seconds
@@ -77,11 +84,13 @@ Create 3 Lambda functions:
 - [x] Structured logging (JSON format)
 
 ### S3 Trigger Configuration
+
 - [x] Trigger on `s3:ObjectCreated:*` event
 - [x] Filter by prefix (`uploads/transactions/` for CSV validator)
 - [x] Filter by suffix (`.csv` for CSV validator, `.jsonl` for log transformer)
 
 ### Testing
+
 - [x] Unit tests for validation logic
 - [x] Integration test: Upload file → verify processed output
 - [x] Error handling test: Upload invalid file → verify rejection
@@ -89,13 +98,15 @@ Create 3 Lambda functions:
 ## 🧪 Test Data
 
 ### Valid Transaction CSV
+
 ```csv
 transaction_id,user_id,product_id,amount,timestamp,country
 TXN001,USER1234,PROD5678,29.99,2024-01-15T10:30:00Z,US
 TXN002,USER5678,PROD1234,149.50,2024-01-15T10:31:00Z,US
-```
+```text
 
 ### Invalid Transaction CSV (for testing error handling)
+
 ```csv
 transaction_id,user_id,product_id,amount,timestamp,country
 TXN003,USER9999,PROD0001,-50.00,2024-01-15T10:32:00Z,US
@@ -103,10 +114,11 @@ TXN004,DUPLICATE_ID,PROD0002,99.99,INVALID_DATE,US
 ```
 
 ### Log JSON Lines
+
 ```json
 {"timestamp":"2024-01-15T10:30:00Z","level":"INFO","user_id":"USER1234","event":"page_view","page":"/products"}
 {"timestamp":"2024-01-15T10:30:05Z","level":"INFO","user_id":"USER1234","event":"add_to_cart","product_id":"PROD5678"}
-```
+```text
 
 ## 💡 Implementation Tips
 
@@ -186,7 +198,7 @@ def validate_row(row):
     """Validate a single row"""
     # TODO: Implement validation logic
     pass
-```
+```text
 
 ### Deployment Package
 
@@ -207,7 +219,7 @@ aws lambda create-function \
   --zip-file fileb://lambda-function.zip \
   --timeout 30 \
   --memory-size 256
-```
+```text
 
 ## 📈 Performance Benchmarks
 

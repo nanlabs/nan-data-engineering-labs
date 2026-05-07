@@ -16,13 +16,14 @@ event = {
         }
     }]
 }
-```
+```text
 
 Extrae bucket y key del primer Record.
 
 ### Hint 1.2: CSV Validation Logic
 
 Para cada fila, valida:
+
 - `transaction_id`: no vacío
 - `user_id`: matches pattern `USER####`
 - `amount`: debe ser número > 0 y < 10000
@@ -37,7 +38,7 @@ s3.put_object(
     Key='validated/file.csv',
     Body=csv_content.encode('utf-8')
 )
-```
+```text
 
 ---
 
@@ -53,7 +54,7 @@ def lambda_handler(event, context):
     key = record['s3']['object']['key']
 
     print(f"Processing s3://{bucket}/{key}")
-```
+```text
 
 ### Hint 2.2: Download and Parse CSV
 
@@ -102,7 +103,7 @@ def validate_row(row):
         errors.append("timestamp must be valid ISO 8601")
 
     return (len(errors) == 0, ", ".join(errors))
-```
+```text
 
 ### Hint 2.4: Convert to CSV String
 
@@ -117,7 +118,7 @@ def format_csv(records):
     writer.writerows(records)
 
     return output.getvalue()
-```
+```text
 
 ---
 
@@ -162,7 +163,7 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': json.dumps({'error': str(e)})
         }
-```
+```text
 
 ### Hint 3.2: Complete Validation Logic
 
@@ -213,7 +214,7 @@ def upload_results(bucket, filename, valid_records, invalid_records):
             Body=invalid_csv.encode('utf-8')
         )
         print(f"Uploaded {len(invalid_records)} invalid records to rejected/{error_filename}")
-```
+```text
 
 ---
 
@@ -239,7 +240,7 @@ event = {
 # Run locally
 result = lambda_handler(event, None)
 print(json.dumps(result, indent=2))
-```
+```text
 
 ### Testing with LocalStack
 
@@ -258,7 +259,7 @@ aws --endpoint-url=http://localhost:4566 s3 ls \
 
 aws --endpoint-url=http://localhost:4566 s3 ls \
   s3://quickmart-data/rejected/
-```
+```text
 
 ### Create Test Data
 
@@ -294,34 +295,37 @@ EOF
 **Cause:** Lambda timeout too short.
 
 **Fix:** Increase timeout to 30 seconds:
+
 ```bash
 aws lambda update-function-configuration \
   --function-name csv-validator \
   --timeout 30
-```
+```text
 
 ### Error: "KeyError: 'Records'"
 
 **Cause:** Event structure unexpected.
 
 **Fix:** Add defensive checks:
+
 ```python
 if 'Records' not in event or len(event['Records']) == 0:
     return {'statusCode': 400, 'body': 'No records in event'}
-```
+```text
 
 ### Error: "Access Denied" writing to S3
 
 **Cause:** Lambda role doesn't have S3 permissions.
 
 **Fix:** Attach policy:
+
 ```json
 {
   "Effect": "Allow",
   "Action": ["s3:GetObject", "s3:PutObject"],
   "Resource": "arn:aws:s3:::quickmart-data/*"
 }
-```
+```text
 
 ---
 

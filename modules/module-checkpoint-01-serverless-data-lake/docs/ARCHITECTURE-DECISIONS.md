@@ -54,7 +54,7 @@ Architecture Decision Records (ADRs) document important architectural decisions 
 
 We follow a lightweight ADR template:
 
-```
+```text
 ## ADR-XXX: [Decision Title]
 
 **Status:** [Proposed | Accepted | Deprecated | Superseded]
@@ -89,7 +89,7 @@ We follow a lightweight ADR template:
 
 ### Implementation Notes
 [Key considerations for implementation]
-```
+```text
 
 ---
 
@@ -103,6 +103,7 @@ We follow a lightweight ADR template:
 ### Context
 
 CloudMart needs a data lake solution that:
+
 - Handles variable workloads (batch processing, ad-hoc queries)
 - Minimizes operational overhead (no dedicated data engineering team)
 - Scales automatically with business growth
@@ -110,6 +111,7 @@ CloudMart needs a data lake solution that:
 - Enables rapid development and iteration
 
 **Traditional alternatives:**
+
 - **EC2-based:** Spark cluster on EC2 instances
 - **EMR:** Managed Hadoop/Spark cluster
 - **Hybrid:** Combination of managed and self-hosted services
@@ -151,11 +153,13 @@ CloudMart needs a data lake solution that:
 #### Alternative 1: Apache Spark on EC2
 
 **Pros:**
+
 - Full control over environment
 - Can fine-tune performance
 - More flexible for complex transformations
 
 **Cons:**
+
 - Requires 24/7 running instances ($500+/month minimum)
 - Complex setup and configuration
 - Need expertise in cluster management
@@ -163,6 +167,7 @@ CloudMart needs a data lake solution that:
 - Higher operational burden
 
 **Cost Comparison:**
+
 - 3 x m5.xlarge instances (modest cluster): $500/month
 - Plus: EBS storage, data transfer, ops time
 - **Total: $600-800/month minimum**
@@ -170,11 +175,13 @@ CloudMart needs a data lake solution that:
 #### Alternative 2: Amazon EMR
 
 **Pros:**
+
 - Managed Hadoop/Spark
 - Good for very large-scale processing
 - Familiar Spark API
 
 **Cons:**
+
 - Still requires cluster management
 - Minimum cluster size = $300+/month
 - Overkill for our data volume (110GB/month)
@@ -182,6 +189,7 @@ CloudMart needs a data lake solution that:
 - More complex than needed
 
 **Cost Comparison:**
+
 - Minimum viable EMR cluster: $300-400/month
 - Spot instances can reduce cost, but add complexity
 - **Total: $300-500/month**
@@ -189,10 +197,12 @@ CloudMart needs a data lake solution that:
 #### Alternative 3: Hybrid (Lambda + Self-hosted Spark)
 
 **Pros:**
+
 - Use Lambda for simple tasks, Spark for complex
 - Optimize costs per workload
 
 **Cons:**
+
 - Complexity of managing two systems
 - More code to maintain (different runtimes)
 - Harder to debug cross-system issues
@@ -201,6 +211,7 @@ CloudMart needs a data lake solution that:
 ### Consequences
 
 **Positive:**
+
 - ✅ **Low Cost:** $30-50/month vs. $500+/month
 - ✅ **Zero Ops:** No servers to manage
 - ✅ **Auto-scaling:** Handles growth automatically
@@ -209,6 +220,7 @@ CloudMart needs a data lake solution that:
 - ✅ **Learning-Friendly:** Clear service boundaries, easier to understand
 
 **Negative:**
+
 - ❌ **Execution Limits:** Lambda 15-minute timeout, 10GB memory limit
 - ❌ **Cold Starts:** Lambda functions may experience latency on first invocation
 - ❌ **Vendor Lock-in:** Harder to migrate to another cloud provider
@@ -259,6 +271,7 @@ CloudMart needs a data lake solution that:
 ### Context
 
 We need a storage solution for our data lake that:
+
 - Stores structured and semi-structured data (CSV, JSON, Parquet)
 - Scales from GB to TB and beyond
 - Integrates with analytics tools (Athena, Glue)
@@ -266,6 +279,7 @@ We need a storage solution for our data lake that:
 - Keeps storage costs low
 
 **Alternatives:**
+
 - HDFS on EC2
 - Amazon EFS
 - Amazon RDS with large storage
@@ -310,11 +324,13 @@ We need a storage solution for our data lake that:
 #### Alternative 1: HDFS on EC2
 
 **Pros:**
+
 - Traditional big data storage
 - Good for Hadoop ecosystem
 - Fine-grained control
 
 **Cons:**
+
 - Requires always-on EC2 cluster
 - Complex setup and maintenance
 - Manual replication for durability
@@ -326,11 +342,13 @@ We need a storage solution for our data lake that:
 #### Alternative 2: Amazon EFS
 
 **Pros:**
+
 - Shared file system
 - POSIX compliance
 - Easy mounting from EC2/Lambda
 
 **Cons:**
+
 - More expensive ($0.30/GB/month)
 - Designed for file sharing, not object storage
 - No direct Athena integration
@@ -341,11 +359,13 @@ We need a storage solution for our data lake that:
 #### Alternative 3: Amazon RDS (PostgreSQL)
 
 **Pros:**
+
 - Structured database
 - ACID transactions
 - SQL interface
 
 **Cons:**
+
 - Expensive for large data ($115/month for 100GB + instance)
 - Not designed for analytics workloads
 - Fixed capacity (must provision)
@@ -357,6 +377,7 @@ We need a storage solution for our data lake that:
 ### Consequences
 
 **Positive:**
+
 - ✅ **Lowest Cost:** $23/month for 1TB vs. $300-600/month alternatives
 - ✅ **No Limits:** Unlimited scalability
 - ✅ **No Ops:** Fully managed, no maintenance
@@ -365,6 +386,7 @@ We need a storage solution for our data lake that:
 - ✅ **Ecosystem:** Works with all AWS analytics services
 
 **Negative:**
+
 - ❌ **Eventual Consistency:** Cross-region replication has slight delays (not an issue for batch processing)
 - ❌ **List Operations:** Listing large prefixes can be slow (mitigated by partitioning)
 - ❌ **No Transactions:** Can't do ACID operations (not needed for data lake)
@@ -381,6 +403,7 @@ We need a storage solution for our data lake that:
 ### Implementation Notes
 
 1. **Bucket Organization:**
+
    ```
    cloudmart-raw/          # Bronze layer
    cloudmart-processed/    # Silver layer
@@ -388,7 +411,7 @@ We need a storage solution for our data lake that:
    cloudmart-scripts/      # ETL scripts
    cloudmart-logs/         # Application logs
    cloudmart-athena-results/ # Athena query results
-   ```
+   ```text
 
 2. **Storage Class Strategy:**
    - Standard: Recent data (last 30 days)
@@ -424,6 +447,7 @@ We need a storage solution for our data lake that:
 ### Context
 
 We need an ETL solution to transform data through Bronze → Silver → Gold layers. Requirements:
+
 - Support PySpark for complex transformations
 - Serverless (no cluster management)
 - Integrate with S3 and Data Catalog
@@ -431,6 +455,7 @@ We need an ETL solution to transform data through Bronze → Silver → Gold lay
 - Easy to develop and debug
 
 **Alternatives:**
+
 - AWS Lambda (for simpler transformations)
 - AWS EMR (managed Spark)
 - Apache Airflow + Spark on EC2
@@ -472,11 +497,13 @@ We need an ETL solution to transform data through Bronze → Silver → Gold lay
 #### Alternative 1: AWS Lambda
 
 **Pros:**
+
 - Serverless and low-cost
 - Fast startup (no cluster spin-up)
 - Simple deployment
 
 **Cons:**
+
 - 15-minute timeout
 - 10GB memory limit
 - Not designed for large-scale transformations
@@ -490,11 +517,13 @@ We need an ETL solution to transform data through Bronze → Silver → Gold lay
 #### Alternative 2: Amazon EMR
 
 **Pros:**
+
 - Full Hadoop/Spark ecosystem
 - More control over cluster configuration
 - Can use Spot instances for cost savings
 
 **Cons:**
+
 - Requires cluster management
 - Requires cluster management
 - Minimum cost $300/month for always-on cluster
@@ -502,17 +531,20 @@ We need an ETL solution to transform data through Bronze → Silver → Gold lay
 - Longer development cycle
 
 **Cost Comparison:**
+
 - EMR: $300-500/month minimum
 - Glue: ~$20-30/month for our workload
 
 #### Alternative 3: Apache Airflow + Spark on EC2
 
 **Pros:**
+
 - Full control and flexibility
 - Open-source (no vendor lock-in)
 - Airflow for orchestration
 
 **Cons:**
+
 - Complex setup and maintenance
 - Need to manage Spark cluster
 - Airflow requires constant monitoring
@@ -522,6 +554,7 @@ We need an ETL solution to transform data through Bronze → Silver → Gold lay
 ### Consequences
 
 **Positive:**
+
 - ✅ **No Cluster Management:** Fully serverless
 - ✅ **PySpark Power:** Complex transformations easy
 - ✅ **Cost-Efficient:** ~$20-30/month for our workload
@@ -530,6 +563,7 @@ We need an ETL solution to transform data through Bronze → Silver → Gold lay
 - ✅ **Auto-scaling:** Handles data volume growth
 
 **Negative:**
+
 - ❌ **Startup Time:** Jobs take 2-3 minutes to start (cold start)
 - ❌ **Limited Customization:** Can't install custom OS packages easily
 - ❌ **Glue Version Lag:** Spark version may be behind latest
@@ -547,6 +581,7 @@ We need an ETL solution to transform data through Bronze → Silver → Gold lay
 ### Implementation Notes
 
 1. **Glue Job Configuration:**
+
    ```python
    --job-language python
    --glue_version 4.0
@@ -589,6 +624,7 @@ We need an ETL solution to transform data through Bronze → Silver → Gold lay
 ### Context
 
 Business users need to query data using SQL. Requirements:
+
 - SQL interface (familiar to business analysts)
 - Query data without loading into a database
 - Support ad-hoc and scheduled queries
@@ -596,6 +632,7 @@ Business users need to query data using SQL. Requirements:
 - No infrastructure to manage
 
 **Alternatives:**
+
 - Amazon Redshift (data warehouse)
 - Amazon RDS (relational database)
 - Presto on EMR
@@ -644,12 +681,14 @@ Business users need to query data using SQL. Requirements:
 #### Alternative 1: Amazon Redshift
 
 **Pros:**
+
 - Purpose-built for analytics
 - Fast for complex queries
 - Mature data warehouse
 - Many BI tool integrations
 
 **Cons:**
+
 - Requires always-on cluster ($180/month minimum)
 - Must load data (ETL into Redshift)
 - Adds complexity (another data store)
@@ -657,6 +696,7 @@ Business users need to query data using SQL. Requirements:
 - Fixed capacity (must provision)
 
 **Cost Comparison:**
+
 - Redshift: $180/month (dc2.large) + storage
 - Athena: ~$5-10/month for expected query volume
 - **Athena is 95% cheaper**
@@ -664,11 +704,13 @@ Business users need to query data using SQL. Requirements:
 #### Alternative 2: Amazon RDS (PostgreSQL)
 
 **Pros:**
+
 - Familiar SQL database
 - ACID transactions
 - Good for operational analytics
 
 **Cons:**
+
 - Not designed for large analytical queries
 - Must load data (ETL required)
 - Expensive for TB-scale ($500+/month)
@@ -678,11 +720,13 @@ Business users need to query data using SQL. Requirements:
 #### Alternative 3: Presto on EMR
 
 **Pros:**
+
 - Open-source query engine
 - No vendor lock-in
 - Fast distributed queries
 
 **Cons:**
+
 - Requires EMR cluster ($300/month minimum)
 - Must manage cluster (patching, monitoring)
 - Higher operational complexity
@@ -691,6 +735,7 @@ Business users need to query data using SQL. Requirements:
 ### Consequences
 
 **Positive:**
+
 - ✅ **Lowest Cost:** $5-10/month vs. $180+/month alternatives
 - ✅ **No ETL to Database:** Query S3 directly
 - ✅ **Zero Ops:** Fully managed
@@ -699,6 +744,7 @@ Business users need to query data using SQL. Requirements:
 - ✅ **BI Integration:** Works with all major tools
 
 **Negative:**
+
 - ❌ **Query Performance:** Slower than Redshift for very complex queries
 - ❌ **No Indexes:** Must rely on partitioning for performance
 - ❌ **Pay Per Scan:** Poorly optimized queries can be expensive
@@ -728,13 +774,14 @@ Business users need to query data using SQL. Requirements:
    - Monitor query patterns with CloudWatch
 
 3. **Workgroup Configuration:**
+
    ```yaml
    Workgroup: cloudmart-analytics
    OutputLocation: s3://cloudmart-athena-results/
    EncryptQueryResults: true
    EnforceWorkgroupConfiguration: true
    BytesScannedCutoffPerQuery: 10 GB  # Alert if query scans >10GB
-   ```
+   ```text
 
 4. **Performance Best Practices:**
    - Partition by date (year/month/day)
@@ -760,12 +807,14 @@ Business users need to query data using SQL. Requirements:
 ### Context
 
 Data partitioning significantly impacts query performance and cost. We need a partitioning strategy that:
+
 - Optimizes Athena query performance (partition pruning)
 - Keeps partition sizes reasonable (100MB-1GB)
 - Aligns with common query patterns
 - Balances granularity with manageability
 
 **Common partition strategies:**
+
 - By date (year/month/day)
 - By customer segment
 - By product category
@@ -805,25 +854,30 @@ Data partitioning significantly impacts query performance and cost. We need a pa
 #### Alternative 1: No Partitioning
 
 **Pros:**
+
 - Simpler data organization
 - No partition maintenance
 
 **Cons:**
+
 - Every query scans all data = high cost
 - Poor performance for large datasets
 - Not scalable
 
 **Example:**
+
 - Query last 7 days: Scans 2 years of data (100x overhead)
 - Cost: $5 per TB scanned (wasteful)
 
 #### Alternative 2: Fine-Grained (Hourly)
 
 **Pros:**
+
 - More precise pruning
 - Smaller partition sizes
 
 **Cons:**
+
 - Too many partitions (8,760/year)
 - Glue Crawler slowdown
 - List operations become expensive
@@ -832,10 +886,12 @@ Data partitioning significantly impacts query performance and cost. We need a pa
 #### Alternative 3: Coarse-Grained (Monthly)
 
 **Pros:**
+
 - Fewer partitions (12/year)
 - Simple management
 
 **Cons:**
+
 - Partition sizes too large (multi-GB)
 - Less effective pruning
 - Queries still scan significant data
@@ -845,10 +901,12 @@ Data partitioning significantly impacts query performance and cost. We need a pa
 **Format:** `year=2026/month=03/category=electronics/`
 
 **Pros:**
+
 - Very precise pruning
 - Optimizes queries with multiple dimensions
 
 **Cons:**
+
 - Explodes partition count (365 * 50 categories = 18K/year)
 - Complex to manage
 - Most queries don't filter by both dimensions
@@ -857,6 +915,7 @@ Data partitioning significantly impacts query performance and cost. We need a pa
 ### Consequences
 
 **Positive:**
+
 - ✅ **90%+ Query Cost Reduction:** Partition pruning avoids scanning unnecessary data
 - ✅ **10x Query Performance:** Athena processes only relevant partitions
 - ✅ **Incremental Processing:** ETL jobs process today's partition only
@@ -864,6 +923,7 @@ Data partitioning significantly impacts query performance and cost. We need a pa
 - ✅ **Standard Format:** Works with all AWS tools
 
 **Negative:**
+
 - ❌ **Partition Management:** Need to ensure partitions are registered
 - ❌ **Small Files:** Low-volume days create small files (mitigate with compaction)
 - ❌ **Not Optimal for All Queries:** Queries without date filter still scan all partitions
@@ -881,23 +941,25 @@ Data partitioning significantly impacts query performance and cost. We need a pa
 1. **Partition Structure:**
 
    **Orders:**
-   ```
+
+      ```text
    s3://cloudmart-processed/orders/
    └── year=2026/
        └── month=03/
            └── day=09/
                └── orders.parquet
-   ```
+      ```
 
    **Clickstream:**
-   ```
+
+      ```text
    s3://cloudmart-raw/clickstream/
    └── year=2026/
        └── month=03/
            └── day=09/
                └── hour=14/  # Additional hour partition for high-volume data
                    └── events_14.json.gz
-   ```
+   ```text
 
 2. **Partition Registration:**
    - Glue Crawlers auto-discover partitions
@@ -905,6 +967,7 @@ Data partitioning significantly impacts query performance and cost. We need a pa
    - Or use `ALTER TABLE ADD PARTITION` manually
 
 3. **Query Example (with partition pruning):**
+
    ```sql
    SELECT
        order_date,
@@ -915,6 +978,7 @@ Data partitioning significantly impacts query performance and cost. We need a pa
      AND day IN ('07', '08', '09')  -- Last 3 days
    GROUP BY order_date;
    ```
+
    **Result:** Scans only 3 partitions instead of all data
 
 4. **Avoiding Small Files:**
@@ -943,11 +1007,13 @@ Data partitioning significantly impacts query performance and cost. We need a pa
 ### Context
 
 File format choice impacts storage cost, query performance, and compatibility. We need a strategy for:
+
 - Raw (Bronze) zone: Original data format
 - Processed (Silver) zone: Optimized for querying
 - Curated (Gold) zone: Highly optimized aggregates
 
 **Format options:**
+
 - CSV: Human-readable, widely compatible
 - JSON: Flexible schema, nested data
 - Parquet: Columnar, compressed, optimized for analytics
@@ -967,6 +1033,7 @@ File format choice impacts storage cost, query performance, and compatibility. W
 #### Raw Zone: Original Formats
 
 **Why keep original:**
+
 - Preserve data fidelity (immutable landing zone)
 - Support diverse data sources
 - No transformation latency at ingestion
@@ -1011,11 +1078,13 @@ File format choice impacts storage cost, query performance, and compatibility. W
 #### Alternative 1: CSV for All Zones
 
 **Pros:**
+
 - Simple, human-readable
 - Easy to inspect and debug
 - Universal compatibility
 
 **Cons:**
+
 - No compression (1GB stays 1GB)
 - Row-based (must read entire row)
 - No predicate pushdown
@@ -1023,6 +1092,7 @@ File format choice impacts storage cost, query performance, and compatibility. W
 - Expensive to query (scan all data)
 
 **Cost Example:**
+
 - Athena cost to scan 1TB CSV: $5
 - Athena cost to scan 1TB Parquet (columnar, only 3 columns): $0.15
 - **Parquet is 30x cheaper**
@@ -1030,17 +1100,20 @@ File format choice impacts storage cost, query performance, and compatibility. W
 #### Alternative 2: JSON for All Zones
 
 **Pros:**
+
 - Flexible schema
 - Nested structures
 - Human-readable
 
 **Cons:**
+
 - Inefficient storage (verbose syntax)
 - Slow parsing
 - No compression benefit
 - Not optimized for Athena
 
 **Performance:**
+
 - JSON query: 10 seconds, scans 500MB
 - Parquet query: 1 second, scans 50MB
 - **Parquet is 10x faster**
@@ -1048,11 +1121,13 @@ File format choice impacts storage cost, query performance, and compatibility. W
 #### Alternative 3: Avro
 
 **Pros:**
+
 - Row-based format
 - Good for schema evolution
 - Efficient serialization
 
 **Cons:**
+
 - Row-based (not columnar)
 - Less compression than Parquet
 - Fewer tools support (compared to Parquet)
@@ -1063,11 +1138,13 @@ File format choice impacts storage cost, query performance, and compatibility. W
 #### Alternative 4: ORC (Optimized Row Columnar)
 
 **Pros:**
+
 - Columnar like Parquet
 - Optimized for Hive
 - Similar compression
 
 **Cons:**
+
 - Less ecosystem support outside Hadoop
 - Athena supports but optimized for Parquet
 - Smaller community
@@ -1077,6 +1154,7 @@ File format choice impacts storage cost, query performance, and compatibility. W
 ### Consequences
 
 **Positive:**
+
 - ✅ **3-5x Storage Savings:** Parquet compression reduces costs
 - ✅ **10x Query Performance:** Columnar format + pruning
 - ✅ **30x Query Cost Reduction:** Pay only for columns scanned
@@ -1084,6 +1162,7 @@ File format choice impacts storage cost, query performance, and compatibility. W
 - ✅ **Data Integrity:** Strong typing prevents errors
 
 **Negative:**
+
 - ❌ **Not Human-Readable:** Can't inspect with `cat` (use `parquet-tools`)
 - ❌ **Conversion Overhead:** Must convert from JSON/CSV to Parquet
 - ❌ **Debugging:** Harder to debug Parquet files
@@ -1100,6 +1179,7 @@ File format choice impacts storage cost, query performance, and compatibility. W
 ### Implementation Notes
 
 1. **Conversion in Glue ETL:**
+
    ```python
    # Read JSON from Bronze
    df = spark.read.json("s3://cloudmart-raw/orders/year=2026/month=03/day=09/")
@@ -1108,9 +1188,10 @@ File format choice impacts storage cost, query performance, and compatibility. W
    df.write.mode("overwrite") \
        .partitionBy("year", "month", "day") \
        .parquet("s3://cloudmart-processed/orders/")
-   ```
+   ```text
 
 2. **Parquet Configuration:**
+
    ```python
    # Compression: Snappy (fast) or GZIP (smaller)
    spark.conf.set("spark.sql.parquet.compression.codec", "snappy")
@@ -1120,6 +1201,7 @@ File format choice impacts storage cost, query performance, and compatibility. W
    ```
 
 3. **Inspect Parquet Files:**
+
    ```bash
    # Install parquet-tools
    pip install parquet-tools
@@ -1129,7 +1211,7 @@ File format choice impacts storage cost, query performance, and compatibility. W
 
    # View data
    parquet-tools head myfile.parquet
-   ```
+   ```text
 
 4. **File Size Best Practices:**
    - Target 100MB-1GB per file
@@ -1153,11 +1235,13 @@ File format choice impacts storage cost, query performance, and compatibility. W
 ### Context
 
 We need orchestration for multi-step workflows, particularly:
+
 - Ingestion: Validate → Transform → Route
 - ETL: Bronze → Silver → Gold (sequential)
 - Error handling and retries
 
 **Options:**
+
 - AWS Lambda with event-driven triggers
 - AWS Step Functions (state machine orchestration)
 - Apache Airflow (external orchestrator)
@@ -1202,18 +1286,21 @@ We need orchestration for multi-step workflows, particularly:
 #### Alternative 1: AWS Step Functions
 
 **Pros:**
+
 - Visual workflow editor
 - Built-in error handling and retries
 - Parallel execution
 - Workflow history and monitoring
 
 **Cons:**
+
 - More complex to set up
 - $25 per 1M transitions (vs. $0.20 Lambda)
 - Overkill for simple event-driven flow
 - Another service to learn
 
 **When to Use:**
+
 - Complex multi-step workflows
 - Long-running orchestrations (>15 minutes)
 - Human approval steps
@@ -1224,12 +1311,14 @@ We need orchestration for multi-step workflows, particularly:
 #### Alternative 2: Apache Airflow (MWAA)
 
 **Pros:**
+
 - Powerful DAG-based orchestration
 - Rich ecosystem of operators
 - Open-source (no lock-in)
 - Great for complex dependencies
 
 **Cons:**
+
 - MWAA costs $300/month minimum
 - Complex setup and learning curve
 - Overkill for our simple pipelines
@@ -1240,11 +1329,13 @@ We need orchestration for multi-step workflows, particularly:
 #### Alternative 3: AWS Glue Workflows
 
 **Pros:**
+
 - Native Glue integration
 - DAG-based orchestration
 - Visualize dependencies
 
 **Cons:**
+
 - Limited to Glue jobs (not Lambda)
 - Less flexible than Step Functions
 - Newer service (less mature)
@@ -1254,6 +1345,7 @@ We need orchestration for multi-step workflows, particularly:
 ### Consequences
 
 **Positive:**
+
 - ✅ **Simple Architecture:** Event-driven, no orchestrator
 - ✅ **Low Cost:** Lambda is cheapest option
 - ✅ **Fast Development:** No workflow DSL to learn
@@ -1261,6 +1353,7 @@ We need orchestration for multi-step workflows, particularly:
 - ✅ **Scalable:** Lambda auto-scales
 
 **Negative:**
+
 - ❌ **No Visual Workflow:** Must infer flow from code/docs
 - ❌ **Limited Retries:** Must implement manually in Lambda
 - ❌ **No Central Monitoring:** Must check each Lambda separately
@@ -1278,7 +1371,8 @@ We need orchestration for multi-step workflows, particularly:
 ### Implementation Notes
 
 1. **Event-Driven Flow:**
-   ```
+
+   ```text
    Data Source → S3 (Raw)
        ↓ (S3 Event)
    Lambda (Validate & Route)
@@ -1292,9 +1386,10 @@ We need orchestration for multi-step workflows, particularly:
    Glue (Silver → Gold)
        ↓
    S3 (Curated)
-   ```
+      ```
 
 2. **Retry Logic in Lambda:**
+
    ```python
    import boto3
    from botocore.exceptions import ClientError
@@ -1318,6 +1413,7 @@ We need orchestration for multi-step workflows, particularly:
    - Manual inspection and reprocessing
 
 4. **Glue Job Triggers:**
+
    ```python
    # Trigger Glue job daily at 3 AM
    glue.create_trigger(
@@ -1328,11 +1424,12 @@ We need orchestration for multi-step workflows, particularly:
            {'JobName': 'bronze-to-silver'}
        ]
    )
-   ```
+   ```text
 
 ### When to Migrate to Step Functions
 
 Consider Step Functions when:
+
 - [ ] More than 5 sequential steps
 - [ ] Complex conditional logic (if/then/else)
 - [ ] Human approval steps
@@ -1357,12 +1454,14 @@ Consider Step Functions when:
 ### Context
 
 Distributed systems fail. We need a strategy to handle:
+
 - Network failures (S3, API calls)
 - Data quality issues (invalid schema, missing fields)
 - Service throttling (AWS rate limits)
 - Code bugs and edge cases
 
 Requirements:
+
 - Automatic retries for transient failures
 - Dead letter queue for permanent failures
 - Alerting for critical errors
@@ -1401,11 +1500,13 @@ Requirements:
 #### Layer 1: Lambda Function Level
 
 **Strategy:**
+
 - Async invocation with DLQ
 - Exponential backoff for retries
 - Structured logging
 
 **Configuration:**
+
 ```yaml
 Lambda:
   MemorySize: 512
@@ -1416,9 +1517,10 @@ Lambda:
     TargetArn: !GetAtt DataIngestionDLQ.Arn
   RetryAttempts: 2
   MaximumEventAge: 3600  # 1 hour
-```
+```text
 
 **Code Pattern:**
+
 ```python
 import logging
 import traceback
@@ -1457,21 +1559,24 @@ def lambda_handler(event, context):
 #### Layer 2: Data Validation
 
 **Strategy:**
+
 - Validate schema before processing
 - Quarantine invalid records
 - Log validation errors
 
 **Quarantine S3 Structure:**
-```
+
+```text
 s3://cloudmart-quarantine/
 └── source=orders/
     └── error_type=schema_mismatch/
         └── year=2026/month=03/day=09/
             ├── invalid_record_1.json
             └── error_metadata_1.json
-```
+```text
 
 **Validation Code:**
+
 ```python
 def validate_order(order):
     required_fields = ['order_id', 'customer_id', 'total_amount', 'order_date']
@@ -1484,16 +1589,18 @@ def validate_order(order):
         raise ValidationError("Invalid amount: must be positive")
 
     # ... more validations
-```
+```text
 
 #### Layer 3: Glue Job Monitoring
 
 **Strategy:**
+
 - Job success/failure alarms
 - Data quality checks within job
 - Bookmark for incremental processing
 
 **CloudWatch Alarm:**
+
 ```yaml
 GlueJobFailureAlarm:
   Type: AWS::CloudWatch::Alarm
@@ -1511,6 +1618,7 @@ GlueJobFailureAlarm:
 ```
 
 **Data Quality in Glue:**
+
 ```python
 # Count records before/after transformation
 input_count = df_input.count()
@@ -1523,16 +1631,18 @@ logger.info(f"Output records: {output_count}")
 loss_rate = (input_count - output_count) / input_count
 if loss_rate > 0.20:
     raise DataQualityException(f"Excessive data loss: {loss_rate:.2%}")
-```
+```text
 
 #### Layer 4: Alerting
 
 **Strategy:**
+
 - SNS topic for critical alerts
 - Email notifications to team
 - CloudWatch dashboard for monitoring
 
 **SNS Topic:**
+
 ```yaml
 AlertSNSTopic:
   Type: AWS::SNS::Topic
@@ -1541,9 +1651,10 @@ AlertSNSTopic:
     Subscriptions:
       - Endpoint: data-team@cloudmart.com
         Protocol: email
-```
+```text
 
 **Alert Types:**
+
 1. Lambda DLQ has messages
 2. Glue job fails
 3. Data quality threshold breached
@@ -1555,10 +1666,12 @@ AlertSNSTopic:
 #### Alternative 1: Fail Fast (No Retries)
 
 **Pros:**
+
 - Simple
 - Immediate alerting
 
 **Cons:**
+
 - Transient failures cause permanent data loss
 - More manual intervention required
 
@@ -1567,10 +1680,12 @@ AlertSNSTopic:
 #### Alternative 2: Infinite Retries
 
 **Pros:**
+
 - Eventually consistent
 - No data loss from transient failures
 
 **Cons:**
+
 - Poison messages block queue
 - Runaway costs
 - Delays in error detection
@@ -1580,11 +1695,13 @@ AlertSNSTopic:
 #### Alternative 3: External Monitoring (Datadog, New Relic)
 
 **Pros:**
+
 - Richer monitoring features
 - Better visualization
 - Anomaly detection
 
 **Cons:**
+
 - Additional cost ($50-100/month)
 - More complexity
 - Overkill for MVP
@@ -1594,6 +1711,7 @@ AlertSNSTopic:
 ### Consequences
 
 **Positive:**
+
 - ✅ **Fault Tolerance:** Transient failures auto-recover
 - ✅ **Data Protection:** Invalid data quarantined, not lost
 - ✅ **Observability:** Logs and metrics for debugging
@@ -1601,6 +1719,7 @@ AlertSNSTopic:
 - ✅ **Cost Control:** Limits prevent runaway costs
 
 **Negative:**
+
 - ❌ **Complexity:** More code to write and test
 - ❌ **Noise:** Potential for alert fatigue if not tuned
 - ❌ **Latency:** Retries add latency to processing
@@ -1643,6 +1762,7 @@ AlertSNSTopic:
 Data lake organization impacts data quality, query performance, and user experience. We need a clear strategy for how data flows through the lake.
 
 **Alternatives:**
+
 - Flat structure (all data in one zone)
 - Two-tier (raw + processed)
 - Three-tier medallion (bronze/silver/gold)
@@ -1681,6 +1801,7 @@ Data lake organization impacts data quality, query performance, and user experie
 **Purpose:** Immutable landing zone for raw data
 
 **Characteristics:**
+
 - **Immutable:** Never modified after ingestion
 - **Format:** Original (JSON, CSV)
 - **Partitioning:** By ingestion date
@@ -1689,13 +1810,15 @@ Data lake organization impacts data quality, query performance, and user experie
 - **Access:** Data engineering only
 
 **Use Cases:**
+
 - Data auditing and lineage
 - Reprocessing (rerun transformations)
 - Debugging data quality issues
 - Compliance and archival
 
 **S3 Path:**
-```
+
+```text
 s3://cloudmart-raw/
 ├── orders/year=2026/month=03/day=09/orders_*.csv.gz
 ├── clickstream/year=2026/month=03/day=09/hour=14/events_*.json.gz
@@ -1707,6 +1830,7 @@ s3://cloudmart-raw/
 **Purpose:** Cleansed, validated, conformed data
 
 **Characteristics:**
+
 - **Cleansed:** Duplicates removed, nulls handled
 - **Validated:** Schema validated, data types correct
 - **Conformed:** Standardized formats (dates, decimals)
@@ -1717,19 +1841,22 @@ s3://cloudmart-raw/
 - **Access:** Data engineering + analysts (read-only)
 
 **Use Cases:**
+
 - Data science model training
 - Ad-hoc analysis
 - Building Gold layer aggregates
 
 **S3 Path:**
-```
+
+```text
 s3://cloudmart-processed/
 ├── orders/year=2026/month=03/day=09/orders.parquet
 ├── order_items/year=2026/month=03/day=09/order_items.parquet
 └── clickstream_events/year=2026/month=03/day=09/events.parquet
-```
+```text
 
 **Transformations (Bronze → Silver):**
+
 - Deduplicate by business key
 - Validate schema and data types
 - Handle missing values (fill or filter)
@@ -1742,6 +1869,7 @@ s3://cloudmart-processed/
 **Purpose:** Business-ready aggregated datasets
 
 **Characteristics:**
+
 - **Aggregated:** Pre-computed metrics (daily sales, CLV)
 - **Joined:** Cross-source datasets (orders + customers)
 - **Business Logic:** Applied (revenue calculations, segmentation)
@@ -1752,13 +1880,15 @@ s3://cloudmart-processed/
 - **Access:** All business users via Athena
 
 **Use Cases:**
+
 - Business intelligence dashboards
 - Executive reporting
 - Self-service analytics
 - Regulatory reporting
 
 **S3 Path:**
-```
+
+```text
 s3://cloudmart-curated/
 ├── daily_sales_summary/year=2026/month=03/summary.parquet
 ├── customer_lifetime_value/snapshot_date=2026-03-09/clv.parquet
@@ -1766,6 +1896,7 @@ s3://cloudmart-curated/
 ```
 
 **Transformations (Silver → Gold):**
+
 - Aggregate (SUM, AVG, COUNT by day/week/month)
 - Join across sources (orders + customers + products)
 - Apply business logic (revenue = sum(order_items))
@@ -1777,10 +1908,12 @@ s3://cloudmart-curated/
 #### Alternative 1: Flat Structure (One Zone)
 
 **Pros:**
+
 - Simplest
 - No ETL between zones
 
 **Cons:**
+
 - No separation of concerns
 - Data quality mixed
 - Hard to debug
@@ -1791,10 +1924,12 @@ s3://cloudmart-curated/
 #### Alternative 2: Two-Tier (Raw + Processed)
 
 **Pros:**
+
 - Simpler than three-tier
 - Clear raw vs. clean separation
 
 **Cons:**
+
 - Processed zone serves both analysts and aggregates
 - No clear line between detail and summary data
 - Query performance suffers (analysts query huge tables)
@@ -1804,10 +1939,12 @@ s3://cloudmart-curated/
 #### Alternative 3: Four-Tier (+ Platinum)
 
 **Pros:**
+
 - Platinum layer for ML feature store
 - Even more specialization
 
 **Cons:**
+
 - Added complexity
 - Overkill for MVP
 - Harder to explain to stakeholders
@@ -1817,6 +1954,7 @@ s3://cloudmart-curated/
 ### Consequences
 
 **Positive:**
+
 - ✅ **Clear Data Quality:** Each layer has defined quality bar
 - ✅ **Incremental Value:** Bronze → Silver → Gold adds value at each step
 - ✅ **Easy Debugging:** Trace data issues through layers
@@ -1825,6 +1963,7 @@ s3://cloudmart-curated/
 - ✅ **Reprocessing:** Immutable Bronze enables easy reprocessing
 
 **Negative:**
+
 - ❌ **Storage Costs:** Data stored in 3 copies (but compressed)
 - ❌ **ETL Complexity:** Must maintain transformations between layers
 - ❌ **Latency:** Data passes through 3 stages before reaching users
@@ -1852,6 +1991,7 @@ s3://cloudmart-curated/
    - For real-time needs, query Silver layer directly
 
 3. **Access Control:**
+
    ```yaml
    Bronze:
      Read: DataEngineers
@@ -1864,7 +2004,7 @@ s3://cloudmart-curated/
    Gold:
      Read: All_BusinessUsers
      Write: GlueETLJobs
-   ```
+   ```text
 
 4. **Documentation:**
    - Data catalog descriptions for each layer
@@ -1895,12 +2035,14 @@ s3://cloudmart-curated/
 ### Context
 
 Infrastructure as Code (IaC) is essential for:
+
 - Reproducible deployments
 - Version control of infrastructure
 - Automated provisioning
 - Disaster recovery
 
 **Options:**
+
 - AWS CloudFormation (native AWS)
 - Terraform (HashiCorp, multi-cloud)
 - AWS CDK (code-based)
@@ -1978,9 +2120,10 @@ Outputs:
     Value: !Ref RawBucket
     Export:
       Name: !Sub ${AWS::StackName}-RawBucket
-```
+```text
 
 **Deploy:**
+
 ```bash
 aws cloudformation create-stack \
   --stack-name cloudmart-data-lake \
@@ -2045,14 +2188,15 @@ output "raw_bucket_name" {
   description = "Bronze layer S3 bucket"
   value       = aws_s3_bucket.raw.id
 }
-```
+```text
 
 **Deploy:**
+
 ```bash
 terraform init
 terraform plan -var="environment=dev"
 terraform apply -var="environment=dev"
-```
+```text
 
 ### Comparison
 
@@ -2071,12 +2215,14 @@ terraform apply -var="environment=dev"
 ### Decision for Students
 
 **Choose CloudFormation if:**
+
 - ✅ You're new to IaC
 - ✅ You're focusing on AWS only
 - ✅ You want native AWS integration
 - ✅ You prefer automatic rollback
 
 **Choose Terraform if:**
+
 - ✅ You want multi-cloud skills
 - ✅ You prefer HCL syntax
 - ✅ You're already familiar with Terraform
@@ -2085,12 +2231,14 @@ terraform apply -var="environment=dev"
 ### Consequences
 
 **Positive:**
+
 - ✅ **Flexibility:** Students choose their preferred tool
 - ✅ **Learning:** Exposure to both tools
 - ✅ **Reproducibility:** Infrastructure as code
 - ✅ **Version Control:** Git-friendly
 
 **Negative:**
+
 - ❌ **Maintenance:** Must maintain two templates
 - ❌ **Parity:** Risk of divergence between templates
 - ❌ **Confusion:** Students must choose
@@ -2137,7 +2285,7 @@ terraform apply -var="environment=dev"
 ## References
 
 - [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
-- [Databricks Lakehouse Architecture](https://www.databricks.com/glossary/ medallion-architecture)
+- [Databricks Lakehouse Architecture](<https://www.databricks.com/glossary/> medallion-architecture)
 - [AWS Data Lake Whitepaper](https://docs.aws.amazon.com/whitepapers/latest/building-data-lakes/building-data-lake-aws.html)
 - [Architecture Decision Records (ADR)](https://adr.github.io/)
 

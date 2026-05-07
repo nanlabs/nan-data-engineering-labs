@@ -35,10 +35,11 @@ pip install great-expectations
 
 # Inicializar proyecto
 great_expectations init
-```
+```text
 
 Esto crea la estructura:
-```
+
+```text
 great_expectations/
 ├── great_expectations.yml          # Configuration principal
 ├── expectations/                   # Expectation suites
@@ -47,7 +48,7 @@ great_expectations/
 └── uncommitted/
     ├── data_docs/                  # Reportes HTML
     └── validations/                # Resultados de validaciones
-```
+```text
 
 ### Creating Expectations
 
@@ -108,7 +109,7 @@ great_expectations suite new
 # 1. Seleccionar datasource
 # 2. Seleccionar batch de datos
 # 3. Agregar expectations con autocompleted
-```
+```text
 
 **Method 3: Auto-profiling**
 
@@ -127,13 +128,14 @@ profiler = UserConfigurableProfiler(
 
 suite = profiler.build_suite()
 validator.save_expectation_suite()
-```
+```text
 
 ### Available Expectations
 
 Great Expectations tiene 50+ built-in expectations:
 
 **Table-level Expectations:**
+
 ```python
 # Row counts
 expect_table_row_count_to_be_between(min_value, max_value)
@@ -142,9 +144,10 @@ expect_table_row_count_to_equal(value)
 # Column structure
 expect_table_columns_to_match_ordered_list(column_list)
 expect_table_column_count_to_equal(value)
-```
+```text
 
 **Column-level Expectations:**
+
 ```python
 # Nulls
 expect_column_values_to_not_be_null(column)
@@ -182,6 +185,7 @@ expect_compound_columns_to_be_unique(column_list)
 ```
 
 **Multi-column Expectations:**
+
 ```python
 # Relationships
 expect_column_pair_values_to_be_equal(column_A, column_B)
@@ -189,7 +193,7 @@ expect_column_pair_values_A_to_be_greater_than_B(column_A, column_B)
 
 # Correlations
 expect_column_pair_cramers_phi_value_to_be_less_than(column_A, column_B, threshold)
-```
+```text
 
 ### Custom Expectations
 
@@ -219,7 +223,7 @@ class ExpectColumnValuesToBeValidEmail(ColumnMapExpectation):
 
 # Usar custom expectation
 validator.expect_column_values_to_be_valid_email(column="email", mostly=0.95)
-```
+```text
 
 ### Running Validations (Checkpoints)
 
@@ -260,7 +264,7 @@ else:
         for validation_result in result["validation_result"]["results"]:
             if not validation_result["success"]:
                 print(f"   - {validation_result['expectation_config']['expectation_type']}")
-```
+```text
 
 ### Data Docs
 
@@ -275,6 +279,7 @@ context.open_data_docs()
 ```
 
 Los Data Docs incluyen:
+
 - **Overview** de todas las suites
 - **Validation results** with graphs
 - **Expectation details** con ejemplos
@@ -283,6 +288,7 @@ Los Data Docs incluyen:
 ### Integration with Data Pipelines
 
 **Con Airflow:**
+
 ```python
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -318,9 +324,10 @@ with DAG("etl_with_validation", schedule_interval="@daily") as dag:
     load = PythonOperator(...)
 
     extract >> validate >> load  # Validar antes de load
-```
+```text
 
 **Con dbt:**
+
 ```yaml
 # models/schema.yml
 version: 2
@@ -344,7 +351,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
               max_value: 1000000
-```
+```text
 
 ---
 
@@ -375,7 +382,7 @@ spark = (SparkSession
 
 # Cargar datos
 df = spark.read.parquet("s3://bucket/transactions/")
-```
+```text
 
 ### Data Profiling
 
@@ -431,7 +438,7 @@ if verification.status == "Success":
     print("✅ All checks passed")
 else:
     print("❌ Some checks failed")
-```
+```text
 
 ### Metrics Computation
 
@@ -456,7 +463,7 @@ analysis = (AnalysisRunner(spark)
 # Convertir a DataFrame para análisis
 metrics_df = AnalyzerContext.successMetricsAsDataFrame(spark, analysis)
 metrics_df.show()
-```
+```text
 
 ### Anomaly Detection
 
@@ -491,7 +498,7 @@ anomalyDetection = (AnomalyDetectionRunner(spark)
     )
     .run()
 )
-```
+```text
 
 ### PyDeequ vs Great Expectations
 
@@ -506,6 +513,7 @@ anomalyDetection = (AnomalyDetectionRunner(spark)
 | **Profiling** | Fast (distributed) | Slower (single node) |
 
 **Recommendation:**
+
 - Use **PyDeequ** if you're already on Spark and have big data
 - Use **Great Expectations** for most other cases (better DX, more mature)
 
@@ -582,7 +590,7 @@ schema = DataFrameSchema({
         Check(lambda s: s.std() < 0.2, element_wise=False)
     ])
 })
-```
+```text
 
 ### Hypothesis Testing
 
@@ -597,7 +605,7 @@ schema = DataFrameSchema({
         alpha=0.05
     ))
 })
-```
+```text
 
 ### DataFrameModel (Class-based API)
 
@@ -619,7 +627,7 @@ class TransactionSchema(DataFrameModel):
 
 # Uso
 TransactionSchema.validate(df)
-```
+```text
 
 ---
 
@@ -631,7 +639,7 @@ TransactionSchema.validate(df)
 
 ```
 [Extract] → [Gate 1: Schema] → [Transform] → [Gate 2: Business Rules] → [Load] → [Gate 3: Completeness]
-```
+```text
 
 **Implementation:**
 
@@ -704,13 +712,13 @@ try:
 except DataQualityException as e:
     # Handle failure (alertas, rollback, etc.)
     handle_quality_failure(e)
-```
+```text
 
 ### 2. Data Quality Monitoring
 
 **Continuous monitoring architecture:**
 
-```
+```text
 ┌─────────────┐
 │ Data Source │
 └──────┬──────┘
@@ -788,9 +796,10 @@ def validate_with_metrics(df: pd.DataFrame, dataset_name: str):
 
 # Start metrics server
 start_http_server(8000)
-```
+```text
 
 **Grafana Dashboard Query:**
+
 ```promql
 # Quality score over time
 avg(data_quality_score{dataset="transactions"}) by (dimension)
@@ -802,7 +811,7 @@ rate(data_quality_checks_total{status="failure"}[5m])
 # P95 validation duration
 histogram_quantile(0.95,
   rate(data_quality_validation_seconds_bucket[5m]))
-```
+```text
 
 ### 3. Data Contracts
 
@@ -863,7 +872,7 @@ consumers:
   - team: ml-platform
     contact: ml@company.com
     usage: "Fraud detection model training"
-```
+```text
 
 **Contract Validation:**
 
@@ -959,7 +968,7 @@ if not result['compliant']:
 
 **Concept:** Isolate poor quality data without stopping the pipeline.
 
-```
+```text
                     ┌─────────────┐
                     │   Extract   │
                     └──────┬──────┘
@@ -976,7 +985,7 @@ if not result['compliant']:
   │ Valid Data   │                   │ Quarantine  │
   │  ─→ Load     │                   │  (Review)   │
   └──────────────┘                   └─────────────┘
-```
+```text
 
 **Implementation:**
 
@@ -1056,7 +1065,7 @@ load_to_warehouse(valid)
 if datetime.now().hour == 9:  # Daily at 9 AM
     quarantine_report = handler.review_quarantine()
     send_to_data_stewards(quarantine_report)
-```
+```text
 
 ---
 
@@ -1068,7 +1077,7 @@ if datetime.now().hour == 9:  # Daily at 9 AM
 Input Layer     → Schema, format, required fields
 Business Layer  → Business rules, referential integrity
 Output Layer    → Aggregation checks, completeness
-```
+```text
 
 ### 2. Fail vs. Warn
 
@@ -1093,7 +1102,7 @@ validations = [
     {'check': lambda df: df['notes'].notna().sum() / len(df) > 0.50,
      'severity': ValidationSeverity.INFO},
 ]
-```
+```text
 
 ### 3. Version Control for Expectations
 
@@ -1105,7 +1114,7 @@ git log expectations/transactions_suite.json
 
 # Code review para cambios en validaciones
 # Pull request para agregar/modificar expectations
-```
+```text
 
 ### 4. Data Quality as Code
 
@@ -1155,6 +1164,7 @@ def enforce_rules(df: pd.DataFrame, rules: List[QualityRule]):
 ## Conclusion
 
 Un sistema de data quality robusto requiere:
+
 1. **Framework adecuado** (Great Expectations, PyDeequ, Pandera)
 2. **Well designed architecture** (quality gates, monitoring, contracts)
 3. **Automation** (CI/CD, alerts, dashboards)

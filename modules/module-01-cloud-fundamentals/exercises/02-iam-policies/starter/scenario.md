@@ -7,15 +7,18 @@ QuickMart ha crecido y ahora tiene un equipo de datos completo. El CTO te pidió
 ## Team Structure
 
 ### Data Engineers (2 personas)
+
 **Nombres:** Alice Smith, Bob Johnson
 
 **Responsabilidades:**
+
 - Construir y mantener data pipelines
 - Write Glue ETL jobs y Lambda functions
 - Configure infraestructura (S3, EMR, Kinesis)
 - Troubleshooting de pipelines en producción
 
 **Permisos Necesarios:**
+
 - ✅ Full access: S3, Glue, Lambda, Athena, EMR, Kinesis
 - ✅ EC2 read-only (para debugging de EMR clusters)
 - ✅ CloudWatch Logs (para monitoring)
@@ -23,15 +26,18 @@ QuickMart ha crecido y ahora tiene un equipo de datos completo. El CTO te pidió
 - ❌ NO pueden ver billing information
 
 ### Data Analysts (2 personas)
+
 **Nombres:** Carol Davis, David Martinez
 
 **Responsabilidades:**
+
 - Run queries en Athena
 - Create dashboards en QuickSight
 - Explorar datos en S3 (read-only)
 - Review Glue Data Catalog
 
 **Permisos Necesarios:**
+
 - ✅ S3 read-only (GetObject, ListBucket)
 - ✅ Athena query execution (CreateNamedQuery, StartQueryExecution)
 - ✅ Glue Data Catalog read-only
@@ -41,15 +47,18 @@ QuickMart ha crecido y ahora tiene un equipo de datos completo. El CTO te pidió
 - ❌ NO pueden lanzar EMR clusters
 
 ### ML/Data Science Lead (1 persona)
+
 **Nombre:** Eve Wilson
 
 **Responsabilidades:**
+
 - Entrenar modelos de ML con SageMaker
 - Acceder training datasets
 - Desplegar modelos en Lambda para inference
 - Experimentación con notebooks
 
 **Permisos Necesarios:**
+
 - ✅ SageMaker full access
 - ✅ S3 access SOLO a:
   - `s3://my-data-lake-curated/ml-models/*`
@@ -69,7 +78,8 @@ QuickMart ha crecido y ahora tiene un equipo de datos completo. El CTO te pidió
 **Cada user debe tener SOLO los permisos necesarios para su trabajo.**
 
 Ejemplo:
-```
+
+```text
 ❌ MAL - Data Analyst con admin access:
 {
   "Effect": "Allow",
@@ -83,7 +93,7 @@ Ejemplo:
   "Action": ["s3:GetObject", "s3:ListBucket"],
   "Resource": ["arn:aws:s3:::my-data-lake/*"]
 }
-```
+```text
 
 ### 2. Separation of Duties
 
@@ -97,7 +107,7 @@ Ejemplo:
 
 **Diferentes niveles de sensibilidad:**
 
-```
+```text
 Public:
 ├── s3://my-data-lake-curated/public-datasets/
 └── Access: Todos los analysts
@@ -130,12 +140,14 @@ Restricted:
 ### Bucket: `my-data-lake-raw`
 
 **Reglas:**
+
 1. ❌ **NOBODY** puede eliminar objetos (except admins)
 2. ✅ Uploads deben usar server-side encryption
 3. ✅ Logs de access habilitados
 4. ✅ Versioning habilitado (recovery de deletes accidentales)
 
 **Bucket Policy debe implementar:**
+
 ```json
 {
   "Statement": [
@@ -165,11 +177,12 @@ Restricted:
     }
   ]
 }
-```
+```text
 
 ### Bucket: `my-data-lake-processed`
 
 **Reglas:**
+
 1. ✅ Engineers pueden read/write
 2. ✅ Analysts pueden solo read
 3. ✅ Particiones por domain (sales/, marketing/, product/)
@@ -182,12 +195,14 @@ Restricted:
 QuickMart tiene un partner (ficticio account `999999999999`) que necesita acceso **read-only** a ciertos reports.
 
 **Setup:**
+
 1. Create role `PartnerReportReader` en tu account
 2. Trust policy permite account 999999999999 asumir el role
 3. Role tiene permisos S3 read-only a `s3://my-data-lake-curated/partner-reports/*`
 
 **Flujo:**
-```
+
+```text
 Partner AWS Account
     ↓
 Asume role: arn:aws:iam::YOUR_ACCOUNT:role/PartnerReportReader
@@ -195,7 +210,7 @@ Asume role: arn:aws:iam::YOUR_ACCOUNT:role/PartnerReportReader
 Obtiene credenciales temporales (1 hora)
     ↓
 Lee reports desde S3
-```
+```text
 
 ---
 
@@ -264,16 +279,19 @@ aws s3 ls s3://my-data-lake-curated/ml-models/ --endpoint-url=http://localhost:4
 ## Compliance Considerations
 
 **GDPR (European users):**
+
 - PII debe estar en buckets separados con access logging
 - Right to deletion debe ser implementable
 - Data retention policies (lifecycle rules)
 
 **HIPAA (si manejan health data):**
+
 - Encryption at rest mandatory
 - Audit trails completos
 - Access reviews trimestrales
 
 **SOC2:**
+
 - Least privilege documented
 - Change management para IAM
 - Regular access reviews

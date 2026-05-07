@@ -9,34 +9,40 @@ Use these hints if you get stuck. Try to solve on your own first!
 ### Understanding Medallion Architecture
 
 **Bronze Layer (Raw Zone):**
+
 - Think of it as a "staging area" or "landing zone"
 - Store data EXACTLY as it arrives (no transformations)
 - Focus on **durability** and **retention**
 - Optimize for **write performance** and **cost**
 
 **Key Questions:**
+
 - Where should raw CSV files land?
 - How long do we need to keep them?
 - What if we need to reprocess?
 
 **Silver Layer (Cleaned Zone):**
+
 - This is your "single source of truth"
 - Data is validated, deduplicated, and normalized
 - Convert to efficient formats (Parquet)
 - Optimize for **query performance**
 
 **Key Questions:**
+
 - What transformations are applied?
 - How do we partition for analytics?
 - What's the retention policy?
 
 **Gold Layer (Curated Zone):**
+
 - Pre-aggregated, business-ready data
 - Optimized for specific use cases
 - Heavily cached/accessed
 - Think "data marts" or "feature stores"
 
 **Key Questions:**
+
 - What aggregations do business users need?
 - How do we optimize for BI tools?
 - What's our SLA for freshness?
@@ -44,6 +50,7 @@ Use these hints if you get stuck. Try to solve on your own first!
 ### S3 Bucket Configuration Checklist
 
 For EACH bucket, consider:
+
 1. ☐ **Versioning:** Protect against accidental deletes?
 2. ☐ **Encryption:** Sensitive data? (Hint: Always yes)
 3. ☐ **Lifecycle:** Move old data to cheaper tiers?
@@ -54,11 +61,13 @@ For EACH bucket, consider:
 ### CloudFormation Resource Types
 
 You'll need:
+
 - `AWS::S3::Bucket` - For each layer
 - `AWS::IAM::Role` - For different user personas
 - `AWS::S3::BucketPolicy` - For access control
 
 **Structure:**
+
 ```yaml
 Resources:
   BronzeBucket:
@@ -66,7 +75,7 @@ Resources:
     Properties:
       BucketName: !Sub '${CompanyName}-bronze-${Environment}'
       # Add configurations here...
-```
+```text
 
 ---
 
@@ -75,26 +84,30 @@ Resources:
 ### S3 Bucket Properties
 
 **1. Versioning Configuration:**
+
 ```yaml
 VersioningConfiguration:
   Status: Enabled  # Protects against accidental deletes
-```
+```text
 
 **Why?** Data engineers sometimes delete files accidentally. Versioning allows recovery.
 
 **2. Encryption Configuration:**
+
 ```yaml
 BucketEncryption:
   ServerSideEncryptionConfiguration:
     - ServerSideEncryptionByDefault:
         SSEAlgorithm: AES256  # SSE-S3 (managed by AWS)
-```
+```text
 
 **Alternatives:**
+
 - `aws:kms` - For more control (with KMS key)
 - `AES256` - Simpler, cheaper, sufficient for most use cases
 
 **3. Lifecycle Rules (Bronze Example):**
+
 ```yaml
 LifecycleConfiguration:
   Rules:
@@ -109,12 +122,14 @@ LifecycleConfiguration:
 ```
 
 **Bronze Strategy:**
+
 - 0-30 days: Standard (recent data, might need reprocessing)
 - 31-90 days: Standard-IA (infrequent access)
 - 91-730 days: Glacier (archival, compliance)
 - 730+ days: Delete
 
 **Silver Strategy:**
+
 ```yaml
 LifecycleConfiguration:
   Rules:
@@ -124,22 +139,25 @@ LifecycleConfiguration:
         - TransitionInDays: 90
           StorageClass: STANDARD_IA
       ExpirationInDays: 365  # Delete after 1 year
-```
+```text
 
 **Gold Strategy:**
+
 ```yaml
 # No lifecycle transitions - keep in Standard
 # Data is frequently accessed by BI tools
-```
+```text
 
 **4. Access Logging:**
+
 ```yaml
 LoggingConfiguration:
   DestinationBucketName: !Ref LogsBucket
   LogFilePrefix: !Sub '${Layer}-access-logs/'
-```
+```text
 
 **5. Public Access Block:**
+
 ```yaml
 PublicAccessBlockConfiguration:
   BlockPublicAcls: true
@@ -153,6 +171,7 @@ PublicAccessBlockConfiguration:
 ### IAM Role Configuration
 
 **Data Engineer Role (Full Access to Bronze/Silver):**
+
 ```yaml
 DataEngineerRole:
   Type: AWS::IAM::Role
@@ -189,9 +208,10 @@ DataEngineerRole:
               Resource:
                 - !GetAtt GoldBucket.Arn
                 - !Sub '${GoldBucket.Arn}/*'
-```
+```text
 
 **Data Scientist Role (Read-Only Silver/Gold):**
+
 ```yaml
 Policies:
   - PolicyName: DataScientistPolicy
@@ -207,11 +227,12 @@ Policies:
             - !Sub '${SilverBucket.Arn}/*'
             - !GetAtt GoldBucket.Arn
             - !Sub '${GoldBucket.Arn}/*'
-```
+```text
 
 ### Bucket Policy Examples
 
 **Force Encrypted Uploads:**
+
 ```yaml
 BronzeBucketPolicy:
   Type: AWS::S3::BucketPolicy
@@ -238,7 +259,7 @@ BronzeBucketPolicy:
           Condition:
             Bool:
               'aws:SecureTransport': false
-```
+```text
 
 ---
 
@@ -336,7 +357,7 @@ SilverBucket:
         Value: !Ref CostCenter
       - Key: DataClassification
         Value: cleaned
-```
+```text
 
 ### Complete Gold Bucket
 
@@ -376,7 +397,7 @@ GoldBucket:
         Value: business-intelligence
       - Key: DataClassification
         Value: aggregated
-```
+```text
 
 ### Complete Logs Bucket
 
@@ -411,7 +432,7 @@ LogsBucket:
         Value: !Ref Environment
       - Key: Purpose
         Value: access-logs
-```
+```text
 
 ### Complete IAM Role with Full Permissions
 
@@ -519,20 +540,24 @@ aws cloudformation describe-stacks \
   --stack-name $STACK_NAME \
   --query 'Stacks[0].Outputs[*].[OutputKey,OutputValue]' \
   --output table
-```
+```text
 
 ---
 
 ## Common Issues & Solutions
 
 ### Issue 1: "Bucket name already exists"
+
 **Solution:** Bucket names are globally unique. Change `CompanyName` parameter or add random suffix.
 
 ### Issue 2: "AccessDenied creating bucket"
+
 **Solution:** Check your AWS credentials and IAM permissions.
 
 ### Issue 3: "LoggingConfiguration error"
+
 **Solution:** Logs bucket must exist BEFORE other buckets reference it. Use `DependsOn`:
+
 ```yaml
 BronzeBucket:
   Type: AWS::S3::Bucket
@@ -540,10 +565,12 @@ BronzeBucket:
   Properties:
     LoggingConfiguration:
       DestinationBucketName: !Ref LogsBucket
-```
+```text
 
 ### Issue 4: "Lifecycle rule validation error"
+
 **Solution:** Ensure `TransitionInDays` values increase:
+
 - 30 days → STANDARD_IA
 - 90 days → GLACIER (must be > 30)
 
@@ -552,6 +579,7 @@ BronzeBucket:
 ## Verification Checklist
 
 After deployment, verify:
+
 - [ ] `aws s3 ls` shows all 4 buckets
 - [ ] `aws s3api get-bucket-versioning` shows Enabled
 - [ ] `aws s3api get-bucket-encryption` shows AES256

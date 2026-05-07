@@ -44,6 +44,7 @@
 **North Star Metric**: 80% of business decisions supported by lakehouse data within 12 months
 
 **Key Results**:
+
 - ✅ 100% compliance audit pass rate (GDPR, CCPA, SOX)
 - ✅ <60 seconds query latency (p99) for ad-hoc analytics
 - ✅ 99.9% data quality score across all domains
@@ -65,6 +66,7 @@
 **Locations**: 25 countries, 80+ offices
 
 **Business Units**:
+
 - **Manufacturing** (35% revenue): Industrial equipment, IoT-enabled machinery
 - **Retail** (30% revenue): E-commerce platform, 200+ physical stores
 - **Financial Services** (20% revenue): B2B payments, invoice financing
@@ -73,7 +75,8 @@
 ### Current Data Landscape
 
 **Systems Inventory** (as of January 2026):
-```
+
+```text
 Production Databases (50+ instances):
 ├── Oracle ERP (6 instances) - Finance, Supply Chain
 ├── SAP S/4HANA (2 instances) - GL, Procurement
@@ -102,11 +105,12 @@ Data Warehouses (3 separate instances):
 ├── Snowflake (Sales, Marketing) - $400K/year
 ├── Redshift (Finance) - $250K/year
 └── BigQuery (Operations) - $180K/year
-```
+```text
 
 **Data Volume**: 10TB production data + 15TB historical archives
 
 **Data Sources Breakdown**:
+
 - Structured (RDBMS): 6TB (60%)
 - Semi-structured (JSON/XML): 2.5TB (25%)
 - Unstructured (PDFs, images): 1.5TB (15%)
@@ -116,22 +120,26 @@ Data Warehouses (3 separate instances):
 #### 1. Regulatory Compliance Crisis
 
 **GDPR Violations**:
+
 - €1.2M fine (2024) for data breach affecting 50K EU customers
 - 18-day delay in responding to data subject access requests (legal limit: 30 days, internal target: 48 hours)
 - No centralized PII inventory
 - Inconsistent consent management across 30+ systems
 
 **CCPA Non-Compliance**:
+
 - Unable to fulfill "right to delete" requests within 45 days
 - Lack of data lineage prevents identification of all consumer data copies
 - No automated opt-out mechanism
 
 **SOX Control Deficiencies**:
+
 - Material weakness reported in Q4 2025 audit: inadequate segregation of duties
 - Financial data modified without audit trail in 3 systems
 - 7-year data retention requirement not consistently enforced
 
 **HIPAA Risks** (Healthcare BU):
+
 - PHI stored in non-encrypted S3 buckets (2 incidents)
 - Unauthorized access to patient records by 12 employees (terminated)
 
@@ -140,11 +148,13 @@ Data Warehouses (3 separate instances):
 #### 2. Data Silos & Quality Issues
 
 **Cross-Functional Analysis Impossible**:
+
 - Sales team cannot correlate revenue with manufacturing quality issues
 - Finance cannot reconcile revenue across 6 different source systems
 - HR cannot link employee satisfaction with productivity metrics
 
 **Data Quality Problems**:
+
 | Issue | Affected Systems | Business Impact |
 |-------|------------------|-----------------|
 | Duplicate customers | Salesforce, Shopify, Dynamics | $5M revenue misattribution |
@@ -155,6 +165,7 @@ Data Warehouses (3 separate instances):
 **Data Quality Score**: 85% (unacceptable for executive decision-making)
 
 **Root Causes**:
+
 - No master data management (MDM) strategy
 - Manual data entry in 40+ systems
 - ETL pipelines with no data validation
@@ -163,16 +174,19 @@ Data Warehouses (3 separate instances):
 #### 3. Performance & Scalability Bottlenecks
 
 **Query Performance SLA Violations**:
+
 - Executive dashboard refresh: 45 minutes (target: <5 minutes)
 - Month-end close reports: 8 hours (target: <1 hour)
 - Ad-hoc analytics: Frequently timeout after 30 minutes
 
 **Concurrent User Limitations**:
+
 - Snowflake: Only 10 concurrent analysts (license limit)
 - Tableau Server: Crashes with >50 simultaneous users
 - Oracle: Batch windows extending into business hours
 
 **Scalability Concerns**:
+
 - 30% YoY data growth
 - Q4 holiday season: 5x query volume, frequent outages
 - IoT expansion: 100K → 1M sensors by 2027 (10x data volume)
@@ -199,17 +213,20 @@ Data Warehouses (3 separate instances):
 #### 5. Limited Advanced Analytics
 
 **Current State**:
+
 - Descriptive analytics only (what happened?)
 - No predictive models (what will happen?)
 - No prescriptive analytics (what should we do?)
 
 **ML/AI Blockers**:
+
 - Data scattered across 50+ systems
 - Inconsistent data formats and schemas
 - No feature store for ML
 - Data scientists spend 80% time on data wrangling, 20% on modeling
 
 **Missed Opportunities**:
+
 - Customer churn prediction (could save $10M annually)
 - Dynamic pricing optimization (could increase margin 5%)
 - Predictive maintenance (could reduce downtime 30%)
@@ -222,6 +239,7 @@ Data Warehouses (3 separate instances):
 ### 1. Regulatory Compliance (Priority: CRITICAL)
 
 **GDPR Full Compliance**:
+
 - ✅ Centralized PII inventory and data map
 - ✅ Automated data subject access request (DSAR) fulfillment <24 hours
 - ✅ Right to be forgotten implementation across all systems
@@ -233,6 +251,7 @@ Data Warehouses (3 separate instances):
 **Success Metric**: Zero GDPR violations, pass annual DPA audit
 
 **CCPA Compliance**:
+
 - ✅ California consumer data identification
 - ✅ Opt-out of sale mechanism (not applicable, but documented)
 - ✅ Data deletion within 45 days
@@ -241,6 +260,7 @@ Data Warehouses (3 separate instances):
 **Success Metric**: Zero CCPA complaints or enforcement actions
 
 **SOX Compliance**:
+
 - ✅ Segregation of duties enforced via RBAC
 - ✅ Immutable audit trail for all financial data
 - ✅ 7-year data retention for financial records
@@ -249,6 +269,7 @@ Data Warehouses (3 separate instances):
 **Success Metric**: Zero material weaknesses, clean audit opinion
 
 **HIPAA Compliance** (Healthcare BU):
+
 - ✅ PHI encryption at rest and in transit
 - ✅ Access controls with MFA for PHI
 - ✅ Breach notification procedures <72 hours
@@ -272,6 +293,7 @@ Data Warehouses (3 separate instances):
 | Shutdown legacy systems | $1.2M (on-prem) | $0 | $1.2M |
 
 **ROI Timeline**:
+
 - Year 1: $5.2M savings - $271K investment = $4.9M net benefit
 - Year 2: $5.2M savings - $125K operations = $5M net benefit
 - 3-Year NPV: $14.1M (discount rate 10%)
@@ -288,11 +310,13 @@ Data Warehouses (3 separate instances):
 | Real-time dashboards | N/A | <5 sec | New capability |
 
 **Concurrency Targets**:
+
 - Support 50+ concurrent analysts
 - 500+ daily active users
 - 5,000 monthly active users
 
 **Scalability Requirements**:
+
 - Handle 30% YoY data growth (3TB/year)
 - Support 10x IoT sensor expansion (100K → 1M devices)
 - Maintain performance during Q4 peak (5x query volume)
@@ -302,6 +326,7 @@ Data Warehouses (3 separate instances):
 **Target**: 99.9% data quality score
 
 **Data Quality Dimensions**:
+
 | Dimension | Current | Target | Implementation |
 |-----------|---------|--------|----------------|
 | **Completeness** | 88% | 99.5% | Mandatory fields, nullability constraints |
@@ -312,6 +337,7 @@ Data Warehouses (3 separate instances):
 | **Uniqueness** | 82% | 99.9% | Deduplication, primary keys |
 
 **Data Quality Framework**:
+
 - Great Expectations for validation rules
 - Automated data profiling and anomaly detection
 - Data quality dashboards with SLA tracking
@@ -320,26 +346,31 @@ Data Warehouses (3 separate instances):
 ### 5. Enable Advanced Analytics (Priority: MEDIUM)
 
 **Phase 1 (Months 1-6)**: Descriptive analytics
+
 - Historical reporting
 - KPI tracking
 - Business intelligence dashboards
 
 **Phase 2 (Months 7-12)**: Diagnostic analytics
+
 - Root cause analysis
 - Drill-down capabilities
 - Variance analysis
 
 **Phase 3 (Months 13-18)**: Predictive analytics
+
 - Customer churn models
 - Demand forecasting
 - Anomaly detection
 
 **Phase 4 (Months 19-24)**: Prescriptive analytics
+
 - Recommendation engines
 - Dynamic pricing
 - Resource optimization
 
 **ML/AI Use Cases** (prioritized):
+
 1. Customer lifetime value (CLV) prediction
 2. Fraud detection in financial transactions
 3. Predictive maintenance for manufacturing equipment
@@ -355,17 +386,20 @@ Data Warehouses (3 separate instances):
 #### FR-1: Multi-Source Data Ingestion
 
 **Batch Ingestion**:
+
 - **RDBMS**: CDC from Oracle, PostgreSQL, MySQL via AWS DMS
 - **Files**: CSV, JSON, XML, Parquet, Avro from S3/SFTP
 - **APIs**: REST/GraphQL with incremental load
 - **SaaS**: Salesforce, Workday via native connectors
 
 **Streaming Ingestion**:
+
 - **IoT**: Sensor data via AWS IoT Core → Kinesis
 - **Application logs**: CloudWatch Logs → Kinesis Firehose
 - **CDC streams**: DynamoDB Streams, RDS binlog
 
 **Ingestion SLAs**:
+
 - Batch: Daily full load (5+ TB), hourly incremental (<100GB)
 - Streaming: <5 minute end-to-end latency (source → Bronze layer)
 
@@ -373,7 +407,7 @@ Data Warehouses (3 separate instances):
 
 **4-Layer Design**:
 
-```
+```text
 s3://datacorp-lakehouse-dev/
 ├── raw/ (landing zone, 30-day retention)
 │   ├── finance/
@@ -398,10 +432,12 @@ s3://datacorp-lakehouse-dev/
 ```
 
 **Partitioning Strategy**:
+
 - Time-based: `year=YYYY/month=MM/day=DD` for facts
 - Categorical: `department={dept}/region={region}` for multi-tenancy
 
 **File Format**:
+
 - Raw: Preserve source format
 - Bronze: Parquet (Snappy compression)
 - Silver/Gold: Delta Lake (Parquet + transaction log)
@@ -409,6 +445,7 @@ s3://datacorp-lakehouse-dev/
 #### FR-3: Delta Lake Table Management
 
 **Capabilities Required**:
+
 - ✅ ACID transactions (atomicity, consistency, isolation, durability)
 - ✅ Time travel (query historical versions)
 - ✅ Schema evolution (add/modify columns)
@@ -417,6 +454,7 @@ s3://datacorp-lakehouse-dev/
 - ✅ VACUUM (remove old versions based on retention)
 
 **Table Types**:
+
 - **Dimension Tables**: SCD Type 2 for historical tracking
 - **Fact Tables**: Insert-only with partitioning
 - **Aggregates**: Materialized views, rebuilt incrementally
@@ -424,12 +462,14 @@ s3://datacorp-lakehouse-dev/
 #### FR-4: Data Catalog & Metadata Management
 
 **AWS Glue Data Catalog**:
+
 - Centralized metadata for all databases and tables
 - Automated schema discovery via Glue crawlers
 - Business glossary with data dictionary
 - Data lineage tracking (source → target)
 
 **Metadata Enrichment**:
+
 - Technical metadata: schema, data types, partitions
 - Business metadata: descriptions, owners, stewards
 - Operational metadata: row counts, last updated, SLAs
@@ -438,12 +478,14 @@ s3://datacorp-lakehouse-dev/
 #### FR-5: Data Governance & Security
 
 **Lake Formation Governance**:
+
 - Database-level permissions by domain (Finance, HR, Sales, Operations)
 - Table-level permissions by role (Admin, Engineer, Analyst, User)
 - Column-level security for PII (e.g., SSN, salary, email)
 - Row-level security for multi-tenancy (filter by department ID)
 
 **Security Controls**:
+
 | Control | Implementation |
 |---------|----------------|
 | **Authentication** | AWS IAM, federated with corporate SAML SSO |
@@ -460,11 +502,13 @@ s3://datacorp-lakehouse-dev/
 **Orchestration**: AWS Step Functions for complex workflows
 
 **Processing**:
+
 - **AWS Glue**: Serverless Spark for ETL (PySpark scripts)
 - **EMR Serverless**: For Spark jobs requiring custom configurations
 - **Lambda**: Lightweight transformations, triggering
 
 **Pipeline Patterns**:
+
 1. **Full Load**: Initial historical data migration
 2. **Incremental Load**: Timestamp-based (last_modified_date)
 3. **CDC**: Change data capture via DMS
@@ -472,6 +516,7 @@ s3://datacorp-lakehouse-dev/
 5. **Backfill**: Reprocess historical data after bug fixes
 
 **Data Quality Gates**:
+
 - Pre-load validation (schema, nullability, constraints)
 - Post-load validation (row counts, reconciliation)
 - Quality score publication to dashboard
@@ -480,12 +525,14 @@ s3://datacorp-lakehouse-dev/
 #### FR-7: Query & Analytics
 
 **Amazon Athena**:
+
 - Serverless SQL queries on S3
 - Support for Delta Lake, Parquet, JSON
 - Workgroups for resource isolation and cost tracking
 - Query result caching (5-minute TTL)
 
 **Performance Optimizations**:
+
 - Partition pruning (reduce data scanned)
 - Predicate pushdown (filter early)
 - Columnar format (Parquet/Delta Lake)
@@ -493,6 +540,7 @@ s3://datacorp-lakehouse-dev/
 - Z-ordering on commonly filtered columns
 
 **Query SLAs**:
+
 | Query Type | Data Scanned | Latency Target (p95) |
 |------------|--------------|----------------------|
 | Simple aggregates | <1GB | <5 seconds |
@@ -503,12 +551,14 @@ s3://datacorp-lakehouse-dev/
 #### FR-8: Data Quality Framework
 
 **Great Expectations**:
+
 - Expectation suites for each table
 - Automated validation on every pipeline run
 - HTML validation reports published to S3
 - Slack/email alerts on failures
 
 **Quality Rules**:
+
 ```python
 # Example expectations
 {
@@ -532,9 +582,10 @@ s3://datacorp-lakehouse-dev/
     "regex": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
   }
 }
-```
+```text
 
 **Quality Dimensions Tracked**:
+
 - Completeness: % of required fields populated
 - Uniqueness: % of records with unique primary keys
 - Validity: % of records passing business rules
@@ -544,6 +595,7 @@ s3://datacorp-lakehouse-dev/
 #### FR-9: Monitoring & Observability
 
 **CloudWatch Dashboards**:
+
 - **Pipeline Health**: Success/failure rates, duration, throughput
 - **Data Quality**: Quality scores by domain, trend over time
 - **Query Performance**: Latency (p50/p95/p99), data scanned, cost
@@ -551,6 +603,7 @@ s3://datacorp-lakehouse-dev/
 - **Storage**: S3 bucket sizes, growth rate, lifecycle transitions
 
 **Alerts** (SNS → Email/Slack):
+
 - Pipeline failure or timeout
 - Data quality score below 99%
 - Query latency exceeding SLA
@@ -560,16 +613,19 @@ s3://datacorp-lakehouse-dev/
 #### FR-10: Disaster Recovery & Business Continuity
 
 **Backup Strategy**:
+
 - **S3 Versioning**: Enabled on all lakehouse buckets
 - **Cross-Region Replication**: To us-west-2 (primary: us-east-1)
 - **Glue Catalog**: Automated daily backup via AWS Backup
 - **Code Repository**: Git with GitHub/CodeCommit
 
 **Recovery Objectives**:
+
 - **RPO (Recovery Point Objective)**: 15 minutes (acceptable data loss)
 - **RTO (Recovery Time Objective)**: 1 hour (time to restore service)
 
 **DR Testing**:
+
 - Quarterly failover drills to DR region
 - Annual full disaster simulation
 
@@ -591,12 +647,14 @@ s3://datacorp-lakehouse-dev/
 #### Key Entities
 
 **Dimensions**:
+
 - `dim_accounts`: Chart of accounts (10K rows, SCD Type 2)
 - `dim_cost_centers`: Organizational hierarchy (500 rows, SCD Type 2)
 - `dim_vendors`: Supplier master data (50K rows, SCD Type 2)
 - `dim_customers`: Customer billing info (2M rows, SCD Type 2)
 
 **Facts**:
+
 - `fact_transactions`: General ledger transactions (50M rows/year, daily partitions)
 - `fact_invoices`: AR invoices (20M rows/year, monthly partitions)
 - `fact_payments`: Cash receipts and disbursements (10M rows/year)
@@ -605,6 +663,7 @@ s3://datacorp-lakehouse-dev/
 #### Business Metrics
 
 **KPIs**:
+
 - Revenue (actual, budget, variance)
 - EBITDA and EBITDA margin
 - Operating cash flow and free cash flow
@@ -613,6 +672,7 @@ s3://datacorp-lakehouse-dev/
 - Cost of goods sold (COGS) by product line
 
 **Reports**:
+
 - Consolidated P&L and balance sheet
 - Month-end, quarter-end, year-end close reports
 - Budget vs. actuals with variance analysis
@@ -639,7 +699,7 @@ finance_quality_rules:
     - amount > 0
     - customer_id must exist in dim_customers
     - invoice_number must be unique
-```
+```text
 
 ### 2. Human Resources Domain
 
@@ -655,12 +715,14 @@ finance_quality_rules:
 #### Key Entities
 
 **Dimensions**:
+
 - `dim_employees`: Employee master (50K rows, SCD Type 2 for history)
 - `dim_positions`: Job titles and levels (500 rows)
 - `dim_departments`: Org structure (200 rows, SCD Type 2)
 - `dim_locations`: Office locations (80 rows)
 
 **Facts**:
+
 - `fact_payroll`: Bi-weekly payroll runs (5M rows/year)
 - `fact_time_tracking`: Hourly time entries (100M rows/year)
 - `fact_applications`: Job applications (500K rows/year)
@@ -669,6 +731,7 @@ finance_quality_rules:
 #### Business Metrics
 
 **KPIs**:
+
 - Headcount by department, location, level
 - Attrition rate (voluntary vs. involuntary)
 - Time-to-fill open positions
@@ -677,6 +740,7 @@ finance_quality_rules:
 - Diversity metrics (gender, ethnicity, age)
 
 **Reports**:
+
 - Workforce planning and forecasting
 - Recruitment funnel analysis
 - Compensation benchmarking
@@ -712,7 +776,7 @@ hr_quality_rules:
     - gross_pay = base_pay + overtime + bonuses - deductions
     - pay_period_end_date = pay_period_start_date + 13 days (bi-weekly)
     - employee_id must exist in dim_employees
-```
+```text
 
 ### 3. Sales Domain
 
@@ -728,12 +792,14 @@ hr_quality_rules:
 #### Key Entities
 
 **Dimensions**:
+
 - `dim_customers`: Customer master (2M rows, SCD Type 2)
 - `dim_products`: Product catalog (100K SKUs, SCD Type 2)
 - `dim_sales_reps`: Sales team (5K reps, SCD Type 2)
 - `dim_campaigns`: Marketing campaigns (10K campaigns)
 
 **Facts**:
+
 - `fact_opportunities`: Sales pipeline (10M rows)
 - `fact_orders`: Customer orders (80M rows/year, daily partitions)
 - `fact_order_lines`: Line items (300M rows/year)
@@ -742,6 +808,7 @@ hr_quality_rules:
 #### Business Metrics
 
 **KPIs**:
+
 - Revenue (actual, forecast, quota attainment)
 - Sales pipeline coverage (pipeline value / quota)
 - Win rate (closed-won / total opportunities)
@@ -753,6 +820,7 @@ hr_quality_rules:
 - Churn rate (logo churn, revenue churn)
 
 **Reports**:
+
 - Sales forecast by rep, region, product
 - Pipeline health (stage distribution)
 - Top customers by revenue
@@ -795,12 +863,14 @@ sales_quality_rules:
 #### Key Entities
 
 **Dimensions**:
+
 - `dim_locations`: Warehouses, factories (1K rows)
 - `dim_equipment`: Manufacturing machines (10K rows, SCD Type 2)
 - `dim_carriers`: Shipping companies (50 rows)
 - `dim_inventory_items`: SKUs and raw materials (500K rows)
 
 **Facts**:
+
 - `fact_sensor_readings`: Time-series IoT data (500M rows/year, hourly partitions)
 - `fact_shipments`: Outbound shipments (30M rows/year)
 - `fact_inventory_transactions`: Stock movements (100M rows/year)
@@ -809,6 +879,7 @@ sales_quality_rules:
 #### Business Metrics
 
 **KPIs**:
+
 - Equipment utilization (uptime %)
 - Overall equipment effectiveness (OEE)
 - Mean time between failures (MTBF)
@@ -819,6 +890,7 @@ sales_quality_rules:
 - Defect rate (parts per million)
 
 **Reports**:
+
 - Equipment performance dashboards
 - Predictive maintenance alerts
 - Inventory aging analysis
@@ -843,7 +915,7 @@ operations_quality_rules:
     - ship_date <= delivery_date
     - tracking_number must be unique
     - carrier_id must exist in dim_carriers
-```
+```text
 
 ---
 
@@ -854,11 +926,13 @@ operations_quality_rules:
 #### Authentication
 
 **Human Users**:
+
 - Corporate SSO via SAML 2.0 (Okta/Azure AD)
 - Multi-factor authentication (MFA) required for production access
 - Session timeout: 8 hours (inactivity: 1 hour)
 
 **Service Accounts**:
+
 - IAM roles with temporary security credentials
 - No long-lived access keys in production
 - Secrets Manager for third-party API keys
@@ -866,7 +940,8 @@ operations_quality_rules:
 #### Authorization Model
 
 **Role Hierarchy**:
-```
+
+```text
 Roles:
 ├── Data Admin
 │   ├── Full access to all databases and tables
@@ -901,7 +976,7 @@ Roles:
     ├── Read-only access to curated datasets
     ├── Pre-built dashboards only
     └── Users: Executives, managers (5,000 members)
-```
+```text
 
 ### 2. Data Encryption
 
@@ -927,6 +1002,7 @@ Roles:
 ### 3. Network Security
 
 **VPC Architecture**:
+
 ```
 VPC: datacorp-lakehouse-vpc (10.0.0.0/16)
 ├── Private Subnets (no internet route)
@@ -939,9 +1015,10 @@ VPC: datacorp-lakehouse-vpc (10.0.0.0/16)
     ├── SG-Glue: Allow HTTPS to S3 VPC endpoint
     ├── SG-EMR: Allow Spark communication within cluster
     └── SG-RDS: Allow inbound from DMS replication instance
-```
+```text
 
 **No Direct Internet Access**:
+
 - S3 accessed via VPC endpoint (PrivateLink)
 - No S3 buckets with public read/write
 
@@ -950,11 +1027,13 @@ VPC: datacorp-lakehouse-vpc (10.0.0.0/16)
 #### PII Discovery
 
 **Automated Classification**:
+
 - AWS Glue Data Quality with regex patterns
 - Custom classifiers for domain-specific PII
 - Quarterly full scan of all lakehouse data
 
 **PII Categories**:
+
 | Category | Examples | Sensitivity |
 |----------|----------|-------------|
 | **Identifiers** | SSN, passport, driver's license | Critical |
@@ -967,6 +1046,7 @@ VPC: datacorp-lakehouse-vpc (10.0.0.0/16)
 #### PII Protection Methods
 
 **Masking** (for analytics):
+
 ```python
 # Email masking
 john.doe@company.com → j***@company.com
@@ -976,29 +1056,33 @@ john.doe@company.com → j***@company.com
 
 # SSN masking
 123-45-6789 → ***-**-6789
-```
+```text
 
 **Tokenization** (for reversibility):
+
 ```python
 # Replace PII with random token, store mapping in Secrets Manager
 john.doe@company.com → TOKEN_A7F8B9C3D2E1
-```
+```text
 
 **Encryption** (for highly sensitive):
+
 ```python
 # Encrypt with KMS, store ciphertext
 SSN: 123-45-6789 → [ENCRYPTED_BLOB_BASE64]
 ```
 
 **Anonymization** (irreversible):
+
 ```python
 # For ML models, remove PII entirely or aggregate
 IP 192.168.1.100 → [ANONYMIZED] or 192.168.X.X
-```
+```text
 
 #### PII Access Controls
 
 **Column-Level Security** (Lake Formation):
+
 ```sql
 -- HR Analysts see masked salary
 GRANT SELECT ON hr.dim_employees
@@ -1009,15 +1093,16 @@ TO ROLE hr_analyst;
 GRANT SELECT ON hr.dim_employees
 (employee_id, name, department, salary)
 TO ROLE finance_admin;
-```
+```text
 
 **Row-Level Security** (Lake Formation data filters):
+
 ```sql
 -- HR Analysts only see own department
 CREATE DATA FILTER hr_rls_filter
 FOR TABLE hr.dim_employees
 ROW FILTER department_id = current_user_department();
-```
+```text
 
 ### 5. Audit & Logging
 
@@ -1035,12 +1120,14 @@ ROW FILTER department_id = current_user_department();
 #### Audit Trail Requirements
 
 **SOX Compliance**:
+
 - Who accessed financial data (user, role, IP)
 - What data was accessed (database, table, columns)
 - When access occurred (timestamp)
 - What action was performed (SELECT, UPDATE, DELETE)
 
 **GDPR Compliance**:
+
 - Log all PII access for data subject access requests
 - Track consent changes with versioning
 - Audit data deletion requests and fulfillment
@@ -1048,6 +1135,7 @@ ROW FILTER department_id = current_user_department();
 #### Security Monitoring
 
 **CloudWatch Alarms**:
+
 - Unauthorized API calls (denied by IAM/Lake Formation)
 - Root account usage (should be zero)
 - MFA disabled on user accounts
@@ -1055,6 +1143,7 @@ ROW FILTER department_id = current_user_department();
 - KMS key deletion attempts
 
 **GuardDuty** (optional, +$50/month):
+
 - Anomalous API behavior
 - Compromised credentials
 - Unusual data access patterns
@@ -1066,6 +1155,7 @@ ROW FILTER department_id = current_user_department();
 ### 1. Functional Acceptance
 
 #### Data Ingestion
+
 - ✅ All 20+ data sources successfully ingested
 - ✅ Batch ingestion completes within 4-hour window (2 AM - 6 AM EST)
 - ✅ Streaming data appears in Bronze layer within 5 minutes
@@ -1073,6 +1163,7 @@ ROW FILTER department_id = current_user_department();
 - ✅ Ingestion metadata captured (source, timestamp, row count)
 
 #### Data Transformation
+
 - ✅ Bronze → Silver transformation completes within 2 hours
 - ✅ Silver → Gold aggregation completes within 1 hour
 - ✅ Data quality score >99% at each layer
@@ -1080,12 +1171,14 @@ ROW FILTER department_id = current_user_department();
 - ✅ Error handling with retry logic (3 attempts)
 
 #### Query Performance
+
 - ✅ Simple queries (1 table, <1GB): <5 seconds (p95)
 - ✅ Complex queries (3+ tables, 10GB): <30 seconds (p95)
 - ✅ Executive dashboards refresh in <2 minutes
 - ✅ 50 concurrent queries without degradation
 
 #### Data Governance
+
 - ✅ Lake Formation permissions enforced for all users
 - ✅ PII columns masked/encrypted for non-privileged users
 - ✅ Row-level security filters by department
@@ -1094,12 +1187,14 @@ ROW FILTER department_id = current_user_department();
 ### 2. Non-Functional Acceptance
 
 #### Reliability
+
 - ✅ 99.9% pipeline success rate (max 7 failures/month)
 - ✅ RPO: 15 minutes (tested via DR drill)
 - ✅ RTO: 1 hour (tested via DR drill)
 - ✅ Zero data loss incidents
 
 #### Security
+
 - ✅ Penetration testing passed (no critical/high vulnerabilities)
 - ✅ All S3 buckets encrypted with KMS
 - ✅ No public access to any lakehouse components
@@ -1107,12 +1202,14 @@ ROW FILTER department_id = current_user_department();
 - ✅ Secrets rotation automated (90 days)
 
 #### Compliance
+
 - ✅ GDPR checklist 100% complete
 - ✅ CCPA compliance validated
 - ✅ SOX controls documented and tested
 - ✅ HIPAA BAA signed with AWS
 
 #### Cost
+
 - ✅ Development environment: ≤$150/month
 - ✅ Production environment (projected): ≤$1,200/month
 - ✅ Cost tracking by domain and workload
@@ -1125,6 +1222,7 @@ ROW FILTER department_id = current_user_department();
 **Objective**: Validate data flows from source to Gold layer
 
 **Steps**:
+
 1. Insert 1,000 new records into source PostgreSQL (Finance)
 2. Trigger CDC replication via DMS
 3. Verify records appear in Raw layer within 5 minutes
@@ -1140,6 +1238,7 @@ ROW FILTER department_id = current_user_department();
 **Objective**: Validate backward-compatible schema changes
 
 **Steps**:
+
 1. Add new column `discount_percent` to source table
 2. Run Glue crawler to detect schema change
 3. Append data with new column to Bronze Delta table (mergeSchema=true)
@@ -1153,6 +1252,7 @@ ROW FILTER department_id = current_user_department();
 **Objective**: Validate right to be forgotten
 
 **Steps**:
+
 1. Identify all records for customer_id=12345 (DSAR)
 2. Execute deletion across all layers (Raw, Bronze, Silver, Gold)
 3. Verify records deleted via Athena queries
@@ -1165,6 +1265,7 @@ ROW FILTER department_id = current_user_department();
 **Objective**: Validate Lake Formation permissions
 
 **Steps**:
+
 1. Attempt to query HR salary as Finance Analyst (should fail)
 2. Attempt to query Finance data as HR Analyst (should fail)
 3. Attempt to query own domain (should succeed)
@@ -1177,6 +1278,7 @@ ROW FILTER department_id = current_user_department();
 **Objective**: Validate DR procedures
 
 **Steps**:
+
 1. Simulate us-east-1 region failure (disable all resources)
 2. Fail over to us-west-2 DR region
 3. Verify S3 data replicated (CRR)
@@ -1191,6 +1293,7 @@ ROW FILTER department_id = current_user_department();
 **Objective**: Validate concurrent query performance
 
 **Steps**:
+
 1. Simulate 50 concurrent Athena queries (Apache JMeter)
 2. Mix of simple (1-table) and complex (multi-join) queries
 3. Measure latency (p50, p95, p99)
@@ -1265,12 +1368,14 @@ ROW FILTER department_id = current_user_department();
 ## 🗓️ Project Timeline
 
 ### Phase 0: Initiation (Week 1)
+
 - Kickoff meeting with stakeholders
 - AWS account setup and budgets
 - Team onboarding and training
 - Development environment provisioning
 
 ### Phase 1: Foundation (Weeks 2-4)
+
 - Infrastructure as Code (Terraform)
 - S3 bucket structure and lifecycle policies
 - Glue Data Catalog databases
@@ -1279,12 +1384,14 @@ ROW FILTER department_id = current_user_department();
 - IAM roles and policies
 
 ### Phase 2: Data Ingestion (Weeks 5-7)
+
 - Finance domain: Oracle → Raw/Bronze (Week 5)
 - HR domain: Workday → Raw/Bronze (Week 6)
 - Sales domain: Salesforce → Raw/Bronze (Week 7)
 - Operations domain: IoT → Raw/Bronze (Week 7)
 
 ### Phase 3: Data Transformation (Weeks 8-10)
+
 - Delta Lake setup on Glue/EMR
 - Finance Silver/Gold layers (Week 8)
 - HR Silver/Gold layers (Week 9)
@@ -1292,24 +1399,28 @@ ROW FILTER department_id = current_user_department();
 - Operations Silver/Gold layers (Week 10)
 
 ### Phase 4: Governance (Week 11)
+
 - PII classification and tagging
 - Lake Formation permissions (RBAC)
 - Row/column-level security
 - Data retention policies
 
 ### Phase 5: Monitoring & Quality (Week 12)
+
 - CloudWatch dashboards
 - Data quality framework (Great Expectations)
 - Cost tracking and alerting
 - Pipeline monitoring
 
 ### Phase 6: UAT & Hardening (Weeks 13-14)
+
 - User acceptance testing
 - Performance tuning
 - Security hardening
 - Documentation finalization
 
 ### Phase 7: Production Launch (Week 15)
+
 - Stakeholder demo
 - Production deployment
 - Knowledge transfer
@@ -1324,6 +1435,7 @@ ROW FILTER department_id = current_user_department();
 ### Data Engineering Team
 
 **Curriculum**:
+
 - AWS Glue and EMR Serverless (2 days)
 - Delta Lake and lakehouse architecture (2 days)
 - Lake Formation security (1 day)
@@ -1333,6 +1445,7 @@ ROW FILTER department_id = current_user_department();
 ### Data Analyst Team
 
 **Curriculum**:
+
 - Athena SQL best practices (1 day)
 - Data catalog navigation (0.5 days)
 - Dashboard creation (Tableau/QuickSight) (1 day)
@@ -1341,6 +1454,7 @@ ROW FILTER department_id = current_user_department();
 ### Business Users
 
 **Curriculum**:
+
 - Self-service analytics overview (2 hours)
 - Pre-built dashboard training (1 hour)
 - Data request process (1 hour)
@@ -1420,13 +1534,13 @@ ROW FILTER department_id = current_user_department();
 
 ### Appendix C: Reference Architectures
 
-- AWS Analytics Reference Architecture: https://aws.amazon.com/architecture/analytics-big-data/
-- AWS Lake Formation Workshop: https://github.com/aws-samples/aws-lake-formation-workshop
-- Databricks Lakehouse Platform: https://www.databricks.com/product/data-lakehouse
-- Netflix Data Platform: https://netflixtechblog.com/
+- AWS Analytics Reference Architecture: <https://aws.amazon.com/architecture/analytics-big-data/>
+- AWS Lake Formation Workshop: <https://github.com/aws-samples/aws-lake-formation-workshop>
+- Databricks Lakehouse Platform: <https://www.databricks.com/product/data-lakehouse>
+- Netflix Data Platform: <https://netflixtechblog.com/>
 
 ---
 
 **This project brief is a living document. Last updated: March 10, 2026.**
 
-For questions or feedback, contact the Data Platform team: data-platform@datacorp.com
+For questions or feedback, contact the Data Platform team: <data-platform@datacorp.com>

@@ -124,11 +124,12 @@ graph TD
     class M15,M16,M17,M18 advanced
     class CP01,CP02,CP03 checkpoint
     class B01,B02 bonus
-```
+```text
 
 ## 🎯 Learning Tiers
 
 ### Foundation Tier (Modules 01-04)
+
 **No Prerequisites** - Start here!
 
 These modules have no dependencies and can be completed in any order, though the suggested sequence is optimal:
@@ -145,6 +146,7 @@ These modules have no dependencies and can be completed in any order, though the
 ---
 
 ### Core Tier (Modules 05-10)
+
 **Prerequisites Required** - Build your data engineering skills
 
 | Module | Name | Prerequisites | Focus |
@@ -160,6 +162,7 @@ These modules have no dependencies and can be completed in any order, though the
 ---
 
 ### Cloud-Native Tier (Modules 11-14)
+
 **Build cloud-native architectures**
 
 | Module | Name | Prerequisites | Focus |
@@ -173,6 +176,7 @@ These modules have no dependencies and can be completed in any order, though the
 ---
 
 ### Advanced Tier (Modules 15-18)
+
 **Master advanced concepts**
 
 | Module | Name | Prerequisites | Parallel Track | Focus |
@@ -188,6 +192,7 @@ These modules have no dependencies and can be completed in any order, though the
 ---
 
 ### Bonus Tier (Optional)
+
 **Expand to other platforms**
 
 | Module | Name | Prerequisites | Platform | Free Option |
@@ -215,13 +220,15 @@ These modules have no dependencies and can be completed in any order, though the
 **🔓 Ready:** When all prerequisites are done, the module is unlocked.
 
 Check prerequisites anytime:
+
 ```bash
 python scripts/check-prerequisites.py module-XX-name
-```
+```text
 
 ### 3. Complete Each Module 100%
 
 A module is complete when:
+
 - ✅ All theory documentation read
 - ✅ All 6 exercises completed
 - ✅ All validation tests passing
@@ -233,11 +240,12 @@ A module is complete when:
 make progress
 # or
 python scripts/progress.py
-```
+```text
 
 ### 5. Tackle Checkpoints as Integration Practice
 
 Checkpoints are **project-based assessments** that combine multiple modules. They:
+
 - Have stricter prerequisites (must complete several modules)
 - Take longer (10-20 hours)
 - Include acceptance tests with clear pass/fail criteria
@@ -249,40 +257,44 @@ Checkpoints are **project-based assessments** that combine multiple modules. The
 ## 🛤️ Suggested Learning Paths
 
 ### Path 1: Batch-First (Traditional)
+
 Best if you're coming from traditional data warehousing:
 
 ```
 Foundation (01-04) → Lakehouse (05) → ETL (06) → CP01 →
 Batch (07) → Orchestration (10) → IaC (11) → CP02 →
 ...continue sequentially
-```
+```text
 
 ### Path 2: Streaming-First (Modern)
+
 Best if you're interested in real-time:
 
-```
+```text
 Foundation (01-04) → Lakehouse (05) → ETL (06) → Streaming (08) →
 Data Quality (09) → CP01 → ...continue with streaming focus
-```
+```text
 
 ### Path 3: Cloud-Native First
+
 Best if you have strong AWS background:
 
 ```
 Foundation (01-04) → IaC (11) → Storage (02) → ETL (06) →
 Serverless (12) → ...integrate data skills
-```
+```text
 
 ### Path 4: Certification-Focused
+
 Optimized for AWS Data Analytics - Specialty cert:
 
-```
+```text
 Follow sequential path 01-18, focus on:
 - Security (16)
 - Governance (14)
 - Cost (17)
 Complete all checkpoints for practice questions
-```
+```text
 
 ---
 
@@ -344,41 +356,50 @@ Your progress is automatically tracked based on:
 3. **Prerequisites:** Automatically calculated dependencies
 
 View progress anytime:
+
 ```bash
 make progress
 ```
 
 Example output:
-```
+
+```text
 ✅ 🔓 Module 01: Cloud Fundamentals                100%
 ✅ 🔓 Module 02: Storage Basics                    100%
 🔄 🔓 Module 03: SQL Foundations                    67%
 ⬜ 🔒 Module 05: Data Lakehouse Architecture         0%  (requires 02)
-```
+```text
 
 ---
 
 ## 💡 Learning Tips
 
 ### 1. Don't Skip Prerequisites
+
 They're designed for a reason. Missing foundational concepts makes advanced modules frustrating.
 
 ### 2. Use the Validation System
+
 Run `bash scripts/validate.sh` frequently. It's not just grading - it teaches you what's important.
 
 ### 3. Read "Expected Approach" First
+
 Each exercise has an "Expected Approach" section. Read it before implementing to avoid wrong paths.
 
 ### 4. Leverage Hints Progressively
+
 Stuck? Check `hints.md` - they're designed to unblock you without spoiling the solution.
 
 ### 5. Treat Checkpoints Seriously
+
 They're your confidence builders. If you can pass checkpoints, you can handle production scenarios.
 
 ### 6. Use LocalStack Effectively
+
 You're learning AWS without AWS costs. Occasionally reference real AWS docs to understand differences.
 
 ### 7. Join the Community
+
 (Link to Discord/Slack if available) - discuss challenges, share solutions, learn together.
 
 ---
@@ -418,6 +439,7 @@ You've successfully completed the Cloud Data Engineering learning path when:
 - ✅ Ready for production data engineering roles
 
 **Bonus Achievement:**
+
 - ✅ Passed AWS Data Analytics - Specialty
 - ✅ Passed Databricks Data Engineer Associate
 - ✅ Completed bonus modules
@@ -437,16 +459,19 @@ You've successfully completed the Cloud Data Engineering learning path when:
 ## 🚀 Ready to Start?
 
 1. **Setup your environment:**
+
    ```bash
    bash scripts/setup-environment.sh
    ```
 
 2. **Start services:**
+
    ```bash
    make up
-   ```
+   ```text
 
 3. **Begin Module 01:**
+
    ```bash
    cd modules/module-01-cloud-fundamentals
    cat README.md

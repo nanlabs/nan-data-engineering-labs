@@ -1,6 +1,7 @@
 # Exercise 06: Security Monitoring & Incident Response
 
 ## Overview
+
 Implement comprehensive security monitoring using Amazon GuardDuty, AWS Security Hub, EventBridge automation, SIEM with Elasticsearch/Kibana, incident response playbooks, and automated remediation.
 
 **Difficulty**: ⭐⭐⭐⭐ Expert
@@ -30,7 +31,7 @@ Implement comprehensive security monitoring using Amazon GuardDuty, AWS Security
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │         SECURITY MONITORING & RESPONSE ARCHITECTURE          │
 │                                                              │
@@ -118,7 +119,7 @@ Implement comprehensive security monitoring using Amazon GuardDuty, AWS Security
 │  │     - Rebuild from golden AMI                        │   │
 │  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Task 1: Enable GuardDuty (20 minutes)
 
@@ -313,7 +314,7 @@ if __name__ == '__main__':
     print(\"\\n\" + \"=\"*60)
     print(\"✓ GUARDDUTY CONFIGURED\")
     print(\"=\"*60)
-```
+```text
 
 ## Task 2: Configure Security Hub (30 minutes)
 
@@ -860,7 +861,7 @@ if __name__ == '__main__':
     print(\"     → Block S3 public access → Isolate bucket\")
     print(\"  3. Malware Detection\")
     print(\"     → Quarantine instance → Create forensics snapshot\")
-```
+```text
 
 ## Validation Checklist
 

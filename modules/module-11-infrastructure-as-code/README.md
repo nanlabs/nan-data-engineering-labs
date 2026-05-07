@@ -106,7 +106,7 @@ docker --version
 
 # Python 3.8+
 python3 --version
-```
+```text
 
 ### 2. Setup Inicial
 
@@ -118,11 +118,12 @@ bash scripts/setup.sh
 
 # O manual:
 pip install -r requirements.txt
-```
+```text
 
 ### 3. Estudiar Theory
 
 Read en orden:
+
 1. [theory/01-terraform-fundamentals.md](theory/01-terraform-fundamentals.md)
 2. [theory/02-terraform-advanced.md](theory/02-terraform-advanced.md)
 3. [theory/03-iac-patterns.md](theory/03-iac-patterns.md)
@@ -140,7 +141,7 @@ terraform plan
 # Exercise 02
 cd ../02-multi-resource
 # ... y así sucesivamente
-```
+```text
 
 ### 5. Validar Aprendizaje
 
@@ -155,7 +156,7 @@ pytest -v test_terraform.py
 
 ## 📊 Estructura Detallada
 
-```
+```text
 module-11-infrastructure-as-code/
 ├── README.md                 # Este archivo
 ├── STATUS.md                 # Estado de completitud
@@ -198,33 +199,38 @@ module-11-infrastructure-as-code/
 │
 ├── data/                     # 📊 Datos de ejemplo (opcional)
 └── assets/                   # 🖼️ Diagramas (opcional)
-```
+```text
 
 ## 🛠️ Tecnologías y Herramientas
 
 ### Core
+
 - **Terraform**: 1.7+ (IaC tool)
 - **HashiCorp Configuration Language (HCL)**: Lenguaje declarativo
 - **AWS**: Provider principal
 
 ### Testing
+
 - **pytest**: Framework de testing Python
 - **Terratest**: Testing Go para Terraform
 - **tflint**: Linter para Terraform
 - **tfsec**: Security scanner
 
 ### Development
+
 - **LocalStack**: AWS emulator local
 - **Docker**: Para LocalStack
 - **pre-commit**: Hooks de Git
 
 ### CI/CD
+
 - **GitHub Actions**: Ejemplo de pipeline
 - **GitLab CI**: Alternativa
 
 ## ✅ Checklist de Completitud
 
 ### Theory
+
 - [ ] Leído `01-terraform-fundamentals.md` completo
 - [ ] Leído `02-terraform-advanced.md` completo
 - [ ] Leído `03-iac-patterns.md` completo
@@ -232,6 +238,7 @@ module-11-infrastructure-as-code/
 - [ ] Comprendes el concepto de state file
 
 ### Exercises
+
 - [ ] Exercise 01: First Terraform ✅
 - [ ] Exercise 02: Multi-Resource ✅
 - [ ] Exercise 03: Modules ✅
@@ -240,6 +247,7 @@ module-11-infrastructure-as-code/
 - [ ] Exercise 06: Production Ready ✅
 
 ### Habilidades Prácticas
+
 - [ ] Puedo create un recurso S3 con Terraform
 - [ ] Puedo escribir un module reutilizable
 - [ ] Entiendo cómo funciona remote state + locking
@@ -248,6 +256,7 @@ module-11-infrastructure-as-code/
 - [ ] Entiendo patrones de security y compliance
 
 ### Validation
+
 - [ ] Todos los tests pasan: `pytest -v`
 - [ ] Validation completa: `bash scripts/validate.sh`
 - [ ] Código formateado: `terraform fmt -check -recursive`
@@ -255,19 +264,23 @@ module-11-infrastructure-as-code/
 ## 📖 Recursos Adicionales
 
 ### Documentación Oficial
+
 - [Terraform Documentation](https://developer.hashicorp.com/terraform/docs)
 - [AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - [HCL Syntax](https://developer.hashicorp.com/terraform/language/syntax)
 
 ### Libros Recomendados
+
 - "Terraform: Up & Running" by Yevgeniy Brikman
 - "Infrastructure as Code" by Kief Morris
 
 ### Cursos
+
 - [HashiCorp Learn Terraform](https://learn.hashicorp.com/terraform)
 - [A Cloud Guru: Terraform Certified Associate](https://acloudguru.com/)
 
 ### Comunidad
+
 - [Terraform Registry](https://registry.terraform.io/)
 - [r/Terraform](https://reddit.com/r/terraform)
 - [HashiCorp Discuss](https://discuss.hashicorp.com/c/terraform-core/)
@@ -275,47 +288,54 @@ module-11-infrastructure-as-code/
 ## 🐛 Troubleshooting
 
 ### Error: "Terraform not found"
+
 ```bash
 # Instalar Terraform
 brew install terraform  # macOS
 # O descargar desde: https://www.terraform.io/downloads
-```
+```text
 
 ### Error: "Error locking state"
+
 ```bash
 # Si el lock está stuck
 terraform force-unlock <LOCK_ID>
 ```
 
 ### Error: "Provider not found"
+
 ```bash
 # Reinicializar
 rm -rf .terraform .terraform.lock.hcl
 terraform init
-```
+```text
 
 ### LocalStack no inicia
+
 ```bash
 # Verificar Docker
 docker ps
 
 # Reiniciar LocalStack
 docker restart localstack
-```
+```text
 
 ## 🏆 Certificación
 
 Este module prepara para:
+
 - **HashiCorp Certified: Terraform Associate**
 - AWS Certified Solutions Architect (knowledge de IaC)
 
 ## 🔗 Modules Relacionados
 
 **Prerequisites:**
+
 - ✅ Module 01: Cloud Fundamentals
 - ✅ Module 02: Storage Basics
 
 **Siguiente:**
+
 - ➡️ Module 12: Serverless Processing
 - ➡️ Module 13: Container Orchestration
 

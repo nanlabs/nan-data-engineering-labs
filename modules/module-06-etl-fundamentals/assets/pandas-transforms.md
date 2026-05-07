@@ -19,11 +19,12 @@ df = pd.read_sql('SELECT * FROM table', connection)
 
 # Excel
 df = pd.read_excel('file.xlsx', sheet_name='Sheet1')
-```
+```text
 
 ## 🧹 Data Cleaning
 
 ### Remove Duplicates
+
 ```python
 # All columns
 df = df.drop_duplicates()
@@ -33,9 +34,10 @@ df = df.drop_duplicates(subset=['id', 'email'])
 
 # Keep last occurrence
 df = df.drop_duplicates(keep='last')
-```
+```text
 
 ### Handle Missing Values
+
 ```python
 # Drop rows with any null
 df = df.dropna()
@@ -51,9 +53,10 @@ df = df.fillna({'col1': 0, 'col2': 'Unknown'})
 # Forward/backward fill
 df['col'] = df['col'].ffill()  # Forward fill
 df['col'] = df['col'].bfill()  # Backward fill
-```
+```text
 
 ### Filter Rows
+
 ```python
 # Simple filter
 df = df[df['age'] > 18]
@@ -76,6 +79,7 @@ df = df[df['email'].str.match(r'^[\w\.-]+@[\w\.-]+\.\w+$')]
 ## 🔄 Data Transformation
 
 ### String Operations
+
 ```python
 # Case conversion
 df['email'] = df['email'].str.lower()
@@ -93,9 +97,10 @@ df[['first', 'last']] = df['name'].str.split(' ', n=1, expand=True)
 
 # Extract with regex
 df['area_code'] = df['phone'].str.extract(r'(\d{3})-')
-```
+```text
 
 ### Type Conversions
+
 ```python
 # To numeric
 df['age'] = pd.to_numeric(df['age'], errors='coerce')
@@ -108,9 +113,10 @@ df['status'] = df['status'].astype('category')
 
 # To string
 df['id'] = df['id'].astype(str)
-```
+```text
 
 ### Create New Columns
+
 ```python
 # Simple calculation
 df['total'] = df['price'] * df['quantity']
@@ -138,9 +144,10 @@ def categorize(age):
         return 'senior'
 
 df['category'] = df['age'].apply(categorize)
-```
+```text
 
 ### Date/Time Operations
+
 ```python
 # Extract components
 df['year'] = df['date'].dt.year
@@ -157,6 +164,7 @@ df['age_days'] = (pd.Timestamp.now() - df['created_at']).dt.days
 ## 📊 Aggregations
 
 ### Basic Aggregations
+
 ```python
 # Single column
 df['amount'].sum()
@@ -171,9 +179,10 @@ df.agg({
     'amount': ['sum', 'mean', 'count'],
     'quantity': ['sum', 'max']
 })
-```
+```text
 
 ### Group By
+
 ```python
 # Simple group by
 df.groupby('country')['amount'].sum()
@@ -196,9 +205,10 @@ df.groupby('country').agg(
 
 # Filter groups
 df.groupby('country').filter(lambda x: len(x) > 10)
-```
+```text
 
 ### Pivot Tables
+
 ```python
 # Simple pivot
 pd.pivot_table(
@@ -217,11 +227,12 @@ pd.pivot_table(
     columns='status',
     aggfunc=['sum', 'mean', 'count']
 )
-```
+```text
 
 ## 🔗 Joins and Merges
 
 ### Merge DataFrames
+
 ```python
 # Inner join
 result = pd.merge(df1, df2, on='id', how='inner')
@@ -250,17 +261,19 @@ result = pd.merge(
 ```
 
 ### Concat DataFrames
+
 ```python
 # Vertical concat (stack)
 result = pd.concat([df1, df2], axis=0, ignore_index=True)
 
 # Horizontal concat (side by side)
 result = pd.concat([df1, df2], axis=1)
-```
+```text
 
 ## 🎯 Advanced Transforms
 
 ### Window Functions
+
 ```python
 # Roleling average
 df['roleling_avg'] = df['amount'].roleling(window=7).mean()
@@ -273,9 +286,10 @@ df['rank'] = df['amount'].rank(ascending=False)
 
 # Percentage change
 df['pct_change'] = df['amount'].pct_change()
-```
+```text
 
 ### Reshaping
+
 ```python
 # Wide to long
 df_long = pd.melt(
@@ -292,7 +306,7 @@ df_wide = df_long.pivot(
     columns='month',
     values='sales'
 )
-```
+```text
 
 ## 💾 Data Export
 
@@ -340,11 +354,12 @@ df['col'].unique()
 
 # Memory usage
 df.memory_usage(deep=True)
-```
+```text
 
 ---
 
 💡 **Pro Tips**:
+
 - Use `.copy()` to avoid SettingWithCopyWarning
 - Chain operations for readability
 - Use vectorized operations (avoid loops)

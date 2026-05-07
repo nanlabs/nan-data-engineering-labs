@@ -17,7 +17,7 @@ df.write.format("delta") \
     .option("overwriteSchema", "true") \
     .mode("overwrite") \
     .save("/path")
-```
+```text
 
 ### Leer table
 
@@ -34,7 +34,7 @@ df = spark.read.format("delta") \
 df = spark.read.format("delta") \
     .option("timestampAsOf", "2024-01-15 10:00:00") \
     .load("/path")
-```
+```text
 
 ### Operaciones DML
 
@@ -62,7 +62,7 @@ delta_table.alias("target").merge(
     "id": "source.id",
     "amount": "source.amount"
 }).execute()
-```
+```text
 
 ### Metadatas
 
@@ -91,7 +91,7 @@ delta_table.vacuum(168)  # horas
 
 # Verificar estado
 delta_table.detail().select("numFiles", "sizeInBytes").show()
-```
+```text
 
 ### Schema Evolution
 
@@ -107,7 +107,7 @@ df.write.format("delta") \
     .mode("overwrite") \
     .option("overwriteSchema", "true") \
     .save("/path")
-```
+```text
 
 ### SQL
 
@@ -127,7 +127,7 @@ VACUUM events RETAIN 168 HOURS;
 
 -- Historial
 DESCRIBE HISTORY events;
-```
+```text
 
 ## 🔥 TIPs Pro
 

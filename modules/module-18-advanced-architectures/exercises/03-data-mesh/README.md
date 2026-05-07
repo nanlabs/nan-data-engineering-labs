@@ -19,7 +19,7 @@ After completing this exercise, you will be able to:
 
 ## Data Mesh Four Principles
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                      DATA MESH PRINCIPLES                       │
 └─────────────────────────────────────────────────────────────────┘
@@ -45,11 +45,11 @@ After completing this exercise, you will be able to:
    ├─ Global policies (PII masking, retention)
    ├─ Domain-specific rules (Product: 7yr, Sales: 10yr)
    └─ Automated compliance checks (Lake Formation)
-```
+```text
 
 ## Architecture: Multi-Domain Data Mesh
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────────────────┐
 │                              FEDERATED GOVERNANCE                              │
 │  (Lake Formation + Glue Catalog + EventBridge Rules)                          │
@@ -115,12 +115,14 @@ After completing this exercise, you will be able to:
 **Question**: "What is revenue by product category for high-value customers?"
 
 **Data Mesh Answer**:
+
 1. **Customer Domain**: Provides `high-value customers` segment (RFM score > 400)
 2. **Sales Domain**: Provides `order events` with revenue
 3. **Product Domain**: Provides `product catalog` with categories
 4. **Analytics Team**: JOINs all 3 data products (federated query via Athena)
 
 **Benefits**:
+
 - **Product Domain**: Enriches catalog independently (add hierarchy, attributes)
 - **Sales Domain**: Can change order schema (v4 → v5) without breaking consumers
 - **Customer Domain**: Manages PII compliance (GDPR, CCPA) autonomously
@@ -131,6 +133,7 @@ After completing this exercise, you will be able to:
 ### Part 1: Domain Data Product API
 
 Each domain exposes its data as a **data product** with:
+
 - **API endpoint**: FastAPI REST API (GET /products, /orders, /customers)
 - **Schema registry**: Glue Schema Registry with versioning (Avro)
 - **Quality metrics**: Freshness, completeness, accuracy SLAs
@@ -154,9 +157,10 @@ product_domain = DomainDataProduct(
 product_domain.serve(port=8001)
 
 # Query: GET http://localhost:8001/products?category=Electronics
-```
+```text
 
 **Features**:
+
 - Auto-register data products in Glue Catalog
 - SLA monitoring (track freshness, availability)
 - Access control with API keys
@@ -197,7 +201,7 @@ is_compatible = registry.check_compatibility(
     data_product="catalog",
     new_schema=updated_schema
 )
-```
+```text
 
 ### Part 3: Catalog Federation (Cross-Domain Queries)
 
@@ -233,9 +237,10 @@ sql = """
 """
 
 result = federation.execute_federated_query(sql)
-```
+```text
 
 **Features**:
+
 - Glue Data Catalog search across domains
 - Lake Formation permissions (column-level access)
 - Athena federated query execution
@@ -269,7 +274,7 @@ python domain_api.py --mode check-slas
 # Product Domain: ✅ Freshness 45 minutes (SLA: < 60 min)
 # Sales Domain: ✅ Freshness 2 minutes (SLA: < 5 min)
 # Customer Domain: ✅ Freshness 8 minutes (SLA: < 15 min)
-```
+```text
 
 ### Task 3: Execute Cross-Domain Query
 
@@ -285,7 +290,7 @@ python catalog_federation.py \
            JOIN customer_domain_db.profiles c ON o.customer_id = c.customer_id
            WHERE c.segment = 'high_value'
            GROUP BY p.category"
-```
+```text
 
 **Expected**: Query joins across 3 domains, returns aggregated revenue
 
@@ -296,6 +301,7 @@ python catalog_federation.py \
 **Scenario**: Product Domain wants to add a new field `sustainability_score` (1-100).
 
 **Requirements**:
+
 1. Add field with default value (backward compatible)
 2. Validate compatibility before deployment
 3. Consumers (Sales Domain) should not break
@@ -306,12 +312,14 @@ python catalog_federation.py \
 ### Challenge 2: Implement Domain SLA Dashboard
 
 **Requirements**:
+
 1. Track freshness for each data product (last update time)
 2. Track availability (API uptime %)
 3. Track accuracy (data quality checks)
 4. Alert if SLA violated (CloudWatch alarm → SNS)
 
 **Metrics to Track**:
+
 - Product Domain: `last_update_timestamp`, `catalog_completeness` (% products with images)
 - Sales Domain: `order_processing_delay`, `revenue_accuracy` (% orders reconciled)
 - Customer Domain: `profile_completeness`, `segment_freshness`
@@ -323,6 +331,7 @@ python catalog_federation.py \
 **Scenario**: GDPR requires deleting customer data within 30 days of request.
 
 **Requirements**:
+
 1. Customer Domain: Delete from `customer_domain_db.profiles`
 2. Sales Domain: Keep orders but pseudonymize `customer_id` (hash with salt)
 3. Product Domain: No customer data (no action needed)
@@ -335,13 +344,15 @@ python catalog_federation.py \
 ### Example 1: Uber Data Mesh
 
 **Scale**:
+
 - **Domains**: 30+ (Matching, Payments, Dispatch, Pricing, Safety, Restaurants...)
 - **Engineers**: 1,000+ (was 100 before Data Mesh)
 - **Data Products**: 10,000+ pipelines
 - **Data Volume**: Multiple petabytes
 
 **Structure**:
-```
+
+```text
 Matching Domain (3 teams, 15 engineers)
 ├─ Data Products: driver_availability, ride_requests, eta_predictions
 ├─ Storage: S3 (Parquet), Kafka (events), Cassandra (realtime)
@@ -356,11 +367,13 @@ Payments Domain (2 teams, 10 engineers)
 ```
 
 **Benefits**:
+
 - **70% faster feature development**: Domain teams don't wait for central data team
 - **10x scaling**: From 100 to 1,000+ engineers without bottleneck
 - **Clearer ownership**: Each team owns data quality (no ambiguity)
 
 **Challenges**:
+
 - **Discoverability**: 10,000+ pipelines hard to find → built internal catalog (DataBook)
 - **Duplication**: Some metrics computed in multiple domains → shared platform components
 - **Coordination**: Cross-domain changes require sync → domain contracts
@@ -372,16 +385,19 @@ Payments Domain (2 teams, 10 engineers)
 **Context**: Tax preparation software (TurboTax, QuickBooks) with seasonal spike.
 
 **Domains**:
+
 1. **Tax Domain**: Tax returns, deductions, refunds
 2. **Financial Domain**: Bank connections, transactions
 3. **Identity Domain**: Users, authentication, KYC
 
 **Data Products**:
+
 - `TaxDomain.annual_returns` (100M records, 50 GB)
 - `FinancialDomain.bank_transactions` (1B records, 500 GB)
 - `IdentityDomain.verified_users` (50M records, 10 GB)
 
 **Governance**:
+
 - **Global**: PII encryption (AES-256), retention (7 years), access logs
 - **Domain-specific**: Tax Domain keeps raw returns 10 years (IRS compliance)
 
@@ -410,7 +426,7 @@ Payments Domain (2 teams, 10 engineers)
 
 ### Centralized Data Lake (Baseline)
 
-```
+```text
 Central Data Lake (Single team, 10 engineers):
 ├─ S3 Storage: 50 TB × $0.023/GB = $1,150/month
 ├─ Glue ETL: 500 DPU-hours/day × $0.44 = $6,600/month
@@ -421,11 +437,11 @@ Central Data Lake (Single team, 10 engineers):
 Limitations:
 - Bottleneck at central team (2-4 week backlog)
 - Domain teams dependent on data engineering
-```
+```text
 
 ### Data Mesh (3 Domains)
 
-```
+```text
 Data Mesh (3 domains, 4 engineers per domain = 12 total):
 
 Product Domain:
@@ -461,11 +477,13 @@ Total: $158,996/month
 ```
 
 **Cost Comparison**:
+
 - **Centralized**: $132,800/month (10 engineers)
 - **Data Mesh**: $158,996/month (12 engineers)
 - **Difference**: +$26,196/month (+20% more expensive)
 
 **When Data Mesh Worth It**:
+
 - **Break-even**: If domain autonomy reduces time-to-market by 50% → generates $26K+/month extra revenue
 - **Example**: Launch 2 features/month instead of 1 → each feature generates $20K/month → $40K extra revenue → +$13K net profit
 - **Uber**: Went from 100 → 1,000+ engineers → 70% faster features → justified $5M+/month extra cost
@@ -482,11 +500,12 @@ Total: $158,996/month
    - Fargate (APIs)
 
 2. Python environment:
+
 ```bash
 pip install -r requirements.txt
-```
+```text
 
-3. IAM Permissions:
+1. IAM Permissions:
    - `s3:*` on domain buckets
    - `glue:*` on domain databases
    - `lakeformation:*` for permissions
@@ -503,7 +522,7 @@ python domain_api.py --mode setup --domain product
 # - Glue database: product_domain_db
 # - Glue schema registry: product-schemas
 # - DynamoDB table: product-api-usage
-```
+```text
 
 ### Step 2: Register Data Product Schema
 
@@ -515,7 +534,7 @@ python schema_registry.py \
     --data-product catalog \
     --schema-file schemas/product.avsc \
     --compatibility BACKWARD
-```
+```text
 
 ### Step 3: Load Sample Data
 
@@ -539,7 +558,7 @@ python domain_api.py --mode serve --domain sales --port 8002
 
 # Start Customer Domain API
 python domain_api.py --mode serve --domain customer --port 8003
-```
+```text
 
 ### Step 5: Query Data Products
 
@@ -552,7 +571,7 @@ curl "http://localhost:8002/orders?start_date=2025-01-01&end_date=2025-01-31"
 
 # Query Customer Domain
 curl "http://localhost:8003/customers?segment=high_value"
-```
+```text
 
 ### Step 6: Execute Federated Query
 
@@ -566,7 +585,7 @@ python catalog_federation.py \
            WHERE o.order_date >= CURRENT_DATE - 30
            GROUP BY p.category
            ORDER BY revenue DESC"
-```
+```text
 
 ### Step 7: Monitor SLAs
 
@@ -585,6 +604,7 @@ python domain_api.py --mode check-slas
 ### Domain Data Product Output
 
 **Product Domain API Response**:
+
 ```json
 {
   "data_product": "catalog",
@@ -606,19 +626,20 @@ python domain_api.py --mode check-slas
     "sla_compliant": true
   }
 }
-```
+```text
 
 ### Federated Query Output
 
 **Cross-Domain Revenue by Category**:
-```
+
+```text
 category        revenue      buyers  avg_order
 ─────────────────────────────────────────────────
 Electronics     $2,450,890   12,345  $198.62
 Clothing        $1,890,234    9,876  $191.37
 Home            $1,234,567    6,789  $181.84
 Sports          $  890,123    5,432  $163.89
-```
+```text
 
 ### SLA Compliance Report
 
@@ -649,7 +670,7 @@ Customer Domain (Owner: Engineering Team C)
    ✅ API Response Time: 67ms (SLA: < 150ms)
 
 Overall: 11/12 SLAs met (91.7%)
-```
+```text
 
 ## Performance Benchmarks
 
@@ -674,6 +695,7 @@ Overall: 11/12 SLAs met (91.7%)
 ### When to Use Data Mesh
 
 ✅ **Use Data Mesh When**:
+
 - Large organization (100+ engineers working on data)
 - Many business domains (5+ with clear boundaries)
 - Domain teams have data expertise (each team has 1-2 data engineers)
@@ -681,6 +703,7 @@ Overall: 11/12 SLAs met (91.7%)
 - Central data team is bottleneck (2+ week backlogs)
 
 ❌ **Don't Use Data Mesh When**:
+
 - Small team (<50 engineers total)
 - Few domains (<3 with unclear boundaries)
 - Limited data engineering expertise (only 1-2 data engineers total)
@@ -697,30 +720,34 @@ Overall: 11/12 SLAs met (91.7%)
 ### Migration Strategy: Strangler Fig Pattern
 
 **Phase 1: Centralized (Current State)**
-```
+
+```text
 All data → Central Data Lake → Analytics Team queries
-```
+```text
 
 **Phase 2: Hybrid (One Domain)**
+
 ```
 Product data → Product Domain API ─┐
 Sales data → Central Data Lake     ├─→ Analytics Team
 Customer data → Central Data Lake  ┘
-```
+```text
 
 **Phase 3: Hybrid (Two Domains)**
-```
+
+```text
 Product data → Product Domain API ─┐
 Sales data → Sales Domain API ─────┤
 Customer data → Central Data Lake ─┘─→ Analytics Team
-```
+```text
 
 **Phase 4: Full Data Mesh**
+
 ```
 Product data → Product Domain API ─┐
 Sales data → Sales Domain API ─────┼─→ Analytics Team (federated queries)
 Customer data → Customer Domain API┘
-```
+```text
 
 **Timeline**: 6-12 months for full migration (one domain every 2-3 months)
 
@@ -729,22 +756,26 @@ Customer data → Customer Domain API┘
 ### Scenario: Medium E-Commerce Company
 
 **Assumptions**:
+
 - Engineers: 150 total (30% work with data)
 - Data Volume: 50 TB
 - Queries: 10,000/day
 - Domains: 5 (Product, Sales, Customer, Marketing, Operations)
 
 **Centralized Approach**:
+
 - Cost: $150K/month (10-person central data team + infrastructure)
 - Time to Market: 3 weeks average (queued backlog)
 - Issues: Bottleneck (teams wait), context loss (data team doesn't understand domains)
 
 **Data Mesh Approach**:
+
 - Cost: $220K/month (5 domains × $15K infrastructure + 3-person platform team × $150K salary / 12 = $37.5K)
 - Time to Market: 3 days average (self-serve)
 - Benefits: 7x faster (3 weeks → 3 days), better quality (domain expertise)
 
 **ROI Calculation**:
+
 - Extra cost: +$70K/month
 - Revenue impact: 7x faster features → 7 features/month instead of 1 → assume $20K/feature → +$120K/month revenue
 - **Net benefit**: $120K - $70K = **+$50K/month profit**
@@ -760,6 +791,7 @@ After completing this exercise:
 3. **Exercise 06**: Polyglot Persistence (right database per domain)
 
 **Real-World Application**:
+
 - If your company has 5+ domains: Propose Data Mesh pilot (start with 1 domain)
 - If your company is small: Stick with centralized (Data Mesh overkill)
 - Read **"Data Mesh"** book by Zhamak Dehghani (O'Reilly, 2022)

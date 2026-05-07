@@ -1,6 +1,7 @@
 # Exercise 04: Real-Time Streaming Analytics
 
 ## Overview
+
 Build a production-grade real-time streaming pipeline using Structured Streaming to process events from Bronze to Gold layers with windowed aggregations, late data handling, and streaming UPSERT operations.
 
 **Estimated Time**: 2 hours
@@ -10,7 +11,9 @@ Build a production-grade real-time streaming pipeline using Structured Streaming
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Build streaming pipelines with Structured Streaming
 - Process continuous data from readStream to writeStream
 - Implement windowed aggregations (tumbling, sliding, session windows)
@@ -22,13 +25,16 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 You're building a real-time analytics platform for a ride-sharing service. Events stream continuously from mobile apps:
+
 - Ride requests (user requests a ride)
 - Driver acceptance (driver accepts request)
 - Ride start (trip begins)
 - Ride complete (trip ends with payment)
 
 Requirements:
+
 1. Ingest streaming events into Bronze layer
 2. Clean and enrich in Silver layer (real-time)
 3. Calculate 5-minute windowed metrics (active rides, requests per region)
@@ -43,16 +49,19 @@ Requirements:
 ## Requirements
 
 ### Task 1: Stream to Bronze (20 min)
+
 Set up streaming ingestion from source to Bronze Delta table.
 
 **Requirements**:
+
 - Create `bronze_ride_events` Delta table (streaming write)
 - Read from JSON event source (simulated with rate source + transformations)
 - Configure checkpointing for fault tolerance
 - Append-only writes (no updates)
 
 **Event Schema**:
-```
+
+```text
 event_id: STRING
 event_type: STRING (ride_request, driver_accept, ride_start, ride_complete)
 timestamp: TIMESTAMP
@@ -64,9 +73,10 @@ longitude: DOUBLE
 city: STRING
 fare: DOUBLE (null until ride_complete)
 distance_km: DOUBLE (null until ride_complete)
-```
+```text
 
 **Streaming Configuration**:
+
 ```python
 # Read stream
 stream_df = spark.readStream \
@@ -82,14 +92,16 @@ query = stream_df.writeStream \
     .option("checkpointLocation", "/checkpoints/bronze") \
     .trigger(processingTime="10 seconds") \
     .table("bronze_ride_events")
-```
+```text
 
 **Data Generation**:
+
 - Simulate 500 events/second using `spark.readStream.format("rate")`
 - Transform rate source into realistic ride events
 - Include some late-arriving events (5-10% arrive 2-8 minutes late)
 
 **Success Criteria**:
+
 - ✅ Streaming query running continuously
 - ✅ Bronze table receiving 500+ events/second
 - ✅ Checkpoint directory created with metadata
@@ -99,9 +111,11 @@ query = stream_df.writeStream \
 ---
 
 ### Task 2: Stream Transformations (Bronze → Silver) (25 min)
+
 Apply real-time cleaning and enrichment transformations.
 
 **Requirements**:
+
 - Create `silver_ride_events` streaming table
 - Clean data (filter nulls, parse timestamps, validate coordinates)
 - Enrich with computed columns:
@@ -112,6 +126,7 @@ Apply real-time cleaning and enrichment transformations.
 - Deduplicate by event_id (use dropDuplicatesWithWatermark)
 
 **Deduplication**:
+
 ```python
 silver_stream = bronze_stream \
     .withWatermark("timestamp", "10 minutes") \
@@ -119,16 +134,19 @@ silver_stream = bronze_stream \
 ```
 
 **Data Quality**:
+
 - Filter out events with:
   - NULL user_id or ride_id
   - Invalid coordinates (lat/lon outside reasonable bounds)
   - Future timestamps (timestamp > current_time + 5 minutes)
 
 **Quarantine Stream**:
+
 - Write filtered-out records to `silver_ride_events_quarantine`
 - Include rejection reason
 
 **Success Criteria**:
+
 - ✅ Silver stream processes 450+ events/second (after filtering)
 - ✅ Duplicates removed (test by sending duplicate event_id)
 - ✅ Quarantine stream captures ~5-10% of bronze events
@@ -138,13 +156,15 @@ silver_stream = bronze_stream \
 ---
 
 ### Task 3: Windowed Aggregations (30 min)
+
 Calculate real-time metrics using tumbling windows.
 
 **Requirements**:
 Create three streaming aggregation tables with 5-minute tumbling windows:
 
 **1. Active Rides Dashboard** (`gold_active_rides_5min`):
-```
+
+```text
 window_start: TIMESTAMP
 window_end: TIMESTAMP
 city: STRING
@@ -152,10 +172,11 @@ active_requests: LONG (ride_request events)
 active_trips: LONG (ride_start - ride_complete events)
 drivers_active: LONG (distinct drivers)
 avg_wait_time_seconds: DOUBLE (request to accept)
-```
+```text
 
 **2. City Demand Heatmap** (`gold_city_demand_5min`):
-```
+
+```text
 window_start: TIMESTAMP
 window_end: TIMESTAMP
 city: STRING
@@ -166,7 +187,8 @@ avg_fare: DOUBLE
 ```
 
 **3. Event Funnel Metrics** (`gold_event_funnel_5min`):
-```
+
+```text
 window_start: TIMESTAMP
 window_end: TIMESTAMP
 total_requests: LONG
@@ -175,9 +197,10 @@ total_starts: LONG
 total_completes: LONG
 acceptance_rate: DOUBLE (accepts / requests)
 completion_rate: DOUBLE (completes / requests)
-```
+```text
 
 **Window Syntax**:
+
 ```python
 from pyspark.sql.functions import window, col
 
@@ -191,13 +214,15 @@ windowed_df = silver_stream \
         count("*").alias("total_events"),
         countDistinct("ride_id").alias("unique_rides")
     )
-```
+```text
 
 **Output Mode**:
+
 - Use `outputMode("append")` for tumbling windows
 - Use `outputMode("update")` for sliding windows (if needed)
 
 **Success Criteria**:
+
 - ✅ All 3 Gold tables updating every 5 minutes
 - ✅ Window boundaries aligned to clock (00:00, 00:05, 00:10, etc.)
 - ✅ Aggregations mathematically correct
@@ -207,14 +232,17 @@ windowed_df = silver_stream \
 ---
 
 ### Task 4: Watermarking for Late Data (20 min)
+
 Handle late-arriving events with watermarking.
 
 **Requirements**:
+
 - Configure 10-minute watermark (events up to 10 min late are processed)
 - Events older than watermark are dropped
 - Test with intentionally delayed events
 
 **Watermark Configuration**:
+
 ```python
 stream_with_watermark = silver_stream \
     .withWatermark("timestamp", "10 minutes") \
@@ -223,16 +251,19 @@ stream_with_watermark = silver_stream \
 ```
 
 **Testing Scenarios**:
+
 1. **On-time event**: timestamp = current_time - 2 minutes → **Processed**
 2. **Late event (within watermark)**: timestamp = current_time - 8 minutes → **Processed**
 3. **Very late event (exceeds watermark)**: timestamp = current_time - 15 minutes → **Dropped**
 
 **Monitoring Late Events**:
+
 - Track percentage of late events (latency > 1 minute)
 - Alert if late event rate > 10%
 - Log dropped events for analysis
 
 **Watermark Tracking**:
+
 ```python
 # Get current watermark from query
 query = stream_with_watermark.writeStream...
@@ -241,9 +272,10 @@ progress = query.lastProgress
 print(f"Current watermark: {progress['eventTime']['watermark']}")
 print(f"Latest event time: {progress['eventTime']['max']}")
 print(f"Lag: {progress['eventTime']['lag']}")
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Watermark advances over time (check every 1 minute)
 - ✅ Late events within 10 minutes are processed
 - ✅ Events older than watermark are dropped
@@ -253,15 +285,18 @@ print(f"Lag: {progress['eventTime']['lag']}")
 ---
 
 ### Task 5: Streaming MERGE (foreachBatch UPSERT) (25 min)
+
 Maintain real-time user profiles with streaming MERGE.
 
 **Requirements**:
+
 - Create `gold_user_profiles` table (updated in real-time)
 - UPSERT profile on each ride completion
 - Track lifetime stats per user
 
 **User Profile Schema**:
-```
+
+```text
 user_id: STRING (primary key)
 first_ride_date: DATE
 last_ride_date: DATE
@@ -271,9 +306,10 @@ total_distance_km: DOUBLE
 avg_fare: DOUBLE
 favorite_city: STRING (city with most rides)
 last_updated: TIMESTAMP
-```
+```text
 
 **Streaming MERGE with foreachBatch**:
+
 ```python
 from delta.tables import DeltaTable
 
@@ -317,10 +353,12 @@ silver_stream.writeStream \
 ```
 
 **Idempotency**:
+
 - Running same batch_id twice should not duplicate counts
 - Use merge semantics (not append)
 
 **Success Criteria**:
+
 - ✅ User profiles table exists and updates in real-time
 - ✅ New users inserted, existing users updated
 - ✅ Aggregations correct (total_rides, total_spent)
@@ -330,27 +368,32 @@ silver_stream.writeStream \
 ---
 
 ### Task 6: Monitoring Streaming Queries (20 min)
+
 Monitor streaming pipeline health, performance, and SLAs.
 
 **Requirements**:
 Track these metrics for each streaming query:
 
 **1. Throughput Metrics**:
+
 - Input rows per second
 - Processed rows per second
 - Trigger durations
 
 **2. Latency Metrics**:
+
 - End-to-end latency (event time to processing time)
 - Batch processing time
 - Watermark lag
 
 **3. Health Metrics**:
+
 - Query status (active/stopped/failed)
 - Number of active queries
 - Checkpoint health
 
 **Monitoring Queries**:
+
 ```python
 # Get all active streams
 active_streams = [s for s in spark.streams.active]
@@ -367,9 +410,10 @@ print(f"Input rate: {progress['inputRowsPerSecond']:.2f} rows/sec")
 print(f"Process rate: {progress['processedRowsPerSecond']:.2f} rows/sec")
 print(f"Batch duration: {progress['batchDuration']} ms")
 print(f"Trigger: {progress['timestamp']}")
-```
+```text
 
 **Create Monitoring Dashboard**:
+
 ```sql
 -- Create metrics table
 CREATE TABLE IF NOT EXISTS streaming_metrics (
@@ -394,15 +438,17 @@ FROM streaming_metrics
 WHERE metric_timestamp >= current_timestamp() - interval 1 hour
 GROUP BY query_name, minute
 ORDER BY minute DESC;
-```
+```text
 
 **SLA Alerts**:
+
 - Processing lag > 5 minutes → Alert
 - Input rate > process rate for 10+ minutes → Alert (backlog building)
 - Batch duration > 60 seconds → Alert (slow processing)
 - Query failed or stopped → Critical alert
 
 **Success Criteria**:
+
 - ✅ All streams monitored (5+ queries tracked)
 - ✅ Metrics collected every minute
 - ✅ Dashboard queries working
@@ -445,7 +491,8 @@ events_stream = rate_stream.select(
     concat(lit("user_"), (rand() * 1000).cast("int")).alias("user_id"),
     # ... more columns
 )
-```
+```text
+
 </details>
 
 <details>
@@ -482,6 +529,7 @@ query = windowed_metrics.writeStream \
     .option("checkpointLocation", "/checkpoints/gold_metrics") \
     .table("gold_city_metrics_5min")
 ```
+
 </details>
 
 <details>
@@ -507,7 +555,8 @@ late_stats = late_events_df \
         sum(when(col("is_late"), 1).otherwise(0)).alias("late_events"),
         (col("late_events") / col("total_events") * 100).alias("late_percentage")
     )
-```
+```text
+
 </details>
 
 <details>
@@ -545,20 +594,23 @@ while True:
     for query in spark.streams.active:
         log_stream_metrics(query, query.name)
     time.sleep(60)
-```
+```text
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
 cd exercises/exercise-04-streaming-analytics
 python validate.py
-```
+```text
 
 **Expected Output**:
+
 ```
 ✅ Task 1: Bronze stream running (498 events/sec average, checkpoint healthy)
 ✅ Task 2: Silver stream processing (447 events/sec, 10.2% filtered to quarantine)
@@ -578,12 +630,14 @@ python validate.py
    - No SLA violations in last hour
 
 🎉 Exercise 04 Complete! Total Score: 100/100
-```
+```text
 
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.py` - Complete streaming pipeline implementation
 2. Streaming architecture diagram (Bronze → Silver → Gold flow)
 3. Performance report (throughput, latency, watermark behavior)
@@ -592,6 +646,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - [Structured Streaming Guide](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html)
 - [Watermarking and Late Data](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#handling-late-data-and-watermarking)
 - [Streaming with Delta Lake](https://docs.delta.io/latest/delta-streaming.html)
@@ -602,7 +657,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Exercise 05: SQL Analytics & Dashboards
 - ✅ Exercise 06: ML with MLflow
 - Review Module 15: Real-Time Analytics

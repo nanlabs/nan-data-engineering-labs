@@ -30,12 +30,14 @@
 Build a complete **real-time analytics platform** for **RideShare**, a rapidly growing ride-sharing company that processes millions of events per day. This checkpoint integrates concepts from modules 07-12, combining batch processing, streaming basics, data quality, workflow orchestration, infrastructure as code, and serverless processing into a production-grade solution.
 
 RideShare currently relies on batch processing with 24-hour data latency, causing:
+
 - **Lost revenue** from suboptimal surge pricing decisions
 - **Poor customer experience** due to slow driver matching
 - **Fraud losses** from delayed detection
 - **Operational blind spots** with no real-time monitoring
 
 Your mission is to design and implement a real-time analytics platform that provides:
+
 - **<5 second latency** from event generation to dashboard visualization
 - **1000+ events per second** throughput with horizontal scalability
 - **99.9% uptime** with automatic failover and recovery
@@ -157,6 +159,7 @@ You must have completed the following modules:
 **RideShare** is a rapidly growing ride-sharing platform operating in 50 cities across North America, similar to Uber and Lyft. The platform connects passengers with nearby drivers through a mobile app.
 
 **Key Metrics:**
+
 - **5 million active users** placing ride requests
 - **500,000 active drivers** providing rides
 - **10 million rides per month** (growing 20% MoM)
@@ -357,13 +360,13 @@ pytest>=7.2.0
 moto>=4.1.0
 black>=23.1.0
 flake8>=6.0.0
-```
+```text
 
 ## Architecture Overview
 
 ### High-Level Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                          Event Sources                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐             │
@@ -481,7 +484,7 @@ flake8>=6.0.0
 │  │  - Subscriptions: Email, SMS, PagerDuty                    │    │
 │  └────────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### Data Flow
 
@@ -645,11 +648,12 @@ sudo mv terraform /usr/local/bin/
 
 # Verify Terraform
 terraform --version  # Should be v1.0+
-```
+```text
 
 ### Step 3: Study the Architecture
 
 Review the architecture diagram above and understand:
+
 - Event flow from sources to visualization
 - Which services handle which concerns
 - How components interact
@@ -660,18 +664,22 @@ Review the architecture diagram above and understand:
 Follow [IMPLEMENTATION-GUIDE.md](IMPLEMENTATION-GUIDE.md) phase by phase:
 
 **Week 1: Foundation**
+
 - Phase 1: Infrastructure Setup (Terraform)
 - Phase 2: Event Ingestion (Producers)
 
 **Week 2: Core Processing**
+
 - Phase 3: Stream Processing (Lambda, Analytics)
 - Phase 4: State Management (DynamoDB)
 
 **Week 3: Orchestration & Quality**
+
 - Phase 5: Workflow Orchestration (Step Functions)
 - Phase 6: Data Quality (Validation framework)
 
 **Week 4: Visualization & Production**
+
 - Phase 7: Visualization (QuickSight dashboards)
 - Phase 8: Monitoring & Alerts (CloudWatch)
 - Phase 9: Optimization (Cost and performance)
@@ -695,6 +703,7 @@ Once dev environment is stable, deploy to production with appropriate scaling.
 **Objective**: Provision all AWS resources using Terraform
 
 **Tasks**:
+
 1. Create Terraform configuration files
 2. Define Kinesis Data Streams (4 streams)
 3. Create DynamoDB tables (3 tables)
@@ -704,6 +713,7 @@ Once dev environment is stable, deploy to production with appropriate scaling.
 7. Verify resources in AWS Console
 
 **Deliverables**:
+
 - Terraform files in `terraform/` directory
 - Infrastructure deployment takes <30 minutes
 - All resources created successfully
@@ -713,11 +723,13 @@ Once dev environment is stable, deploy to production with appropriate scaling.
 **Objective**: Create event producers that send events to Kinesis
 
 **Tasks**:
+
 1. Implement 4 event producer scripts
 2. Add monitoring and logging
 3. Test with load generators
 
 **Deliverables**:
+
 - 4 producer scripts in `src/producers/` directory
 - Successfully ingest 1000 events/second
 - 0 throttling errors under normal load
@@ -728,7 +740,7 @@ See [IMPLEMENTATION-GUIDE.md](IMPLEMENTATION-GUIDE.md) for detailed phase-by-pha
 
 ## Project Structure
 
-```
+```text
 module-checkpoint-02-realtime-analytics-platform/
 │
 ├── README.md                          # This file
@@ -755,7 +767,7 @@ module-checkpoint-02-realtime-analytics-platform/
 ├── monitoring/                        # Monitoring configurations
 ├── data/                              # Sample data for testing
 └── reference-solution/                # Reference implementation
-```
+```text
 
 ## Deliverables
 
@@ -790,6 +802,7 @@ See detailed rubric in main README sections above.
 ## Troubleshooting
 
 See detailed troubleshooting guide above covering:
+
 - Kinesis throttling issues
 - Lambda timeouts and memory errors
 - Kinesis Data Analytics SQL errors

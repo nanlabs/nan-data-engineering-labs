@@ -1,6 +1,7 @@
 # Exercise 04: Schema Evolution
 
 ## 🎯 Objective
+
 Manejar changes of schema without romper aplicaciones existentes.
 
 **Difficulty**: ⭐⭐⭐⭐ Avanzado | **Tiempo**: 30-45 minutos
@@ -23,7 +24,7 @@ delta_table.alterColumn("amount", DecimalType(10, 2))
 
 # Rename column  
 spark.sql("ALTER TABLE delta.`path` RENAME COLUMN user_id TO customer_id")
-```
+```text
 
 ## 🎓 Conceptos
 

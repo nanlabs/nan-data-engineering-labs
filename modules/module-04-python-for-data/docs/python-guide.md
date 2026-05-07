@@ -21,9 +21,10 @@
 
 ```python
 import this
-```
+```text
 
 **Principios clave**:
+
 - **Explicit is better than implicit**: Clear code over "smart" code
 - **Simple is better than complex**: Avoid over-engineering
 - **Readability counts**: Code that reads like prose
@@ -64,7 +65,7 @@ def CalculateSales():  # Should be snake_case
     pass
 
 MaxRetries = 3  # Should be UPPER_CASE
-```
+```text
 
 ### Indentation and Spacing
 
@@ -82,12 +83,12 @@ items = [1, 2, 3, 4, 5]
 
 # ❌ Incorrect: tabulaciones mezcladas con espacios
 def bad_function():
-	print("Tab")  # Tab
+ print("Tab")  # Tab
     print("Spaces")  # Espacios
 
 # ❌ Incorrect: sin espacios
 result=(value1+value2)*factor
-```
+```text
 
 ### Line Length
 
@@ -135,7 +136,7 @@ import numpy as np
 
 # ❌ Incorrect: multiple imports on one line
 import pandas, numpy, matplotlib
-```
+```text
 
 ---
 
@@ -155,7 +156,7 @@ unique_customers = {1, 2, 3, 4, 5}
 
 # Dict: Key-value, O(1) lookup
 customer_data = {"name": "Ana", "age": 25}
-```
+```text
 
 ### Comprehensions (Pythonic)
 
@@ -176,7 +177,7 @@ id_to_name = {user['id']: user['name'] for user in users}
 
 # ✅ Set comprehension
 unique_lengths = {len(word) for word in words}
-```
+```text
 
 ### Collections Module
 
@@ -219,7 +220,7 @@ try:
     df = pd.read_csv(file_path)
 except Exception as e:  # Demasiado amplio
     pass  # Nunca usar pass silencioso
-```
+```text
 
 ### Context Managers
 
@@ -233,7 +234,7 @@ with open('data.csv', 'r') as f:
 f = open('data.csv', 'r')
 data = f.read()
 f.close()  # Easy to forget
-```
+```text
 
 ### Custom Exceptions
 
@@ -250,7 +251,7 @@ class SchemaError(DataValidationError):
 def validate_data(df, expected_columns):
     if not all(col in df.columns for col in expected_columns):
         raise SchemaError(f"Missing columns: {expected_columns}")
-```
+```text
 
 ### Logging Errors
 
@@ -293,7 +294,7 @@ df['doubled'] = df['value'].apply(lambda x: x * 2)
 
 # ✅ Fast: direct operation
 df['doubled'] = df['value'] * 2
-```
+```text
 
 ### Generators (Lazy Evaluation)
 
@@ -311,7 +312,7 @@ for processed_line in read_large_file('huge_file.txt'):
 # ❌ Loadr todo en memoria
 with open('huge_file.txt', 'r') as f:
     lines = [process_line(line) for line in f]  # Consume mucha RAM
-```
+```text
 
 ### Caching
 
@@ -329,7 +330,7 @@ result1 = expensive_calculation(10)  # Slow
 
 # Segunda llamada: usa cache
 result2 = expensive_calculation(10)  # Instant
-```
+```text
 
 ### Profiling
 
@@ -366,7 +367,7 @@ def test_calculate_total():
     
     # Assert: verificar resultado
     assert result == 110  # (10*2 + 20*3 + 30*1)
-```
+```text
 
 ### Fixtures (pytest)
 
@@ -384,7 +385,7 @@ def sample_dataframe():
 def test_process_data(sample_dataframe):
     result = process_data(sample_dataframe)
     assert len(result) == 3
-```
+```text
 
 ### Parameterization
 
@@ -399,7 +400,7 @@ def test_process_data(sample_dataframe):
 ])
 def test_square(input, expected):
     assert square(input) == expected
-```
+```text
 
 ### Mocking
 
@@ -462,7 +463,7 @@ def calculate_customer_ltv(transactions, discount_rate=0.1):
     
     # Implementation...
     return result
-```
+```text
 
 ### Type Hints
 
@@ -489,7 +490,7 @@ def merge_data(
 ) -> pd.DataFrame:
     """Merge two DataFrames."""
     return pd.merge(left, right, on=on)
-```
+```text
 
 ---
 
@@ -511,7 +512,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-```
+```text
 
 ### Logging Levels
 
@@ -559,7 +560,7 @@ logger.info(
         'total_amount': 500.00
     }
 )
-```
+```text
 
 ---
 
@@ -579,7 +580,7 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 # ❌ Incorrect: credentials in code
 DB_PASSWORD = "my_secret_password"  # NUNCA!
-```
+```text
 
 ### Input Validation
 
@@ -601,7 +602,7 @@ def get_customer_data(customer_id: int) -> dict:
 def bad_query(customer_id):
     query = f"SELECT * FROM customers WHERE id = {customer_id}"
     return db.execute(query)
-```
+```text
 
 ---
 
@@ -656,7 +657,7 @@ pipeline = (DataPipeline()
 )
 
 clean_data = pipeline.execute(raw_data)
-```
+```text
 
 ### Singleton Pattern
 
@@ -679,7 +680,7 @@ class Config:
 config1 = Config()
 config2 = Config()
 assert config1 is config2  # True
-```
+```text
 
 ---
 
@@ -711,9 +712,9 @@ assert config1 is config2  # True
 
 ## 📚 Additional Resources
 
-- **PEP 8**: https://pep8.org/
-- **Python Type Hints**: https://docs.python.org/3/library/typing.html
-- **pytest**: https://docs.pytest.org/
+- **PEP 8**: <https://pep8.org/>
+- **Python Type Hints**: <https://docs.python.org/3/library/typing.html>
+- **pytest**: <https://docs.pytest.org/>
 - **Clean Code in Python**: Libro recomendado
 - **Effective Python**: Libro recomendado
 

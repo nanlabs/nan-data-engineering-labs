@@ -63,6 +63,7 @@ By the end of this module, you will be able to:
 ## Resources
 
 See `theory/resources.md` for:
+
 - Official AWS documentation
 - Video tutorials and workshops
 - Community resources
@@ -71,14 +72,16 @@ See `theory/resources.md` for:
 ## Validation
 
 Run all validations:
+
 ```bash
 bash scripts/validate.sh
-```
+```text
 
 Or use the global validation:
+
 ```bash
 make validate MODULE=module-{module_id}-{module["name"]}
-```
+```text
 
 ## Progress Checklist
 

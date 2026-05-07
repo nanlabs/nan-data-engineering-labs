@@ -5,6 +5,7 @@ Comprehensive acceptance tests for validating the Checkpoint 01: Serverless Data
 ## Overview
 
 This test suite validates:
+
 - ✅ Infrastructure deployment (S3, IAM, Lambda, Glue, Athena, SNS, CloudWatch)
 - ✅ Data pipeline functionality (upload, transform, query)
 - ✅ Data quality (schema, completeness, transformations, referential integrity)
@@ -33,14 +34,15 @@ Configure AWS credentials with appropriate permissions:
 
 ```bash
 aws configure
-```
+```text
 
 Or set environment variables:
+
 ```bash
 export AWS_ACCESS_KEY_ID="your-access-key"
 export AWS_SECRET_ACCESS_KEY="your-secret-key"
 export AWS_REGION="us-east-1"
-```
+```text
 
 ### 2. Python Environment
 
@@ -48,11 +50,12 @@ Python 3.8+ required:
 
 ```bash
 python --version  # Should be 3.8 or higher
-```
+```text
 
 ### 3. Infrastructure Deployed
 
 Ensure the serverless data lake infrastructure is deployed:
+
 - S3 buckets (raw, processed, curated, logs, athena-results)
 - IAM roles (Lambda, Glue)
 - Lambda functions (file-validator, metadata-extractor, etc.)
@@ -99,35 +102,43 @@ pytest test_infrastructure.py::TestS3Infrastructure::test_s3_buckets_exist
 
 # Run with coverage
 pytest --cov=. --cov-report=html
-```
+```text
 
 ## Test Categories
 
 Tests are marked with pytest markers for selective execution:
 
 ### Integration Tests
+
 Tests that interact with actual AWS resources:
+
 ```bash
 pytest -m integration
-```
+```text
 
 ### Slow Tests
+
 Tests that take longer to execute (> 10 seconds):
+
 ```bash
 pytest -m slow
-```
+```text
 
 ### Expensive Tests
+
 Tests that may incur AWS costs (Glue jobs, large queries):
+
 ```bash
 pytest -m expensive
 ```
 
 ### Quick Tests Only
+
 Exclude slow and expensive tests:
+
 ```bash
 pytest -m "not slow and not expensive"
-```
+```text
 
 ## Environment Configuration
 
@@ -145,29 +156,33 @@ export PROJECT_NAME="serverless-data-lake"
 
 # Environment (test, dev, prod)
 export ENVIRONMENT="test"
-```
+```text
 
 ## Test Reports
 
 After running tests, reports are generated in the `reports/` directory:
 
 ### HTML Test Report
+
 ```bash
 open reports/test-report.html
-```
+```text
 
 Shows:
+
 - Test results (passed/failed/skipped)
 - Execution time per test
 - Failure details with stack traces
 - Test summary statistics
 
 ### Coverage Report
+
 ```bash
 open reports/coverage/index.html
 ```
 
 Shows:
+
 - Code coverage percentage
 - Line-by-line coverage
 - Uncovered lines highlighted
@@ -175,19 +190,23 @@ Shows:
 ## Understanding Test Results
 
 ### All Tests Passed ✓
-```
+
+```text
 ╔════════════════════════════════════════════════════════════╗
 ║  ✓ ALL TESTS PASSED                                       ║
 ╚════════════════════════════════════════════════════════════╝
-```
+```text
+
 Infrastructure is correctly deployed and functioning.
 
 ### Some Tests Failed ✗
-```
+
+```text
 ╔════════════════════════════════════════════════════════════╗
 ║  ✗ SOME TESTS FAILED                                      ║
 ╚════════════════════════════════════════════════════════════╝
 ```
+
 Check `reports/test-report.html` for detailed failure information.
 
 ## Common Test Scenarios
@@ -195,11 +214,13 @@ Check `reports/test-report.html` for detailed failure information.
 ### Scenario 1: Initial Infrastructure Validation
 
 After deploying infrastructure:
+
 ```bash
 ./run_tests.sh --quick
-```
+```text
 
 This runs fast tests to verify:
+
 - ✅ All buckets exist
 - ✅ IAM roles are configured
 - ✅ Lambda functions are deployed
@@ -208,11 +229,13 @@ This runs fast tests to verify:
 ### Scenario 2: End-to-End Pipeline Test
 
 After deploying complete pipeline:
+
 ```bash
 pytest test_data_pipeline.py::TestEndToEnd::test_complete_pipeline_flow -v
-```
+```text
 
 This validates:
+
 - ✅ Data upload to raw bucket
 - ✅ Lambda processing
 - ✅ Data transformation
@@ -221,11 +244,13 @@ This validates:
 ### Scenario 3: Data Quality Validation
 
 After running data through pipeline:
+
 ```bash
 pytest test_data_quality.py -v
-```
+```text
 
 This checks:
+
 - ✅ Schema correctness
 - ✅ No nulls in key columns
 - ✅ Transformations applied
@@ -235,11 +260,13 @@ This checks:
 ### Scenario 4: Performance Benchmarking
 
 To measure performance:
+
 ```bash
 pytest test_performance.py -v
 ```
 
 This measures:
+
 - ✅ Lambda execution time
 - ✅ Glue job duration
 - ✅ Athena query speed
@@ -250,47 +277,55 @@ This measures:
 ### Test Failures
 
 #### "Bucket does not exist"
+
 **Problem**: S3 buckets not created or name mismatch
 **Solution**: Check `BUCKET_PREFIX` environment variable matches your deployment
 
 #### "IAM role does not exist"
+
 **Problem**: IAM roles not created or incorrect names
 **Solution**: Verify IAM roles are deployed with expected names
 
 #### "Lambda function does not exist"
+
 **Problem**: Lambda functions not deployed
 **Solution**: Check Lambda deployment in AWS Console
 
 #### "No data in bronze/silver/gold layer"
+
 **Problem**: Pipeline hasn't processed data yet
 **Solution**: Upload sample data and wait for processing
 
 #### "AWS credentials not configured"
+
 **Problem**: No AWS credentials available
 **Solution**: Run `aws configure` or set environment variables
 
 ### Performance Issues
 
 If tests are too slow:
+
 ```bash
 # Run in parallel
 ./run_tests.sh --parallel
 
 # Skip slow tests
 ./run_tests.sh --quick
-```
+```text
 
 ### Cost Concerns
 
 Some tests may incur AWS costs:
+
 - Glue job execution (marked with `@pytest.mark.expensive`)
 - Athena queries (minimal cost)
 - Lambda invocations (usually within Free Tier)
 
 To skip expensive tests:
+
 ```bash
 pytest -m "not expensive"
-```
+```text
 
 ## Extending Tests
 
@@ -302,17 +337,19 @@ pytest -m "not expensive"
 4. Add appropriate pytest markers
 
 Example:
+
 ```python
 @pytest.mark.integration
 def test_new_feature(s3_client, bucket_names):
     """Test description"""
     # Test implementation
     assert condition, "Error message"
-```
+```text
 
 ### Adding New Fixtures
 
 Add fixtures to `conftest.py`:
+
 ```python
 @pytest.fixture
 def my_fixture():
@@ -325,34 +362,40 @@ def my_fixture():
 ## Best Practices
 
 ### 1. Run Tests After Every Change
+
 ```bash
 ./run_tests.sh --quick
-```
+```text
 
 ### 2. Use Cleanup Fixtures
+
 Tests should clean up resources they create using the `cleanup_test_data` fixture.
 
 ### 3. Mock Expensive Operations
+
 Use `moto` to mock AWS services during development:
+
 ```python
 from moto import mock_s3
 
 @mock_s3
 def test_with_mock():
     # Test implementation
-```
+```text
 
 ### 4. Document Test Purpose
+
 Each test should have a clear docstring explaining what it validates.
 
 ### 5. Use Meaningful Assertions
+
 ```python
 # Good
 assert bucket_exists, f"Bucket {bucket_name} does not exist"
 
 # Bad
 assert bucket_exists
-```
+```text
 
 ## CI/CD Integration
 
@@ -380,11 +423,12 @@ acceptance_tests:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
     AWS_REGION: us-east-1
-```
+```text
 
 ## Support
 
 For issues or questions:
+
 1. Check test logs in `reports/test-report.html`
 2. Review AWS CloudWatch logs for Lambda/Glue failures
 3. Verify infrastructure deployment in AWS Console

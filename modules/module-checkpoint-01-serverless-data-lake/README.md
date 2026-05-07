@@ -33,11 +33,11 @@ Run the checkpoint acceptance tests from this module:
 
 ```bash
 bash validation/run-tests.sh
-```
+```text
 
 Also validate module contracts from repository root:
 
 ```bash
 PYTHON=python
 $PYTHON scripts/validate_learning_labs.py --module module-checkpoint-01-serverless-data-lake --strict-core --strict-headings
-```
+```text

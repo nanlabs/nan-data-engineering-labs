@@ -1,6 +1,7 @@
 # Exercise 04: CDC with Streams & Tasks
 
 ## Overview
+
 Build an automated Change Data Capture (CDC) pipeline using Snowflake Streams and Tasks to process data changes in real-time and maintain a multi-layer analytics architecture.
 
 **Estimated Time**: 2.5 hours
@@ -10,7 +11,9 @@ Build an automated Change Data Capture (CDC) pipeline using Snowflake Streams an
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Create and manage Streams for change data capture
 - Query streams to identify INSERT, UPDATE, and DELETE operations
 - Build automated pipelines using Tasks
@@ -21,7 +24,9 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 You're building a real-time order processing system for an e-commerce platform. Orders are continuously created, updated, and occasionally canceled in the bronze layer. Your goal is to:
+
 - Track all changes to the orders table
 - Automatically process completed orders to the silver layer
 - Generate daily aggregations in the gold layer
@@ -34,9 +39,11 @@ The system must run without manual intervention and handle incremental processin
 ## Requirements
 
 ### Task 1: Setup Source Tables (20 min)
+
 Create the bronze layer and populate with initial order data.
 
 **Create Bronze Orders Table**:
+
 ```sql
 CREATE OR REPLACE TABLE bronze_orders (
     order_id INT,
@@ -47,9 +54,10 @@ CREATE OR REPLACE TABLE bronze_orders (
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-```
+```text
 
 **Load Initial Data** (1,000 orders):
+
 ```sql
 INSERT INTO bronze_orders
 SELECT
@@ -71,9 +79,10 @@ SELECT
     dateadd(hour, -uniform(1, 720, random()), current_timestamp()) as created_at,
     dateadd(hour, -uniform(1, 720, random()), current_timestamp()) as updated_at
 FROM table(generator(rowcount => 1000));
-```
+```text
 
 **Verification Queries**:
+
 ```sql
 -- Check data distribution
 SELECT status, COUNT(*) as count, AVG(amount) as avg_amount
@@ -82,9 +91,10 @@ GROUP BY status;
 
 -- Sample records
 SELECT * FROM bronze_orders LIMIT 10;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ `bronze_orders` table created with 1,000 rows
 - ✅ Data distributed across PENDING, COMPLETED, CANCELLED statuses
 - ✅ Timestamps properly generated (last 30 days)
@@ -93,9 +103,11 @@ SELECT * FROM bronze_orders LIMIT 10;
 ---
 
 ### Task 2: Create Streams (25 min)
+
 Set up a stream to track changes to the bronze_orders table.
 
 **Create Stream**:
+
 ```sql
 CREATE OR REPLACE STREAM orders_stream
 ON TABLE bronze_orders
@@ -103,6 +115,7 @@ COMMENT = 'Track all changes to bronze_orders for CDC processing';
 ```
 
 **Generate Change Data**:
+
 ```sql
 -- INSERT: 100 new orders
 INSERT INTO bronze_orders
@@ -127,9 +140,10 @@ LIMIT 50;
 DELETE FROM bronze_orders
 WHERE status = 'CANCELLED'
 LIMIT 10;
-```
+```text
 
 **Query Stream with Metadata**:
+
 ```sql
 -- View stream contents
 SELECT
@@ -152,14 +166,16 @@ SELECT
     COUNT(*) as change_count
 FROM orders_stream
 GROUP BY METADATA$ACTION, METADATA$ISUPDATE;
-```
+```text
 
 **Understanding Streams**:
+
 - Updates appear as DELETE (old) + INSERT (new) rows
 - Stream offset only advances when consumed (via DML)
 - Records remain in stream until consumed
 
 **Success Criteria**:
+
 - ✅ Stream `orders_stream` created successfully
 - ✅ Stream shows ~160 rows (100 INSERT, 50 UPDATE=100 rows, 10 DELETE)
 - ✅ Can query `METADATA$ACTION` and `METADATA$ISUPDATE` columns
@@ -168,9 +184,11 @@ GROUP BY METADATA$ACTION, METADATA$ISUPDATE;
 ---
 
 ### Task 3: Manual Stream Consumption (30 min)
+
 Process the stream to silver layer and verify offset behavior.
 
 **Create Silver Table**:
+
 ```sql
 CREATE OR REPLACE TABLE silver_orders (
     order_id INT PRIMARY KEY,
@@ -181,9 +199,10 @@ CREATE OR REPLACE TABLE silver_orders (
     completed_at TIMESTAMP,
     processed_at TIMESTAMP DEFAULT current_timestamp()
 );
-```
+```text
 
 **Manual Stream Processing**:
+
 ```sql
 -- Process only COMPLETED orders from stream
 INSERT INTO silver_orders (order_id, customer_id, product, amount, created_at, completed_at)
@@ -201,6 +220,7 @@ WHERE status = 'COMPLETED'
 ```
 
 **Verify Stream Offset Advanced**:
+
 ```sql
 -- Stream should now be empty (offset advanced)
 SELECT COUNT(*) as remaining_records FROM orders_stream;
@@ -218,9 +238,10 @@ LIMIT 20;
 -- Stream should show new data
 SELECT COUNT(*) as new_changes FROM orders_stream;
 -- Expected: ~40 (20 UPDATE = 40 rows)
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Silver table created and populated with completed orders
 - ✅ Stream offset advanced after consumption (became empty)
 - ✅ New changes appear in stream after additional updates
@@ -229,9 +250,11 @@ SELECT COUNT(*) as new_changes FROM orders_stream;
 ---
 
 ### Task 4: Automated Task (30 min)
+
 Create a Task to automatically process the stream every 5 minutes.
 
 **Create Processing Task**:
+
 ```sql
 -- Create warehouse for tasks
 CREATE WAREHOUSE IF NOT EXISTS WH_TASK_SMALL
@@ -258,17 +281,19 @@ FROM orders_stream
 WHERE status = 'COMPLETED'
     AND METADATA$ACTION = 'INSERT'
     AND METADATA$ISUPDATE = FALSE;
-```
+```text
 
 **Resume Task** (tasks created in suspended state):
+
 ```sql
 ALTER TASK process_orders_task RESUME;
 
 -- Verify task is running
 SHOW TASKS LIKE 'process_orders_task';
-```
+```text
 
 **Test Automated Execution**:
+
 ```sql
 -- Generate new completed orders
 INSERT INTO bronze_orders (order_id, customer_id, product, amount, status, created_at, updated_at)
@@ -302,6 +327,7 @@ SELECT MAX(processed_at) as last_processed FROM silver_orders;
 ```
 
 **Success Criteria**:
+
 - ✅ Task created with SCHEDULE='5 MINUTE'
 - ✅ WHEN condition checks for stream data
 - ✅ Task resumed and shows STATE='started'
@@ -311,9 +337,11 @@ SELECT MAX(processed_at) as last_processed FROM silver_orders;
 ---
 
 ### Task 5: Task DAG Pipeline (30 min)
+
 Build a 3-task pipeline with dependencies: Bronze→Silver→Gold.
 
 **Create Gold Aggregation Table**:
+
 ```sql
 CREATE OR REPLACE TABLE gold_daily_sales (
     sales_date DATE,
@@ -323,14 +351,16 @@ CREATE OR REPLACE TABLE gold_daily_sales (
     unique_customers INT,
     last_updated TIMESTAMP DEFAULT current_timestamp()
 );
-```
+```text
 
 **Suspend Existing Task**:
+
 ```sql
 ALTER TASK process_orders_task SUSPEND;
-```
+```text
 
 **Create Task DAG**:
+
 ```sql
 -- Root task: Process stream to silver
 CREATE OR REPLACE TASK bronze_to_silver_task
@@ -388,9 +418,10 @@ SELECT
     'Today sales: ' || COUNT(*)::VARCHAR
 FROM gold_daily_sales
 WHERE sales_date = CURRENT_DATE();
-```
+```text
 
 **Create Quality Log Table**:
+
 ```sql
 CREATE OR REPLACE TABLE data_quality_log (
     check_date TIMESTAMP,
@@ -401,6 +432,7 @@ CREATE OR REPLACE TABLE data_quality_log (
 ```
 
 **Resume Task DAG** (resume in reverse dependency order):
+
 ```sql
 -- Resume child tasks first
 ALTER TASK data_quality_task RESUME;
@@ -411,9 +443,10 @@ ALTER TASK bronze_to_silver_task RESUME;
 
 -- View task tree
 SHOW TASKS;
-```
+```text
 
 **Monitor Task Execution**:
+
 ```sql
 -- View task hierarchy and execution history
 SELECT
@@ -426,9 +459,10 @@ SELECT
 FROM table(information_schema.task_history())
 WHERE scheduled_time >= DATEADD(hour, -1, current_timestamp())
 ORDER BY scheduled_time DESC, name;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ 3 tasks created with proper dependencies (AFTER clause)
 - ✅ Task DAG visualized: bronze_to_silver → silver_to_gold → data_quality
 - ✅ All tasks resumed in correct order
@@ -438,16 +472,19 @@ ORDER BY scheduled_time DESC, name;
 ---
 
 ### Task 6: Error Handling & Monitoring (25 min)
+
 Implement error detection, monitoring, and retry logic.
 
 **Introduce Erroneous Data**:
+
 ```sql
 -- Insert order with invalid data (negative amount)
 INSERT INTO bronze_orders VALUES
     (9999, 100, 'ErrorProduct', -500.00, 'COMPLETED', current_timestamp(), current_timestamp());
-```
+```text
 
 **Add Validation to Task**:
+
 ```sql
 ALTER TASK bronze_to_silver_task SUSPEND;
 
@@ -480,15 +517,17 @@ END;
 ```
 
 **Create Rejected Orders Table**:
+
 ```sql
 CREATE OR REPLACE TABLE rejected_orders (
     order_id INT,
     rejection_reason VARCHAR(500),
     rejected_at TIMESTAMP
 );
-```
+```text
 
 **Monitor Task Health**:
+
 ```sql
 -- Query task execution history
 SELECT
@@ -524,9 +563,10 @@ SELECT
 FROM table(information_schema.task_history())
 WHERE scheduled_time >= DATEADD(day, -7, current_timestamp())
 GROUP BY name;
-```
+```text
 
 **Stream Monitoring**:
+
 ```sql
 -- Check stream lag
 SELECT
@@ -537,9 +577,10 @@ FROM orders_stream;
 
 -- Monitor stream metadata
 SHOW STREAMS LIKE 'orders_stream';
-```
+```text
 
 **Create Alert Query** (run periodically):
+
 ```sql
 -- Alert if tasks haven't run in 30 minutes
 SELECT
@@ -553,6 +594,7 @@ HAVING minutes_since_run > 30;
 ```
 
 **Success Criteria**:
+
 - ✅ Error handling implemented (validation + rejected orders table)
 - ✅ Invalid data logged to rejected_orders table
 - ✅ Task execution history queried (success/failure tracking)
@@ -568,6 +610,7 @@ HAVING minutes_since_run > 30;
 <summary>Hint 1: Understanding Stream Metadata</summary>
 
 Streams track changes with special metadata columns:
+
 ```sql
 -- METADATA$ACTION values:
 -- 'INSERT' = new row or updated row (new version)
@@ -588,7 +631,8 @@ SELECT *
 FROM orders_stream
 WHERE METADATA$ACTION = 'DELETE'
     AND METADATA$ISUPDATE = FALSE;
-```
+```text
+
 </details>
 
 <details>
@@ -612,7 +656,8 @@ INSERT INTO target_table SELECT * FROM orders_stream;
 
 -- Stream now empty
 SELECT COUNT(*) FROM orders_stream;  -- Returns 0
-```
+```text
+
 </details>
 
 <details>
@@ -645,7 +690,8 @@ SHOW TASKS;
 
 -- Describe task details
 DESCRIBE TASK my_task;
-```
+```text
+
 </details>
 
 <details>
@@ -675,6 +721,7 @@ ALTER TASK child_task_2 RESUME;
 ALTER TASK child_task_1 RESUME;
 ALTER TASK root_task RESUME;  -- Starts entire DAG
 ```
+
 </details>
 
 <details>
@@ -710,21 +757,24 @@ FROM table(information_schema.task_history())
 WHERE scheduled_time >= DATEADD(day, -7, current_timestamp())
     AND state = 'SUCCEEDED'
 GROUP BY name;
-```
+```text
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
 cd exercises/exercise-04-cdc-streams-tasks
 bash validate.sh
-```
+```text
 
 **Expected Output**:
-```
+
+```text
 ✅ Task 1: bronze_orders table created with 1,000 rows
 ✅ Task 2: orders_stream created and shows change records
 ✅ Task 3: Stream consumed, offset advanced correctly
@@ -738,7 +788,9 @@ bash validate.sh
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.sql` - All stream and task creation commands
 2. `task-dag-diagram.mmd` - Mermaid diagram of task dependencies
 3. `monitoring-queries.sql` - Save your monitoring queries
@@ -747,6 +799,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - Snowflake Documentation: [Streams](https://docs.snowflake.com/en/user-guide/streams)
 - Snowflake Documentation: [Tasks](https://docs.snowflake.com/en/user-guide/tasks-intro)
 - Notebook: `notebooks/04-streams-tasks.sql`
@@ -756,7 +809,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Exercise 05: Snowpipe Auto-Ingestion (event-driven loading)
 - ✅ Exercise 06: Secure Data Sharing (partner data distribution)
 - Explore Snowflake's Task Observability Interface (UI monitoring)

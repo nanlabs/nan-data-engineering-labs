@@ -95,7 +95,7 @@ response = glue.create_data_quality_ruleset(
 )
 
 print(f"Created ruleset: {response['Name']}")
-```
+```text
 
 ### Task 2: Create Silver Layer Quality Rules
 
@@ -144,7 +144,7 @@ glue.create_data_quality_ruleset(
 )
 
 print("Created Silver quality ruleset")
-```
+```text
 
 ### Task 3: Run Quality Evaluation
 
@@ -206,7 +206,7 @@ if status == 'SUCCEEDED':
         print(f"{status_icon} {rule_result['Name']}: {rule_result['Result']}")
         if rule_result['Result'] == 'FAIL':
             print(f"   Reason: {rule_result.get('EvaluationMessage', 'N/A')}")
-```
+```text
 
 ### Task 4: Integrate Quality Checks into ETL Pipeline
 
@@ -371,7 +371,7 @@ publish_quality_metrics(
     rules_passed=25,
     rules_failed=2
 )
-```
+```text
 
 ### Task 6: Set Up Quality Alerts
 
@@ -403,7 +403,7 @@ awslocal cloudwatch put-metric-alarm \
     --threshold 5 \
     --comparison-operator GreaterThanThreshold \
     --dimensions Name=TableName,Value=sales_transactions
-```
+```text
 
 ### Task 7: Quality Report Generation
 
@@ -503,7 +503,7 @@ print(f"\n{'Database':<30} {'Table':<30} {'Avg Score':<12} {'Trend':<15}")
 print("-"*87)
 for table in report['tables']:
     print(f"{table['database']:<30} {table['table']:<30} {table['avg_score']:.2f}%{'':<7} {table['trend']:<15}")
-```
+```text
 
 ## Validation
 
@@ -514,6 +514,7 @@ python validation_04.py
 ```
 
 Expected results:
+
 - ✅ Quality rulesets created for Bronze and Silver tables
 - ✅ Rules cover completeness, validity, consistency dimensions
 - ✅ Quality evaluation runs successfully

@@ -13,12 +13,14 @@
 ## 📄 CSV (Comma-Separated Values)
 
 ### features
+
 - ✅ **Pros**: Universal, legible, simple, soportado por todo
 - ❌ **Cons**: No data types, no compression, slow with large files
 - 📦 **Size**: ~100 MB for 1M rows
 - 🎯 **When to use**: Simple data exchange, maximum compatibility
 
 ### Lectura
+
 ```python
 import pandas as pd
 
@@ -47,9 +49,10 @@ df = pd.read_csv(
 chunk_size = 10000
 for chunk in pd.read_csv('data_grandes.csv', chunksize=chunk_size):
     process(chunk)
-```
+```text
 
 ### Escritura
+
 ```python
 # Basico
 df.to_csv('output.csv', index=False)
@@ -68,9 +71,10 @@ df.to_csv(
     quoting=csv.QUOTE_NONNUMERIC,  # Entrecomillar non-numeric
     compression='gzip'          # Comprimir (.csv.gz)
 )
-```
+```text
 
 ### Problemas Comunes
+
 ```python
 # 1. Encoding incorrecto
 df = pd.read_csv('data.csv', encoding='latin1')  # Prueba diferentes encodings
@@ -83,11 +87,12 @@ df = pd.read_csv('data.csv', decimal=',')  # Europa usa ','
 
 # 4. Tipos inferidos mal
 df = pd.read_csv('data.csv', dtype={'codigo': str})  # '001' seria int sin esto
-```
+```text
 
 ## 📋 JSON (JavaScript Object Notation)
 
 ### features
+
 - ✅ **Pros**: Nested structure, readable, web standard, flexible schema
 - ❌ **Cons**: Verbose, no compression, slower than binaries
 - 📦 **Size**: ~150 MB for 1M rows
@@ -96,6 +101,7 @@ df = pd.read_csv('data.csv', dtype={'codigo': str})  # '001' seria int sin esto
 ### Types of Guidance
 
 #### 1. Records (Most common)
+
 ```json
 [
     {"nombre": "Ana", "edad": 25, "ciudad": "Madrid"},
@@ -109,23 +115,25 @@ df = pd.read_json('data.json', orient='records')
 
 # Escribir
 df.to_json('output.json', orient='records', indent=2)
-```
+```text
 
 #### 2. Columns
+
 ```json
 {
     "nombre": ["Ana", "Luis"],
     "edad": [25, 30],
     "ciudad": ["Madrid", "Barcelona"]
 }
-```
+```text
 
 ```python
 df = pd.read_json('data.json', orient='columns')
 df.to_json('output.json', orient='columns')
-```
+```text
 
 #### 3. Index
+
 ```json
 {
     "0": {"nombre": "Ana", "edad": 25},
@@ -134,6 +142,7 @@ df.to_json('output.json', orient='columns')
 ```
 
 ### Lectura
+
 ```python
 # Basico
 df = pd.read_json('data.json')
@@ -161,9 +170,10 @@ data = [
 
 df = json_normalize(data, sep='_')
 # Resultado: id, nombre, direccion_ciudad, direccion_pais
-```
+```text
 
 ### Escritura
+
 ```python
 # Basico
 df.to_json('output.json', orient='records', indent=2)
@@ -173,9 +183,10 @@ df.to_json('output.jsonl', orient='records', lines=True)
 
 # Con compresion
 df.to_json('output.json.gz', orient='records', compression='gzip')
-```
+```text
 
 ### JSON Anidado Complejo
+
 ```python
 # Loadr JSON complejo
 import json
@@ -191,11 +202,12 @@ df = json_normalize(
     meta_prefix='customer_',         # Prefijo para campos meta
     sep='_'
 )
-```
+```text
 
 ## 🚀 Parquet (Columnar Storage)
 
 ### features
+
 - ✅ **Pros**: Excellent compression, very fast, schema included, data types preserved
 - ❌ **Cons**: Not human readable, requires special library
 - 📦 **Size**: ~15 MB for 1M rows (85% less than CSV!)
@@ -204,6 +216,7 @@ df = json_normalize(
 ### Why Parquet is Superior
 
 #### 1. Compression
+
 ```python
 # Comparacion de tamano
 df.to_csv('data.csv', index=False)         # 100 MB
@@ -211,6 +224,7 @@ df.to_parquet('data.parquet')              # 15 MB (85% menos!)
 ```
 
 #### 2. Velocidad
+
 ```python
 import time
 
@@ -223,9 +237,10 @@ print(f"CSV: {time.time() - start:.2f}s")   # ~10s
 start = time.time()
 df = pd.read_parquet('data.parquet')
 print(f"Parquet: {time.time() - start:.2f}s")  # ~2s (5x mas quick!)
-```
+```text
 
 #### 3. Type Preservation
+
 ```python
 # CSV pierde tipos
 df.to_csv('data.csv', index=False)
@@ -236,9 +251,10 @@ df_csv = pd.read_csv('data.csv')
 df.to_parquet('data.parquet')
 df_parquet = pd.read_parquet('data.parquet')
 # fecha: datetime64, edad: int32 (exacto)
-```
+```text
 
 ### Lectura
+
 ```python
 # Basico
 df = pd.read_parquet('data.parquet')
@@ -253,9 +269,10 @@ df = pd.read_parquet(
 
 # Leer desde S3/Cloud
 df = pd.read_parquet('s3://bucket/data.parquet')
-```
+```text
 
 ### Escritura
+
 ```python
 # Basico
 df.to_parquet('output.parquet', index=False)
@@ -276,6 +293,7 @@ df.to_parquet(
 ```
 
 ### Comparative Compression
+
 ```python
 # Sin compresion
 df.to_parquet('sin_comp.parquet', compression=None)      # 50 MB
@@ -288,17 +306,19 @@ df.to_parquet('gzip.parquet', compression='gzip')        # 10 MB, mas lento
 
 # LZ4 (muy quick)
 df.to_parquet('lz4.parquet', compression='lz4')          # 18 MB, muy quick
-```
+```text
 
 ## 📊 Excel (XLS/XLSX)
 
 ### features
+
 - ✅ **Pros**: Familiar for business users, multiple sheets, visual format
 - ❌ **Cons**: Slow, 1M rows limit, not for production
 - 📦 **Size**: ~80 MB for 1M rows
 - 🎯 **When to use**: Reports for business users
 
 ### Lectura
+
 ```python
 # Basico
 df = pd.read_excel('data.xlsx')
@@ -317,9 +337,10 @@ df = pd.read_excel(
 sheets = pd.read_excel('data.xlsx', sheet_name=None)  # Dict de DataFrames
 for sheet_name, df in sheets.items():
     print(f"Sheet: {sheet_name}, Filas: {len(df)}")
-```
+```text
 
 ### Escritura
+
 ```python
 # Basico
 df.to_excel('output.xlsx', index=False, sheet_name='Data')
@@ -340,11 +361,12 @@ format = workbook.add_format({'bold': True, 'bg_color': '#D7E4BD'})
 worksheet.set_row(0, None, format)  # Formatear header
 
 writer.close()
-```
+```text
 
 ## 🔄 Conversion Between Formats
 
 ### CSV → Parquet
+
 ```python
 # Simple
 df = pd.read_csv('data.csv')
@@ -360,21 +382,24 @@ writer.close()
 ```
 
 ### JSON → Parquet
+
 ```python
 df = pd.read_json('data.json', orient='records')
 df.to_parquet('data.parquet', index=False)
-```
+```text
 
 ### Parquet → CSV (para reportes)
+
 ```python
 df = pd.read_parquet('data.parquet')
 df.to_csv('reporte.csv', index=False)
-```
+```text
 
 ## 📐 Decision Guide
 
 ### Decision Flow
-```
+
+```text
 ¿Necesitas compatibilidad universal?
 ├─ YES → CSV
 └─ NO
@@ -392,6 +417,7 @@ df.to_csv('reporte.csv', index=False)
 ### Specific Use Cases
 
 #### 1. Data Engineering pipeline
+
 ```python
 # Extract: CSV/JSON de fuentes externas
 raw_df = pd.read_csv('fuente_externa.csv')
@@ -401,9 +427,10 @@ clean_df = transform(raw_df)
 
 # Load: Guardar como Parquet para analytics
 clean_df.to_parquet('data_lake/clean_data.parquet', compression='snappy')
-```
+```text
 
 #### 2. Reporte para Negocio
+
 ```python
 # Leer desde data warehouse (Parquet)
 df = pd.read_parquet('data_warehouse/ventas.parquet')
@@ -413,9 +440,10 @@ report = df.groupby('region').agg({'ventas': 'sum', 'unidades': 'sum'})
 
 # Exportar a Excel con formato
 report.to_excel('reporte_mensual.xlsx', sheet_name='Resumen')
-```
+```text
 
 #### 3. API Response
+
 ```python
 # Leer desde almacenamiento eficiente
 df = pd.read_parquet('data.parquet', columns=['id', 'nombre', 'valor'])
@@ -425,11 +453,12 @@ df = df[df['valor'] > 100]
 
 # Retornar como JSON
 return df.to_json(orient='records')
-```
+```text
 
 ## 💾 storage en la cloud
 
 ### S3 (AWS)
+
 ```python
 # Leer
 df = pd.read_parquet('s3://my-bucket/data.parquet')
@@ -440,13 +469,14 @@ df.to_parquet('s3://my-bucket/output.parquet')
 ```
 
 ### Google Cloud Storage
+
 ```python
 # Leer
 df = pd.read_parquet('gs://my-bucket/data.parquet')
 
 # Escribir
 df.to_parquet('gs://my-bucket/output.parquet')
-```
+```text
 
 ## 📊 Benchmark Comparativo
 
@@ -477,4 +507,3 @@ df.to_parquet('gs://my-bucket/output.parquet')
 ---
 
 **Siguiente**: Ver [diagramas](../diagrams/) para visualizar flujos de data
-

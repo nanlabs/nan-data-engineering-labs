@@ -36,21 +36,24 @@ flowchart TD
     style Executor fill:#d4edda
     style ResultSet fill:#d4edda
     style SyntaxError fill:#f8d7da
-```
+```text
 
 ## Execution Phases
 
 ### 1. Parsing
+
 - **Input**: Raw SQL text
 - **Process**: Lexical analysis, syntax validation
 - **Output**: Parse tree (AST)
 
 ### 2. Query Rewriting
+
 - **Input**: Parse tree
 - **Process**: View expansion, rule application, simplification
 - **Output**: Rewritten query tree
 
 ### 3. Planning
+
 - **Input**: Query tree
 - **Process**:
   - Generate possible execution paths
@@ -59,6 +62,7 @@ flowchart TD
 - **Output**: Optimal execution plan
 
 ### 4. Execution
+
 - **Input**: Execution plan
 - **Process**: Execute operators in plan order
 - **Output**: Result rows

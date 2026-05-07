@@ -7,7 +7,9 @@
 ### Las Tres Fases
 
 #### 1. Extract
+
 Extraer datas desde fuentes origen:
+
 - **databases**: PostgreSQL, MySQL, Oracle
 - **Archivos**: CSV, JSON, Excel, Parquet
 - **APIs**: REST, GraphQL, SOAP
@@ -16,7 +18,9 @@ Extraer datas desde fuentes origen:
 - **Web scraping**: HTML parsing
 
 #### 2. Transform
+
 Procesar y limpiar datas:
+
 - **Limpieza**: Eliminar nulls, duplicados, outliers
 - **Validation**: Schema validation, data types
 - **Enriquecimiento**: Joins, lookups, APIs externas
@@ -25,7 +29,9 @@ Procesar y limpiar datas:
 - **Derivation**: Calculate new fields
 
 #### 3. Load (Carga)
+
 Escribir datas a destino:
+
 - **Data Warehouse**: Snowflake, Networkshift, BigQuery
 - **Data Lake**: S3, ADLS, GCS
 - **Databases**: PostgreSQL, MongoDB
@@ -41,22 +47,25 @@ Escribir datas a destino:
 
 **Transformation BEFORE loading**
 
-```
+```text
 Source → Extract → Transform → Load → Warehouse
-```
+```text
 
 **Ventajas**:
+
 - ✅ Datas ya limpios en warehouse
 - ✅ Menos carga en warehouse
 - ✅ Schema validado anticipadamente
 - ✅ Compliance and security made easier
 
 **Desventajas**:
+
 - ❌ Requiere server ETL potente
 - ❌ Rigid schema
 - ❌ Transformaciones complejas lentas
 
 **Casos de uso**:
+
 - Data Warehouses tradicionales (Oracle, SQL Server)
 - Datas structunetworkos y schema fijo
 - Transformaciones complejas
@@ -66,22 +75,25 @@ Source → Extract → Transform → Load → Warehouse
 
 **Transformation AFTER loading**
 
-```
+```text
 Source → Extract → Load → Data Lake → Transform
 ```
 
 **Ventajas**:
+
 - ✅ Fast loading (raw data)
 - ✅ Schema flexible (schema-on-read)
 - ✅ Aprovecha poder del warehouse moderno
 - ✅ Raw data available for analysis
 
 **Desventajas**:
+
 - ❌ Requiere warehouse potente
 - ❌ Higher storage costs
 - ❌ Datas raw pueden tener quality baja
 
 **Casos de uso**:
+
 - Cloud Data Warehouses (Snowflake, BigQuery)
 - Data Lakes (S3, Azure Data Lake)
 - Big Data y datas no structunetworkos
@@ -102,15 +114,17 @@ while True:
     transformed = transform(data)
     load(transformed)
     time.sleep(86400)  # Esperar 24 horas
-```
+```text
 
 **features**:
+
 - ⏰ **latency**: High (hours/days)
 - 📊 **throughput**: Alto (procesa mucho a la vez)
 - 💰 **Costo**: Menor (resources bajo demanda)
 - 🔧 **Complejidad**: Baja
 
 **Casos de uso**:
+
 - Reportes diarios/semanales
 - Data warehouse nightly loads
 - Historical analysis
@@ -129,15 +143,17 @@ def process_event(event):
 consumer.subscribe('events')
 for event in consumer:
     process_event(event)  # Procesa cada evento
-```
+```text
 
 **features**:
+
 - ⏰ **latency**: Baja (segundos/milisegundos)
 - 📊 **throughput**: Variable
 - 💰 **Costo**: Mayor (resources 24/7)
 - 🔧 **Complejidad**: Alta
 
 **Casos de uso**:
+
 - Real-time dashboards
 - Fraud detection
 - IoT data processing
@@ -154,15 +170,17 @@ while True:
     transformed = transform(data)
     load(transformed)
     time.sleep(300)  # 5 minutos
-```
+```text
 
 **features**:
+
 - ⏰ **latency**: Media (minutos)
 - 📊 **throughput**: Alto
 - 💰 **Costo**: Medio
 - 🔧 **Complejidad**: Media
 
 **Casos de uso**:
+
 - Near real-time dashboards
 - Data lake ingestion
 - Spark Structunetwork Streaming
@@ -183,16 +201,19 @@ load(df, mode='replace')  # Reemplaza todo
 ```
 
 **Ventajas**:
+
 - ✅ Simple de implementar
 - ✅ Siempre consistente
 - ✅ No requiere tracking
 
 **Desventajas**:
+
 - ❌ Lento para tables grandes
 - ❌ Alto uso de resources
 - ❌ No scalable
 
 **When to use**:
+
 - small tables (< 1M rows)
 - Datas que cambian completamente
 - Static dimension tables
@@ -207,19 +228,22 @@ last_run = get_last_watermark()  # 2024-03-06
 df = extract_data_since(last_run)  # Solo nuevos
 load(df, mode='append')
 update_watermark(now())
-```
+```text
 
 **Ventajas**:
+
 - ✅ Fast
 - ✅ Eficiente en resources
 - ✅ scalable
 
 **Desventajas**:
+
 - ❌ More complex
 - ❌ Requiere watermark/timestamp
 - ❌ Puede perder deletes
 
 **When to use**:
+
 - tables grandes
 - Alto volumen de inserts
 - Event logs, transactions
@@ -238,20 +262,23 @@ for change in changes:
         update(change.data)
     elif change.type == 'DELETE':
         delete(change.key)
-```
+```text
 
 **Ventajas**:
+
 - ✅ Captura todos los changes
 - ✅ Incluye deletes
 - ✅ Near real-time
 - ✅ Bajo impacto en source
 
 **Desventajas**:
+
 - ❌ Requiere support CDC en source
 - ❌ Complejo de implementar
 - ❌ Requiere infrastructure adicional
 
 **Herramientas CDC**:
+
 - Debezium (open source)
 - AWS DMS
 - Fivetran
@@ -273,14 +300,16 @@ df.to_sql('table', con, if_exists='append')
 # ✅ Idempotente
 df.to_sql('table', con, if_exists='replace')
 # Segunda ejecución → mismo result
-```
+```text
 
 **Why it is important**:
+
 - Permite re-runs sin side effects
 - Facilita recovery de errores
 - Simplifica debugging
 
 **How ​​to achieve idempotence**:
+
 - Usar `replace` en lugar de `append`
 - Implementar UPSERT (update or insert)
 - Use unique transaction IDs
@@ -294,15 +323,17 @@ df.to_sql('table', con, if_exists='replace')
 Source DB → Extract → Transform (join) → Load → Warehouse
    ↓           ↓            ↓               ↓         ↓
  Table A    Raw CSV    Enriched CSV     Staging   Final Table
-```
+```text
 
 **Why it is important**:
+
 - 🔍 Debugging: Rastrear errores a origen
 - 📊 Impact analysis: What affects a change
 - 🔒 Compliance: Data audit
 - 📈 Optimization: Identificar cuellos de botella
 
 **Herramientas**:
+
 - Apache Atlas
 - Amundsen
 - DataHub
@@ -321,14 +352,16 @@ Source DB → Extract → Transform (join) → Load → Warehouse
 
 # Pipeline debe manejar ambos
 df['phone'] = df.get('phone', None)  # Default si no existe
-```
+```text
 
 **Tipos de changes**:
+
 - ✅ **Additive**: Agregar columns (safe)
 - ⚠️ **Modification**: Cambiar tipos (risky)
 - ❌ **Removal**: Eliminar columns (breaking)
 
 **Best practices**:
+
 - Siempre agregar, nunca remover
 - Usar valores por defecto
 - Versionar schemas
@@ -339,6 +372,7 @@ df['phone'] = df.get('phone', None)  # Default si no existe
 **Ensure that data is correct and useful**:
 
 **Dimensiones de quality**:
+
 1. **Completeness**: Sin nulls donde no deben estar
 2. **Accuracy**: Correct values ​​(valid email)
 3. **Consistency**: Formato consistente
@@ -351,7 +385,7 @@ df['phone'] = df.get('phone', None)  # Default si no existe
 assert df['email'].notnull().all(), "Nulls in email"
 assert df['age'].between(0, 120).all(), "Invalid age"
 assert ~df.duplicated('id').any(), "Duplicate IDs"
-```
+```text
 
 ---
 
@@ -378,7 +412,7 @@ assert ~df.duplicated('id').any(), "Duplicate IDs"
 │  │ • Security & Compliance                       │  │
 │  └──────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────┘
-```
+```text
 
 ### Layers
 
@@ -436,7 +470,7 @@ except Exception as e:
     log_error(e)
     alert_team()
     raise  # Re-raise para que orchestrator lo maneje
-```
+```text
 
 ### 2. Make it Idempotent
 
@@ -447,7 +481,7 @@ def upsert(df, table):
     conn.execute(f"DELETE FROM {table} WHERE id IN ({df['id']})")
     # Insert new
     df.to_sql(table, conn, if_exists='append')
-```
+```text
 
 ### 3. Log Everything
 
@@ -466,7 +500,7 @@ logger.info(f"Loaded to {destiNATion}")
 # Validate después de extract
 assert len(df) > 0, "No data extracted"
 assert df['key'].notnull().all(), "Nulls in key column"
-```
+```text
 
 ### 5. Monitor Actively
 
@@ -475,7 +509,7 @@ assert df['key'].notnull().all(), "Nulls in key column"
 metrics.gauge('etl.records_processed', len(df))
 metrics.timing('etl.duration', duration)
 metrics.increment('etl.success')
-```
+```text
 
 ---
 

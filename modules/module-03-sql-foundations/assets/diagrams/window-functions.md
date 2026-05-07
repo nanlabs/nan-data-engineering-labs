@@ -18,9 +18,10 @@ flowchart LR
     style Output1 fill:#d4edda
     style Input2 fill:#e1f5ff
     style Output2 fill:#fff3cd
-```
+```text
 
 **Key Difference**:
+
 - **GROUP BY**: Collapses rows into groups
 - **Window Functions**: Keep all rows, add calculated columns
 
@@ -48,7 +49,7 @@ graph TD
     style WF fill:#e1f5ff
     style Func fill:#d4edda
     style Window fill:#fff3cd
-```
+```text
 
 ---
 
@@ -105,7 +106,7 @@ graph TD
     style RK3 fill:#ffcccc
     style RK4 fill:#cce5ff
     style DR4 fill:#d4edda
-```
+```text
 
 | Function | Ties? | Gap After Tie? |
 |----------|-------|----------------|
@@ -114,6 +115,7 @@ graph TD
 | **DENSE_RANK()** | ✅ Yes (same rank) | ❌ No (consecutive) |
 
 **Example**:
+
 ```sql
 SELECT
     product_name,
@@ -158,7 +160,7 @@ graph TD
     style P1 fill:#d4edda
     style P2 fill:#fff3cd
     style P3 fill:#ffcccc
-```
+```text
 
 **Without PARTITION BY**: Ranks globally across all products
 **With PARTITION BY category**: Ranks reset within each category
@@ -179,7 +181,7 @@ SELECT
     price,
     ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) AS category_rank
 FROM products;
-```
+```text
 
 ---
 
@@ -232,9 +234,10 @@ graph LR
 
     style L1 fill:#ffcccc
     style LD4 fill:#ffcccc
-```
+```text
 
 **Use Cases**:
+
 - **LAG**: Compare with previous period (month-over-month growth)
 - **LEAD**: Compare with next period (predict trends)
 
@@ -290,7 +293,7 @@ graph TD
 
     style RT4 fill:#d4edda
     style MA4 fill:#fff3cd
-```
+```text
 
 ```sql
 -- Running total
@@ -309,7 +312,7 @@ SELECT
         ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
     ) AS moving_avg_3m
 FROM monthly_sales;
-```
+```text
 
 ---
 
@@ -339,9 +342,10 @@ graph LR
     style F1 fill:#d4edda
     style F2 fill:#fff3cd
     style B3 fill:#e1f5ff
-```
+```text
 
 **Common Frames**:
+
 ```sql
 -- All rows up to current (running total)
 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
@@ -386,4 +390,4 @@ SELECT
 
 FROM products
 ORDER BY category, price DESC;
-```
+```text

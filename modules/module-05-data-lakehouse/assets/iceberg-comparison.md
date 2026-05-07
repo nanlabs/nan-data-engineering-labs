@@ -19,7 +19,7 @@
 
 ## 🎯 Use Cases
 
-### Usa Delta Lake when:
+### Usa Delta Lake when
 
 1. **Databricks Ecosystem**: Tu stack princIPal is Databricks
 2. **Spark-Heavy**: Tu processing is princIPalmente PySpark
@@ -28,7 +28,7 @@
 5. **Simplicity**: You want to simpler setup
 6. **Optimize Write**: You need automatic compaction
 
-### Usa Apache Iceberg when:
+### Usa Apache Iceberg when
 
 1. **Multi-Engine**: You use Trino, Presto, Flink in addition to Spark
 2. **Partition Evolution**: Cambias structure of particiones frecuentemente
@@ -42,24 +42,27 @@
 ### Write Operations
 
 **Delta Lake**:
+
 ```python
 df.write.format("delta") \
     .mode("overwrite") \
     .partitionBy("country") \
     .save("s3a://bucket/table")
-```
+```text
 
 **Iceberg**:
+
 ```python
 df.writeTo("catalog.db.table") \
     .using("iceberg") \
     .partitionedBy("country") \
     .create()
-```
+```text
 
 ### Time Travel
 
 **Delta Lake**:
+
 ```python
 # By version
 spark.read.format("delta") \
@@ -70,9 +73,10 @@ spark.read.format("delta") \
 spark.read.format("delta") \
     .option("timestampAsOf", "2024-01-15") \
     .load("/path")
-```
+```text
 
 **Iceberg**:
+
 ```python
 # By snapshot
 spark.read.format("iceberg") \
@@ -88,25 +92,28 @@ spark.read.format("iceberg") \
 ### Schema Evolution
 
 **Delta Lake**:
+
 ```python
 df.write.format("delta") \
     .mode("append") \
     .option("mergeSchema", "true") \
     .save("/path")
-```
+```text
 
 **Iceberg**:
+
 ```python
 from pyspark.sql.types import StringType
 spark.sql("""
     ALTER TABLE catalog.db.table 
     ADD COLUMN new_col STRING
 """)
-```
+```text
 
 ### Optimization
 
 **Delta Lake**:
+
 ```python
 from delta.tables import DeltaTable
 delta_table = DeltaTable.forPath(spark, "/path")
@@ -119,9 +126,10 @@ delta_table.optimize().executeZOrderBy("col1", "col2")
 
 # Vacuum
 delta_table.vacuum(168)  # hours
-```
+```text
 
 **Iceberg**:
+
 ```python
 # Compaction (manual)
 spark.sql("""
@@ -144,23 +152,24 @@ spark.sql("""
 
 ### Delta Lake Architecture
 
-```
+```text
 Delta Table
 ├── data/ (Parquet files)
 └── _delta_log/
     ├── 00000000000000000000.json (V0)
     ├── 00000000000000000001.json (V1)
     └── 00000000000000000002.json (V2)
-```
+```text
 
 **Pros**:
+
 - Simple and fast transaction log
 - Reading secuencial of the log
 - Checkpoint files for performance
 
 ### Iceberg Architecture
 
-```
+```text
 Iceberg Table
 ├── data/ (Parquet files)
 └── metadata/
@@ -172,6 +181,7 @@ Iceberg Table
 ```
 
 **Pros**:
+
 - More detailed metadata
 - Partition evolution without reescritura
 - Hidden partitioning (abstraction)
@@ -201,7 +211,7 @@ df = spark.read.format("delta").load("/delta/path")
 df.writeTo("catalog.db.table").using("iceberg").create()
 
 # 3. Copy metadata (manually)
-```
+```text
 
 ### Iceberg → Delta
 
@@ -211,28 +221,31 @@ df = spark.read.format("iceberg").load("catalog.db.table")
 
 # 2. Write to Delta
 df.write.format("delta").save("/delta/path")
-```
+```text
 
 ⚠️ **Note**: Time Travel history not se preserva in migration
 
 ## 💡 Recommendations
 
 ### For Enterprises
+
 - **Heavy Databricks**: Delta Lake
 - **Multi-Platform Analytics**: Iceberg
 - **Hybrid**: Use both (Delta for streams, Iceberg for analytics)
 
 ### For Startups
+
 - **Quick MVP**: Delta Lake (simpler)
 - **Future flexibility**: Iceberg (less vendor lock-in)
 
 ### For data Engineers
+
 - **Learn both**: Both are industry standard
 - **Lakehouse pattern**: Aplica with ambos
 - **Skills transferable**: Conceptos are similares
 
 ## 📚 Resources
 
-- Delta Lake: HTTPs://delta.io
-- Apache Iceberg: HTTPs://iceberg.apache.org
-- Lakehouse Benchmarking: HTTPs://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison
+- Delta Lake: <HTTPs://delta.io>
+- Apache Iceberg: <HTTPs://iceberg.apache.org>
+- Lakehouse Benchmarking: <HTTPs://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison>

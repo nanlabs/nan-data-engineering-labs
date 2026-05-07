@@ -4,7 +4,7 @@ Este directorio contiene datos de ejemplo y schemas para usar en los exercises d
 
 ## 📁 Estructura
 
-```
+```text
 data/
 ├── sample/                    # Datos de ejemplo
 │   ├── users.csv             # 10 usuarios de ejemplo
@@ -14,20 +14,23 @@ data/
 └── schemas/                   # Definiciones de schemas
     ├── database_schema.sql   # Schema PostgreSQL
     └── data_schema.json      # Schema JSON con reglas de calidad
-```
+```text
 
 ## 📊 Description de Datasets
 
 ### 1. users.csv
+
 **Registros**: 10 usuarios
 **Campos**: id, name, email, age, city, registration_date, status
 
 Datos de usuarios para exercises de:
+
 - Carga de CSV a base de datos
 - Validation de datos
 - ETL básico
 
 **Ejemplo de uso en DAG**:
+
 ```python
 import pandas as pd
 
@@ -35,18 +38,21 @@ def load_users():
     df = pd.read_csv('data/sample/users.csv')
     # Procesar y cargar a DB
     return len(df)
-```
+```text
 
 ### 2. sales.csv
+
 **Registros**: 15 órdenes
 **Campos**: order_id, customer_id, product, category, amount, quantity, order_date, status
 
 Datos de ventas para:
+
 - Pipeline ETL completo
 - Agregaciones y transformaciones
 - Análisis de series temporales
 
 **Ejemplo de uso**:
+
 ```python
 import pandas as pd
 
@@ -61,15 +67,18 @@ def analyze_sales():
 ```
 
 ### 3. sensor_data.json
+
 **Registros**: 5 lecturas
 **Campos**: sensor_id, location, temperature, humidity, timestamp, status
 
 Datos de sensores IoT para:
+
 - Procesamiento de JSON
 - Detección de anomalías
 - Monitoreo de alertas
 
 **Ejemplo de uso**:
+
 ```python
 import json
 
@@ -80,7 +89,7 @@ def process_sensors():
     # Detectar alertas
     warnings = [s for s in data if s['status'] == 'warning']
     print(f"⚠️  {len(warnings)} sensores en estado warning")
-```
+```text
 
 ## 🗄️ Database Schemas
 
@@ -89,6 +98,7 @@ def process_sensors():
 Schema completo para PostgreSQL que incluye:
 
 **Tablas**:
+
 - `users` - Información de usuarios
 - `orders` - Órdenes de compra
 - `user_stats` - Estadísticas agregadas (para ETL)
@@ -96,6 +106,7 @@ Schema completo para PostgreSQL que incluye:
 - `pipeline_logs` - Logs de ejecución de pipelines
 
 **Features**:
+
 - Primary keys y foreign keys
 - Constraints de validation (CHECK)
 - Índices para performance
@@ -103,6 +114,7 @@ Schema completo para PostgreSQL que incluye:
 - Comentarios y documentación
 
 **Uso**:
+
 ```bash
 # Crear schema en PostgreSQL
 psql -U postgres -d airflow -f data/schemas/database_schema.sql
@@ -113,19 +125,21 @@ create_table = PostgresOperator(
     sql='data/schemas/database_schema.sql',
     postgres_conn_id='postgres_default',
 )
-```
+```text
 
 ### data_schema.json
 
 Schema JSON con definiciones de datos y reglas de calidad:
 
 **Incluye**:
+
 - Definición de campos (tipo, required, constraints)
 - Reglas de calidad de datos
 - Validaciones de formato
 - Rangos permitidos
 
 **Uso con Pandera**:
+
 ```python
 import json
 import pandera as pa
@@ -138,7 +152,7 @@ def validate_with_schema(df, table_name):
 
     # Crear schema Pandera dinámicamente
     # ... validation ...
-```
+```text
 
 ## 🚀 Cómo Usar con Airflow
 
@@ -181,7 +195,7 @@ def load_and_process():
     # Procesar desde /tmp
     df = pd.read_csv('/tmp/sales.csv')
     # ...
-```
+```text
 
 ### Opción 3: Usar con Docker Volumes
 
@@ -191,35 +205,42 @@ Si usas Docker Compose del module, los datos ya están montados:
 # En docker-compose.yml
 volumes:
   - ./data:/opt/airflow/data:ro  # Read-only
-```
+```text
 
 Acceder desde DAG:
+
 ```python
 df = pd.read_csv('/opt/airflow/data/sample/users.csv')
-```
+```text
 
 ## 📋 Casos de Uso por Exercise
 
 ### Exercise 01: Primer DAG
+
 - ✅ No requiere datos externos
 
 ### Exercise 02: Operadores y Sensores
+
 - ✅ `users.csv` para FileSensor
 - ✅ `sales.csv` para procesamiento
 
 ### Exercise 03: Dependencias
+
 - ✅ `sensor_data.json` para branching basado en status
 
 ### Exercise 04: Pipeline ETL
+
 - ✅ API externa (JSONPlaceholder) - no requiere datos locales
 - ✅ `database_schema.sql` para create tablas
 - ✅ `users.csv` + `sales.csv` para pipeline completo
 
 ### Exercise 05: Monitoreo
+
 - ✅ `sales.csv` para métricas de calidad
 - ✅ `data_schema.json` para validaciones
 
 ### Exercise 06: Producción
+
 - ✅ Todos los datasets para pipeline completo
 - ✅ `database_schema.sql` para setup de DB
 
@@ -261,18 +282,21 @@ if __name__ == '__main__':
 ## 📊 Estadísticas de Datos
 
 ### users.csv
+
 - Total registros: 10
 - Status: 8 active, 2 inactive
 - Rango edad: 26-45 años
 - Ciudades: 10 ciudades españolas distintas
 
 ### sales.csv
+
 - Total registros: 15
 - Total ventas: $3,114.44
 - Categorías: Electronics (80%), Furniture (13%), Stationery (7%)
 - Status: 10 completed, 2 pending, 2 shipped, 1 cancelled
 
 ### sensor_data.json
+
 - Total lecturas: 5
 - Sensores únicos: 3
 - Rango temperatura: 21.0°C - 28.5°C
@@ -291,7 +315,7 @@ jq . data/sample/sensor_data.json
 
 # Verificar schema SQL
 psql --dry-run -f data/schemas/database_schema.sql
-```
+```text
 
 ## 🔒 Buenas Prácticas
 

@@ -9,6 +9,7 @@ Este directorio contiene la configuration de infraestructura necessary para run 
 Configuration de LocalStack para simular servicios AWS localmente.
 
 **Servicios incluidos:**
+
 - S3 (buckets, objects, versioning, lifecycle)
 - IAM (users, groups, roles, policies)
 - Lambda (functions, triggers)
@@ -36,7 +37,7 @@ docker-compose down
 # Limpiar datos
 docker-compose down -v
 rm -rf ./localstack-data/*
-```
+```text
 
 ## 🔧 Configuration
 
@@ -51,7 +52,7 @@ export AWS_ENDPOINT_URL=http://localhost:4566
 
 # Verify
 aws s3 ls --endpoint-url=$AWS_ENDPOINT_URL
-```
+```text
 
 ### Python/boto3
 
@@ -65,20 +66,21 @@ s3 = boto3.client('s3', endpoint_url='http://localhost:4566')
 import os
 os.environ['AWS_ENDPOINT_URL'] = 'http://localhost:4566'
 s3 = boto3.client('s3')
-```
+```text
 
 ## 📊 Persistencia de Datos
 
 Los datos de LocalStack se guardan en `./localstack-data/` para persistencia entre reinicios.
 
 **Estructura:**
+
 ```
 localstack-data/
 ├── s3/           # Buckets y objetos
 ├── logs/         # CloudWatch logs
 ├── lambda/       # Funciones Lambda
 └── ...
-```
+```text
 
 ## 🚀 Inicio Rápido
 
@@ -100,7 +102,7 @@ cd ..
 # 5. Runr exercises
 cd exercises/01-s3-basics/starter
 ./s3_operations.sh
-```
+```text
 
 ## 🔍 Troubleshooting
 
@@ -115,7 +117,7 @@ docker-compose logs localstack
 
 # Reiniciar
 docker-compose restart
-```
+```text
 
 ### Puerto 4566 en uso
 
@@ -138,7 +140,7 @@ ports:
 docker-compose down -v
 rm -rf ./localstack-data/*
 docker-compose up -d
-```
+```text
 
 ## 📚 Referencias
 

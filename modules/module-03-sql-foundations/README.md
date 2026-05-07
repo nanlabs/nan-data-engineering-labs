@@ -27,28 +27,30 @@ Upon completion of this module, you will be able to:
 11. **Debug and solve problems** of slow queries and common SQL errors
 12. **Write efficient analytical queries** for data pipeline transformations
 
-
 ## Prerequisites
 
 ### Required Knowledge
+
 - Basic understanding of relational databases
 - Familiarity with data types (integers, strings, dates)
 - Basic command line commands
 
 ### Required Software
+
 - Python 3.9+
 - Docker y Docker Compose
 - Cliente PostgreSQL (psql)
 - 2GB de espacio libre en disco
 
 ### Recommended but Optional
+
 - Basic understanding of data warehousing concepts
 - Familiarity with any programming language
 - Experience with data analysis tools
 
 ## Module Structure
 
-```
+```text
 module-03-sql-foundations/
 ├── theory/                      # Conceptual documentation
 │   ├── concepts.md             # Fundamentos de SQL (20,000+ palabras)
@@ -79,39 +81,45 @@ module-03-sql-foundations/
 └── docs/                        # Additional documentation
     ├── sql-guide.md            # Complete SQL guide
     └── troubleshooting.md      # Common problems and solutions
-```
+```text
 
 ## Getting Started
 
 ### 1. Clonar y Navegar
+
 ```bash
 cd modules/module-03-sql-foundations
-```
+```text
 
 ### 2. Instalar Dependencias de Python
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 3. Iniciar database PostgreSQL
+
 ```bash
 cd infrastructure
 docker-compose up -d
 cd ..
-```
+```text
 
 ### 4. Inicializar database de Muestra
+
 ```bash
 bash scripts/setup.sh
-```
+```text
 
 ### 5. Verify Database Connection
+
 ```bash
 psql -h localhost -p 5432 -U dataeng -d training
 # Password: dataeng123
-```
+```text
 
 ### 6. Read the Theory First
+
 ```bash
 # Comenzar con fundamentos
 cat theory/concepts.md | less
@@ -121,25 +129,29 @@ cat theory/architecture.md | less
 ```
 
 ### 7. Complete Exercises in Order
+
 ```bash
 cd exercises/01-basic-queries
 cat README.md
 # Follow instructions in each exercise
-```
+```text
 
 ### 8. Validar tu Aprendizaje
+
 ```bash
 bash scripts/validate.sh
 # o
 pytest validation/ -v
-```
+```text
 
 ## Exercises
 
 ### Exercise 01: Basic queries
+
 **Objective**: Master fundamental SQL operations
 
 **Temas**:
+
 - SELECT de columns y expresiones
 - Filtering with WHERE clause
 - Ordenamiento con ORDER BY
@@ -154,9 +166,11 @@ pytest validation/ -v
 ---
 
 ### Exercise 02: Joins and Relationships
+
 **Goal**: Combine data from multiple tables
 
 **Temas**:
+
 - INNER JOIN para registros coincidentes
 - LEFT/RIGHT JOIN para preservar rows
 - FULL OUTER JOIN para todos los registros
@@ -171,9 +185,11 @@ pytest validation/ -v
 ---
 
 ### Exercise 03: Aggregations and Grouping
+
 **Objective**: Summarize and analyze data
 
 **Temas**:
+
 - COUNT, SUM, AVG, MIN, MAX
 - GROUP BY with one or multiple columns
 - HAVING para filtered aggregates
@@ -188,9 +204,11 @@ pytest validation/ -v
 ---
 
 ### Exercise 04: Window Functions
+
 **Objective**: Perform advanced analytical queries
 
 **Temas**:
+
 - ROW_NUMBER para ranking
 - RANK y DENSE_RANK
 - LAG y LEAD para comparaciones
@@ -205,9 +223,11 @@ pytest validation/ -v
 ---
 
 ### Exercise 05: CTEs y Subqueries
+
 **Objective**: Escribir queries complejas y mantenibles
 
 **Temas**:
+
 - Common Table Expressions (WITH)
 - CTEs recursivos
 - Subqueries en SELECT, WHERE, FROM
@@ -222,9 +242,11 @@ pytest validation/ -v
 ---
 
 ### Exercise 06: Query optimization
+
 **Objective**: Analizar y mejorar el performance de queries
 
 **Temas**:
+
 - EXPLAIN y EXPLAIN ANALYZE
 - Tipos y uso de indexs
 - Query planning and execution
@@ -257,56 +279,65 @@ order_items (item_id, order_id, product_id, quantity, price)
 
 -- Tabla de actividad de usuarios
 user_activity (activity_id, user_id, event_type, event_time, session_id)
-```
+```text
 
 ## resources
 
 ### Official Documentation
+
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [AWS Athena SQL Reference](https://docs.aws.amazon.com/athena/latest/ug/ddl-sql-reference.html)
 - [Spark SQL Guide](https://spark.apache.org/docs/latest/sql-programming-guide.html)
 
 ### Aprendizaje Interactivo
+
 - [SQLBolt](https://sqlbolt.com/) - Lecciones interactivas de SQL
 - [Mode SQL Tutorial](https://mode.com/sql-tutorial/) - Focused on analytics
 - [PostgreSQL Exercises](https://pgexercises.com/) - Practice Problems
 
 ### Books and Guides
+
 - "SQL for Data Analysis" by Cathy Tanimura
 - "Practical SQL" by Anthony DeBarros
 - Ver `theory/resources.md` para lista completa
 
 ### Contenido en Video
+
 - [SQL Tutorial - Full Database Course](https://www.youtube.com/watch?v=HXV3zeQKqGY)
 - [Advanced SQL for Data Engineers](https://www.youtube.com/playlist?list=PLBgogxgQVM9v0xG0QTFQ5PTbNrj8uGSS-)
 
 ## Validation
 
 ### Run All Tests
+
 ```bash
 bash scripts/validate.sh
 ```
 
 ### Run Specific Exercise Tests
+
 ```bash
 pytest validation/test_exercise_01.py -v
 pytest validation/test_exercise_02.py -v
-```
+```text
 
 ### Verificar performance de queries
+
 ```bash
 # Run optimization benchmarks
 python validation/benchmark_queries.py
-```
+```text
 
 ## Progress Checklist
 
 ### Theory
+
 - [ ] Leer `theory/concepts.md` (fundamentos de SQL)
 - [ ] Leer `theory/architecture.md`(query execution)
 - [ ] Revisar `theory/resources.md` (materiales adicionales)
 
 ### Exercises
+
 - [ ] Exercise 01: Basic queries ✓
 - [ ] Exercise 02: Joins and Relationships ✓
 - [ ] Exercise 03: Aggregations and Grouping ✓
@@ -315,11 +346,13 @@ python validation/benchmark_queries.py
 - [ ] Exercise 06: Query optimization ✓
 
 ### Validation
+
 - [ ] Todos los tests pasando (`pytest validation/`)
 - [ ] Benchmarks de performance revisados
 - [ ] I can explain query execution plans
 
 ### Optional Challenges
+
 - [ ] Solve all bonus problems in exercises
 - [ ] Escribir 5 queries complejas desde cero
 - [ ] Optimizar una query lenta 10x
@@ -328,6 +361,7 @@ python validation/benchmark_queries.py
 ## Problemas Comunes
 
 ### Database connection failure
+
 ```bash
 # Verify that Docker is running
 docker ps
@@ -335,9 +369,10 @@ docker ps
 # Reiniciar PostgreSQL
 cd infrastructure
 docker-compose restart
-```
+```text
 
 ### queries Lentas
+
 ```sql
 -- Usar EXPLAIN para analizar
 EXPLAIN ANALYZE
@@ -348,10 +383,11 @@ SELECT * FROM pg_indexes WHERE tablename = 'your_table';
 ```
 
 ### Missing Sample Data
+
 ```bash
 # Reinitialize database
 bash scripts/setup.sh --reset
-```
+```text
 
 Ver `docs/troubleshooting.md`for complete troubleshooting guide.
 

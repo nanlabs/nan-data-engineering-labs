@@ -22,10 +22,12 @@ Data quality refers to the **suitability of the data for its intended purpose**.
 ### Impact of Poor Data Quality
 
 **Costos Empresariales:**
+
 - IBM estimates that poor data quality costs companies $3.1 trillion annually in the US alone.
 - Gartner reports that poor data quality costs organizations an average of $12.9 million per year
 
 **Consecuencias Operacionales:**
+
 - Decisiones de negocio incorrectas
 - Loss of customer trust
 - Incumplimiento regulatorio (GDPR, CCPA)
@@ -44,11 +46,13 @@ In 2018, Amazon had to discontinue its AI-based recruiting tool because the mode
 **Definition:** Data correctly reflects the real world it represents.
 
 **Preguntas Clave:**
+
 - Are the values ​​correct?
 - Does the information reflect reality?
 - Has the data been verified against a reliable source?
 
 **Ejemplos de Problemas:**
+
 ```python
 # ❌ Problemas de exactitud
 customers = [
@@ -57,9 +61,10 @@ customers = [
     {"name": "Bob", "phone": "123"},                         # Teléfono incompleto
     {"name": "Alice", "salary": 999999999}                   # Salario irreal
 ]
-```
+```text
 
 **Validaciones de Exactitud:**
+
 ```python
 import re
 from typing import Dict, List
@@ -96,9 +101,10 @@ for customer in customers:
     errors = validate_accuracy(customer)
     if errors:
         print(f"Errores en {customer['name']}: {errors}")
-```
+```text
 
 **Accuracy Metrics:**
+
 ```python
 def calculate_accuracy_rate(df, validation_func):
     """Calcula la tasa de exactitud de un DataFrame."""
@@ -112,7 +118,7 @@ def calculate_accuracy_rate(df, validation_func):
 
     accuracy_rate = (accurate_records / total_records) * 100
     return accuracy_rate
-```
+```text
 
 ---
 
@@ -121,11 +127,13 @@ def calculate_accuracy_rate(df, validation_func):
 **Definition:** All required data is present.
 
 **Preguntas Clave:**
+
 - Are there any required fields missing?
 - Are there null values ​​where they shouldn't exist?
 - Are all expected records present?
 
 **Ejemplos de Problemas:**
+
 ```python
 # ❌ Problemas de completitud
 transactions = pd.DataFrame({
@@ -138,6 +146,7 @@ transactions = pd.DataFrame({
 ```
 
 **Completeness Analysis:**
+
 ```python
 import pandas as pd
 import numpy as np
@@ -172,11 +181,12 @@ def analyze_completeness(df: pd.DataFrame) -> pd.DataFrame:
 # Uso
 report = analyze_completeness(transactions)
 print(report)
-```
+```text
 
 **Completitud por Level:**
 
 1. **Row-Level Completeness (Completitud de Registros)**
+
    ```python
    def row_completeness(df: pd.DataFrame, required_fields: List[str]) -> pd.Series:
        """Calcula completitud por registro."""
@@ -194,9 +204,10 @@ print(report)
    # Filtrar registros incompletos
    incomplete = transactions[transactions['completeness'] < 100]
    print(f"Registros incompletos: {len(incomplete)}")
-   ```
+   ```text
 
 2. **Column-Level Completeness (Completitud de columns)**
+
    ```python
    def column_completeness(df: pd.DataFrame) -> Dict[str, float]:
        """Calcula completitud por columna."""
@@ -207,13 +218,14 @@ print(report)
    ```
 
 3. **Dataset-Level Completeness (Completitud del Dataset)**
+
    ```python
    def dataset_completeness(df: pd.DataFrame) -> float:
        """Calcula completitud global del dataset."""
        total_cells = df.shape[0] * df.shape[1]
        non_null_cells = df.notna().sum().sum()
        return (non_null_cells / total_cells) * 100
-   ```
+   ```text
 
 ---
 
@@ -222,6 +234,7 @@ print(report)
 **Definition:** Data is consistent within the same dataset and between different datasets.
 
 **Preguntas Clave:**
+
 - Does the data follow the same format?
 - Are the related values ​​consistent?
 - Does the data match between systems?
@@ -229,6 +242,7 @@ print(report)
 **Tipos de Inconsistencias:**
 
 **3.1 Inconsistencia de Formato:**
+
 ```python
 # ❌ Formatos inconsistentes
 dates_inconsistent = [
@@ -247,6 +261,7 @@ phones_inconsistent = [
 ```
 
 **Standardization:**
+
 ```python
 from datetime import datetime
 import re
@@ -284,9 +299,10 @@ def standardize_phone(phone: str) -> str:
 # Uso
 dates_standardized = [standardize_date(d) for d in dates_inconsistent]
 phones_standardized = [standardize_phone(p) for p in phones_inconsistent]
-```
+```text
 
 **3.2 Inconsistencia Referencial:**
+
 ```python
 # ❌ Referencias inconsistentes
 customers = pd.DataFrame({
@@ -322,9 +338,10 @@ orphan_orders = check_referential_integrity(
     orders, customers, 'customer_id', 'customer_id'
 )
 print(f"Orders huérfanos: {len(orphan_orders)}")
-```
+```text
 
 **3.3 Logical Inconsistency:**
+
 ```python
 # ❌ Inconsistencias lógicas
 employees = pd.DataFrame({
@@ -373,7 +390,7 @@ def validate_logical_consistency(df: pd.DataFrame) -> List[Dict]:
 consistency_issues = validate_logical_consistency(employees)
 for issue in consistency_issues:
     print(f"Employee {issue['employee_id']}: {issue['issue']}")
-```
+```text
 
 ---
 
@@ -382,11 +399,13 @@ for issue in consistency_issues:
 **Definition:** Data is available when needed and represents the correct time period.
 
 **Preguntas Clave:**
+
 - Is the data up to date?
 - Are there delays in intake?
 - Does the data represent the correct period?
 
 **Ejemplos de Problemas:**
+
 ```python
 from datetime import datetime, timedelta
 
@@ -439,6 +458,7 @@ print(f"Compliance con SLA (4h): {timeliness_report['sla_compliance_rate']:.1f}%
 ```
 
 **Monitoreo de Freshness:**
+
 ```python
 def check_data_freshness(df: pd.DataFrame,
                          timestamp_col: str,
@@ -460,7 +480,7 @@ def check_data_freshness(df: pd.DataFrame,
 freshness = check_data_freshness(data_lake_records, 'event_timestamp', max_age_hours=24)
 print(f"Estado de frescura: {freshness['status']}")
 print(f"Último registro hace: {freshness['age_hours']:.1f} hours")
-```
+```text
 
 ---
 
@@ -469,6 +489,7 @@ print(f"Último registro hace: {freshness['age_hours']:.1f} hours")
 **Definition:** The data complies with defined business rules, formats and restrictions.
 
 **Preguntas Clave:**
+
 - Are the values ​​in the allowed domain?
 - Are the formats correct?
 - Are business rules followed?
@@ -476,6 +497,7 @@ print(f"Último registro hace: {freshness['age_hours']:.1f} hours")
 **Tipos de Validaciones:**
 
 **5.1 Domain Validation:**
+
 ```python
 # Definir dominios válidos
 VALID_DOMAINS = {
@@ -501,9 +523,10 @@ def validate_domain(df: pd.DataFrame,
 
 # Uso
 validate_domain(transactions, 'status', VALID_DOMAINS['status'])
-```
+```text
 
 **5.2 Range Validation:**
+
 ```python
 def validate_range(df: pd.DataFrame,
                    column: str,
@@ -536,9 +559,10 @@ def validate_range(df: pd.DataFrame,
 # Uso
 validate_range(transactions, 'amount', min_val=0, max_val=100000)
 validate_range(customers, 'age', min_val=0, max_val=120)
-```
+```text
 
 **5.3 Format Validation:**
+
 ```python
 import re
 
@@ -583,6 +607,7 @@ validate_format(customers, 'phone', 'phone_us')
 ```
 
 **5.4 Business Rule Validation:**
+
 ```python
 class BusinessRuleValidator:
     """Validate reglas de negocio complejas."""
@@ -637,7 +662,7 @@ violations = validator.validate_all_rules(orders_df, rules)
 for v in violations:
     if v['violations'] > 0:
         print(f"❌ {v['rule']}: {v['violations']} violaciones")
-```
+```text
 
 ---
 
@@ -646,6 +671,7 @@ for v in violations:
 **Definition:** The data does not contain unnecessary duplicates.
 
 **Preguntas Clave:**
+
 - Are there duplicate records?
 - Are the IDs unique?
 - Are the duplicates legitimate or errors?
@@ -653,6 +679,7 @@ for v in violations:
 **Duplicate Detection:**
 
 **6.1 Duplicados Exactos:**
+
 ```python
 def detect_exact_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     """Detecta duplicados exactos (todas las columnas iguales)."""
@@ -672,9 +699,10 @@ def detect_exact_duplicates(df: pd.DataFrame) -> pd.DataFrame:
 
 # Uso
 exact_dupes = detect_exact_duplicates(customers)
-```
+```text
 
 **6.2 Duplicados por Clave:**
+
 ```python
 def detect_key_duplicates(df: pd.DataFrame, key_columns: List[str]) -> pd.DataFrame:
     """Detecta duplicados basados en columnas clave."""
@@ -697,9 +725,10 @@ def detect_key_duplicates(df: pd.DataFrame, key_columns: List[str]) -> pd.DataFr
 # Uso
 key_dupes = detect_key_duplicates(customers, ['email'])
 key_dupes = detect_key_duplicates(transactions, ['transaction_id'])
-```
+```text
 
 **6.3 Duplicados Fuzzy (Aproximados):**
+
 ```python
 from difflib import SequenceMatcher
 
@@ -732,6 +761,7 @@ for dupe in fuzzy_dupes:
 ```
 
 **Deduplication:**
+
 ```python
 def deduplicate_dataframe(df: pd.DataFrame,
                           subset: List[str] = None,
@@ -767,7 +797,7 @@ deduped = deduplicate_dataframe(
     keep='priority',
     priority_column='timestamp'
 )
-```
+```text
 
 ---
 
@@ -778,6 +808,7 @@ Data profiling is the process of examining data to understand its structure, con
 ### Profiling Techniques
 
 **1. Statistical Profiling:**
+
 ```python
 def statistical_profile(df: pd.DataFrame, column: str) -> Dict:
     """Genera perfil estadístico de una columna numérica."""
@@ -803,9 +834,10 @@ def statistical_profile(df: pd.DataFrame, column: str) -> Dict:
 profile = statistical_profile(transactions, 'amount')
 for key, value in profile.items():
     print(f"{key:15s}: {value}")
-```
+```text
 
 **2. Categorical Profiling:**
+
 ```python
 def categorical_profile(df: pd.DataFrame, column: str, top_n: int = 10) -> Dict:
     """Genera perfil de una columna categórica."""
@@ -822,9 +854,10 @@ def categorical_profile(df: pd.DataFrame, column: str, top_n: int = 10) -> Dict:
         'distribution_entropy': -(value_counts / len(series) *
                                   np.log(value_counts / len(series))).sum()
     }
-```
+```text
 
 **3. Profiling Completo con ydata-profiling:**
+
 ```python
 from ydata_profiling import ProfileReport
 
@@ -922,7 +955,7 @@ transaction_schema = {
 ingestor = DataIngestor(transaction_schema)
 valid, invalid = ingestor.ingest(incoming_transactions)
 print(f"Válidos: {len(valid)}, Inválidos: {len(invalid)}")
-```
+```text
 
 ### 2. Validation in Transformation (pipeline Validation)
 
@@ -985,7 +1018,7 @@ pipeline = (
 )
 
 clean_data, validation_report = pipeline.get_results()
-```
+```text
 
 ### 3. Output Validation
 
@@ -1049,7 +1082,7 @@ else:
     for check in validation_result['checks']:
         if not check['passed']:
             print(f"   - {check}")
-```
+```text
 
 ---
 
@@ -1165,11 +1198,12 @@ for dim, score in quality_report['scores'].items():
 
 ### 1. Establecer Data Quality Framework
 
-```
+```text
 Definir → Medir → Monitorear → Mejorar
-```
+```text
 
 **Steps:**
+
 1. **Define critical dimensions** for your domain
 2. **Establecer thresholds** aceptables
 3. **Implement automatic validations**
@@ -1179,6 +1213,7 @@ Definir → Medir → Monitorear → Mejorar
 ### 2. Shift Left (Early Validation)
 
 Validate as early as possible in the pipeline:
+
 - **Input validation**: En el punto de ingesta
 - **Schema enforcement**: Al escribir a storage
 - **pipeline checkpoints**: Between transformation stages
@@ -1209,7 +1244,7 @@ def automated_quality_check(data_path: str):
         raise DataQualityException(f"Failed checks: {failed}")
 
     return True
-```
+```text
 
 ### 4. Data Quality SLAs
 
@@ -1280,7 +1315,7 @@ datasets:
       - "~2% of transactions missing customer_id (guest checkouts)"
       - "Amounts rounded to 2 decimals"
     last_validated: 2024-01-15T10:30:00Z
-```
+```text
 
 ---
 
@@ -1322,13 +1357,14 @@ def test_completeness_threshold():
     })
     completeness = df['value'].notna().sum() / len(df)
     assert completeness >= 0.80, f"Completeness {completeness} below 80% threshold"
-```
+```text
 
 ---
 
 ## Conclusion
 
 Data quality is a continuous process that requires:
+
 1. **Clear definition** of dimensions and metrics
 2. **Validaciones automatizadas** en todo el pipeline
 3. **Proactive monitoring** with alerts

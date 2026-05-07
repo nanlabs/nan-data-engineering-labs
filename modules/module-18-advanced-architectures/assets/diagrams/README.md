@@ -5,14 +5,17 @@ This directory contains Mermaid diagrams illustrating advanced data architecture
 ## Diagrams
 
 ### 1. Lambda Architecture
+
 **File**: [lambda-architecture.mmd](lambda-architecture.mmd)
 
 Shows the classic Lambda Architecture with:
+
 - **Batch Layer**: Historical data processing (Spark, Hive)
 - **Speed Layer**: Real-time stream processing (Kinesis, Lambda)
 - **Serving Layer**: Combined views (DynamoDB, Redshift)
 
 **Use Cases**:
+
 - High-volume event processing with both batch and real-time
 - Historical re-processing requirements
 - Complex analytics combining batch and streaming
@@ -22,14 +25,17 @@ Shows the classic Lambda Architecture with:
 ---
 
 ### 2. Kappa Architecture
+
 **File**: [kappa-architecture.mmd](kappa-architecture.mmd)
 
 Shows stream-only architecture with:
+
 - Single stream processing path (no batch layer)
 - Replayable log (Kafka with 365-day retention)
 - Multiple consumers reading at different speeds
 
 **Use Cases**:
+
 - Pure streaming systems
 - Event-driven architectures
 - Systems where batch = replay of stream
@@ -39,15 +45,18 @@ Shows stream-only architecture with:
 ---
 
 ### 3. Data Mesh Topology
+
 **File**: [data-mesh-topology.mmd](data-mesh-topology.mmd)
 
 Shows domain-oriented data architecture:
+
 - **Domain Teams**: Product, Sales, Customer (autonomous)
 - **Data Products**: Self-serve APIs with SLAs
 - **Federated Governance**: Central schema registry + catalog
 - **Self-serve Infrastructure**: Platform team provides tools
 
 **Use Cases**:
+
 - Large organizations with multiple data teams
 - Distributed data ownership
 - Scaling data beyond centralized teams
@@ -57,14 +66,17 @@ Shows domain-oriented data architecture:
 ---
 
 ### 4. CQRS + Event Sourcing
+
 **File**: [cqrs-event-sourcing.mmd](cqrs-event-sourcing.mmd)
 
 Shows Command Query Responsibility Segregation:
+
 - **Command Side**: Write operations to Event Store (DynamoDB)
 - **Event Bus**: EventBridge for decoupling
 - **Query Side**: Multiple read models (ElastiCache, Redshift, Elasticsearch)
 
 **Use Cases**:
+
 - High read/write scalability requirements
 - Multiple query patterns for same data
 - Audit trail and temporal queries
@@ -74,15 +86,18 @@ Shows Command Query Responsibility Segregation:
 ---
 
 ### 5. Event Sourcing Flow
+
 **File**: [event-sourcing-flow.mmd](event-sourcing-flow.mmd)
 
 Shows event log with snapshots:
+
 - Immutable event log (append-only)
 - Event replay for state reconstruction
 - Snapshots for performance optimization
 - Temporal queries (state at any point in time)
 
 **Use Cases**:
+
 - Financial systems requiring audit trails
 - Systems needing time travel debugging
 - Applications with complex state machines
@@ -92,9 +107,11 @@ Shows event log with snapshots:
 ---
 
 ### 6. Architecture Comparison
+
 **File**: [architecture-comparison.mmd](architecture-comparison.mmd)
 
 Decision matrix comparing:
+
 - **Lambda**: Batch + Speed layers
 - **Kappa**: Stream-only
 - **Data Mesh**: Domain-oriented
@@ -103,20 +120,24 @@ Decision matrix comparing:
 **Factors**: Complexity, latency, scalability, consistency
 
 **Use Cases**:
+
 - Choosing architecture for new projects
 - Understanding trade-offs
 
 ---
 
 ### 7. Saga Pattern
+
 **File**: [saga-pattern.mmd](saga-pattern.mmd)
 
 Shows distributed transaction pattern:
+
 - Choreography-based saga (event-driven)
 - Compensating transactions for rollback
 - Order placement → Payment → Shipment flow
 
 **Use Cases**:
+
 - Microservices transactions
 - Cross-service data consistency
 - Systems without 2PC/XA transactions
@@ -126,9 +147,11 @@ Shows distributed transaction pattern:
 ---
 
 ### 8. Polyglot Persistence
+
 **File**: [polyglot-persistence.mmd](polyglot-persistence.mmd)
 
 Shows multiple database types:
+
 - **DynamoDB**: Event store (NoSQL key-value)
 - **Redshift**: Analytics (columnar OLAP)
 - **ElastiCache**: Read models (in-memory cache)
@@ -136,6 +159,7 @@ Shows multiple database types:
 - **S3**: Data lake (object storage)
 
 **Use Cases**:
+
 - Different query patterns require different databases
 - Optimizing for read/write patterns
 - Scaling specific workloads independently
@@ -149,27 +173,31 @@ Shows multiple database types:
 ### Rendering Mermaid
 
 **VS Code** (with Mermaid extension):
+
 ```bash
 # Install extension
 code --install-extension bierner.markdown-mermaid
 
 # Open diagram file
 code data-mesh-topology.mmd
-```
+```text
 
 **Online**:
+
 - [Mermaid Live Editor](https://mermaid.live/)
 - Copy/paste diagram content
 
 **Documentation**:
+
 ```markdown
 # In Markdown files
 ```mermaid
 graph LR
     A[Source] --> B[Transform]
     B --> C[Sink]
-```
-```
+```text
+
+```text
 
 ### Exporting to Image
 
@@ -200,7 +228,7 @@ mmdc -i kappa-architecture.mmd -o kappa-architecture.svg
 
 ### Architecture Patterns Flow
 
-```
+```text
 Lambda Architecture
     ↓ (simplify to stream-only)
 Kappa Architecture
@@ -208,7 +236,7 @@ Kappa Architecture
 Data Mesh
     ↓ (add read/write separation)
 CQRS + Event Sourcing
-```
+```text
 
 ---
 
@@ -224,6 +252,7 @@ CQRS + Event Sourcing
 ### Styling
 
 All diagrams use consistent styling:
+
 - **Blue**: Data sources
 - **Green**: Processing layers
 - **Orange**: Serving/output layers
@@ -231,6 +260,7 @@ All diagrams use consistent styling:
 - **Purple**: Governance/cross-cutting
 
 Example:
+
 ```mermaid
 graph LR
     A[Source]:::source --> B[Process]:::process
@@ -239,18 +269,20 @@ graph LR
     classDef source fill:#4A90E2,stroke:#333,stroke-width:2px,color:#fff
     classDef process fill:#7ED321,stroke:#333,stroke-width:2px,color:#fff
     classDef sink fill:#F5A623,stroke:#333,stroke-width:2px,color:#fff
-```
+```text
 
 ---
 
 ## Resources
 
 ### Mermaid Documentation
+
 - [Official Docs](https://mermaid-js.github.io/mermaid/)
 - [Flow Chart Syntax](https://mermaid-js.github.io/mermaid/#/flowchart)
 - [Sequence Diagrams](https://mermaid-js.github.io/mermaid/#/sequenceDiagram)
 
 ### Architecture Patterns
+
 - **Lambda**: Nathan Marz, "Big Data" (2015)
 - **Kappa**: Jay Kreps, "Questioning the Lambda Architecture" (2014)
 - **Data Mesh**: Zhamak Dehghani, "Data Mesh" (2022)

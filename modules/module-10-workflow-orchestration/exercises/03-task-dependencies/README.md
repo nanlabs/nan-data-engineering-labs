@@ -16,7 +16,7 @@ Master complex task dependencies, conditional branching, trigger rules, and data
 
 Create a DAG with a complex dependency structure:
 
-```
+```text
         start
           |
        extract
@@ -33,9 +33,10 @@ Create a DAG with a complex dependency structure:
        └──┬──┘
           |
          end
-```
+```text
 
 **Requirements:**
+
 - Fan-out after extract
 - Fan-in before aggregate
 - Parallel final tasks
@@ -56,6 +57,7 @@ Create a DAG that routes based on data size:
 4. **notify**: Send completion notification
 
 **Requirements:**
+
 - Use `BranchPythonOperator`
 - Return appropriate task_id from branch function
 - Handle skipped tasks correctly
@@ -67,7 +69,7 @@ Create a DAG that routes based on data size:
 
 Create a DAG demonstrating all trigger rules:
 
-```
+```text
    start
      |
    ┌─┴─┐
@@ -86,6 +88,7 @@ task_a task_b (may fail)
 ```
 
 **Requirements:**
+
 - Implement all 7 trigger rules
 - task_b fails 50% of the time (random)
 - Log which trigger rules execute
@@ -105,6 +108,7 @@ Create a DAG demonstrating XCom patterns:
 6. **store_results**: Push large data reference (not data itself)
 
 **Requirements:**
+
 - Push multiple values to XCom
 - Pull with `key` parameter
 - Pull from multiple `task_ids`
@@ -123,6 +127,7 @@ Create a DAG that stops execution if condition not met:
 5. **cleanup**: Always runs (trigger_rule: `all_done`)
 
 **Requirements:**
+
 - Use `ShortCircuitOperator`
 - Return True/False from function
 - Downstream tasks skipped if False
@@ -134,7 +139,7 @@ Create a DAG that stops execution if condition not met:
 
 Create a DAG with multiple decision points:
 
-```
+```text
         start
           |
       check_day
@@ -155,9 +160,10 @@ weekday weekend holiday
      └───────┘
         |
        end
-```
+```text
 
 **Requirements:**
+
 - First branch based on day of week
 - Second branch based on data quality
 - Use `BranchPythonOperator` twice
@@ -267,7 +273,7 @@ with DAG(
     [clean, validate, stats] >> aggregate
     aggregate >> [report, archive]
     [report, archive] >> end
-```
+```text
 
 ---
 
@@ -511,7 +517,7 @@ with DAG(
     [task_a_op, task_b_op] >> one_failed
     [task_a_op, task_b_op] >> none_failed
     [task_a_op, task_b_op] >> none_skipped
-```
+```text
 
 ---
 
@@ -649,7 +655,7 @@ with DAG(
     extract >> [task_a_op, task_b_op]
     [task_a_op, task_b_op] >> task_c_op
     [extract, task_c_op] >> aggregate_op >> store
-```
+```text
 
 ---
 
@@ -666,7 +672,7 @@ done
 
 # Check which branch executed each time
 airflow tasks list ex03_branching --tree
-```
+```text
 
 ### Test Trigger Rules
 
@@ -691,7 +697,7 @@ done
 airflow tasks test ex03_advanced_xcom extract_multiple 2024-01-01
 # Check database
 psql -U airflow -d airflow -c "SELECT * FROM xcom WHERE dag_id='ex03_advanced_xcom';"
-```
+```text
 
 ---
 

@@ -33,7 +33,7 @@ flowchart TD
     style Apply fill:#FFD700
     style State fill:#87CEEB
     style DestroyCmd fill:#FF6347
-```
+```text
 
 ## Comandos Principales
 
@@ -68,7 +68,7 @@ graph LR
     style D fill:#FFF4E1
     style F fill:#FFE1E1
     style K fill:#FFB6C1
-```
+```text
 
 ## Gestión de Workspaces
 
@@ -100,7 +100,7 @@ flowchart LR
     style StateDev fill:#C8E6C9
     style StateStaging fill:#FFE0B2
     style StateProd fill:#FFCDD2
-```
+```text
 
 ## Flujo de Trabajo en Equipo
 
@@ -182,11 +182,12 @@ flowchart TD
     style Q fill:#FFD700
     style V fill:#87CEEB
     style U fill:#FF6347
-```
+```text
 
 ## Uso
 
 Estos diagramas muestran:
+
 1. El ciclo de vida completo de Terraform
 2. Los comandos principales y su secuencia
 3. Gestión de múltiples workspaces

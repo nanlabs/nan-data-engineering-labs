@@ -18,45 +18,52 @@
 ### Error: "python3: command not found"
 
 **Symptoms**:
+
 ```bash
 $ python3 --version
 bash: python3: command not found
-```
+```text
 
 **Solution**:
 
 **Linux (Ubuntu/Debian)**:
+
 ```bash
 sudo apt update
 sudo apt install python3 python3-pip python3-venv
-```
+```text
 
 **Linux (Fedora/RHEL)**:
+
 ```bash
 sudo dnf install python3 python3-pip
-```
+```text
 
 **macOS**:
+
 ```bash
 brew install python3
 ```
 
 **Verify installation**:
+
 ```bash
 python3 --version  # Debe mostrar Python 3.8+
-```
+```text
 
 ---
 
 ### Error: "Permission denied" al run scripts
 
 **Yesntomas**:
+
 ```bash
 $ ./scripts/setup.sh
 bash: ./scripts/setup.sh: Permission denied
-```
+```text
 
 **Solution**:
+
 ```bash
 # Grant execution permissions to scripts
 chmod +x scripts/*.sh
@@ -66,7 +73,7 @@ chmod +x scripts/setup.sh
 chmod +x scripts/validate.sh
 chmod +x scripts/reset_env.sh
 chmod +x scripts/run_jupyter.sh
-```
+```text
 
 ---
 
@@ -75,6 +82,7 @@ chmod +x scripts/run_jupyter.sh
 ### Error: "No module named 'venv'"
 
 **Yesntomas**:
+
 ```bash
 $ python3 -m venv venv
 /usr/bin/python3: No module named venv
@@ -83,44 +91,50 @@ $ python3 -m venv venv
 **Solution**:
 
 **Linux (Ubuntu/Debian)**:
+
 ```bash
 sudo apt install python3-venv
-```
+```text
 
 **Alternativa**: Usar `virtualenv`
+
 ```bash
 pip3 install virtualenv
 virtualenv venv
-```
+```text
 
 ---
 
 ### Error: Environment virtual no se activa
 
 **Yesntomas**:
+
 ```bash
 $ source venv/bin/activate
 (no cambia el prompt)
-```
+```text
 
 **Solution**:
 
 **Verify that the environment was created correctly**:
+
 ```bash
 ls -la venv/bin/activate
 ```
 
 **Si no existe, recrear**:
+
 ```bash
 rm -rf venv
 python3 -m venv venv
 source venv/bin/activate
-```
+```text
 
 **Verify activation**:
+
 ```bash
 which python  # Debe mostrar ruta dentro de venv/
-```
+```text
 
 ---
 
@@ -133,6 +147,7 @@ El script ejecuta pero el environment no permanece activo.
 Bash scripts run in a subshell, so the activation does not persist.
 
 **Solution**:
+
 ```bash
 # En lugar de run el script:
 ./scripts/setup.sh
@@ -143,7 +158,7 @@ source scripts/setup.sh
 # Or activate manually afterwards:
 ./scripts/setup.sh
 source venv/bin/activate
-```
+```text
 
 ---
 
@@ -152,6 +167,7 @@ source venv/bin/activate
 ### Error: "Could not find a version that satisfies the requirement"
 
 **Yesntomas**:
+
 ```bash
 ERROR: Could not find a version that satisfies the requirement pandas==2.0.0
 ```
@@ -159,21 +175,25 @@ ERROR: Could not find a version that satisfies the requirement pandas==2.0.0
 **Solution**:
 
 **1. Actualizar pip**:
+
 ```bash
 pip install --upgrade pip
-```
+```text
 
 **2. Check Python version**:
+
 ```bash
 python --version  # Debe ser 3.8+
-```
+```text
 
 **3. Install without specific version**:
+
 ```bash
 pip install pandas  # Install the latest compatible version
-```
+```text
 
 **4. Limpiar cache de pip**:
+
 ```bash
 pip cache purge
 pip install -r requirements.txt
@@ -184,12 +204,14 @@ pip install -r requirements.txt
 ### Error: "ImportError: No module named 'pandas'"
 
 **Yesntomas**:
+
 ```python
 >>> import pandas
 ImportError: No module named 'pandas'
-```
+```text
 
 **Diagnosis**:
+
 ```bash
 # Verify you are in the virtual environment
 echo $VIRTUAL_ENV  # Debe mostrar ruta a venv
@@ -199,9 +221,10 @@ pip list | grep pandas
 
 # Verify which Python you are using
 which python
-```
+```text
 
 **Solution**:
+
 ```bash
 # Activar environment
 source venv/bin/activate
@@ -211,13 +234,14 @@ pip install pandas
 
 # Verify installation
 python -c "import pandas; print(pandas.__version__)"
-```
+```text
 
 ---
 
 ### Error: Conflictos de dependencias
 
 **Yesntomas**:
+
 ```bash
 ERROR: package-a 1.0 has requirement package-b<2.0, but you have package-b 2.1
 ```
@@ -225,20 +249,22 @@ ERROR: package-a 1.0 has requirement package-b<2.0, but you have package-b 2.1
 **Solution**:
 
 **1. Crear requirements limpio**:
+
 ```bash
 # Resetear environment
 ./scripts/reset_env.sh --full
 
 # Recrear
 ./scripts/setup.sh
-```
+```text
 
 **2. Usar pip-tools**:
+
 ```bash
 pip install pip-tools
 pip-compile requirements.in
 pip-sync
-```
+```text
 
 ---
 
@@ -247,12 +273,14 @@ pip-sync
 ### Error: "No tests ran" o "No tests collected"
 
 **Yesntomas**:
+
 ```bash
 $ pytest
 collected 0 items
-```
+```text
 
 **Diagnosis**:
+
 ```bash
 # Verify tests location
 find . -name "test_*.py"
@@ -264,27 +292,31 @@ cat pytest.ini
 **Solution**:
 
 **1. Run desde directorio correcto**:
+
 ```bash
 cd /path/to/module-04-python-for-data
 pytest exercises/
-```
+```text
 
 **2. Especificar ruta completa**:
+
 ```bash
 pytest exercises/01-python-basics/tests/
-```
+```text
 
 **3. Verificar nombres de files**:
+
 ```bash
 # Los tests deben empezar con test_
 mv basics_test.py test_basics.py
-```
+```text
 
 ---
 
 ### Error: "fixture not found"
 
 **Yesntomas**:
+
 ```bash
 fixture 'customers_df' not found
 ```
@@ -292,29 +324,33 @@ fixture 'customers_df' not found
 **Solution**:
 
 **1. Verificar conftest.py existe**:
+
 ```bash
 ls validation/conftest.py
-```
+```text
 
 **2. Verificar scope del fixture**:
+
 ```python
 # En conftest.py
 @pytest.fixture(scope="session")
 def customers_df():
     return pd.read_csv("data/raw/customers.csv")
-```
+```text
 
 **3. Run desde directorio correcto**:
+
 ```bash
 cd modules/module-04-python-for-data
 pytest validation/
-```
+```text
 
 ---
 
 ### Error: "FileNotFoundError" en tests
 
 **Yesntomas**:
+
 ```python
 FileNotFoundError: [Errno 2] No such file or directory: 'data/raw/customers.csv'
 ```
@@ -322,24 +358,27 @@ FileNotFoundError: [Errno 2] No such file or directory: 'data/raw/customers.csv'
 **Solution**:
 
 **1. Generar data**:
+
 ```bash
 python data/scripts/generate_all_datasets.py
-```
+```text
 
 **2. Verificar rutas relativas**:
+
 ```python
 # Usar Path absoluto en tests
 from pathlib import Path
 
 MODULE_DIR = Path(__file__).parent.parent.parent
 DATA_PATH = MODULE_DIR / "data" / "raw" / "customers.csv"
-```
+```text
 
 **3. Run tests from the root of the module**:
+
 ```bash
 cd modules/module-04-python-for-data
 pytest
-```
+```text
 
 ---
 
@@ -351,21 +390,24 @@ Los tests tardan mucho en run.
 **Solution**:
 
 **1. Run only quick tests**:
+
 ```bash
 ./scripts/validate.sh --fast
 ```
 
 **2. Run tests en paralelo**:
+
 ```bash
 pip install pytest-xdist
 pytest -n auto  # Usa todos los cores
-```
+```text
 
 **3. Usar markers para filtrar**:
+
 ```bash
 pytest -m "not slow"
 pytest -m "unit"
-```
+```text
 
 ---
 
@@ -374,18 +416,21 @@ pytest -m "unit"
 ### Error: "Data files not found"
 
 **Yesntomas**:
+
 ```bash
 FileNotFoundError: data/raw/customers.csv not found
-```
+```text
 
 **Solution**:
 
 **1. Generar todos los datasets**:
+
 ```bash
 python data/scripts/generate_all_datasets.py
 ```
 
 **2. Verificar estructura**:
+
 ```bash
 ls -lh data/raw/
 # Debe mostrar:
@@ -394,9 +439,10 @@ ls -lh data/raw/
 # products.csv
 # orders.json
 # user_activity.json
-```
+```text
 
 **3. Check sizes**:
+
 ```bash
 du -h data/raw/*
 # customers.csv: ~2MB
@@ -404,21 +450,23 @@ du -h data/raw/*
 # products.csv: ~50KB
 # orders.json: ~25MB
 # user_activity.json: ~10MB
-```
+```text
 
 ---
 
 ### Error: "ValueError: could not convert string to float"
 
 **Yesntomas**:
+
 ```python
 pd.read_csv("data.csv")
 ValueError: could not convert string to float: 'N/A'
-```
+```text
 
 **Solution**:
 
 **Especificar valores nulos**:
+
 ```python
 df = pd.read_csv(
     "data.csv",
@@ -427,36 +475,40 @@ df = pd.read_csv(
 ```
 
 **Forzar tipos**:
+
 ```python
 df = pd.read_csv(
     "data.csv",
     dtype={'columna': str}  # Leer como string primero
 )
 df['columna'] = pd.to_numeric(df['columna'], errors='coerce')
-```
+```text
 
 ---
 
 ### Error: "MemoryError" al cargar data
 
 **Yesntomas**:
+
 ```python
 df = pd.read_csv("big_file.csv")
 MemoryError
-```
+```text
 
 **Solution**:
 
 **1. Leer por chunks**:
+
 ```python
 chunks = []
 for chunk in pd.read_csv("big_file.csv", chunksize=10000):
     # Procesar chunk
     chunks.append(chunk)
 df = pd.concat(chunks, ignore_index=True)
-```
+```text
 
 **2. Leer solo columns necesarias**:
+
 ```python
 df = pd.read_csv(
     "big_file.csv",
@@ -465,12 +517,13 @@ df = pd.read_csv(
 ```
 
 **3. Optimizar tipos**:
+
 ```python
 df = pd.read_csv(
     "big_file.csv",
     dtype={'id': 'int32', 'category': 'category'}
 )
-```
+```text
 
 ---
 
@@ -479,47 +532,54 @@ df = pd.read_csv(
 ### Error: "Jupyter: command not found"
 
 **Yesntomas**:
+
 ```bash
 $ jupyter lab
 bash: jupyter: command not found
-```
+```text
 
 **Solution**:
 
 **1. Verificar environment activo**:
+
 ```bash
 echo $VIRTUAL_ENV
 source venv/bin/activate
-```
+```text
 
 **2. Instalar Jupyter**:
+
 ```bash
 pip install jupyter jupyterlab
 ```
 
 **3. Verify installation**:
+
 ```bash
 which jupyter
 jupyter --version
-```
+```text
 
 ---
 
 ### Error: "Port already in use"
 
 **Yesntomas**:
+
 ```bash
 OSError: [Errno 48] Address already in use
-```
+```text
 
 **Solution**:
 
 **1. Usar otro puerto**:
+
 ```bash
 ./scripts/run_jupyter.sh --port 9000
-```
+```text
 
 **2. Encontrar y matar proceso**:
+
 ```bash
 # Encontrar proceso usando el puerto
 lsof -ti:8888
@@ -529,9 +589,10 @@ kill -9 $(lsof -ti:8888)
 ```
 
 **3. Usar puerto aleatorio**:
+
 ```bash
 jupyter lab --port=0
-```
+```text
 
 ---
 
@@ -543,19 +604,22 @@ El notebook muestra "Connecting to kernel..." indefinidamente.
 **Solution**:
 
 **1. Reiniciar kernel**:
+
 - Kernel → Restart Kernel
 
 **2. Limpiar cache**:
+
 ```bash
 rm -rf ~/.jupyter/lab/
 jupyter lab clean
-```
+```text
 
 **3. Reinstalar ipykernel**:
+
 ```bash
 pip install --upgrade ipykernel
 python -m ipykernel install --user
-```
+```text
 
 ---
 
@@ -569,6 +633,7 @@ Operaciones simples tardan mucho.
 **Solution**:
 
 **1. Avoid loops, use vectorization**:
+
 ```python
 # ❌ Slow
 for i in range(len(df)):
@@ -579,32 +644,36 @@ df['new'] = df['old'] * 2
 ```
 
 **2. Usar dtypes eficientes**:
+
 ```python
 # Convertir a category
 df['ciudad'] = df['ciudad'].astype('category')
 
 # Usar int32 en lugar de int64
 df['id'] = df['id'].astype('int32')
-```
+```text
 
 **3. Usar query() para filtros**:
+
 ```python
 # ✅ Mas quick
 df.query('edad > 25 and ciudad == "Madrid"')
-```
+```text
 
 ---
 
 ### Alto uso de memoria
 
 **Yesntomas**:
+
 ```python
 df.memory_usage(deep=True).sum()  # Muy alto
-```
+```text
 
 **Solution**:
 
 **1. Liberar memoria no usada**:
+
 ```python
 import gc
 del df_old
@@ -612,12 +681,14 @@ gc.collect()
 ```
 
 **2. Usar chunks**:
+
 ```python
 for chunk in pd.read_csv('file.csv', chunksize=10000):
     process(chunk)
-```
+```text
 
 **3. Optimizar columns**:
+
 ```python
 # Antes
 df.memory_usage(deep=True)
@@ -628,7 +699,7 @@ df['id'] = df['id'].astype('int32')
 
 # Despues
 df.memory_usage(deep=True)  # Menor
-```
+```text
 
 ---
 
@@ -639,14 +710,16 @@ df.memory_usage(deep=True)  # Menor
 **Solution**:
 
 **Ubuntu/Debian**:
+
 ```bash
 sudo apt update
 sudo apt install docker.io
 sudo systemctl start docker
 sudo usermod -aG docker $USER
-```
+```text
 
 **macOS**:
+
 ```bash
 brew install --cask docker
 ```
@@ -656,11 +729,13 @@ brew install --cask docker
 ### Error: "permission denied" con Docker
 
 **Yesntomas**:
+
 ```bash
 Got permission denied while trying to connect to the Docker daemon socket
-```
+```text
 
 **Solution**:
+
 ```bash
 # Agregar usuario al grupo docker
 sudo usermod -aG docker $USER
@@ -671,19 +746,21 @@ newgrp docker
 
 # Verificar
 docker ps
-```
+```text
 
 ---
 
 ### Error: Container no inicia
 
 **Yesntomas**:
+
 ```bash
 $ docker-compose up
 ERROR: container exited with code 1
-```
+```text
 
 **Diagnosis**:
+
 ```bash
 # Ver logs
 docker-compose logs
@@ -698,17 +775,19 @@ docker inspect container_name
 **Solution**:
 
 **1. Reconstruir containers**:
+
 ```bash
 docker-compose down
 docker-compose build --no-cache
 docker-compose up
-```
+```text
 
 **2. Clear volumes**:
+
 ```bash
 docker-compose down -v
 docker-compose up
-```
+```text
 
 ---
 
@@ -717,6 +796,7 @@ docker-compose up
 ### Steps to report a problem
 
 1. **Collect information**:
+
 ```bash
 # Python version
 python --version
@@ -727,27 +807,29 @@ pip list
 # Environment
 echo $VIRTUAL_ENV
 echo $PYTHONPATH
-```
+```text
 
-2. **Reproduce el error**:
+1. **Reproduce el error**:
+
 ```bash
 # Ejecuta con modo verbose
 pytest -vv test_file.py::test_function
 ```
 
-3. **Revisa logs**:
+1. **Revisa logs**:
+
 ```bash
 # Logs de pytest
 cat logs/pytest.log
 
 # Logs de Jupyter
 cat logs/jupyter.log
-```
+```text
 
 ### useful resources
 
-- **Pandas Documentation**: https://pandas.pydata.org/docs/
-- **Pytest Documentation**: https://docs.pytest.org/
+- **Pandas Documentation**: <https://pandas.pydata.org/docs/>
+- **Pytest Documentation**: <https://docs.pytest.org/>
 - **Stack Overflow**: Find your specific error
 - **GitHub Issues**: Check module issues
 
@@ -768,7 +850,7 @@ pytest --collect-only
 python -c "import pandas; print(pandas.__version__)"
 python -c "import numpy; print(numpy.__version__)"
 python -c "import pytest; print(pytest.__version__)"
-```
+```text
 
 ---
 

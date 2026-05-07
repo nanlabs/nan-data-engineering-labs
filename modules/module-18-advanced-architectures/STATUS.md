@@ -25,6 +25,7 @@
 ### ✅ Foundation (100% Complete)
 
 **Files Created**:
+
 - `README.md` (477 lines): Module overview with 6 exercises, real-world case studies (Netflix, Uber, Airbnb, LinkedIn), cost estimates
 - `requirements.txt` (77 lines): Python dependencies (boto3, pandas, FastAPI, Kafka, Avro, etc.)
 
@@ -35,6 +36,7 @@
 ### ✅ Theory Documentation (100% Complete)
 
 **Files Created**:
+
 1. **concepts.md** (1,394 lines)
    - 10 architectural patterns
    - Lambda vs Kappa comparison (40% faster insights vs 30% simpler)
@@ -67,12 +69,14 @@
 ### ✅ Exercise 01: Lambda Architecture (100% Complete)
 
 **Files Created**:
+
 - `README.md` (600 lines): Lambda 3-layer architecture (batch + speed + serving), Netflix/LinkedIn examples
 - `batch_layer.py` (726 lines): BatchLayerProcessor with Spark/Glue processing
 - `speed_layer.py` (726 lines): SpeedLayerProcessor with Kinesis + DynamoDB real-time updates
 - `serving_layer.py` (700 lines): ServingLayerAPI with parallel ThreadPoolExecutor
 
 **Key Features**:
+
 - E-commerce analytics use case
 - 90-day batch views + real-time metrics
 - <1s query latency (batch + speed merge)
@@ -85,12 +89,14 @@
 ### ✅ Exercise 02: Kappa Architecture (100% Complete)
 
 **Files Created**:
+
 - `README.md` (1,500 lines): Stream-only architecture, comparison with Lambda (33% cheaper: $890 vs $1,335/month)
 - `stream_processor.py` (726 lines): KappaStreamProcessor with Flink SQL tumbling windows
 - `materialized_views.py` (650 lines): Blue-green deployment, version management
 - `replay_handler.py` (774 lines): Stream replay for reprocessing (2,000 events/sec)
 
 **Key Features**:
+
 - 365-day Kinesis retention
 - No batch layer (single codebase)
 - LinkedIn case study (1T messages/day)
@@ -103,12 +109,14 @@
 ### ✅ Exercise 03: Data Mesh (100% Complete)
 
 **Files Created**:
+
 - `README.md` (800 lines): 4 principles (domain ownership, data as product, self-serve platform, federated governance)
 - `domain_api.py` (900 lines): DomainDataProduct with FastAPI, SLA monitoring
 - `schema_registry.py` (550 lines): Glue Schema Registry, backward/forward compatibility
 - `catalog_federation.py` (550 lines): Cross-domain discovery, federated queries
 
 **Key Features**:
+
 - 3 domains: Product, Sales, Customer
 - Uber case study (30+ domains, 1,000+ engineers, 10,000+ pipelines)
 - SLA tracking: freshness, availability, completeness
@@ -121,12 +129,14 @@
 ### ✅ Exercise 04: Event-Driven CQRS (100% Complete)
 
 **Files Created**:
+
 - `README.md` (1,900 lines): Comprehensive CQRS + Event Sourcing guide with Airbnb/banking examples
 - `event_store.py` (565 lines): Immutable DynamoDB event log with snapshots
 - `command_handler.py` (456 lines): Command validation and execution with Saga pattern
 - `query_projections.py` (418 lines): Multiple read models (ElastiCache, Redshift, temporal queries)
 
 **Key Features**:
+
 - Immutable event log (append-only)
 - Optimistic locking (version numbers)
 - Temporal queries ("What was balance on Dec 31?")
@@ -143,19 +153,22 @@
 ### ✅ Infrastructure (100% Complete)
 
 **Files Created**:
+
 - `docker-compose.yml` (160 lines): Full environment with LocalStack, Redis (ElastiCache), PostgreSQL (Redshift), Jupyter, Kafka + UI, Grafana
 - `init-aws.sh` (235 lines): AWS resource initialization script
 
 **Services Configured**:
+
 - **LocalStack**: S3, DynamoDB, Kinesis, Lambda, EventBridge, Glue, Athena
 - **Redis**: ElastiCache simulation for CQRS read models (256MB LRU cache)
 - **PostgreSQL**: Redshift simulation for analytics
 - **Kafka + Zookeeper**: Stream processing (Kappa architecture)
-- **Kafka UI**: Monitoring at http://localhost:8080
-- **Jupyter**: Interactive notebooks at http://localhost:8888
-- **Grafana**: Dashboards at http://localhost:3000
+- **Kafka UI**: Monitoring at <http://localhost:8080>
+- **Jupyter**: Interactive notebooks at <http://localhost:8888>
+- **Grafana**: Dashboards at <http://localhost:3000>
 
 **AWS Resources Created**:
+
 - 5 S3 buckets (raw, processed, curated, batch-views, stream-checkpoints)
 - 5 DynamoDB tables (event_store, event_snapshots, speed_layer_metrics, materialized_views, data_product_catalog)
 - 3 Kinesis streams (raw-events, processed-events, aggregate-metrics)
@@ -169,6 +182,7 @@
 ### ✅ Scripts (100% Complete)
 
 **Files Created**:
+
 1. **setup.sh** (235 lines)
    - Prerequisites check (Python, Docker, AWS CLI, jq)
    - Virtual environment creation
@@ -195,6 +209,7 @@
    - Safety prompts for destructive operations
 
 **Features**:
+
 - Color-coded output (info/success/warning/error)
 - Progress indicators
 - Error handling
@@ -208,6 +223,7 @@
 ### ✅ Data Sample Files (100% Complete)
 
 **Files Created**:
+
 1. **data/sample/README.md** (253 lines)
    - Documentation for all sample files
    - Usage instructions for each dataset
@@ -224,6 +240,7 @@
    - CLI with argparse
 
 **Sample Datasets Generated**:
+
 - `event-store-sample.json`: 50 CQRS events (JSONL)
 - `kinesis-stream-events.json`: 100 streaming events (JSONL)
 - `batch-data-sample.parquet`: 10,000 transactions (Parquet columnar)
@@ -234,6 +251,7 @@
 **Total Size**: ~910 KB (small for quick testing)
 
 **Use Cases**:
+
 - Quick testing without AWS infrastructure
 - CI/CD automated tests
 - LocalStack development
@@ -245,6 +263,7 @@
 ### ✅ Data Schemas (100% Complete)
 
 **Files Created**:
+
 1. **data/schemas/order-event.avsc** (66 lines)
    - Avro schema for order events
    - Enum for OrderEventType (OrderPlaced, PaymentProcessed, OrderShipped, OrderDelivered, OrderCancelled)
@@ -272,6 +291,7 @@
 ### ✅ Architecture Diagrams (100% Complete)
 
 **Files Created**:
+
 1. **assets/diagrams/README.md** (200 lines)
    - Index of all 8 diagrams with descriptions
    - Usage instructions (VS Code, Mermaid Live Editor, CLI export)
@@ -348,12 +368,14 @@
 ### ⭐ Exercise 05: Multi-Region Active-Active (Optional - Advanced)
 
 **Planned Content** (not implemented):
+
 - README.md: DynamoDB Global Tables, Aurora Global Database
 - global_replication.py: Cross-region setup
 - conflict_resolution.py: LWW and custom resolvers
 - failover_automation.py: Health checks, Route 53 updates
 
 **Decision**: Marked as advanced optional due to:
+
 - Core content already comprehensive (97% complete)
 - Exercise complexity requires extensive testing
 - Token budget optimization for essential exercises
@@ -365,12 +387,14 @@
 ### ⭐ Exercise 06: Polyglot Persistence (Optional - Advanced)
 
 **Planned Content** (not implemented):
+
 - README.md: Database selection guide, CDC patterns
 - database_selector.py: Decision logic and cost calculator
 - cdc_pipeline.py: DMS setup, DynamoDB Streams
 - data_synchronization.py: Cross-database sync
 
 **Decision**: Marked as advanced optional due to:
+
 - Polyglot patterns covered extensively in Exercise 03 (Data Mesh)
 - Requires multiple database setups (Aurora, Redshift, OpenSearch)
 - Core CQRS patterns (Exercise 04) demonstrate polyglot reads
@@ -382,6 +406,7 @@
 ## Module Statistics
 
 **Created Content**:
+
 - **Total Files**: 41
 - **Total Lines**: ~24,536
 - **Exercises Completed**: 4/6 (67% - 2 optional advanced)
@@ -389,6 +414,7 @@
 - **Time Invested**: ~10 hours
 
 **Content Breakdown**:
+
 - Theory: 23.8% (5,829 lines)
 - Exercise 01: 11.2% (2,752 lines)
 - Exercise 02: 14.9% (3,650 lines)
@@ -402,6 +428,7 @@
 - Documentation: 11.2% (STATUS.md + READMEs)
 
 **Quality Metrics**:
+
 - ✅ All code production-ready (no TODOs)
 - ✅ Comprehensive docstrings
 - ✅ Real AWS integrations (boto3)
@@ -418,12 +445,14 @@
 ## Validation Checklist
 
 ### Theory Documentation
+
 - [x] Architectural patterns documented (10 patterns)
 - [x] AWS implementations detailed
 - [x] Best practices with code examples
 - [x] Resources and certifications listed
 
 ### Exercise 01: Lambda Architecture
+
 - [x] Batch layer (Spark/Glue)
 - [x] Speed layer (Kinesis/Lambda)
 - [x] Serving layer (merge query)
@@ -431,6 +460,7 @@
 - [x] Performance metrics (<1s latency)
 
 ### Exercise 02: Kappa Architecture
+
 - [x] Stream processor (Flink SQL)
 - [x] Materialized views (blue-green)
 - [x] Replay handler (365-day retention)
@@ -438,6 +468,7 @@
 - [x] Throughput: 2,000 events/sec
 
 ### Exercise 03: Data Mesh
+
 - [x] Domain API (FastAPI)
 - [x] Schema Registry (Glue)
 - [x] Catalog Federation (cross-domain queries)
@@ -445,6 +476,7 @@
 - [x] Uber case study (1,000+ engineers)
 
 ### Exercise 04: Event-Driven CQRS
+
 - [x] Event Store (immutable log)
 - [x] Command Handler (validation + Saga)
 - [x] Query Projections (ElastiCache, Redshift, temporal)
@@ -457,6 +489,7 @@
 ## Prerequisites Completed
 
 Users must complete before starting this module:
+
 - ✅ Module 05: Data Lakehouse (S3, Glue, Athena)
 - ✅ Module 07: Batch Processing (Spark, EMR)
 - ✅ Module 08: Streaming Basics (Kinesis, Lambda)
@@ -467,12 +500,14 @@ Users must complete before starting this module:
 ## Next Steps for Users
 
 ### 1. Setup Environment (30 minutes)
+
 ```bash
 cd modules/module-18-advanced-architectures
 pip install -r requirements.txt
-```
+```text
 
 ### 2. Complete Exercises in Order
+
 1. **Exercise 01: Lambda Architecture** (3-4 hours)
    - Learn batch + speed + serving layers
    - Handle 90-day historical + real-time data
@@ -491,10 +526,12 @@ pip install -r requirements.txt
    - Learn temporal queries
 
 ### 3. Optional Advanced Exercises
+
 - **Exercise 05: Multi-Region** (extend independently)
 - **Exercise 06: Polyglot Persistence** (extend Exercise 04)
 
 ### 4. Validate Learning
+
 - Compare Lambda vs Kappa for your use case
 - Decide when to use Data Mesh (5+ domains?)
 - Understand event sourcing trade-offs
@@ -507,24 +544,28 @@ pip install -r requirements.txt
 ### When to Use Each Architecture
 
 **Lambda Architecture** ✅:
+
 - Need historical reprocessing (>7 days)
 - Complex batch transformations (ML models)
 - Can tolerate data divergence
 - Examples: Netflix recommendations, LinkedIn analytics
 
 **Kappa Architecture** ✅:
+
 - Simple transformations (aggregations)
 - Need single codebase
 - Stream reprocessing sufficient (<365 days)
 - Examples: Uber real-time pricing, Pinterest analytics
 
 **Data Mesh** ✅:
+
 - 5+ data domains
 - 100+ data engineers
 - Domain expertise critical
 - Examples: Uber (30+ domains), Intuit ($2M/year savings)
 
 **Event-Driven CQRS** ✅:
+
 - Audit trail required (banking, healthcare)
 - Temporal queries needed ("state at time X")
 - Multiple read patterns
@@ -536,22 +577,26 @@ pip install -r requirements.txt
 ## Real-World Impact
 
 ### Netflix (Lambda Architecture)
+
 - **Scale**: 1T events/day
 - **Latency**: 40% faster insights (batch + real-time)
 - **Impact**: Personalized recommendations for 200M users
 
 ### LinkedIn (Kappa Architecture)
+
 - **Scale**: 1T messages/day
 - **Benefit**: 30% simpler than Lambda (single codebase)
 - **Impact**: Real-time analytics for 800M members
 
 ### Uber (Data Mesh)
+
 - **Domains**: 30+ data domains
 - **Engineers**: 1,000+ data engineers
 - **Impact**: 70% faster feature development
 - **Pipelines**: 10,000+ data pipelines
 
 ### Airbnb (Event-Driven CQRS)
+
 - **Events**: 100M events/day
 - **Storage**: DynamoDB 300 TB event log
 - **Read Models**: 15 different projections
@@ -570,6 +615,7 @@ pip install -r requirements.txt
 | CQRS | High volume | $250 | DynamoDB, ElastiCache, Redshift, Lambda |
 
 **Cost Optimization Wins**:
+
 - Kappa vs Lambda: 33% cheaper ($890 vs $1,335)
 - CQRS vs CRUD: 84% cheaper ($250 vs $1,523)
 - S3 lifecycle: 72% storage savings
@@ -584,6 +630,7 @@ pip install -r requirements.txt
 **Status**: ✅ CORE COMPLETE (97%)
 
 **Exercises Completed**:
+
 - [x] Lambda Architecture (4 files, 2,752 lines)
 - [x] Kappa Architecture (4 files, 3,650 lines)
 - [x] Data Mesh (4 files, 2,800 lines)
@@ -592,6 +639,7 @@ pip install -r requirements.txt
 - [ ] Polyglot Persistence (optional - advanced)
 
 **Skills Acquired**:
+
 - ✅ Lambda vs Kappa architecture decision-making
 - ✅ Data Mesh principles (domain ownership, data as product)
 - ✅ Event Sourcing and CQRS patterns
@@ -633,6 +681,7 @@ pip install -r requirements.txt
 ## Feedback & Improvements
 
 **Strengths** 💪:
+
 - Comprehensive theory (5,829 lines)
 - Real-world case studies (Netflix, Uber, Airbnb, LinkedIn)
 - Production-ready code (no placeholders)
@@ -644,6 +693,7 @@ pip install -r requirements.txt
 - ✅ Data schemas (3 Avro/JSON schemas)
 
 **Future Enhancements** 🚀 (for users to implement):
+
 1. Exercise 05: Multi-Region Active-Active
    - DynamoDB Global Tables
    - Aurora Global Database

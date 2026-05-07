@@ -17,6 +17,7 @@ Master real-time data streaming and build production-grade streaming application
 ## 📚 What You Will Learn
 
 ### Conceptos Centrales de Streaming
+
 - Paradigmas de procesamiento stream vs batch
 - Fundamentals of event-driven architecture
 - Apache Kafka architecture (topics, partitions, consumer groups)
@@ -25,6 +26,7 @@ Master real-time data streaming and build production-grade streaming application
 - State management in stream processing
 
 ### Technical Skills
+
 - **Kafka**: Productores, consumidores, topics, particionamiento, replication
 - **Schema Management**: Avro Serialization, Schema Registry, schema evolution
 - **Stream Processing**: Filtering, mapping, aggregation, joins
@@ -33,6 +35,7 @@ Master real-time data streaming and build production-grade streaming application
 - **Production Patterns**: Monitoring, error handling (DLQ), scaling
 
 ### Architecture Patterns
+
 - Arquitecturas Lambda vs Kappa
 - Microservices orientados a eventos
 - CQRS (Command Query Responsibility Segregation)
@@ -51,6 +54,7 @@ cd modules/module-08-streaming-basics
 \`\`\`
 
 This will do:
+
 - ✅ Iniciar Kafka, Zookeeper, Schema Registry (Docker)
 - ✅ Crear topics (user-events, sensor-readings, transactions)
 - ✅ Generar 300 eventos de ejemplo
@@ -64,7 +68,8 @@ This will do:
 
 ### 3. Explorar Kafka UI
 
-Abre http://localhost:8080 en tu navegador para:
+Abre <http://localhost:8080> en tu navegador para:
+
 - Explorar topics y mensajes
 - monitor grupos de consumidores
 - Ver salud del cluster
@@ -77,9 +82,10 @@ Complete guide: [GETTING-STARTED.md](GETTING-STARTED.md)
 
 ---
 
-## ✅ Complete Module!
+## ✅ Complete Module
 
 This module includes:
+
 - ✅ **18,500 words** of comprehensive theory
 - ✅ **6 progressive exercises** (Kafka → Flink → Production)
 - ✅ **Infraestructura basada en Docker** (sin costos de cloud)

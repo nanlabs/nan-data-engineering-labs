@@ -5,7 +5,9 @@ Este directorio contiene esquemas y scripts para generar datos de batch processi
 ## 📦 Datasets Disponibles
 
 ### 1. Transactions (10M+ records)
+
 transactions de e-commerce con:
+
 - Timestamps distributed in 90 days
 - Multiple product categories
 - Different payment methods
@@ -13,14 +15,18 @@ transactions de e-commerce con:
 - Particionado por fecha (year/month/day)
 
 ### 2. Users (1M records)
+
 Perfiles de usuarios con:
+
 - Diferentes tiers (bronze, silver, gold, platinum)
 - Geographic distribution
 - Leveles de actividad
 - Creation timestamps
 
 ### 3. Products (100K records)
+
 Product catalog with:
+
 - 8 different categories
 - Marcas populares
 - Ratings y reviews
@@ -32,7 +38,7 @@ Product catalog with:
 
 ```bash
 pip install pandas pyarrow tqdm
-```
+```text
 
 ### Generar transactions
 
@@ -48,9 +54,10 @@ python data/scripts/generate_transactions.py \
   --format parquet \
   --partition-by date \
   --output-dir data/raw/transactions
-```
+```text
 
 **Opciones**:
+
 - `--total-records`: Total number of transactions (default: 10M)
 - `--days`: Number of days to generate (default: 90)
 - `--start-date`: Fecha de inicio YYYY-MM-DD (default: 2024-01-01)
@@ -59,7 +66,8 @@ python data/scripts/generate_transactions.py \
 - `--output-dir`: Directorio de salida
 
 **Output structure** (con `--partition-by date`):
-```
+
+```text
 data/raw/transactions/
 ├── year=2024/
 │   ├── month=01/
@@ -72,6 +80,7 @@ data/raw/transactions/
 ```
 
 **Estimated size**:
+
 - 10M records: ~500 MB (Parquet snappy)
 - 1M records: ~50 MB
 - CSV is ~5x larger
@@ -87,7 +96,7 @@ python data/scripts/generate_users.py \
   --num-users 500000 \
   --format parquet \
   --output-path data/raw/users.parquet
-```
+```text
 
 **Size**: ~50 MB for 1M users (Parquet)
 
@@ -102,7 +111,7 @@ python data/scripts/generate_products.py \
   --num-products 50000 \
   --format parquet \
   --output-path data/raw/products.parquet
-```
+```text
 
 **Size**: ~10 MB for 100K products (Parquet)
 
@@ -126,7 +135,7 @@ python data/scripts/generate_transactions.py \
   --total-records 100000 \
   --days 7 \
   --output-dir data/raw/transactions_small
-```
+```text
 
 ### Generar Dataset Grande (Performance Testing)
 
@@ -143,11 +152,13 @@ python data/scripts/generate_transactions.py \
 ### Formato Recomendado
 
 ✅ **Parquet**: Columnr format, compressed, fast
+
 - Usa `--format parquet` (default)
 - Automatic compression (snappy)
 - Mejor para batch processing
 
 ❌ **CSV**: Only for small exports
+
 - 5x larger than Parquet
 - 10x slower to read
 - No recomendado para > 1M records
@@ -155,12 +166,15 @@ python data/scripts/generate_transactions.py \
 ## 🎯 Usage in Exercises
 
 ### Exercise 01: Batch Basics
+
 Use small dataset (100K records)
 
 ### Exercise 02-03: Partitioning & PySpark
+
 Usa dataset mediano (1M-5M records)
 
 ### Exercise 04-06: Pipelines & Optimization
+
 Usa dataset grande (10M-50M records)
 
 ## 🔍 Data Quality
@@ -175,7 +189,7 @@ Los scripts generan datos realistas con:
 
 ## 📁 Estructura de Archivos
 
-```
+```text
 data/
 ├── schemas/
 │   ├── transactions.json     # Transaction schema
@@ -191,7 +205,7 @@ data/
     ├── transactions/         # Transacciones particionadas
     ├── users.parquet         # 1M usuarios
     └── products.parquet      # 100K productos
-```
+```text
 
 ## ⚠️ Notas
 
@@ -210,6 +224,6 @@ python data/scripts/generate_products.py
 
 # Verificar
 ls -lh data/raw/
-```
+```text
 
 Total: ~560 MB de data de entrenamiento

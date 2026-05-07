@@ -7,6 +7,7 @@
 ## 🎓 Objectives de Aprendizaje
 
 Al completar este exercise, serás capaz de:
+
 - ✅ Entender cómo funciona el state file de Terraform
 - ✅ Configurar remote state con S3 y DynamoDB locking
 - ✅ Usar workspaces para múltiples entornos
@@ -19,6 +20,7 @@ Al completar este exercise, serás capaz de:
 El manejo apropiado del state es **crítico** en Terraform. El state file es la fuente de verdad sobre tu infraestructura. Este exercise te enseña cómo gestionar el state de forma segura, especialmente cuando trabajas en equipo.
 
 **⚠️ Problemas al no gestionar bien el state:**
+
 - Múltiples personas aplicando cambios simultáneamente → corrupción
 - State local perdido → Terraform no sabe qué recursos controla
 - Credentials en state file → riesgo de seguridad
@@ -35,9 +37,10 @@ Create un proyecto simple:
 ```bash
 mkdir -p ~/terraform-state-demo/local
 cd ~/terraform-state-demo/local
-```
+```text
 
 **main.tf:**
+
 ```hcl
 terraform {
   required_version = ">= 1.0"
@@ -60,7 +63,7 @@ resource "aws_s3_bucket" "state_demo" {
     Purpose = "State Management Demo"
   }
 }
-```
+```text
 
 ```bash
 terraform init
@@ -71,9 +74,10 @@ ls -lh terraform.tfstate
 cat terraform.tfstate | jq '.resources'
 
 # Ubicación: ./terraform.tfstate (mismo directorio)
-```
+```text
 
 **Problemas del local state:**
+
 - ❌ Un solo usuario puede trabajar a la vez
 - ❌ Si pierdes el archivo, pierdes el tracking
 - ❌ No hay locking → riesgo de corrupción
@@ -89,6 +93,7 @@ cat terraform.tfstate | jq '.resources'
 Primero, necesitamos create el bucket S3 y tabla DynamoDB para el backend:
 
 **backend-resources.tf:**
+
 ```hcl
 # Este archivo crea los recursos necesarios para el remote backend
 # Ejecutar PRIMERO con local state, luego migrar
@@ -205,7 +210,7 @@ terraform apply
 
 # Guardar los outputs
 terraform output backend_config
-```
+```text
 
 #### 1.2.2: Migrar a Remote State
 
@@ -231,7 +236,7 @@ terraform {
     }
   }
 }
-```
+```text
 
 ```bash
 # Reinicializar para migrar el state
@@ -247,9 +252,10 @@ aws s3 ls s3://terraform-state-backend-shared/demo/
 # El archivo local puede ser eliminado
 ls terraform.tfstate*
 # Debería estar vacío o mostrar backup
-```
+```text
 
 **✅ Ventajas del remote state:**
+
 - ✅ Múltiples usuarios pueden trabajar
 - ✅ Locking automático (gracias a DynamoDB)
 - ✅ Versionado y rollback posible
@@ -295,6 +301,7 @@ terraform workspace list
 ### Step 2.2: Usar Workspace en Configuration
 
 **main.tf:**
+
 ```hcl
 locals {
   workspace_config = {
@@ -338,7 +345,7 @@ output "workspace_info" {
     config            = local.config
   }
 }
-```
+```text
 
 ### Step 2.3: Aplicar en Diferentes Workspaces
 
@@ -369,9 +376,10 @@ terraform state list
 
 terraform workspace select production
 terraform state list
-```
+```text
 
 **📊 Cada workspace mantiene:**
+
 - Su propio state file
 - Sus propios recursos
 - Su propia configuration
@@ -392,7 +400,7 @@ terraform state list
 
 # Ver detalles de un recurso específico
 terraform state show aws_s3_bucket.app_data
-```
+```text
 
 ### Step 3.2: terraform state mv (Refactoring)
 
@@ -422,7 +430,7 @@ terraform state mv aws_s3_bucket.data aws_s3_bucket.analytics_data
 # Ahora actualiza el código HCL y verifica:
 terraform plan
 # Output: No changes. Your infrastructure matches the configuration.
-```
+```text
 
 ### Step 3.3: terraform state rm (Remover del State)
 
@@ -437,7 +445,7 @@ terraform state list  # No aparece
 
 # El bucket sigue existiendo en AWS
 aws s3 ls | grep legacy
-```
+```text
 
 ### Step 3.4: terraform import (Importar Recurso Existente)
 
@@ -451,7 +459,7 @@ resource "aws_s3_bucket" "imported_bucket" {
   bucket = "my-manually-created-bucket"
   # Terraform completará los detalles al importar
 }
-```
+```text
 
 ```bash
 # 2. Importar el bucket al state
@@ -478,7 +486,7 @@ cat terraform.tfstate.backup | jq '.'
 
 # ⚠️ CUIDADO: Push solo en emergencias
 # terraform state push terraform.tfstate.backup
-```
+```text
 
 ---
 
@@ -487,15 +495,17 @@ cat terraform.tfstate.backup | jq '.'
 ### Step 4.1: Simular Bloqueo Concurrente
 
 **Terminal 1:**
+
 ```bash
 cd ~/terraform-state-demo/local
 terraform workspace select development
 
 # Iniciar apply (toma tiempo con sleep)
 terraform apply -auto-approve
-```
+```text
 
 **Terminal 2 (simultáneamente):**
+
 ```bash
 cd ~/terraform-state-demo/local
 terraform workspace select development
@@ -519,7 +529,7 @@ terraform apply -auto-approve
 # by multiple users concurrently. Please resolve the issue above and try
 # again. For most commands, you can disable locking with the "-lock=false"
 # flag, but this is not recommended.
-```
+```text
 
 **✅ State locking funciona!** El segundo apply está bloqueado hasta que el primero termine.
 
@@ -549,7 +559,7 @@ resource "aws_db_instance" "database" {
   username             = "admin"
   password             = "SuperSecretPassword123!"  # ⚠️ Aparecerá en el state!
 }
-```
+```text
 
 ```bash
 terraform apply
@@ -557,7 +567,7 @@ terraform apply
 # Ver el state
 terraform state pull | jq '.resources[] | select(.type == "aws_db_instance") | .instances[0].attributes.password'
 # Output: "SuperSecretPassword123!"  # 😱 Password visible!
-```
+```text
 
 ### Soluciones
 
@@ -585,7 +595,7 @@ resource "aws_db_instance" "database" {
 # - No está hardcodeado en código
 # - Secrets Manager controla el acceso
 # - Puedes rotar el secret sin tocar Terraform
-```
+```text
 
 #### Solution 2: Sensitive Outputs
 
@@ -615,7 +625,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" 
     }
   }
 }
-```
+```text
 
 #### Solution 4: Constraints de Acceso al State
 
@@ -645,7 +655,7 @@ resource "aws_s3_bucket_policy" "terraform_state" {
     ]
   })
 }
-```
+```text
 
 ---
 
@@ -654,6 +664,7 @@ resource "aws_s3_bucket_policy" "terraform_state" {
 ### ✅ DO's (Hacer)
 
 1. **Usar remote state siempre en equipo**
+
    ```hcl
    backend "s3" {
      bucket         = "terraform-state"
@@ -668,7 +679,8 @@ resource "aws_s3_bucket_policy" "terraform_state" {
    - Permite rollback si el state se corrompe
 
 3. **Usar workspaces o directorios separados para entornos**
-   ```
+
+   ```text
    environments/
      ├── dev/
      ├── staging/
@@ -680,13 +692,15 @@ resource "aws_s3_bucket_policy" "terraform_state" {
 5. **Limitar acceso al state** (IAM policies restrictivas)
 
 6. **Backup regular del state**
+
    ```bash
    terraform state pull > backup-$(date +%Y%m%d-%H%M%S).tfstate
-   ```
+   ```text
 
 ### ❌ DON'Ts (No Hacer)
 
 1. **NO commitear terraform.tfstate a Git**
+
    ```gitignore
    # .gitignore
    *.tfstate
@@ -733,7 +747,7 @@ terraform workspace delete production
 # Destruir backend resources (separado)
 cd ../backend-setup
 terraform destroy -auto-approve
-```
+```text
 
 ---
 

@@ -24,6 +24,7 @@ Python has become the dominant language for data engineering thanks to its clear
 ### Why Python for Data Engineering?
 
 **Key Advantages**:
+
 - **Clear Syntax**: Readable code that resembles pseudocode
 - **Ecosistema Rico**: pandas, NumPy, PyArrow, SQLAlchemy, PySpark
 - **Universal Integration**: REST APIs, databases, cloud providers
@@ -32,6 +33,7 @@ Python has become the dominant language for data engineering thanks to its clear
 - **Versatilidad**: Desde scripts simples hasta pipelines distribuidos
 
 **Casos de Uso en Data Engineering**:
+
 - ETL/ELT pipelines
 - Data transformation y cleaning
 - API integration y web scraping
@@ -72,6 +74,7 @@ Python has become the dominant language for data engineering thanks to its clear
 ### features del Lenguaje
 
 **Python es**:
+
 - **Interpreted**: Does not require explicit compilation
 - **Dynamically Typed**: Variables do not require type declaration
 - **Orientado a Objetos**: Todo es un objeto
@@ -97,7 +100,7 @@ if activo:
     print("Pipeline activo")    # 4 espacios
     if num_registros > 0:
         print("Data disponibles")  # 8 espacios
-```
+```text
 
 ### Convenciones de Nombres (PEP 8)
 
@@ -118,7 +121,7 @@ class DataPipeline:
 # Modules: lowercase
 import data_processor
 from utils import helper_functions
-```
+```text
 
 ### Comentarios y Docstrings
 
@@ -151,7 +154,7 @@ def extract_data(fuente: str, fecha: str) -> list:
         1523
     """
     pass
-```
+```text
 
 ---
 
@@ -225,7 +228,7 @@ texto.split()           # ["Data", "Engineering"]
 texto.startswith("  D") # True
 texto.endswith("ing  ") # True
 texto.isdigit()         # False
-```
+```text
 
 #### Booleanos
 
@@ -258,7 +261,7 @@ bool(None)            # False
 valor = None
 resultado = valor or "default"  # "default"
 resultado = valor and "never"   # None (no evalua "never")
-```
+```text
 
 #### None
 
@@ -282,7 +285,7 @@ def procesar(data=None):
     if data is None:
         data = []
     return len(data)
-```
+```text
 
 ### Type Hints (Python 3.5+)
 
@@ -320,6 +323,7 @@ resultado: Union[str, None] = None
 ### Listas (Lists)
 
 **features**:
+
 - Ordenadas
 - Mutables
 - Permiten duplicados
@@ -360,11 +364,12 @@ registros.reverse()              # Revierte in-place
 cuadrados = [x**2 for x in range(10)]
 pares = [x for x in range(20) if x % 2 == 0]
 procesados = [procesar(x) for x in data if validate(x)]
-```
+```text
 
 ### Tuplas (Tuples)
 
 **features**:
+
 - Ordenadas
 - Inmutables
 - Permiten duplicados
@@ -393,11 +398,12 @@ Registro = namedtuple('Registro', ['id', 'nombre', 'valor'])
 reg = Registro(1, "Cliente A", 1000)
 print(reg.id)       # 1
 print(reg.nombre)   # "Cliente A"
-```
+```text
 
 ### Diccionarios (Dicts)
 
 **features**:
+
 - Unsorted (sorted by insertion since Python 3.7+)
 - Mutables
 - Unique keys
@@ -448,11 +454,12 @@ cuadrados = {x: x**2 for x in range(5)}
 # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
 
 filtrado = {k: v for k, v in usuario.items() if v is not None}
-```
+```text
 
 ### Sets
 
 **features**:
+
 - No ordenados
 - Mutables
 - Sin duplicados
@@ -519,7 +526,7 @@ if edad >= 18 and licencia_valida:
 
 if usuario is None or not usuario.get("activo"):
     print("Invalid user")
-```
+```text
 
 ### Loops
 
@@ -552,7 +559,7 @@ for i in range(0, 10, 2):  # 0, 2, 4, 6, 8
 for x in range(3):
     for y in range(3):
         print(f"({x}, {y})")
-```
+```text
 
 #### While Loops
 
@@ -575,7 +582,7 @@ for numero in range(10):
     if numero % 2 == 0:
         continue  # Salta pares
     print(numero)
-```
+```text
 
 ### Comprehensions (Avanzado)
 
@@ -630,7 +637,7 @@ def log_mensaje(*args, **kwargs):
 log_mensaje(1, 2, 3, level="INFO", timestamp="2026-02-02")
 # Args: (1, 2, 3)
 # Kwargs: {'level': 'INFO', 'timestamp': '2026-02-02'}
-```
+```text
 
 ### Lambda Functions
 
@@ -651,7 +658,7 @@ usuarios = [
     {"nombre": "Maria", "edad": 22}
 ]
 ordenados = sorted(usuarios, key=lambda u: u["edad"])
-```
+```text
 
 ### Funciones de Orden Superior
 
@@ -673,7 +680,7 @@ pares = list(filter(es_par, numeros))  # [2, 4]
 from functools import reduce
 
 suma = reduce(lambda a, b: a + b, numeros)  # 10
-```
+```text
 
 ### Decoradores
 
@@ -727,7 +734,7 @@ with open('data.txt', 'r') as f:
 with open('input.txt') as f_in, open('output.txt', 'w') as f_out:
     for linea in f_in:
         f_out.write(linea.upper())
-```
+```text
 
 ### Modos de Apertura
 
@@ -755,7 +762,7 @@ with open('data.txt', 'r', encoding='utf-8') as f:
 with open('output.txt', 'w') as f:
     f.write("First line\n")
     f.writelines(["Line 2\n", "Line 3\n"])
-```
+```text
 
 ### Formatos de Data
 
@@ -780,7 +787,7 @@ with open('output.csv', 'w', newline='') as f:
     writer = csv.DictWriter(f, fieldnames=['nombre', 'edad'])
     writer.writeheader()
     writer.writerows(data)
-```
+```text
 
 #### JSON
 
@@ -816,7 +823,7 @@ df.to_parquet('output.parquet', compression='snappy')
 # Reading with PyArrow (more control)
 table = pq.read_table('data.parquet')
 df = table.to_pandas()
-```
+```text
 
 ---
 
@@ -844,7 +851,7 @@ arr.max()            # 5
 
 # Broadcasting
 matriz + 10          # Suma 10 a cada elemento
-```
+```text
 
 ### Pandas DataFrames
 
@@ -889,7 +896,7 @@ df.groupby(['ciudad', 'gender']).agg({
     'edad': ['mean', 'max'],
     'ingreso': 'sum'
 })
-```
+```text
 
 ---
 
@@ -925,7 +932,7 @@ df.duplicated(subset=['email'])  # Solo considerando email
 # Eliminar
 df.drop_duplicates()
 df.drop_duplicates(subset=['email'], keep='first')
-```
+```text
 
 ### Validation with Pandera
 
@@ -945,7 +952,7 @@ try:
     validated_df = schema.validate(df)
 except pa.errors.SchemaError as e:
     print(f"Validation error: {e}")
-```
+```text
 
 ---
 
@@ -988,7 +995,7 @@ except Exception as e:
 else:
     print("Success!")
     guardar(resultado)
-```
+```text
 
 ### Excepciones Personalizadas
 
@@ -1041,7 +1048,7 @@ try:
     procesar_data(df)
 except Exception as e:
     logger.error(f"Error procesando data: {e}", exc_info=True)
-```
+```text
 
 ---
 
@@ -1062,7 +1069,7 @@ def ProcesarData(d):
     df=pd.DataFrame(d)
     df=df.dropna()
     return df
-```
+```text
 
 ### Docstrings
 
@@ -1097,7 +1104,7 @@ def extraer_transformar_cargar(
         15000
     """
     pass
-```
+```text
 
 ### DRY (Don't Repeat Yourself)
 
@@ -1155,7 +1162,7 @@ if len(lista) == 0:
 # ✅ Pythonic
 if not lista:
     print("Empty")
-```
+```text
 
 ### Performance Tips
 
@@ -1195,7 +1202,7 @@ usuario = next(u for u in usuarios_lista if u["id"] == 1)
 # ✅ O(1) lookup
 usuarios_dict = {u["id"]: u for u in usuarios_lista}
 usuario = usuarios_dict[1]
-```
+```text
 
 ---
 

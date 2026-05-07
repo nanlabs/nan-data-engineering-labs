@@ -21,18 +21,18 @@
 
 Snowflake offers a **30-day free trial** that is **perfect for this module**:
 
-```
+```text
 ✅ $400 USD in free credits
 ✅ 30 days to complete all exercises
 ✅ Full enterprise features (no limitations)
 ✅ All cloud providers supported (AWS, Azure, GCP)
 ✅ No credit card required for signup
 ✅ Automatic trial conversion (opt-in)
-```
+```text
 
 ### Trial Signup
 
-1. **Visit**: https://signup.snowflake.com/
+1. **Visit**: <https://signup.snowflake.com/>
 2. **Choose Cloud Provider**: AWS, Azure, or GCP
 3. **Select Region**: Choose nearest region (e.g., `us-east-1`, `eu-west-1`)
 4. **Provide Details**: Email, name, company (can use "Personal Learning")
@@ -41,7 +41,7 @@ Snowflake offers a **30-day free trial** that is **perfect for this module**:
 
 ### Trial Coverage for This Module
 
-```
+```text
 Total Estimated Cost: $15-25 USD
 Trial Credits: $400 USD
 Coverage: 16-26x the needed amount
@@ -60,7 +60,7 @@ Snowflake has three main cost components:
 
 **Pricing Model**: Pay per credit consumed
 
-```
+```text
 Cost per Credit:
 - Standard Edition: $2.00/credit
 - Enterprise Edition: $3.00/credit
@@ -70,11 +70,11 @@ Billing:
 - Per-second billing (60-second minimum)
 - Charged when warehouse is RUNNING
 - Auto-suspend stops charges immediately
-```
+```text
 
 **Cost Formula**:
 
-```
+```text
 Cost = (Credits per Hour × Hours Running) × Price per Credit
 ```
 
@@ -82,7 +82,7 @@ Cost = (Credits per Hour × Hours Running) × Price per Credit
 
 **Pricing Model**: Pay per TB per month
 
-```
+```text
 Storage Costs (Monthly):
 - Standard Tier: $23/TB (AWS), $25/TB (Azure/GCP)
 - Compressed: ~10:1 ratio (1TB raw ≈ 100GB stored)
@@ -94,13 +94,13 @@ Included:
 Example:
 - 50GB data → ~5GB compressed → $0.12/month
 - 1TB data → ~100GB compressed → $2.30/month
-```
+```text
 
 ### 3. Cloud Services
 
 **Pricing Model**: Free if <10% of compute
 
-```
+```text
 Cloud Services Layer:
 - Query optimization & planning
 - Authentication & security
@@ -117,7 +117,7 @@ Cost:
 
 Typical learning workload (per day):
 
-```
+```text
 Component          Usage           Cost
 ─────────────────────────────────────────
 Compute (X-Small)  2 hours/day     $4-6
@@ -126,7 +126,7 @@ Cloud Services     Free (<10%)     $0
 ─────────────────────────────────────────
 TOTAL PER DAY                      $4-6
 TOTAL FOR MODULE (5 days)          $20-30
-```
+```text
 
 **With Trial**: $0 (covered by $400 credits)
 
@@ -166,26 +166,28 @@ CREATE WAREHOUSE bi_warehouse WITH
 -- Min: 1 cluster = 1 × credits/hour
 -- Max: 5 clusters = 5 × credits/hour
 -- Auto-scales based on query queue
-```
+```text
 
 ### Warehouse Sizing Recommendations
 
 **Development & Learning (This Module)**:
+
 ```
 Size: X-Small (1 credit/hour)
 Auto-Suspend: 60-300 seconds
 Auto-Resume: TRUE
 Multi-Cluster: Not needed
 Expected Cost: $2-6/hour × 0.5-2 hours/day = $1-12/day
-```
+```text
 
 **Production Workloads**:
-```
+
+```text
 ETL (Batch):     Small to Large (2-8 credits/hour)
 BI Dashboards:   X-Small to Small (1-2 credits/hour)
 Data Science:    Medium to X-Large (4-16 credits/hour)
 Streaming:       X-Small to Small (1-2 credits/hour)
-```
+```text
 
 ---
 
@@ -268,7 +270,7 @@ CREATE WAREHOUSE training_wh WITH
     AUTO_RESUME = TRUE
     INITIALLY_SUSPENDED = TRUE
     RESOURCE_MONITOR = training_wh_monitor;
-```
+```text
 
 ### Step 3: Set Up Email Notifications
 
@@ -281,7 +283,7 @@ CREATE NOTIFICATION INTEGRATION email_integration
 -- Notifications are sent to account admin emails
 -- Configure additional emails in Snowflake UI:
 -- Account → Notifications → Add Email
-```
+```text
 
 ### Step 4: Daily Budget Monitor
 
@@ -297,7 +299,7 @@ CREATE RESOURCE MONITOR daily_training_monitor WITH
 
 -- Apply to training warehouse
 ALTER WAREHOUSE training_wh SET RESOURCE_MONITOR = daily_training_monitor;
-```
+```text
 
 ### Monitor Management
 
@@ -350,7 +352,7 @@ CREATE WAREHOUSE etl_wh WITH
     WAREHOUSE_SIZE = 'LARGE'
     AUTO_SUSPEND = 600              -- 10 minutes (batch job)
     AUTO_RESUME = TRUE;
-```
+```text
 
 **Savings**: Auto-suspend at 60s vs. always-on = **up to 99% savings** during idle periods.
 
@@ -379,7 +381,7 @@ LIMIT 20;
 -- 1. Spilling to remote storage (disk)
 -- 2. Queries timeout frequently
 -- 3. Execution time unacceptable
-```
+```text
 
 **Savings**: X-Small vs. Medium (unnecessary) = **75% cost reduction**.
 
@@ -395,7 +397,7 @@ CREATE TABLE experiments.customer_test CLONE prod.customers;
 -- Clone at historical point (Time Travel)
 CREATE TABLE analysis.orders_backup
     CLONE prod.orders AT (TIMESTAMP => '2024-01-01 00:00:00'::timestamp);
-```
+```text
 
 **Savings**: Cloning vs. copying data = **90% storage savings** + instant creation.
 
@@ -442,7 +444,7 @@ CREATE PIPE order_pipe AS
     FILE_FORMAT = (TYPE = 'PARQUET');
 
 -- Snowpipe cost: $0.06 per 1,000 files processed
-```
+```text
 
 **Savings**: Parquet vs. CSV = **50-70% storage savings** + faster queries.
 
@@ -459,7 +461,7 @@ INSERT ALL
         INTO orders_cancelled VALUES (order_id, customer_id, total_amount)
 SELECT order_id, customer_id, total_amount, order_status
 FROM staging.orders_raw;
-```
+```text
 
 **Savings**: Multi-table insert vs. separate inserts = **70% compute savings**.
 
@@ -478,7 +480,7 @@ WHERE sale_date = '2024-01-15'  -- Only scans relevant micro-partitions
 
 -- Check clustering depth (lower is better)
 SELECT SYSTEM$CLUSTERING_INFORMATION('fact_sales', '(sale_date, region_id)');
-```
+```text
 
 **Savings**: Good clustering = **80-95% less data scanned** for filtered queries.
 
@@ -524,11 +526,11 @@ SELECT
 FROM SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_METERING_HISTORY
 WHERE start_time >= DATEADD('hour', -24, CURRENT_TIMESTAMP())
     AND credits_used = 0;
-```
+```text
 
 ### Cost Optimization Checklist
 
-```
+```text
 ✅ Use X-Small warehouse for development
 ✅ Set auto-suspend to 60-300 seconds
 ✅ Enable query result caching
@@ -543,7 +545,7 @@ WHERE start_time >= DATEADD('hour', -24, CURRENT_TIMESTAMP())
 ✅ Use Snowpipe for streaming (avoid dedicated warehouse)
 ✅ Leverage Time Travel instead of backups
 ✅ Share data instead of copying
-```
+```text
 
 ---
 
@@ -585,7 +587,7 @@ WHERE start_time >= DATEADD('day', -7, CURRENT_TIMESTAMP())
     AND credits_used_cloud_services > 0
 ORDER BY credits_used_cloud_services DESC
 LIMIT 20;
-```
+```text
 
 ### Storage Costs Tracking
 
@@ -600,7 +602,7 @@ FROM SNOWFLAKE.ACCOUNT_USAGE.DATABASE_STORAGE_USAGE_HISTORY
 WHERE usage_date >= DATEADD('day', -30, CURRENT_DATE())
 GROUP BY 1
 ORDER BY 2 DESC;
-```
+```text
 
 ### Monthly Cost Projection
 
@@ -620,7 +622,7 @@ SELECT
     AVG(daily_credits) * 30 * 2.00 AS projected_cost_standard_usd,
     AVG(daily_credits) * 30 * 3.00 AS projected_cost_enterprise_usd
 FROM daily_credits;
-```
+```text
 
 ### Real-Time Credit Monitoring
 
@@ -650,7 +652,7 @@ SELECT
     start_time,
     end_time
 FROM SNOWFLAKE.ACCOUNT_USAGE.RESOURCE_MONITORS;
-```
+```text
 
 ### Cost Dashboard Query Template
 
@@ -681,7 +683,7 @@ SELECT
     'Storage' AS cost_category,
     cost_usd
 FROM storage_costs;
-```
+```text
 
 ---
 
@@ -689,7 +691,7 @@ FROM storage_costs;
 
 ### Understanding Trial Expiration
 
-```
+```text
 Trial Duration: 30 days from signup
 Credit Limit: $400 USD
 Expiration Behavior:
@@ -701,16 +703,18 @@ Expiration Behavior:
 ### What Happens After Trial
 
 **Scenario 1: Trial Credits Exhausted Before 30 Days**
-```
+
+```text
 → Warehouses automatically suspend
 → Account enters "credit pause" state
 → Data remains accessible (read-only via UI)
 → Must add payment method to resume compute
 → Storage charges begin (~$23/TB/month)
-```
+```text
 
 **Scenario 2: 30 Days Expire with Credits Remaining**
-```
+
+```text
 → Remaining credits forfeit
 → Account requires payment method
 → Same as Scenario 1
@@ -725,9 +729,10 @@ SELECT
     DATEDIFF('day', CURRENT_DATE(), end_time) AS days_remaining
 FROM SNOWFLAKE.ACCOUNT_USAGE.RESOURCE_MONITORS
 WHERE name = 'TRIAL_MONITOR';
-```
+```text
 
 **Steps to Add Payment Method**:
+
 1. Navigate to **Account** → **Billing**
 2. Click **Add Payment Method**
 3. Enter credit card details
@@ -748,7 +753,7 @@ OVERWRITE = TRUE;
 snowsql -c my_connection -o output_format=csv -o header=true \
     -q "SELECT * FROM training_snowflake.analytics.customers" \
     > customers_backup.csv
-```
+```text
 
 ### Continuing After This Module
 
@@ -797,14 +802,15 @@ CREATE RESOURCE MONITOR monthly_budget WITH
         ON 100 PERCENT DO SUSPEND_IMMEDIATE;
 
 ALTER WAREHOUSE minimal_wh SET RESOURCE_MONITOR = monthly_budget;
-```
+```text
 
 **Expected Monthly Cost (Minimal Use)**:
+
 ```
 Storage (10GB):      ~$0.25/month
 Compute (1 hr/week): ~$8-12/month
 Total:               ~$10-15/month
-```
+```text
 
 ---
 
@@ -812,10 +818,10 @@ Total:               ~$10-15/month
 
 ### Getting Help with Costs
 
-- **Snowflake Community**: https://community.snowflake.com/
-- **Documentation**: https://docs.snowflake.com/en/user-guide/cost-understanding
-- **Support Portal**: https://support.snowflake.com/ (via Snowflake UI)
-- **Trial Support**: support@snowflake.com
+- **Snowflake Community**: <https://community.snowflake.com/>
+- **Documentation**: <https://docs.snowflake.com/en/user-guide/cost-understanding>
+- **Support Portal**: <https://support.snowflake.com/> (via Snowflake UI)
+- **Trial Support**: <support@snowflake.com>
 
 ### Common Cost-Related Questions
 
@@ -837,7 +843,7 @@ A: Trial credits are non-refundable. Paid credits depend on contract terms.
 
 Before starting exercises, ensure:
 
-```
+```text
 ✅ Signed up for Snowflake free trial ($400 credits)
 ✅ Account is active and accessible
 ✅ Created at least one resource monitor
@@ -846,7 +852,7 @@ Before starting exercises, ensure:
 ✅ Planned to complete module within 30-day trial
 ✅ Know how to check remaining credits
 ✅ Configured email notifications for alerts
-```
+```text
 
 ---
 

@@ -21,7 +21,7 @@ Build a complete automated governance workflow integrating catalog management, c
 
 ## Architecture Overview
 
-```
+```text
 ┌─────────────────┐
 │   S3 Events     │
 │  (New Data)     │
@@ -56,7 +56,7 @@ Build a complete automated governance workflow integrating catalog management, c
 │ ✅ Quality OK   │
 │ ✅ Monitored    │
 └─────────────────┘
-```
+```text
 
 ## Exercise Tasks
 
@@ -230,13 +230,14 @@ Define Step Functions workflow:
     }
   }
 }
-```
+```text
 
 ### Task 2: Implement Lambda Functions
 
 Create Lambda functions for each workflow step:
 
 **1. Validate S3 Input**
+
 ```python
 # lambda_validate_input.py
 import boto3
@@ -300,6 +301,7 @@ def lambda_handler(event, context):
 ```
 
 **2. Run Data Quality Check**
+
 ```python
 # lambda_run_quality_check.py
 import boto3
@@ -370,9 +372,10 @@ def lambda_handler(event, context):
         'rulesFailed': rules_failed,
         'passed': score >= 85
     }
-```
+```text
 
 **3. Apply LF-Tags**
+
 ```python
 # lambda_apply_lf_tags.py
 import boto3
@@ -412,9 +415,10 @@ def lambda_handler(event, context):
         'table': table,
         'tagsApplied': list(tags.keys())
     }
-```
+```text
 
 **4. Grant LF Permissions**
+
 ```python
 # lambda_grant_permissions.py
 import boto3
@@ -452,9 +456,10 @@ def lambda_handler(event, context):
         'table': table,
         'principalsGranted': len(principals)
     }
-```
+```text
 
 **5. Publish Governance Metrics**
+
 ```python
 # lambda_publish_metrics.py
 import boto3
@@ -538,7 +543,7 @@ awslocal events put-targets \
         "Arn": "arn:aws:states:us-east-1:000000000000:stateMachine:DataGovernanceWorkflow",
         "RoleArn": "arn:aws:iam::000000000000:role/EventBridgeStepFunctionsRole"
     }]'
-```
+```text
 
 ### Task 4: Build Governance Dashboard
 
@@ -600,7 +605,7 @@ cloudwatch.put_dashboard(
 )
 
 print("Dashboard created: DataGovernance")
-```
+```text
 
 ### Task 5: Test End-to-End Workflow
 
@@ -627,7 +632,7 @@ awslocal stepfunctions describe-execution --execution-arn $EXECUTION_ARN
 
 # Get execution history
 awslocal stepfunctions get-execution-history --execution-arn $EXECUTION_ARN
-```
+```text
 
 ### Task 6: Create Governance Report
 
@@ -692,9 +697,10 @@ Test complete governance automation:
 
 ```bash
 python validation_06.py
-```
+```text
 
 Expected results:
+
 - ✅ Step Functions state machine deployed
 - ✅ All Lambda functions created and operational
 - ✅ EventBridge rule triggering on S3 events
@@ -721,9 +727,10 @@ Expected results:
 - [EventBridge S3 Events](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html)
 - Theory: `../theory/best-practices.md` - Section 10: Monitoring and Alerting
 
-## Congratulations!
+## Congratulations
 
 You've completed all governance exercises. You can now:
+
 - ✅ Manage Data Catalog programmatically
 - ✅ Automate schema discovery with Crawlers
 - ✅ Implement fine-grained Lake Formation permissions

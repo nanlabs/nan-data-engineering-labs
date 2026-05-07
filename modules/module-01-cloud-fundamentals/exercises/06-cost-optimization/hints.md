@@ -4,13 +4,13 @@
 
 ### Hint 1.1: Storage Cost Breakdown
 
-```
+```text
 S3 Storage Classes (per GB/month):
 - STANDARD:      $0.023   (immediate access)
 - STANDARD_IA:   $0.0125  (infrequent, retrieval fee)
 - GLACIER:       $0.004   (archive, hours to restore)
 - DEEP_ARCHIVE:  $0.00099 (long-term, 12+ hours restore)
-```
+```text
 
 **Rule of thumb:** Data not accessed in 30 days → move to IA
 
@@ -25,7 +25,7 @@ Example:
 - 512MB memory
 - 1000ms duration
 → 1,000,000 × (0.5 × 1 × 0.0000166667) = $8.33/month
-```
+```text
 
 **Optimization:** Use minimum memory that doesn't timeout
 
@@ -39,7 +39,7 @@ Example:
 Optimization Strategy:
 1. Reduce retention: 180d → 7d (saves 96%)
 2. Export to S3: $0.03/GB → $0.004/GB (saves 87%)
-```
+```text
 
 ---
 
@@ -79,7 +79,7 @@ def analyze_bucket(bucket_name):
         age_buckets[key] = age_buckets[key] / (1024**3)
 
     return age_buckets
-```
+```text
 
 ### Hint 2.2: Cost Calculation
 
@@ -112,7 +112,7 @@ def calculate_costs(age_buckets):
         'savings': savings,
         'savings_percent': savings_percent
     }
-```
+```text
 
 ### Hint 2.3: Lifecycle Policy Generator
 
@@ -203,7 +203,7 @@ def analyze_lambda(function_name):
         'avg_duration': stats['avg_duration'],
         'invocations': stats['invocations']
     }
-```
+```text
 
 ### Hint 2.5: AWS Budget Creation
 
@@ -255,13 +255,14 @@ def create_budget(account_id, amount, email):
             }
         ]
     )
-```
+```text
 
 ---
 
 ## 🔴 NIVEL 3: Complete Solutions
 
 See solution files for:
+
 - [s3_storage_analyzer.py](solution/s3_storage_analyzer.py) - Full analysis with CSV export
 - [logs_analyzer.py](solution/logs_analyzer.py) - CloudWatch Logs cost analysis
 - [lambda_profiler.py](solution/lambda_profiler.py) - Right-sizing recommendations
@@ -290,7 +291,7 @@ aws s3api copy-object \
 
 # Run analyzer
 python3 s3_storage_analyzer.py --bucket quickmart-data-lake-dev
-```
+```text
 
 ### Test 2: Lambda Profiling
 
@@ -323,7 +324,7 @@ create_budget('$ACCOUNT_ID', 800, 'your-email@example.com')
 
 # Verify
 aws budgets describe-budgets --account-id $ACCOUNT_ID
-```
+```text
 
 ---
 
@@ -332,6 +333,7 @@ aws budgets describe-budgets --account-id $ACCOUNT_ID
 ### Error: "Access Denied" for CloudWatch Logs Insights
 
 **Fix:** Add IAM permissions:
+
 ```json
 {
   "Effect": "Allow",
@@ -341,18 +343,19 @@ aws budgets describe-budgets --account-id $ACCOUNT_ID
   ],
   "Resource": "*"
 }
-```
+```text
 
 ### Error: "Rate exceeded" when listing S3 objects
 
 **Fix:** Add throttling:
+
 ```python
 import time
 
 for page in paginator.paginate(Bucket=bucket_name):
     process_page(page)
     time.sleep(0.1)  # 100ms delay
-```
+```text
 
 ### Error: Budget creation requires confirmation
 

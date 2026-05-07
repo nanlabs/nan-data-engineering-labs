@@ -44,7 +44,7 @@ cd ~/terraform-exercises/02-multi-resource
 # Crear estructura de archivos
 touch main.tf variables.tf outputs.tf terraform.tfvars
 mkdir -p modules
-```
+```text
 
 #### 1.2. Definir Variables
 
@@ -122,7 +122,7 @@ variable "tags" {
     Project   = "DataLake"
   }
 }
-```
+```text
 
 </details>
 
@@ -312,7 +312,7 @@ resource "aws_s3_bucket_versioning" "backup_versioning" {
     status = "Enabled"
   }
 }
-```
+```text
 
 </details>
 
@@ -396,7 +396,7 @@ terraform output -json | jq '.'
 
 # Verificar en LocalStack
 awslocal s3 ls
-```
+```text
 
 ### Output Esperado
 
@@ -434,7 +434,7 @@ infrastructure_summary = {
   "project" = "datalake"
   "total_buckets" = 5
 }
-```
+```text
 
 ### Conceptos Clave
 
@@ -703,7 +703,7 @@ output "iam_policies" {
     admin         = aws_iam_policy.admin.arn
   }
 }
-```
+```text
 
 </details>
 
@@ -741,7 +741,7 @@ iam_roles = {
   "data_analyst" = "arn:aws:iam::000000000000:role/datalake-data-analyst-development"
   "data_engineer" = "arn:aws:iam::000000000000:role/datalake-data-engineer-development"
 }
-```
+```text
 
 ### Conceptos Clave
 
@@ -998,7 +998,7 @@ output "dependency_chain" {
     temp_bucket        = aws_s3_bucket.processing_temp.id
   }
 }
-```
+```text
 
 </details>
 
@@ -1041,7 +1041,7 @@ if command -v xdg-open &> /dev/null; then
 elif command -v open &> /dev/null; then
     open dependency-graph.png
 fi
-```
+```text
 
 </details>
 
@@ -1068,7 +1068,7 @@ null_resource.infrastructure_ready (local-exec): Roles IAM: 4
 null_resource.infrastructure_ready (local-exec): Timestamp: 2024-03-07 10:30:00
 
 Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
-```
+```text
 
 ### Conceptos Clave
 
@@ -1361,7 +1361,7 @@ output "project_environment_buckets" {
 # ✅ Lista dinámica que puede cambiar
 # ✅ Map con configuraciones complejas
 # ❌ Cuando necesitas índice numérico
-```
+```text
 
 </details>
 
@@ -1410,7 +1410,7 @@ terraform plan -var='environments_list=["dev","prod"]'
 
 echo -e "\n✅ Experimento completed"
 echo "Observa las diferencias en los planes de Terraform"
-```
+```text
 
 </details>
 
@@ -1455,7 +1455,7 @@ app_buckets = {
     "versioning" = false
   }
 }
-```
+```text
 
 ### Conceptos Clave
 
@@ -1739,7 +1739,7 @@ output "lifecycle_examples" {
     }
   }
 }
-```
+```text
 
 </details>
 
@@ -1790,7 +1790,7 @@ echo -e "\n5️⃣  Triggers del null_resource:"
 terraform state show null_resource.bucket_config_monitor | grep -A 3 "triggers"
 
 echo -e "\n✅ Pruebas de lifecycle completadas"
-```
+```text
 
 </details>
 
@@ -1825,7 +1825,7 @@ on lifecycle-rules.tf line 95, in resource "aws_s3_bucket" "validated":
    98:     }
 
 Los datos deben retenerse mínimo 7 days (compliance requirement).
-```
+```text
 
 ### Conceptos Clave
 
@@ -1919,7 +1919,7 @@ awslocal iam list-roles --query 'Roles[?RoleName==`legacy-role-to-import`].RoleN
 
 echo -e "\n✅ Recursos 'existentes' creados exitosamente"
 echo "Ahora puedes importarlos a Terraform"
-```
+```text
 
 </details>
 
@@ -1927,7 +1927,7 @@ echo "Ahora puedes importarlos a Terraform"
 # Crear recursos existentes
 chmod +x create-manual-resources.sh
 ./create-manual-resources.sh
-```
+```text
 
 #### 6.2. Escribir Configuration para Import
 
@@ -2088,7 +2088,7 @@ terraform state list | grep imported
 
 echo -e "\n✅ Importación completed"
 echo "Los recursos ahora están gestionados por Terraform"
-```
+```text
 
 </details>
 
@@ -2096,7 +2096,7 @@ echo "Los recursos ahora están gestionados por Terraform"
 # Ejecutar importación
 chmod +x import-resources.sh
 ./import-resources.sh
-```
+```text
 
 #### 6.4. Importación Masiva con Script
 
@@ -2159,7 +2159,7 @@ date >> import-report.txt
 echo -e "\nRecursos importados:" >> import-report.txt
 terraform state list | grep imported >> import-report.txt
 echo -e "\n✅ Reporte generado: import-report.txt"
-```
+```text
 
 </details>
 
@@ -2202,7 +2202,7 @@ aws_iam_role.imported_legacy: Import complete!
 
 ✅ Importación completed
 Los recursos ahora están gestionados por Terraform
-```
+```text
 
 ### Conceptos Clave
 
@@ -2219,11 +2219,13 @@ Los recursos ahora están gestionados por Terraform
 ### Problema 1: For_Each con Lista que Cambia de Orden
 
 **Error:**
-```
+
+```text
 Error: Invalid for_each argument
-```
+```text
 
 **Solution:**
+
 ```hcl
 # Convertir lista a set (elimina orden)
 resource "aws_s3_bucket" "example" {
@@ -2237,22 +2239,25 @@ resource "aws_s3_bucket" "example" {
 **Problema:** Eliminar elemento del medio causa recreación de todos los siguientes
 
 **Solution:**
+
 ```hcl
 # Usar for_each en lugar de count
 resource "aws_s3_bucket" "example" {
   for_each = var.bucket_map  # ← Usar map con keys únicas
   bucket   = each.key
 }
-```
+```text
 
 ### Problema 3: Import Falla
 
 **Error:**
-```
+
+```text
 Error: Resource already exists in state
-```
+```text
 
 **Solution:**
+
 ```bash
 # Remover del state primero
 terraform state rm aws_s3_bucket.example
@@ -2264,15 +2269,17 @@ terraform import aws_s3_bucket.example bucket-name
 ### Problema 4: Circular Dependency
 
 **Error:**
-```
+
+```text
 Error: Cycle: aws_s3_bucket.a, aws_s3_bucket.b
-```
+```text
 
 **Solution:**
+
 ```hcl
 # Revisar dependencias y usar depends_on explícitamente si es necesario
 # O reformular la arquitectura para eliminar el ciclo
-```
+```text
 
 ### Problema 5: Lifecycle Prevent_Destroy No Funciona
 
@@ -2281,6 +2288,7 @@ Error: Cycle: aws_s3_bucket.a, aws_s3_bucket.b
 **Causa:** prevent_destroy solo funciona con recursos individuales (-target)
 
 **Solution:**
+
 ```bash
 # destroy completo (with -force o -auto-approve) ignora prevent_destroy
 # Protección real requiere policies a level de cuenta AWS/Azure/GCP
@@ -2327,6 +2335,7 @@ Error: Cycle: aws_s3_bucket.a, aws_s3_bucket.b
 **Continúa con:** [Exercise 03 - Modules](../03-modules/README.md)
 
 En el próximo exercise you will learn a:
+
 - Crear modules reutilizables
 - Publicar modules en registries
 - Usar modules de terceros

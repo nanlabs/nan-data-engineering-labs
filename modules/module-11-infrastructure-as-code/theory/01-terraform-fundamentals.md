@@ -1,6 +1,7 @@
 # Terraform Fundamentals: Introducción a Infrastructure as Code
 
 ## Tabla de Contenidos
+
 1. [¿Qué es Infrastructure as Code?](#qué-es-infrastructure-as-code)
 2. [Beneficios de IaC](#beneficios-de-iac)
 3. [Terraform vs Otras Herramientas](#terraform-vs-otras-herramientas)
@@ -25,6 +26,7 @@
 ### Conceptos Clave
 
 En el paradigma tradicional, los ingenieros de infraestructura:
+
 - Configuran servidores manualmente a través de consolas web
 - Documentan steps en wikis o documentos de texto
 - Repiten procesos manualmente para cada entorno
@@ -32,6 +34,7 @@ En el paradigma tradicional, los ingenieros de infraestructura:
 - Tienen dificultad para rastrear cambios
 
 Con Infrastructure as Code:
+
 - La infraestructura se define en archivos de código versionables
 - Los cambios se rastrean mediante control de versiones (Git)
 - La infraestructura se puede replicar consistentemente
@@ -55,6 +58,7 @@ Con Infrastructure as Code:
 #### Problema: Gestión Manual de Infraestructura
 
 Imagina que necesitas create un entorno de producción con:
+
 - 3 servidores web
 - 1 base de datos
 - 1 balanceador de carga
@@ -62,6 +66,7 @@ Imagina que necesitas create un entorno de producción con:
 - Almacenamiento S3
 
 Hacerlo manualmente implica:
+
 - 45-60 minutes de trabajo por entorno
 - Alto riesgo de errores humanos
 - Difficulty para replicar en múltiples regiones
@@ -71,6 +76,7 @@ Hacerlo manualmente implica:
 #### Solution: Infrastructure as Code
 
 Con IaC:
+
 ```hcl
 # Un archivo define TODO
 resource "aws_instance" "web" {
@@ -79,7 +85,7 @@ resource "aws_instance" "web" {
   ami           = var.ami_id
   # ... más configuration
 }
-```
+```text
 
 - Despliegue en 5 minutes
 - Cero errores de configuration
@@ -96,13 +102,15 @@ resource "aws_instance" "web" {
 La capacidad de create la misma infraestructura múltiples veces de manera consistente.
 
 **Sin IaC:**
-```
+
+```text
 Ingeniero 1: "Creé el servidor de staging"
 Ingeniero 2: "¿Qué configuration usaste?"
 Ingeniero 1: "Umm... creo que era t2.medium... ¿o t3.medium?"
-```
+```text
 
 **Con IaC:**
+
 ```hcl
 resource "aws_instance" "staging" {
   instance_type = "t3.medium"  # Definido claramente
@@ -124,9 +132,10 @@ git log --oneline infrastructure/
 a1b2c3d Aumentar instancia a t3.large
 e4f5g6h Agregar grupo de seguridad para RDS
 i7j8k9l Configuration inicial de VPC
-```
+```text
 
 Beneficios:
+
 - Auditoría completa de cambios
 - Rollback fácil a versiones anteriores
 - Code review antes de aplicar cambios
@@ -147,7 +156,7 @@ resource "aws_instance" "app" {
   vpc_id = aws_vpc.main.id
   # ...
 }
-```
+```text
 
 - Pull requests para revisar cambios
 - CI/CD para validate antes de aplicar
@@ -155,7 +164,7 @@ resource "aws_instance" "app" {
 
 ### 4. Consistencia Entre Entornos
 
-```
+```text
 Desarrollo ≈ Staging ≈ Producción
 ```
 
@@ -169,7 +178,7 @@ instance_type  = "t3.small"
 # variables-prod.tfvars
 instance_count = 5
 instance_type  = "t3.xlarge"
-```
+```text
 
 ### 5. Velocidad
 
@@ -179,12 +188,14 @@ instance_type  = "t3.xlarge"
 ### 6. Reducción de Errores
 
 Los errores humanos en configuration manual son comunes:
+
 - Puerto incorrecto abierto (security risk)
 - Región equivocada seleccionada
 - Tamaño de instancia incorrecto
 - Configuration de red inconsistente
 
 IaC elimina estos errores mediante:
+
 - Validation automática
 - Review de código
 - Testing automatizado
@@ -212,7 +223,7 @@ resource "aws_instance" "app" {
 resource "aws_db_instance" "db" {
   # ... configuration
 }
-```
+```text
 
 ---
 
@@ -258,15 +269,17 @@ Resources:
     Properties:
       InstanceType: t3.medium
       ImageId: ami-12345678
-```
+```text
 
 **Pros:**
+
 - Integración nativa con AWS
 - No requiere state management explícito
 - Gratis (solo pagas por recursos de AWS)
 - Stack policies para protección
 
 **Contras:**
+
 - Solo AWS (vendor lock-in)
 - JSON/YAML puede ser verboso
 - Menos flexible que Terraform
@@ -285,12 +298,14 @@ server = aws.ec2.Instance('my-server',
 ```
 
 **Pros:**
+
 - Lenguajes de programación reales (Python, TypeScript, Go)
 - Lógica compleja más fácil de implement
 - Type safety con TypeScript
 - Testing con frameworks estándar
 
 **Contras:**
+
 - Comunidad más pequeña
 - Menos modules disponibles
 - Puede ser "demasiado" flexible
@@ -305,15 +320,17 @@ server = aws.ec2.Instance('my-server',
     instance_type: t3.medium
     image: ami-12345678
     state: present
-```
+```text
 
 **Pros:**
+
 - Excelente para configuration management
 - Sin agentes requeridos
 - Sintaxis simple (YAML)
 - Gran ecosistema de roles
 
 **Contras:**
+
 - Imperativo (defines steps, no estado)
 - No tiene state management
 - Menos apropiado para cloud provisioning
@@ -322,6 +339,7 @@ server = aws.ec2.Instance('my-server',
 ### ¿Cuándo Usar Terraform?
 
 ✅ **Usa Terraform cuando:**
+
 - Necesitas multi-cloud o múltiples providers
 - Quieres infraestructura declarativa
 - Necesitas state management robusto
@@ -329,6 +347,7 @@ server = aws.ec2.Instance('my-server',
 - Tu equipo prefiere learn HCL
 
 ❌ **Considera alternativas cuando:**
+
 - Solo usas AWS y quieres integración nativa → CloudFormation
 - Tu equipo son developers y prefieren Python/TypeScript → Pulumi
 - Necesitas configuration management de servidores → Ansible
@@ -340,7 +359,7 @@ server = aws.ec2.Instance('my-server',
 
 Terraform tiene una arquitectura modular compuesta por tres componentes principales:
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │                 Terraform CLI                    │
 │                 (terraform)                      │
@@ -359,11 +378,12 @@ Terraform tiene una arquitectura modular compuesta por tres componentes principa
 │   State Backend   │
 │  (local/remote)   │
 └───────────────────┘
-```
+```text
 
 ### 1. Terraform Core
 
 **Funciones:**
+
 - Read configuration (archivos .tf)
 - Construye el grafo de recursos y dependencias
 - Determina el orden de operaciones
@@ -371,15 +391,17 @@ Terraform tiene una arquitectura modular compuesta por tres componentes principa
 - Actualiza el state
 
 **Workflow interno:**
+
 ```
 Load Config → Build Graph → Generate Plan → Execute Plan → Update State
-```
+```text
 
 ### 2. Providers
 
 Los providers son plugins que permiten a Terraform interactuar con APIs de servicios cloud y otros servicios.
 
 **Providers Populares:**
+
 - **aws**: Amazon Web Services
 - **azurerm**: Microsoft Azure
 - **google**: Google Cloud Platform
@@ -389,12 +411,14 @@ Los providers son plugins que permiten a Terraform interactuar con APIs de servi
 - **postgresql**: PostgreSQL
 
 **Arquitectura de Provider:**
-```
+
+```text
 Terraform Core ←→ Provider Plugin ←→ Service API
                   (aws provider)      (AWS API)
-```
+```text
 
 Cada provider:
+
 - Es un binario separado
 - Se descarga automáticamente en `terraform init`
 - Traduce HCL a llamadas API
@@ -463,7 +487,7 @@ El **state** es el mecanismo que Terraform usa para mapear recursos del mundo re
     <IDENTIFIER> = <EXPRESSION>
   }
 }
-```
+```text
 
 ### Bloques
 
@@ -478,9 +502,10 @@ resource "aws_instance" "web" {
     Name = "WebServer"
   }
 }
-```
+```text
 
 Componentes:
+
 - **Tipo de bloque**: `resource`
 - **Etiquetas**: `"aws_instance"` y `"web"`
 - **Cuerpo**: Todo entre `{}`
@@ -548,7 +573,7 @@ module "vpc" {
 
   cidr_block = "10.0.0.0/16"
 }
-```
+```text
 
 ### Argumentos
 
@@ -602,7 +627,7 @@ config = {
   version = "1.0"
   enabled = true
 }
-```
+```text
 
 #### Referencias
 
@@ -624,7 +649,7 @@ data.aws_ami.ubuntu.id
 
 # Referencia a module output
 module.vpc.vpc_id
-```
+```text
 
 #### Interpolación
 
@@ -635,7 +660,7 @@ name = "${var.project}-${var.environment}-server"
 # Para solo una variable, no es necesario ${}
 ami = var.ami_id  # Preferido
 ami = "${var.ami_id}"  # También funciona pero no necesario
-```
+```text
 
 #### Operadores
 
@@ -687,7 +712,7 @@ timestamp()  # "2024-03-07T12:34:56Z"
 # Encoding functions
 base64encode("hello")
 jsonencode({key = "value"})
-```
+```text
 
 ### For Expressions
 
@@ -705,7 +730,7 @@ jsonencode({key = "value"})
 [for subnet in var.subnets : [
   for zone in var.zones : "${subnet}-${zone}"
 ]]
-```
+```text
 
 ---
 
@@ -713,7 +738,7 @@ jsonencode({key = "value"})
 
 El workflow de Terraform sigue un ciclo predecible:
 
-```
+```text
 ┌─────────┐    ┌────────┐    ┌────────┐    ┌──────────┐
 │  Write  │───▶│  Init  │───▶│  Plan  │───▶│  Apply   │
 │  Code   │    │        │    │        │    │          │
@@ -750,22 +775,24 @@ provider "aws" {
 resource "aws_s3_bucket" "data" {
   bucket = "${var.project}-data-${var.environment}"
 }
-```
+```text
 
 ### 2. Init: Inicializar
 
 ```bash
 terraform init
-```
+```text
 
 **¿Qué hace `init`?**
+
 - Descarga providers especificados
 - Inicializa backend para state
 - Descarga modules referenciados
 - Create `.terraform/` directory
 
 **Output típico:**
-```
+
+```text
 Initializing the backend...
 Initializing provider plugins...
 - Finding hashicorp/aws versions matching "~> 5.0"...
@@ -776,6 +803,7 @@ Terraform has been successfully initialized!
 ```
 
 **Cuándo execute init:**
+
 - Primera vez en un directorio nuevo
 - Después de agregar nuevos providers
 - Después de cambiar configuration de backend
@@ -785,9 +813,10 @@ Terraform has been successfully initialized!
 
 ```bash
 terraform plan
-```
+```text
 
 **¿Qué hace `plan`?**
+
 - Read configuration actual
 - Read state actual
 - Consulta estado real de recursos (refresh)
@@ -795,7 +824,8 @@ terraform plan
 - Muestra qué cambios se aplicarán
 
 **Output típico:**
-```
+
+```text
 Terraform will perform the following actions:
 
   # aws_s3_bucket.data will be created
@@ -809,9 +839,10 @@ Terraform will perform the following actions:
     }
 
 Plan: 1 to add, 0 to change, 0 to destroy.
-```
+```text
 
 **Símbolos en plan:**
+
 - `+` : Recurso será creado
 - `-` : Recurso será destruido
 - `~` : Recurso será modificado in-place
@@ -819,6 +850,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.
 - `<=` : Recurso será leído durante apply
 
 **Guardar plan:**
+
 ```bash
 terraform plan -out=tfplan
 ```
@@ -829,16 +861,18 @@ Esto guarda el plan para aplicarlo después exactamente como se vio.
 
 ```bash
 terraform apply
-```
+```text
 
 **¿Qué hace `apply`?**
+
 - Execute un `plan` (a menos que uses plan guardado)
 - Pide confirmación
 - Execute cambios en el orden correcto (basado en dependencias)
 - Actualiza state file
 
 **Output típico:**
-```
+
+```text
 Do you want to perform these actions?
   Terraform will perform the actions described above.
   Only 'yes' will be accepted to approve.
@@ -849,27 +883,30 @@ aws_s3_bucket.data: Creating...
 aws_s3_bucket.data: Creation complete after 2s [id=myproject-data-dev]
 
 Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
-```
+```text
 
 **Aplicar sin confirmación:**
+
 ```bash
 terraform apply -auto-approve
 ```
 
 **Aplicar plan guardado:**
+
 ```bash
 terraform apply tfplan
-```
+```text
 
 ### 5. Destroy: Destruir Infraestructura
 
 ```bash
 terraform destroy
-```
+```text
 
 Elimina todos los recursos gestionados por Terraform.
 
 **¿Cuándo usar?:**
+
 - Entornos temporales (testing, demos)
 - Limpiar recursos no utilizados
 - Reconstruir desde cero
@@ -909,7 +946,7 @@ terraform state list
 
 # 10. (Cuando ya no se necesita) Destruir
 terraform destroy
-```
+```text
 
 ---
 
@@ -952,7 +989,7 @@ provider "aws" {
     keys = ["LastModified", "AutoScaling"]
   }
 }
-```
+```text
 
 ### Provider Requirements
 
@@ -972,9 +1009,10 @@ terraform {
     }
   }
 }
-```
+```text
 
 **Version constraints:**
+
 - `= 1.0.0` : Exactamente la versión 1.0.0
 - `!= 1.0.0` : Cualquiera excepto 1.0.0
 - `> 1.0.0` : Mayor que 1.0.0
@@ -1010,7 +1048,7 @@ resource "aws_s3_bucket" "west" {
   provider = aws.west
   bucket   = "my-bucket-west"
 }
-```
+```text
 
 ### AWS Provider: Configuration Común
 
@@ -1043,23 +1081,28 @@ provider "aws" {
 Terraform puede autenticarse con AWS de varias formas (en orden de precedencia):
 
 1. **Parámetros en Provider Block**
+
 ```hcl
 provider "aws" {
   access_key = "AKIAIOSFODNN7EXAMPLE"
   secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 }
-```
+```text
+
 ❌ **NO RECOMENDADO**: Credenciales en código
 
-2. **Variables de Entorno**
+1. **Variables de Entorno**
+
 ```bash
 export AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
 export AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 export AWS_REGION="us-east-1"
-```
+```text
+
 ✅ **RECOMENDADO** para CI/CD
 
-3. **Shared Credentials File**
+1. **Shared Credentials File**
+
 ```bash
 # ~/.aws/credentials
 [default]
@@ -1069,14 +1112,15 @@ aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 [production]
 aws_access_key_id = AKIAIOSFODNN7EXAMPLE2
 aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY2
-```
+```text
+
 ✅ **RECOMENDADO** para desarrollo local
 
-4. **IAM Role (EC2 Instance Profile)**
+1. **IAM Role (EC2 Instance Profile)**
 En instancias EC2 con IAM role asignado
 ✅ **RECOMENDADO** para execute desde EC2
 
-5. **ECS Task Role**
+2. **ECS Task Role**
 En ECS tasks con task role asignado
 ✅ **RECOMENDADO** para execute desde ECS
 
@@ -1134,7 +1178,7 @@ resource "<PROVIDER>_<TYPE>" "<NAME>" {
     <ARGUMENT> = <VALUE>
   }
 }
-```
+```text
 
 ### Ejemplos de Resources
 
@@ -1188,7 +1232,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_lake" {
     }
   }
 }
-```
+```text
 
 #### AWS EC2 Instance
 
@@ -1231,7 +1275,7 @@ resource "aws_instance" "web_server" {
     create_before_destroy = true
   }
 }
-```
+```text
 
 #### AWS RDS Database
 
@@ -1326,7 +1370,7 @@ resource "aws_instance" "web" {
   subnet_id              = aws_subnet.public.id  # ← Referencia
   vpc_security_group_ids = [aws_security_group.web.id]  # ← Referencia
 }
-```
+```text
 
 Terraform automáticamente crea el **grafo de dependencias** y crea recursos en el orden correcto.
 
@@ -1349,10 +1393,11 @@ resource "aws_instance" "web" {
     Name = "WebServer v1"  # Cambiar esto solo actualiza tags
   }
 }
-```
+```text
 
 En el plan verás `~` (modificación):
-```
+
+```text
 ~ resource "aws_instance" "web" {
     ~ tags = {
         ~ "Name" = "WebServer v1" -> "WebServer v2"
@@ -1369,15 +1414,16 @@ resource "aws_instance" "web" {
   ami           = "ami-12345"  # Cambiar AMI requiere recrear
   instance_type = "t3.medium"
 }
-```
+```text
 
 En el plan verás `-/+` (reemplazo):
-```
+
+```text
 -/+ resource "aws_instance" "web" {
     ~ ami           = "ami-12345" -> "ami-67890"
       instance_type = "t3.medium"
   }
-```
+```text
 
 #### Destroy
 
@@ -1388,7 +1434,7 @@ Cuando eliminas un resource del código o ejecutas `terraform destroy`:
     - ami           = "ami-12345"
     - instance_type = "t3.medium"
   }
-```
+```text
 
 ---
 
@@ -1408,7 +1454,7 @@ resource "aws_s3_bucket" "new_bucket" {
 data "aws_s3_bucket" "existing_bucket" {
   bucket = "already-exists-bucket"
 }
-```
+```text
 
 ### Sintaxis
 
@@ -1418,7 +1464,7 @@ data "<PROVIDER>_<TYPE>" "<NAME>" {
 }
 
 # Referencia: data.<TYPE>.<NAME>.<ATTRIBUTE>
-```
+```text
 
 ### Ejemplos Comunes
 
@@ -1481,7 +1527,7 @@ resource "aws_subnet" "private" {
     Name = "private-subnet-${count.index + 1}"
   }
 }
-```
+```text
 
 #### AWS VPC Existente
 
@@ -1511,7 +1557,7 @@ resource "aws_instance" "app" {
   instance_type = "t3.medium"
   subnet_id     = tolist(data.aws_subnets.private.ids)[0]
 }
-```
+```text
 
 #### AWS Caller Identity
 
@@ -1531,7 +1577,7 @@ output "account_info" {
 resource "aws_s3_bucket" "logs" {
   bucket = "logs-${data.aws_caller_identity.current.account_id}"
 }
-```
+```text
 
 #### AWS IAM Policy Document
 
@@ -1650,7 +1696,7 @@ variable "database_config" {
     allocated_storage = 100
   }
 }
-```
+```text
 
 ### Tipos de Variables
 
@@ -1699,7 +1745,7 @@ resource "aws_instance" "web" {
     Name = "web-${count.index + 1}"
   }
 }
-```
+```text
 
 ### Formas de Asignar Valores a Variables
 
@@ -1710,7 +1756,7 @@ variable "region" {
   type    = string
   default = "us-east-1"
 }
-```
+```text
 
 #### 2. Archivo terraform.tfvars
 
@@ -1728,17 +1774,17 @@ instance_count = 5
 environment    = "dev"
 instance_count = 1
 instance_type  = "t3.small"
-```
+```text
 
 ```bash
 terraform apply -var-file="dev.tfvars"
-```
+```text
 
 #### 4. Línea de comandos
 
 ```bash
 terraform apply -var="region=us-west-2" -var="environment=prod"
-```
+```text
 
 #### 5. Variables de entorno
 
@@ -1799,7 +1845,7 @@ resource "aws_instance" "web" {
   instance_type = local.instance_type
   tags          = local.all_tags
 }
-```
+```text
 
 **Diferencia: Variables vs Locals**
 
@@ -1869,7 +1915,7 @@ output "vpc_cidr_blocks" {
     for subnet in aws_subnet.private : subnet.cidr_block
   ]
 }
-```
+```text
 
 ### Uso de Outputs
 
@@ -1894,7 +1940,7 @@ instance_ids = [
   "i-abcdef1234567890",
   "i-567890abcdef1234",
 ]
-```
+```text
 
 #### Ver Outputs Específico
 
@@ -1922,7 +1968,7 @@ BUCKET=$(terraform output -raw bucket_name)
 
 # Subir archivo a S3
 aws s3 cp data.csv s3://$BUCKET/
-```
+```text
 
 #### Outputs Entre Modules
 
@@ -1953,7 +1999,7 @@ module "compute" {
 output "vpc_id" {
   value = module.networking.vpc_id
 }
-```
+```text
 
 ---
 
@@ -1964,11 +2010,13 @@ El **state** es la forma en que Terraform rastrea qué recursos ha creado y su e
 ### ¿Qué es el State?
 
 El state es un archivo JSON que contiene:
+
 - Mapeo entre recursos en código y recursos reales
 - Metadata sobre recursos y dependencias
 - Cach de valores de atributos de recursos
 
 **Archivo state básico:**
+
 ```json
 {
   "version": 4,
@@ -2001,7 +2049,7 @@ El state es un archivo JSON que contiene:
     }
   ]
 }
-```
+```text
 
 ### ¿Por Qué es Importante el State?
 
@@ -2020,9 +2068,10 @@ El state es un archivo JSON que contiene:
 ├── variables.tf
 ├── terraform.tfstate          ← State file
 └── terraform.tfstate.backup   ← Backup del state anterior
-```
+```text
 
 **Problemas:**
+
 - ❌ No se puede compartir fácilmente
 - ❌ No tiene locking (múltiples personas pueden aplicar cambios simultáneamente)
 - ❌ Sensible (contiene secrets)
@@ -2040,9 +2089,10 @@ terraform {
     dynamodb_table = "terraform-state-lock"
   }
 }
-```
+```text
 
 **Beneficios:**
+
 - ✅ Compartido entre equipo
 - ✅ Locking automático
 - ✅ Encriptación
@@ -2064,7 +2114,7 @@ aws_subnet.public[0]
 aws_instance.web[0]
 aws_instance.web[1]
 aws_s3_bucket.data
-```
+```text
 
 #### terraform state show
 
@@ -2090,7 +2140,7 @@ Actualiza state con el estado real actual sin modificar infraestructura:
 
 ```bash
 terraform refresh
-```
+```text
 
 ⚠️ Deprecated: Usa `terraform apply -refresh-only` en su lugar.
 
@@ -2105,13 +2155,14 @@ terraform refresh
 7. **No commitees state a Git**
 
 **`.gitignore` recomendado:**
+
 ```gitignore
 # Terraform
 .terraform/
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
-```
+```text
 
 ---
 
@@ -2128,7 +2179,7 @@ terraform init
 terraform init -upgrade           # Actualiza providers
 terraform init -reconfigure       # Reconfigura backend
 terraform init -migrate-state     # Migra state a nuevo backend
-```
+```text
 
 ### terraform validate
 
@@ -2159,7 +2210,7 @@ terraform fmt -recursive
 
 # Check (no modifica, solo verifica)
 terraform fmt -check
-```
+```text
 
 ### terraform plan
 
@@ -2179,7 +2230,7 @@ terraform plan -var="environment=prod" -var-file="prod.tfvars"
 
 # Plan parcial (solo ciertos resources)
 terraform plan -target=aws_instance.web
-```
+```text
 
 ### terraform apply
 
@@ -2199,7 +2250,7 @@ terraform apply -var="environment=prod"
 
 # Aplicar parcialmente
 terraform apply -target=aws_instance.web
-```
+```text
 
 ### terraform destroy
 
@@ -2231,7 +2282,7 @@ terraform output -json
 
 # Raw (sin quotes)
 terraform output -raw bucket_name
-```
+```text
 
 ### terraform show
 
@@ -2246,7 +2297,7 @@ terraform show tfplan
 
 # JSON format
 terraform show -json
-```
+```text
 
 ### terraform console
 
@@ -2266,7 +2317,7 @@ $ terraform console
   "subnet-1",
   "subnet-2",
 ]
-```
+```text
 
 ### terraform graph
 
@@ -2284,7 +2335,7 @@ Vamos a create un proyecto completo step a step: un entorno básico de aplicaci�
 
 ### Arquitectura
 
-```
+```text
 Internet
    │
    ▼
@@ -2301,11 +2352,11 @@ Internet
             │
             ▼
        [S3 Bucket]
-```
+```text
 
 ### Estructura de Archivos
 
-```
+```text
 project/
 ├── main.tf           # Recursos principales
 ├── variables.tf      # Definiciones de variables
@@ -2363,7 +2414,7 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
-```
+```text
 
 ### 2. main.tf
 
@@ -2654,7 +2705,7 @@ resource "aws_db_instance" "main" {
 
 # Data source for account ID
 data "aws_caller_identity" "current" {}
-```
+```text
 
 ### 3. outputs.tf
 
@@ -2698,7 +2749,7 @@ output "database_name" {
   description = "Database name"
   value       = aws_db_instance.main.db_name
 }
-```
+```text
 
 ### 4. terraform.tfvars
 
@@ -2751,7 +2802,7 @@ vpc_id = "vpc-abc123def456"
 
 # 6. Probar
 curl http://54.123.45.67
-```
+```text
 
 ### 6. Limpiar Recursos
 
@@ -2759,7 +2810,7 @@ curl http://54.123.45.67
 terraform destroy
 
 # Confirmar con: yes
-```
+```text
 
 ---
 
@@ -2768,36 +2819,42 @@ terraform destroy
 ### 1. Organización de Código
 
 ✅ **DO:**
+
 - Separar código en múltiples archivos (.tf)
 - Usar nombres descriptivos
 - Agrupar recursos relacionados
 - Usar modules para código reutilizable
 
 ❌ **DON'T:**
+
 - Poner todo en un solo archivo gigante
 - Usar nombres genéricos (like "resource1")
 
 ### 2. Variables y Outputs
 
 ✅ **DO:**
+
 - Definir variables con descriptions
 - Usar validation cuando sea apropiado
 - Marcar variables sensibles como `sensitive = true`
 - Proveer defaults razonables cuando sea posible
 
 ❌ **DON'T:**
+
 - Hardcodear valores en recursos
 - Exponer secrets en outputs no-sensitive
 
 ### 3. State Management
 
 ✅ **DO:**
+
 - Usar remote state en equipo
 - Habilitar state locking
 - Encriptar state files
 - Versionar state files
 
 ❌ **DON'T:**
+
 - Commitear state a Git
 - Editar state manualmente
 - Compartir state via archivos locales
@@ -2805,12 +2862,14 @@ terraform destroy
 ### 4. Seguridad
 
 ✅ **DO:**
+
 - Usar IAM roles en lugar de access keys
 - Encriptar datos sensibles
 - Seguir principio de least privilege
 - Usar recursos encriptados por defecto
 
 ❌ **DON'T:**
+
 - Commitear credenciales al código
 - Dar permisos excesivos
 - Dejar recursos públicos sin intención
@@ -2818,6 +2877,7 @@ terraform destroy
 ### 5. Testing y Validation
 
 ✅ **DO:**
+
 - Ejecutar `terraform validate` regularmente
 - Ejecutar `terraform fmt` antes de commits
 - Revisar plans cuidadosamente antes de apply
@@ -2854,20 +2914,24 @@ terraform destroy
 ## Recursos y Referencias
 
 ### Documentación Oficial
+
 - [Terraform Documentation](https://www.terraform.io/docs)
 - [AWS Provider Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - [HCL Configuration Language](https://www.terraform.io/docs/language/index.html)
 
 ### Tutoriales y Guías
+
 - [HashiCorp Learn](https://learn.hashicorp.com/terraform)
 - [Terraform Best Practices](https://www.terraform-best-practices.com/)
 
 ### Herramientas
+
 - [Terraform Registry](https://registry.terraform.io/) - Providers y modules
 - [tflint](https://github.com/terraform-linters/tflint) - Linter para Terraform
 - [terraform-docs](https://terraform-docs.io/) - Generador de documentación
 
 ### Comunidad
+
 - [Terraform Community Forum](https://discuss.hashicorp.com/c/terraform-core)
 - [Terraform GitHub](https://github.com/hashicorp/terraform)
 

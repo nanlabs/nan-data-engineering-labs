@@ -1,6 +1,7 @@
 # Exercise 06: Production Deployment
 
 ## Overview
+
 Deploy Flink applications to production with blue/green deployments, auto-scaling, comprehensive monitoring, disaster recovery, and cost optimization strategies.
 
 **Difficulty**: ⭐⭐⭐⭐ Expert
@@ -26,7 +27,7 @@ Deploy Flink applications to production with blue/green deployments, auto-scalin
 
 ## Architecture
 
-```
+```text
 ┌────────────────────────────────────────────────────────┐
 │                   PRODUCTION                           │
 │                                                        │
@@ -52,7 +53,7 @@ Deploy Flink applications to production with blue/green deployments, auto-scalin
    │CloudWatch│ │X-Ray │  │ Grafana │
    │Monitoring│ │Tracing│ │Dashboard│
    └──────────┘ └────────┘ └─────────┘
-```
+```text
 
 ## Task 1: Blue/Green Deployment Script (30 minutes)
 
@@ -419,7 +420,7 @@ main() {
 
 # Execute
 main
-```
+```text
 
 **Rollback script**:
 
@@ -629,7 +630,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     configure_autoscaling(args.app)
-```
+```text
 
 ## Task 3: Comprehensive Monitoring (30 minutes)
 
@@ -890,7 +891,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     setup_monitoring(args.app)
-```
+```text
 
 ## Task 4: Disaster Recovery Testing (25 minutes)
 
@@ -1014,7 +1015,7 @@ echo "=========================================="
 echo "✓ Recovery Time Objective (RTO): < 5 minutes"
 echo "✓ Recovery Point Objective (RPO): < 1 minute (checkpoint interval)"
 echo "✓ All scenarios passed"
-```
+```text
 
 ## Task 5: Cost Optimization (20 minutes)
 
@@ -1143,9 +1144,10 @@ aws logs tail /aws/kinesis-analytics/fraud-detection-app --follow
 
 # Check specific error types
 aws logs filter-pattern "ERROR" --log-group-name ...
-```
+```text
 
 **Resolution**:
+
 1. Check for data format issues
 2. Verify external dependencies (DynamoDB, SageMaker)
 3. Scale up if CPU > 80%
@@ -1158,15 +1160,17 @@ aws logs filter-pattern "ERROR" --log-group-name ...
 **Symptoms**: Processing lag > 30 seconds
 
 **Diagnosis**:
+
 ```bash
 # Check current lag
 aws cloudwatch get-metric-statistics \
     --namespace AWS/KinesisAnalytics \
     --metric-name MillisBehindLatest \
     ...
-```
+```text
 
 **Resolution**:
+
 1. Increase parallelism (scale out)
 2. Optimize expensive operations (reduce joins)
 3. Check for data skew (hot keys)
@@ -1178,6 +1182,7 @@ aws cloudwatch get-metric-statistics \
 **Symptoms**: NumFailedCheckpoints > 0
 
 **Resolution**:
+
 1. Check S3 permissions
 2. Verify checkpoint storage space
 3. Reduce state size
@@ -1191,7 +1196,7 @@ aws cloudwatch get-metric-statistics \
 
 ```bash
 ./rollback.sh fraud-detection-app snapshot-name
-```
+```text
 
 ### Manual Failover (Multi-Region)
 
@@ -1204,9 +1209,10 @@ aws route53 change-resource-record-sets \
 
 ## On-Call Contacts
 
-- Primary: oncall@example.com, +1-555-0100
-- Escalation: manager@example.com, +1-555-0101
-```
+- Primary: <oncall@example.com>, +1-555-0100
+- Escalation: <manager@example.com>, +1-555-0101
+
+```text
 
 ## Validation Checklist
 

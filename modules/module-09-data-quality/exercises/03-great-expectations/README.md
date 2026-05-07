@@ -38,7 +38,7 @@ great_expectations init
 # └── uncommitted/
 #     ├── data_docs/                # HTML reports
 #     └── validations/              # Validation results
-```
+```text
 
 ## 📝 Exercises
 
@@ -57,7 +57,7 @@ context = gx.get_context()
 datasource = context.sources.add_pandas("ecommerce_datasource")
 
 print("✅ Datasource creado")
-```
+```text
 
 **Task 1.2: Create Expectation Suite - Programmatically**
 
@@ -119,7 +119,7 @@ validator.expect_column_values_to_be_in_set(
 # Guardar suite
 validator.save_expectation_suite(discard_failed_expectations=False)
 print(f"✅ Expectation suite '{suite_name}' creada con {len(validator.get_expectation_suite().expectations)} expectations")
-```
+```text
 
 **Task 1.3: Crear Expectation Suite - Customers**
 
@@ -154,7 +154,7 @@ suite = profiler.build_suite()
 validator.save_expectation_suite()
 
 print(f"✅ Suite auto-generada con {len(suite.expectations)} expectations")
-```
+```text
 
 ---
 
@@ -177,7 +177,7 @@ else:
             expectation_type = result["expectation_config"]["expectation_type"]
             kwargs = result["expectation_config"]["kwargs"]
             print(f"  - {expectation_type}: {kwargs}")
-```
+```text
 
 **Task 2.2: Crear Checkpoint**
 
@@ -201,7 +201,7 @@ checkpoint_config = {
 # Crear checkpoint
 context.add_checkpoint(**checkpoint_config)
 print("✅ Checkpoint creado")
-```
+```text
 
 **Task 2.3: Ejecutar Checkpoint**
 
@@ -245,7 +245,7 @@ context.build_data_docs()
 
 # Abrir en navegador
 context.open_data_docs()
-```
+```text
 
 **Task 3.2: Personalizar Data Docs**
 
@@ -262,7 +262,7 @@ data_docs_sites:
       class_name: DefaultSiteIndexBuilder
       show_cta_footer: true
       site_name: "E-commerce Data Quality"
-```
+```text
 
 ---
 
@@ -298,7 +298,7 @@ validator.expect_column_values_to_be_valid_email(
     column="email",
     mostly=0.95  # 95% deben ser válidos
 )
-```
+```text
 
 **Task 4.2: Custom Expectation - Phone**
 
@@ -360,7 +360,7 @@ try:
 except ValueError as e:
     print(f"❌ Pipeline failed: {e}")
     # Send alert, log error, etc.
-```
+```text
 
 **Task 5.2: Airflow Integration**
 
@@ -400,7 +400,7 @@ with DAG("etl_with_ge_validation", schedule_interval="@daily") as dag:
     load = PythonOperator(task_id="load", python_callable=load_data)
 
     extract >> validate >> load
-```
+```text
 
 ---
 
@@ -424,9 +424,9 @@ with DAG("etl_with_ge_validation", schedule_interval="@daily") as dag:
 
 ## 📚 resources
 
-- **GE Docs**: https://docs.greatexpectations.io/
-- **Expectations Gallery**: https://greatexpectations.io/expectations/
-- **Tutorials**: https://docs.greatexpectations.io/docs/tutorials/
+- **GE Docs**: <https://docs.greatexpectations.io/>
+- **Expectations Gallery**: <https://greatexpectations.io/expectations/>
+- **Tutorials**: <https://docs.greatexpectations.io/docs/tutorials/>
 
 ## ➡️ Next Exercise
 

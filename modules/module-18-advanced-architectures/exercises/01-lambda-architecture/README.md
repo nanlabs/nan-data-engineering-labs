@@ -17,7 +17,7 @@ By completing this exercise, you will:
 
 ## Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                      Raw Events                              │
 │   (User actions: page views, purchases, clicks)             │
@@ -51,17 +51,19 @@ By completing this exercise, you will:
               │ Output: Unified  │
               │ analytics view   │
               └──────────────────┘
-```
+```text
 
 ## Use Case: E-commerce User Analytics
 
 **Business Question**: "What is the total revenue and order count per user?"
 
 **Challenge**:
+
 - **Historical accuracy**: Need perfect count from all-time data (batch)
 - **Real-time freshness**: Need today's orders immediately (speed)
 
 **Lambda Solution**:
+
 - **Batch Layer**: Process all orders daily → accurate lifetime metrics
 - **Speed Layer**: Process orders real-time → today's metrics
 - **Serving Layer**: Merge batch (yesterday) + real-time (today) = complete view
@@ -90,7 +92,7 @@ By completing this exercise, you will:
 
 ```bash
 pip install boto3 pandas pyarrow awswrangler
-```
+```text
 
 ### 2. Start LocalStack (Optional)
 
@@ -107,9 +109,10 @@ aws --endpoint-url=http://localhost:4566 s3 ls
 ```bash
 # Run batch_layer.py once to create resources
 python batch_layer.py --mode setup
-```
+```text
 
 This creates:
+
 - S3 bucket: `lambda-arch-batch-views`
 - S3 bucket: `lambda-arch-raw-data`
 - Kinesis stream: `orders-stream` (1 shard)
@@ -139,7 +142,7 @@ df = spark.read.parquet("s3://lambda-arch-raw-data/orders/")
 # | ord_002  | user_123  | 49.50  | 2025-02-20 |
 # | ord_003  | user_456  | 199.00 | 2025-03-01 |
 # +----------+-----------+--------+------------+
-```
+```text
 
 #### **Step 2: Aggregate by User**
 
@@ -160,7 +163,7 @@ user_metrics = df.groupBy("user_id").agg(
 # | user_123| 25             | 1,247.50        | 49.90          |
 # | user_456| 10             | 890.00          | 89.00          |
 # +---------+----------------+-----------------+----------------+
-```
+```text
 
 #### **Step 3: Write to Batch Views (S3 + Athena)**
 
@@ -204,11 +207,11 @@ python batch_layer.py --env aws --date 2026-03-09 --dry-run false
 # Option 3: Generate sample data first
 python batch_layer.py --mode generate-data --records 100000
 python batch_layer.py --mode batch-process
-```
+```text
 
 ### Expected Output
 
-```
+```text
 === Batch Layer Execution ===
 📊 Processing Date: 2026-03-09
 📁 Raw Data: s3://lambda-arch-raw-data/orders/year=2026/month=03/
@@ -230,11 +233,12 @@ python batch_layer.py --mode batch-process
 
 🔍 Query Example (Athena):
    SELECT * FROM user_metrics WHERE user_id = 'user_123'
-```
+```text
 
 ### Performance Tuning
 
 **Slow Performance** (>1 hour for 10M orders):
+
 1. Increase Glue DPUs: `--number-of-workers 10` (default: 2)
 2. Partition raw data by date: `s3://.../year=2026/month=03/day=09/`
 3. Use Delta Lake: `df.write.format("delta").save()` (faster updates)
@@ -306,7 +310,7 @@ def update_realtime_metrics(order):
             ':timestamp': order['timestamp']
         }
     )
-```
+```text
 
 #### **Step 3: Reset Daily** (Midnight Cron)
 
@@ -338,7 +342,7 @@ def reset_realtime_metrics():
             UpdateExpression='SET orders_today = :zero, revenue_today = :zero',
             ExpressionAttributeValues={':zero': Decimal('0')}
         )
-```
+```text
 
 ### Running Speed Layer
 
@@ -352,7 +356,7 @@ python speed_layer.py --mode consumer --process-continuous
 
 # Check DynamoDB metrics
 python speed_layer.py --mode query --user-id user_123
-```
+```text
 
 ### Expected Output
 
@@ -386,7 +390,7 @@ python speed_layer.py --mode query --user-id user_123
    ├─ Lambda: $4/day (1M invocations)
    ├─ DynamoDB: $8/day (writes)
    └─ Total: $31/day = $930/month
-```
+```text
 
 ---
 
@@ -415,7 +419,7 @@ def get_today_metrics(user_id):
         'orders_today': response['Item'].get('orders_today', 0),
         'revenue_today': float(response['Item'].get('revenue_today', 0))
     }
-```
+```text
 
 ##### **Pattern 2**: Historical data from Batch Layer
 
@@ -436,7 +440,7 @@ def get_lifetime_metrics(user_id):
 
     result = athena.execute_query(query)
     return result[0] if result else {}
-```
+```text
 
 ##### **Pattern 3**: Merged Complete View
 
@@ -519,7 +523,7 @@ def get_top_users_by_revenue(limit=10):
     combined.sort(key=lambda x: x['total_revenue'], reverse=True)
 
     return combined[:limit]
-```
+```text
 
 ### Running Serving Layer
 
@@ -533,11 +537,11 @@ python serving_layer.py --mode top-users --limit 10
 # API server (FastAPI)
 python serving_layer.py --mode api --port 8000
 # Then: curl http://localhost:8000/api/users/user_123
-```
+```text
 
 ### Expected Output
 
-```
+```text
 === Serving Layer Query ===
 👤 User: user_123
 
@@ -585,7 +589,7 @@ python batch_layer.py --mode batch-process
 python serving_layer.py --mode validate-batch
 
 # ✅ Validation: Total revenue matches expected ($500,000)
-```
+```text
 
 ### Task 2: Verify Real-Time Latency
 
@@ -594,7 +598,7 @@ python serving_layer.py --mode validate-batch
 python speed_layer.py --mode latency-test --samples 100
 
 # Expected: <1 second (p50), <2 seconds (p99)
-```
+```text
 
 ### Task 3: Verify Merge Logic
 
@@ -609,7 +613,7 @@ result = serving_layer.get_complete_user_metrics('user_test')
 # ✅ Validation:
 assert result['total_orders'] == 23  # 20 + 3
 assert result['total_revenue'] == 1150.00  # $1,000 + $150
-```
+```text
 
 ---
 
@@ -622,6 +626,7 @@ assert result['total_revenue'] == 1150.00  # $1,000 + $150
 **Task**: Implement incremental updates (only process new data).
 
 **Hint**:
+
 ```python
 # Instead of reading all data
 df = spark.read.parquet("s3://raw-data/orders/")  # All-time (TB)
@@ -639,6 +644,7 @@ df = spark.read.parquet("s3://raw-data/orders/date=2026-03-08/")  # 1 day (GB)
 **Task**: Implement watermarks to handle late arrivals.
 
 **Hint**:
+
 ```python
 # Track event_time vs processing_time
 event_time = datetime.fromisoformat(order['timestamp'])
@@ -650,7 +656,7 @@ if delay > 3600:  # 1 hour late
     logger.warning(f"Late event: {delay}s delay")
 else:
     update_realtime_metrics(order)
-```
+```text
 
 ### Challenge 3: Cost Optimization
 
@@ -659,6 +665,7 @@ else:
 **Task**: Calculate break-even vs batch-only.
 
 **Analysis**:
+
 ```python
 # Batch-only: 24-hour delay, $255/month (Glue)
 # Lambda (batch + speed): <1 second delay, $1,185/month (Glue + Kinesis)
@@ -667,7 +674,7 @@ else:
 # When is real-time worth it?
 # If 1-second data increases revenue by >$930/month → Worth it
 # Example: Fraud detection (save $10K/month in fraud) → Justified
-```
+```text
 
 ---
 
@@ -690,6 +697,7 @@ else:
 ### When to Use Lambda Architecture
 
 **✅ Use When**:
+
 - Accuracy is critical (banking, healthcare, financial reporting)
 - Complex batch analytics (ML training, multi-table joins)
 - Reprocessing is frequent (fix bugs, add features, change metrics)
@@ -697,6 +705,7 @@ else:
 - Cost of errors > cost of complexity (e.g., wrong fraud detection = lost $$$)
 
 **❌ Don't Use When**:
+
 - Simple analytics (single-table aggregations)
 - Small team (<5 engineers, can't maintain 2 systems)
 - Cost-sensitive (batch-only is 3x cheaper)
@@ -705,12 +714,14 @@ else:
 ### Cost Comparison
 
 **Lambda Architecture** (10M events/day):
+
 - Batch: $255/month (Glue, daily)
 - Speed: $930/month (Kinesis + Lambda)
 - Storage: $150/month (S3 + DynamoDB)
 - **Total: $1,335/month**
 
 **Batch-Only** (10M events/day):
+
 - Batch: $255/month (Glue, daily)
 - Storage: $50/month (S3 only)
 - **Total: $305/month**
@@ -726,16 +737,19 @@ else:
 ### Netflix: Personalization Lambda Architecture
 
 **Batch Layer**:
+
 - Spark job (daily): Collaborative filtering (all user-movie interactions)
 - Output: Matrix factorization model (users × movies)
 - Time: 4 hours (process 1B+ interactions)
 
 **Speed Layer**:
+
 - Kinesis: User viewing session (play, pause, stop)
 - Lambda: Update current session preferences
 - Time: <100ms (real-time)
 
 **Serving Layer**:
+
 - Merge: Batch recommendations + session boost
 - Example: "Continue Watching" row (batch) + "Because you watched X" (session)
 
@@ -744,14 +758,17 @@ else:
 ### LinkedIn: Feed Ranking Lambda Architecture
 
 **Batch Layer**:
+
 - Hadoop job (daily): Compute user-post relevance scores
 - Output: Precomputed scores for 800M members
 
 **Speed Layer**:
+
 - Kafka: User interactions (like, comment, share)
 - Samza: Update trending score (viral content)
 
 **Serving Layer**:
+
 - Merge: Batch (personal relevance) + Speed (trending) = Feed ranking
 
 **Result**: Sub-second feed generation, 99.9% uptime.
@@ -769,6 +786,7 @@ After completing Exercise 01:
 5. 🛡️ **Production**: Add monitoring (CloudWatch alarms), error handling
 
 **Estimated Savings vs Batch-Only**:
+
 - **Latency Reduction**: 24 hours → <1 second (86,400x faster)
 - **Business Value**: Enables real-time fraud detection, personalization
 - **Extra Cost**: $1,030/month (must justify with revenue increase)
@@ -782,6 +800,7 @@ After completing Exercise 01:
 **Symptom**: Glue job fails after 2 hours.
 
 **Solutions**:
+
 1. Increase DPUs: `--number-of-workers 20`
 2. Filter data: `df.where(F.col("date") >= "2026-01-01")`  # Only 1 year
 3. Enable predicate pushdown: Partition raw data by date
@@ -791,6 +810,7 @@ After completing Exercise 01:
 **Symptom**: `ProvisionedThroughputExceededException`
 
 **Solutions**:
+
 1. Increase shards: `kinesis.update_shard_count(StreamName='orders-stream', TargetShardCount=5)`
 2. Use record aggregation: `kinesis_agg` library (100 records → 1 API call)
 3. Batch writes: `put_records()` instead of `put_record()` (500 records/call)
@@ -800,6 +820,7 @@ After completing Exercise 01:
 **Symptom**: Some users have 1,000x more orders (celebrities).
 
 **Solutions**:
+
 1. Partition key: Change from `user_id` to `user_id#date` (distribute writes)
 2. DynamoDB Accelerator (DAX): Cache hot items
 3. Sharding: Split hot users across multiple items
@@ -809,6 +830,7 @@ After completing Exercise 01:
 **Symptom**: Serving layer slow.
 
 **Solutions**:
+
 1. Cache results: ElastiCache for frequent queries (user dashboards)
 2. Materialize merged view: Run serving layer logic in batch (daily), cache results
 3. Index optimization: Add GSI (Global Secondary Index) on DynamoDB
@@ -818,15 +840,18 @@ After completing Exercise 01:
 ## Additional Resources
 
 **AWS Documentation**:
+
 - [AWS Glue Developer Guide](https://docs.aws.amazon.com/glue/)
 - [Kinesis Developer Guide](https://docs.aws.amazon.com/kinesis/)
 - [Lambda Best Practices](https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html)
 
 **Blog Posts**:
+
 - [Lambda Architecture at Uber](https://eng.uber.com/big-data-messaging/)
 - [Netflix Lambda Processing](https://netflixtechblog.com/lambda-processing-f34b5e6b5f8c)
 
 **Video**:
+
 - [AWS re:Invent: Building Lambda Architecture on AWS](https://www.youtube.com/watch?v=example) (fictional link)
 
 ---

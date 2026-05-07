@@ -61,7 +61,8 @@ By completing this checkpoint, you will:
 
 **Objective**: Set up your development environment and plan the lakehouse architecture.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Clone the starter template repository
 - [ ] Review the project requirements and success criteria
 - [ ] Set up AWS credentials and configure AWS CLI
@@ -71,7 +72,8 @@ By completing this checkpoint, you will:
 - [ ] Define data layer naming conventions
 - [ ] Document security and governance requirements
 
-#### TODOs:
+#### TODOs
+
 ```bash
 # TODO: Install required tools
 # - Terraform >= 1.0
@@ -86,9 +88,10 @@ aws configure --profile lakehouse-dev
 export AWS_PROFILE=lakehouse-dev
 export AWS_REGION=us-east-1
 export PROJECT_NAME=enterprise-lakehouse
-```
+```text
 
-#### Deliverables:
+#### Deliverables
+
 - Architecture diagram (draw.io, Lucidchart, or similar)
 - Project plan document
 - Development environment ready
@@ -99,7 +102,8 @@ export PROJECT_NAME=enterprise-lakehouse
 
 **Objective**: Provision core infrastructure using Terraform.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Initialize Terraform workspace
 - [ ] Define S3 buckets for each data layer
 - [ ] Configure S3 bucket policies and encryption
@@ -109,7 +113,8 @@ export PROJECT_NAME=enterprise-lakehouse
 - [ ] Set up CloudWatch Log Groups
 - [ ] Enable AWS CloudTrail for audit logging
 
-#### TODOs:
+#### TODOs
+
 ```hcl
 # TODO: In infrastructure/terraform/main.tf
 # 1. Define S3 buckets:
@@ -132,9 +137,10 @@ export PROJECT_NAME=enterprise-lakehouse
 #    - glue_job_role
 #    - lambda_execution_role
 #    - step_functions_role
-```
+```text
 
-#### Validation:
+#### Validation
+
 ```bash
 # Run terraform plan to preview changes
 terraform plan -out=tfplan
@@ -145,9 +151,10 @@ terraform apply tfplan
 # Verify resources were created
 aws s3 ls | grep lakehouse
 aws glue get-databases
-```
+```text
 
-#### Deliverables:
+#### Deliverables
+
 - Complete Terraform configuration files
 - Successfully provisioned AWS resources
 - IAM roles and policies documented
@@ -158,7 +165,8 @@ aws glue get-databases
 
 **Objective**: Build the raw-to-bronze data ingestion pipeline.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Create raw data ingestion Glue job
 - [ ] Implement data validation checks
 - [ ] Add metadata tracking (ingestion timestamp, source, etc.)
@@ -168,7 +176,8 @@ aws glue get-databases
 - [ ] Configure Glue job parameters and schedule
 - [ ] Test with sample datasets
 
-#### TODOs:
+#### TODOs
+
 ```python
 # TODO: In pipelines/glue-jobs/raw_to_bronze.py
 
@@ -194,13 +203,15 @@ aws glue get-databases
 # - Update statistics
 ```
 
-#### Sample Data Requirements:
+#### Sample Data Requirements
+
 - Customer data (1M+ records)
 - Transaction data (10M+ records)
 - Product catalog (100K+ records)
 - Store locations (10K+ records)
 
-#### Deliverables:
+#### Deliverables
+
 - Working raw-to-bronze Glue job
 - Test results with sample data
 - Data quality report
@@ -211,7 +222,8 @@ aws glue get-databases
 
 **Objective**: Implement data cleansing and standardization pipeline.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Create bronze-to-silver Glue job
 - [ ] Implement data cleansing rules
 - [ ] Standardize data types and formats
@@ -222,7 +234,8 @@ aws glue get-databases
 - [ ] Create business keys and surrogate keys
 - [ ] Set up schema evolution handling
 
-#### TODOs:
+#### TODOs
+
 ```python
 # TODO: In pipelines/glue-jobs/bronze_to_silver.py
 
@@ -255,15 +268,17 @@ aws glue get-databases
 # - Use optimized Parquet format
 # - Partition by date and category
 # - Update Glue Catalog
-```
+```text
 
-#### Data Quality Rules:
+#### Data Quality Rules
+
 - Customer email must be valid format
 - Transaction amount must be positive
 - Dates must be within valid range
 - Foreign keys must exist in reference tables
 
-#### Deliverables:
+#### Deliverables
+
 - Working bronze-to-silver Glue job
 - SCD Type 2 implementation
 - Data quality validation report
@@ -274,7 +289,8 @@ aws glue get-databases
 
 **Objective**: Create business-ready analytical datasets.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Design gold layer schema (star/snowflake)
 - [ ] Create dimension tables (customer, product, date, store)
 - [ ] Create fact tables (sales, inventory)
@@ -284,7 +300,8 @@ aws glue get-databases
 - [ ] Optimize for query performance
 - [ ] Document business logic
 
-#### TODOs:
+#### TODOs
+
 ```python
 # TODO: Create dimension tables
 # - dim_customer: Customer demographics and attributes
@@ -308,16 +325,18 @@ aws glue get-databases
 # - Apply Z-ordering/clustering
 # - Set appropriate partitioning
 # - Enable table statistics
-```
+```text
 
-#### Business Metrics:
+#### Business Metrics
+
 - Revenue by product category
 - Customer lifetime value (CLV)
 - Inventory turnover ratio
 - Same-store sales growth
 - Customer acquisition cost (CAC)
 
-#### Deliverables:
+#### Deliverables
+
 - Complete gold layer schema
 - Aggregation pipelines
 - Business metrics documentation
@@ -328,7 +347,8 @@ aws glue get-databases
 
 **Objective**: Implement data governance and security controls.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Enable Lake Formation on S3 buckets
 - [ ] Configure Lake Formation database permissions
 - [ ] Set up table-level security
@@ -338,7 +358,8 @@ aws glue get-databases
 - [ ] Configure cross-account access (if needed)
 - [ ] Document access control policies
 
-#### TODOs:
+#### TODOs
+
 ```bash
 # TODO: Register S3 locations with Lake Formation
 aws lakeformation register-resource \
@@ -359,16 +380,18 @@ aws lakeformation register-resource \
 # - Enable CloudTrail for Lake Formation
 # - Monitor access patterns
 # - Alert on suspicious activity
-```
+```text
 
-#### Security Requirements:
+#### Security Requirements
+
 - Encryption at rest (S3-SSE or KMS)
 - Encryption in transit (TLS)
 - MFA for sensitive operations
 - Least privilege access principle
 - Data masking for PII
 
-#### Deliverables:
+#### Deliverables
+
 - Lake Formation configuration
 - Access control policies documented
 - Security audit report
@@ -379,7 +402,8 @@ aws lakeformation register-resource \
 
 **Objective**: Optimize analytical queries for performance and cost.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Create Athena workgroups
 - [ ] Configure query result location
 - [ ] Set up data catalog for Athena
@@ -389,7 +413,8 @@ aws lakeformation register-resource \
 - [ ] Partition pruning strategies
 - [ ] Monitor query performance
 
-#### TODOs:
+#### TODOs
+
 ```sql
 -- TODO: Create business-ready views in sql/business_queries.sql
 
@@ -418,14 +443,16 @@ aws lakeformation register-resource \
 -- Employee productivity metrics
 ```
 
-#### Optimization Techniques:
+#### Optimization Techniques
+
 - Partition by date and high-cardinality fields
 - Use Parquet with compression
 - Create covering indexes
 - Implement query result caching
 - Use CTAS for complex queries
 
-#### Deliverables:
+#### Deliverables
+
 - Optimized SQL queries
 - Query performance benchmarks
 - Cost analysis report
@@ -436,7 +463,8 @@ aws lakeformation register-resource \
 
 **Objective**: Add real-time data processing capabilities.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Set up Kinesis Data Stream
 - [ ] Create Kinesis Firehose delivery stream
 - [ ] Configure Lambda for stream processing
@@ -446,7 +474,8 @@ aws lakeformation register-resource \
 - [ ] Create real-time dashboards
 - [ ] Monitor streaming metrics
 
-#### TODOs:
+#### TODOs
+
 ```python
 # TODO: Create Kinesis stream processor
 # - Process transaction events in real-time
@@ -462,15 +491,17 @@ aws lakeformation register-resource \
 # - Dead letter queue for failed records
 # - Retry logic with exponential backoff
 # - Alerting for stream processing errors
-```
+```text
 
-#### Streaming Use Cases:
+#### Streaming Use Cases
+
 - Real-time transaction processing
 - Fraud detection alerts
 - Inventory level monitoring
 - Customer activity tracking
 
-#### Deliverables:
+#### Deliverables
+
 - Working streaming pipeline
 - Real-time dashboard (optional)
 - Latency benchmarks
@@ -481,7 +512,8 @@ aws lakeformation register-resource \
 
 **Objective**: Automate pipeline execution and implement monitoring.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Create Step Functions state machine
 - [ ] Define pipeline dependencies
 - [ ] Configure scheduling (EventBridge)
@@ -491,7 +523,8 @@ aws lakeformation register-resource \
 - [ ] Configure SNS notifications
 - [ ] Document operational procedures
 
-#### TODOs:
+#### TODOs
+
 ```json
 // TODO: Define Step Functions workflow
 {
@@ -517,16 +550,18 @@ aws lakeformation register-resource \
 // - Alarms for pipeline failures
 // - SNS topic for notifications
 // - Cost monitoring and alerts
-```
+```text
 
-#### Monitoring Metrics:
+#### Monitoring Metrics
+
 - Pipeline execution time
 - Data processing volume
 - Error rates and types
 - Cost per pipeline run
 - Data quality scores
 
-#### Deliverables:
+#### Deliverables
+
 - Step Functions workflow
 - CloudWatch dashboards
 - Alert configuration documentation
@@ -537,7 +572,8 @@ aws lakeformation register-resource \
 
 **Objective**: Ensure quality and provide comprehensive documentation.
 
-#### Tasks:
+#### Tasks
+
 - [ ] Create unit tests for data transformations
 - [ ] Implement integration tests for pipelines
 - [ ] Perform end-to-end testing
@@ -547,7 +583,8 @@ aws lakeformation register-resource \
 - [ ] Document architecture decisions
 - [ ] Prepare final presentation
 
-#### TODOs:
+#### TODOs
+
 ```python
 # TODO: Create test suite
 # - Unit tests for transformation functions
@@ -560,9 +597,10 @@ aws lakeformation register-resource \
 # - Error handling: Malformed data
 # - Scale testing: Large data volumes
 # - Recovery testing: Failure scenarios
-```
+```text
 
-#### Documentation Requirements:
+#### Documentation Requirements
+
 - Architecture overview
 - Data dictionary
 - Pipeline documentation
@@ -571,7 +609,8 @@ aws lakeformation register-resource \
 - Performance benchmarks
 - Cost analysis
 
-#### Deliverables:
+#### Deliverables
+
 - Complete test suite
 - Documentation package
 - Final project presentation
@@ -624,7 +663,7 @@ cat README.md  # You're reading this!
 
 ### Project Structure
 
-```
+```text
 module-checkpoint-03-enterprise-data-lakehouse/
 ├── starter-template/           # Your working directory
 │   ├── README.md              # This file
@@ -645,7 +684,7 @@ module-checkpoint-03-enterprise-data-lakehouse/
 ├── docs/                      # Additional documentation
 ├── validation/                # Validation scripts
 └── requirements.txt
-```
+```text
 
 ---
 
@@ -751,16 +790,19 @@ Your project will be evaluated on:
 ## 📚 Resources
 
 ### AWS Documentation
+
 - [AWS Lake Formation Developer Guide](https://docs.aws.amazon.com/lake-formation/)
 - [AWS Glue Developer Guide](https://docs.aws.amazon.com/glue/)
 - [Amazon Athena User Guide](https://docs.aws.amazon.com/athena/)
 - [Apache Spark Documentation](https://spark.apache.org/docs/latest/)
 
 ### Terraform
+
 - [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/)
 - [Terraform Best Practices](https://www.terraform.io/docs/cloud/guides/recommended-practices/)
 
 ### Additional Reading
+
 - "The Data Lakehouse Architecture" - Databricks
 - "AWS Well-Architected Framework" - AWS
 - "Designing Data-Intensive Applications" - Martin Kleppmann

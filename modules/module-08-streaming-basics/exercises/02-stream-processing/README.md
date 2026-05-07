@@ -9,6 +9,7 @@
 ## 🎯 Objectives
 
 Learn stream processing patterns:
+
 - **Filtering**: Remove unwanted events
 - **Mapping**: Transform events
 - **Aggregation**: Compute running totals
@@ -29,29 +30,32 @@ mapped = stream.map(lambda x: transform(x))
 # Stateful: Maintains state between events
 aggregated = stream.reduce(lambda acc, x: acc + x['amount'])
 windowed = stream.window(size=60).aggregate(sum)
-```
+```text
 
 ### Windowing
 
 **Tumbling Windows** (non-overlapping):
-```
+
+```text
 [──Window 1──][──Window 2──][──Window 3──]
 0-60s         60-120s       120-180s
-```
+```text
 
 **Sliding Windows** (overlapping):
+
 ```
 [────Window 1────]
     [────Window 2────]
         [────Window 3────]
-```
+```text
 
 **Session Windows** (gap-based):
-```
+
+```text
 [Session 1]  [Session 2]    [Session 3]
 ███──────────███████────────█
       ^10min gap    ^10min gap
-```
+```text
 
 ---
 
@@ -85,13 +89,14 @@ class StreamFilter:
 ```
 
 **Test**:
+
 ```python
 filter_app = StreamFilter(
     input_topic='transactions',
     output_topic='high-value-transactions'
 )
 filter_app.filter_high_value(threshold=500.0)
-```
+```text
 
 ### Part 2: Map/Transform Stream (45 min)
 
@@ -120,7 +125,7 @@ class StreamMapper:
             event = message.value
             enriched = self.enrich_user_event(event)
             self.producer.send(self.output_topic, enriched)
-```
+```text
 
 ### Part 3: Stateful Aggregation (60 min)
 
@@ -151,7 +156,7 @@ class StreamAggregator:
             'total': self.state[user_id]['total'],
             'average': self.state[user_id]['total'] / self.state[user_id]['count']
         }
-```
+```text
 
 ### Part 4: Tumbling Window (60 min)
 
@@ -228,7 +233,7 @@ class StreamJoiner:
             'user_country': profile.get('country'),
             'user_registration_date': profile.get('registration_date')
         }
-```
+```text
 
 ### Part 6: Complex pipeline (30 min)
 
@@ -258,18 +263,20 @@ class StreamPipeline:
 
             # Step 4: Output
             self.producer.send('processed-events', aggregate)
-```
+```text
 
 ---
 
 ## ✅ Validation
 
 **Run tests**:
+
 ```bash
 pytest test_stream_processing.py -v
-```
+```text
 
 **Tests cover**:
+
 - ✅ Filter correctly removes events
 - ✅ Map adds all computed fields
 - ✅ Aggregation maintains correct state

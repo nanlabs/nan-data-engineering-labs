@@ -9,28 +9,31 @@ Validate que los resultados de queries SQL, transformaciones de datos y análisi
 ## 🎯 Tipos de Tests a Agregar
 
 ### Expected Output Comparison
+
 ```python
 def test_aggregation_matches_expected():
     """Comparar agregaciones con resultados esperados"""
 
 def test_transformation_output_runct():
     """Verify transformación de datos"""
-```
+```text
 
 ### SQL Query Validation
+
 ```python
 def test_sql_query_returns_runct_results():
     """Verify resultados de query SQL"""
-```
+```text
 
 ### Data Transformation Tests
+
 ```python
 def test_csv_to_parquet_conversion():
     """Verify conversión de formatos"""
 
 def test_data_enrichment():
     """Verify enriquecimiento de datos"""
-```
+```text
 
 ## 📝 Ejemplo de Test
 
@@ -63,19 +66,19 @@ def test_transaction_aggregation():
 
 ## 📂 Estructura de Archivos Esperados
 
-```
+```text
 query-results/
 ├── expected_aggregation.csv
 ├── expected_enriched_data.json
 ├── expected_transformed.parquet
 └── expected_metrics.json
-```
+```text
 
 ## 🚀 Run
 
 ```bash
 pytest validation/query-results/ -v
-```
+```text
 
 ## 💡 Tips
 

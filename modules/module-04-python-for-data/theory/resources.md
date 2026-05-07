@@ -22,7 +22,8 @@
 ### Python
 
 **Python Official Docs**
-- URL: https://docs.python.org/3/
+
+- URL: <https://docs.python.org/3/>
 - Description: Complete official Python documentation
 - Level: All levels
 - What to want:
@@ -31,7 +32,8 @@
   - Language Reference (para detalles del lenguaje)
 
 **Python Enhancement Proposals (PEPs)**
-- URL: https://peps.python.org/
+
+- URL: <https://peps.python.org/>
 - Description: Proposals that define the language and its standards
 - PEPs esenciales:
   - PEP 8: Style Guide for Python Code
@@ -43,7 +45,8 @@
 ### Bibliotecas Core
 
 **Pandas Documentation**
-- URL: https://pandas.pydata.org/docs/
+
+- URL: <https://pandas.pydata.org/docs/>
 - Description: Official Pandas Documentation
 - resources clave:
   - Getting Started tutorials
@@ -52,7 +55,8 @@
   - 10 minutes to pandas (quick tutorial)
 
 **NumPy Documentation**
-- URL: https://numpy.org/doc/stable/
+
+- URL: <https://numpy.org/doc/stable/>
 - Description: Official NumPy Documentation
 - resources clave:
   - NumPy for absolute beginners
@@ -60,7 +64,8 @@
   - Array programming with NumPy (paper)
 
 **PyArrow Documentation**
-- URL: https://arrow.apache.org/docs/python/
+
+- URL: <https://arrow.apache.org/docs/python/>
 - Description: Python bindings for Apache Arrow
 - Temas importantes:
   - Parquet file format
@@ -68,7 +73,8 @@
   - IPC and streaming
 
 **SQLAlchemy Documentation**
-- URL: https://docs.sqlalchemy.org/
+
+- URL: <https://docs.sqlalchemy.org/>
 - Description: SQL toolkit and ORM for Python
 - Secciones clave:
   - Core Tutorial
@@ -82,6 +88,7 @@
 ### Fundamentos de Python
 
 **"Python Crash Course" - Eric Matthes**
+
 - Level: Principiante
 - Pages: 544
 - Description: Practical introduction to Python with real projects
@@ -89,6 +96,7 @@
 - Topics: Basic syntax, data structures, OOP, files, testing
 
 **"Fluent Python" - Luciano Ramalho**
+
 - Level: Intermedio a Avanzado
 - Pages: 792
 - Description: Idiomatic Python and advanced features
@@ -96,6 +104,7 @@
 - Temas: Data structures, functions, OOP, metaprogramming, concurrency
 
 **"Effective Python: 90 Specific Ways to Write Better Python" - Brett Slatkin**
+
 - Level: Intermedio
 - Pages: 400
 - Description: Python best practices and patterns
@@ -105,6 +114,7 @@
 ### Data Engineering
 
 **"Python for Data Analysis" - Wes McKinney**
+
 - Level: Principiante a Intermedio
 - Pages: 550
 - Description: Panda Creator's Book
@@ -113,6 +123,7 @@
 - Note: 3rd edition (2022) updated for pandas 2.0
 
 **"Data Engineering with Python" - Paul Crickard**
+
 - Level: Intermedio
 - Pages: 400
 - Description: Complete guide to data engineering with Python
@@ -120,6 +131,7 @@
 - Temas: ETL, data lakes, streaming, orchestration, testing
 
 **"Designing Data-Intensive Applications" - Martin Kleppmann**
+
 - Level: Intermedio a Avanzado
 - Pages: 616
 - Description: Fundamentals of distributed data systems
@@ -128,15 +140,17 @@
 - Note: Not specific to Python but essential for architectures
 
 **"The Data Engineering Handbook" - DataEngineer.io**
+
 - Level: All levels
 - Formato: Online/GitHub
-- URL: https://github.com/DataEngineer-io/data-engineer-handbook
+- URL: <https://github.com/DataEngineer-io/data-engineer-handbook>
 - Description: Community open-source handbook
 - Why you want it: Constantly updated, practical examples
 
 ### Advanced Topics
 
 **"High Performance Python" - Micha Gorelick, Ian Ozsvald**
+
 - Level: Avanzado
 - Pages: 468
 - Description: Python code optimization and performance
@@ -144,6 +158,7 @@
 - Temas: Profiling, Cython, NumPy optimization, multiprocessing, distributed computing
 
 **"Architecture Patterns with Python" - Harry Percival, Bob Gregory**
+
 - Level: Intermedio a Avanzado
 - Pages: 300
 - Description: Architectural patterns and DDD with Python
@@ -157,7 +172,8 @@
 ### Plataformas con Cursos Python
 
 **Real Python**
-- URL: https://realpython.com/
+
+- URL: <https://realpython.com/>
 - Tipo: Tutoriales y cursos
 - Cost: Freemium ($60/year premium)
 - Why: High quality tutorials, constantly updated
@@ -167,7 +183,8 @@
   - pandas: Powerful Python Data Analysis Toolkit
 
 **DataCamp**
-- URL: https://www.datacamp.com/
+
+- URL: <https://www.datacamp.com/>
 - Tipo: Cursos interactivos
 - Cost: Subscription ($25-39/month)
 - Tracks recomendados:
@@ -176,7 +193,8 @@
   - "Python Programming"
 
 **Coursera**
-- URL: https://www.coursera.org/
+
+- URL: <https://www.coursera.org/>
 - Tipo: Cursos universitarios
 - Costo: Algunos gratuitos, especializations de pago
 - Cursos destacados:
@@ -185,7 +203,8 @@
   - "Python 3 Programming" (Universidad de Michigan)
 
 **Udemy**
-- URL: https://www.udemy.com/
+
+- URL: <https://www.udemy.com/>
 - Tipo: Cursos en video
 - Costo: $10-20 (constantemente en oferta)
 - Cursos recomendados:
@@ -194,7 +213,8 @@
   - "The Complete Python Pandas Data Science Course"
 
 **edX**
-- URL: https://www.edx.org/
+
+- URL: <https://www.edx.org/>
 - Tipo: Cursos universitarios
 - Cost: Free audit, payment certificate
 - Cursos destacados:
@@ -204,7 +224,8 @@
 ### Cursos Especializados Data Engineering
 
 **Data Engineering Zoomcamp (DataTalks.Club)**
-- URL: https://github.com/DataTalksClub/data-engineering-zoomcamp
+
+- URL: <https://github.com/DataTalksClub/data-engineering-zoomcamp>
 - Tipo: Bootcamp online gratuito
 - Costo: GRATIS
 - Duration: 9 semanas
@@ -212,7 +233,8 @@
 - Temas: Docker, SQL, Terraform, GCP, dbt, Kafka, Spark
 
 **DataExpert.io**
-- URL: https://www.dataexpert.io/
+
+- URL: <https://www.dataexpert.io/>
 - Tipo: Cursos especializados
 - Cost: $497 one-time or subscription
 - Why: Created by ex-Facebook/Airbnb data engineers
@@ -225,21 +247,24 @@
 ### Tutoriales Interactivos
 
 **LearnPython.org**
-- URL: https://www.learnpython.org/
+
+- URL: <https://www.learnpython.org/>
 - Tipo: Tutorial interactivo en navegador
 - Costo: GRATIS
 - Description: Run Python code directly in the browser
 - Level: Principiante
 
 **Python Tutor**
-- URL: https://pythontutor.com/
+
+- URL: <https://pythontutor.com/>
 - Type: Run Viewer
 - Costo: GRATIS
 - Description: See step by step how Python executes your code
 - Uso: Entender loops, funciones, objetos visualmente
 
 **Kaggle Learn**
-- URL: https://www.kaggle.com/learn
+
+- URL: <https://www.kaggle.com/learn>
 - Tipo: Micro-courses interactivos
 - Costo: GRATIS
 - Cursos relevantes:
@@ -251,19 +276,22 @@
 ### Specific Guides
 
 **The Hitchhiker's Guide to Python**
-- URL: https://docs.python-guide.org/
+
+- URL: <https://docs.python-guide.org/>
 - Tipo: Best practices guide
 - Costo: GRATIS
 - Contenido: Setup, workflow, code style, documentation, testing, logging
 
 **Full Stack Python**
-- URL: https://www.fullstackpython.com/
+
+- URL: <https://www.fullstackpython.com/>
 - Tipo: Comprehensive guide
 - Costo: GRATIS
 - Useful sections: Development environments, data, testing, deployment
 
 **Python Packaging User Guide**
-- URL: https://packaging.python.org/
+
+- URL: <https://packaging.python.org/>
 - Type: Official packaging guide
 - Costo: GRATIS
 - Use: When you need to package and distribute code
@@ -275,32 +303,37 @@
 ### Technical Blogs
 
 **Real Python Blog**
-- URL: https://realpython.com/
+
+- URL: <https://realpython.com/>
 - Frecuencia: Semanal
 - Calidad: ⭐⭐⭐⭐⭐
 - Temas: Python en general, best practices, tutorials
 
 **Ned Batchelder's Blog**
-- URL: https://nedbatchelder.com/blog/
+
+- URL: <https://nedbatchelder.com/blog/>
 - Frecuencia: Ocasional
 - Calidad: ⭐⭐⭐⭐⭐
 - Temas: Python internals, coverage.py, testing
 
 **Dan Bader's Blog**
-- URL: https://dbader.org/blog/
+
+- URL: <https://dbader.org/blog/>
 - Frecuencia: Mensual
 - Calidad: ⭐⭐⭐⭐⭐
 - Temas: Python tips, best practices, patterns
 
 **Towards Data Science (Medium)**
-- URL: https://towardsdatascience.com/
+
+- URL: <https://towardsdatascience.com/>
 - Frecuencia: Diaria
 - Calidad: Variable (⭐⭐⭐⭐)
 - Temas: Data science, engineering, Python tutorials
 - Note: Requires Medium subscription to read everything
 
 **The Data Engineering Podcast**
-- URL: https://www.dataengineeringpodcast.com/ (also has a blog)
+
+- URL: <https://www.dataengineeringpodcast.com/> (also has a blog)
 - Frecuencia: Semanal
 - Formato: Podcast + transcripciones
 - Temas: Herramientas, arquitecturas, casos de uso reales
@@ -308,20 +341,24 @@
 ### Publicaciones Corporativas
 
 **Netflix Tech Blog**
-- URL: https://netflixtechblog.com/
+
+- URL: <https://netflixtechblog.com/>
 - Temas: Data engineering a escala, arquitecturas distribuidas
 - Featured articles on: Data platform, orchestration, data quality
 
 **Airbnb Engineering & Data Science**
-- URL: https://medium.com/airbnb-engineering
+
+- URL: <https://medium.com/airbnb-engineering>
 - Temas: Data infrastructure, experimentation, ML platform
 
 **Uber Engineering Blog**
-- URL: https://eng.uber.com/
+
+- URL: <https://eng.uber.com/>
 - Temas: Real-time data, streaming, data lakes
 
 **Spotify Engineering**
-- URL: https://engineering.atspotify.com/
+
+- URL: <https://engineering.atspotify.com/>
 - Temas: Data platform, event delivery, ML
 
 ---
@@ -331,55 +368,64 @@
 ### Canales de YouTube
 
 **Corey Schafer**
-- URL: https://www.youtube.com/c/Coreyms
+
+- URL: <https://www.youtube.com/c/Coreyms>
 - Tipo: Tutoriales Python
 - Suscriptores: 1M+
 - Why: Clear explanations of fundamental concepts
 - Videos recomendados: OOP, decorators, generators, context managers
 
 **mCoding**
-- URL: https://www.youtube.com/c/mCoding
+
+- URL: <https://www.youtube.com/c/mCoding>
 - Tipo: Python avanzado
 - Why: Advanced topics explained clearly
 - Videos: Type hints, async/await, performance optimization
 
 **ArjanCodes**
-- URL: https://www.youtube.com/c/ArjanCodes
+
+- URL: <https://www.youtube.com/c/ArjanCodes>
 - Tipo: Software design con Python
 - Why: Clean code, design patterns, refactoring
 - Series: Design patterns, SOLID principles, testing
 
 **Data Engineering - Seattle Data Guy**
-- URL: https://www.youtube.com/c/SeattleDataGuy
+
+- URL: <https://www.youtube.com/c/SeattleDataGuy>
 - Tipo: Data engineering concepts
 - Why: Architectures, tools, career advice
 
 ### Conferencias
 
 **PyCon**
-- URL: https://www.youtube.com/c/PyConUS (videos)
+
+- URL: <https://www.youtube.com/c/PyConUS> (videos)
 - Frequency: Annual (multiple countries)
 - Why: Best Python Community Talks
 - Search: "PyCon [year] [topic]"
 
 **PyData**
-- URL: https://www.youtube.com/c/PyDataTV
+
+- URL: <https://www.youtube.com/c/PyDataTV>
 - Frequency: Multiple conferences per year
 - Why: Specific to Python in data science/engineering
 - Temas: pandas, data pipelines, visualization
 
 **EuroPython**
-- URL: https://www.youtube.com/c/EuroPythonConference
+
+- URL: <https://www.youtube.com/c/EuroPythonConference>
 - Frecuencia: Anual
 - Why: Largest European Python Conference
 
 ### Playlists Recomendadas
 
 **"Python for Data Analysis" por Data School**
+
 - Playlist completa de pandas desde cero
 - 30+ practical videos
 
 **"Python Tutorials" por freeCodeCamp**
+
 - Cursos completos gratuitos de 4-10 horas
 - From basic to advanced
 
@@ -390,39 +436,46 @@
 ### Repositorios GitHub
 
 **Awesome Python**
-- URL: https://github.com/vinta/awesome-python
+
+- URL: <https://github.com/vinta/awesome-python>
 - Description: Curated list of frameworks, libraries and resources
 - Uso: Descubrir nuevas herramientas y bibliotecas
 
 **Awesome Data Engineering**
-- URL: https://github.com/igorbarinov/awesome-data-engineering
+
+- URL: <https://github.com/igorbarinov/awesome-data-engineering>
 - Description: List of data engineering resources
 - Uso: Herramientas, learning paths, best practices
 
 **Python Design Patterns**
-- URL: https://github.com/faif/python-patterns
+
+- URL: <https://github.com/faif/python-patterns>
 - Description: Collection of design patterns in Python
 - Use: Learn patterns with practical examples
 
 ### Proyectos para Estudiar
 
 **Apache Airflow**
-- URL: https://github.com/apache/airflow
+
+- URL: <https://github.com/apache/airflow>
 - Why: Industry standard Orchestration tool
 - What to study: DAGs, operators, hooks, executors
 
 **dbt (data build tool)**
-- URL: https://github.com/dbt-labs/dbt-core
+
+- URL: <https://github.com/dbt-labs/dbt-core>
 - Why: Transformations in SQL with Python
 - What to study: Project structure, jinja templating, testing
 
 **Prefect**
-- URL: https://github.com/PrefectHQ/prefect
+
+- URL: <https://github.com/PrefectHQ/prefect>
 - Why: Modern workflow orchestration
 - What to study: Tasks, flows, deployments
 
 **Great Expectations**
-- URL: https://github.com/great-expectations/great_expectations
+
+- URL: <https://github.com/great-expectations/great_expectations>
 - Why: Data quality framework
 - What to study: Expectations, validation, data docs
 
@@ -433,66 +486,78 @@
 ### Desarrollo
 
 **IPython/Jupyter**
-- URL: https://ipython.org/ | https://jupyter.org/
+
+- URL: <https://ipython.org/> | <https://jupyter.org/>
 - Usage: Interactive development, data exploration
 - Why: Essential for iterative development
 
 **Black**
-- URL: https://black.readthedocs.io/
+
+- URL: <https://black.readthedocs.io/>
 - Usage: Automatic code formatter
 - Why: Eliminates formatting debates, consistent code
 
 **pytest**
-- URL: https://docs.pytest.org/
+
+- URL: <https://docs.pytest.org/>
 - Uso: Testing framework
 - Why: More powerful and flexible than unittest
 
 **mypy**
-- URL: https://mypy.readthedocs.io/
+
+- URL: <https://mypy.readthedocs.io/>
 - Uso: Static type checker
 - Why: Catch bugs before runtime with type hints
 
 **Poetry**
-- URL: https://python-poetry.org/
+
+- URL: <https://python-poetry.org/>
 - Uso: Dependency management y packaging
 - Why: Better than pip/setuptools for complex projects
 
 ### Data Processing
 
 **Polars**
-- URL: https://www.pola.rs/
+
+- URL: <https://www.pola.rs/>
 - Description: DataFrame library alternative to pandas
 - Why: 10-100x faster than pandas, written in Rust
 
 **Dask**
-- URL: https://www.dask.org/
+
+- URL: <https://www.dask.org/>
 - Description: Parallel computing library
 - Why: Process datasets larger than RAM
 
 **DuckDB**
-- URL: https://duckdb.org/
+
+- URL: <https://duckdb.org/>
 - Description: Embedded SQL database
 - Why: Ultra-fast SQL on local files (Parquet, CSV)
 
 **Pydantic**
-- URL: https://docs.pydantic.dev/
+
+- URL: <https://docs.pydantic.dev/>
 - Description: Data validation using type hints
 - Why: Automatic data validation with Python types
 
 ### Visualization
 
 **Matplotlib**
-- URL: https://matplotlib.org/
+
+- URL: <https://matplotlib.org/>
 - Use: Basic and advanced plotting
 - Why: Foundational, highly customizable
 
 **Seaborn**
-- URL: https://seaborn.pydata.org/
+
+- URL: <https://seaborn.pydata.org/>
 - Uso: Statistical visualizations
 - Why: Built on matplotlib, easier for stats
 
 **Plotly**
-- URL: https://plotly.com/python/
+
+- URL: <https://plotly.com/python/>
 - Uso: Interactive visualizations
 - Why: Interactive charts for dashboards
 
@@ -503,36 +568,42 @@
 ### Foros y Q&A
 
 **Stack Overflow**
-- URL: https://stackoverflow.com/questions/tagged/python
+
+- URL: <https://stackoverflow.com/questions/tagged/python>
 - Usage: Code specific questions
 - Useful tags: [python], [pandas], [python-3.x]
 
 **Reddit**
-- r/Python: https://www.reddit.com/r/Python/
+
+- r/Python: <https://www.reddit.com/r/Python/>
   - Noticias, proyectos, discusiones generales
-- r/learnpython: https://www.reddit.com/r/learnpython/
+- r/learnpython: <https://www.reddit.com/r/learnpython/>
   - Para hacer preguntas de aprendizaje
-- r/dataengineering: https://www.reddit.com/r/dataengineering/
+- r/dataengineering: <https://www.reddit.com/r/dataengineering/>
   - Specific data engineering
 
 **Python Discord**
-- URL: https://pythondiscord.com/
+
+- URL: <https://pythondiscord.com/>
 - Description: Discord community with 350k+ members
 - Canales: #python-help, #data-science, #career
 
 **Data Engineering Discord (DataTalks.Club)**
+
 - Description: Data engineering community
 - Eventos: Weekly office hours, Q&A sessions
 
 ### Meetups
 
 **Python Meetups**
-- URL: https://www.meetup.com/topics/python/
+
+- URL: <https://www.meetup.com/topics/python/>
 - Description: Local Python Meetups
 - Buscar: "Python [tu ciudad]"
 
 **PyData Meetups**
-- URL: https://www.meetup.com/pro/pydata/
+
+- URL: <https://www.meetup.com/pro/pydata/>
 - Description: Data Specific Meetups with Python
 - Ubicaciones: 80+ ciudades globalmente
 
@@ -543,25 +614,29 @@
 ### Coding Practice
 
 **LeetCode**
-- URL: https://leetcode.com/
+
+- URL: <https://leetcode.com/>
 - Tipo: Algoritmos y estructuras de data
 - Use: Interview preparation
 - Difficulty: Easy, Medium, Hard
 
 **HackerRank**
-- URL: https://www.hackerrank.com/domains/python
+
+- URL: <https://www.hackerrank.com/domains/python>
 - Tipo: Challenges de Python
 - Usage: Syntax and library practice
 - Track: Python
 
 **Codewars**
-- URL: https://www.codewars.com/
+
+- URL: <https://www.codewars.com/>
 - Type: Code Katas (exercises)
 - Use: Daily practice
 - Lenguaje: Python
 
 **Exercism**
-- URL: https://exercism.org/tracks/python
+
+- URL: <https://exercism.org/tracks/python>
 - Tipo: Exercises con mentoring
 - Use: Practice with feedback
 - Gratis: Yes
@@ -569,20 +644,23 @@
 ### Specific Data Engineering
 
 **DataLemur**
-- URL: https://datalemur.com/
+
+- URL: <https://datalemur.com/>
 - Tipo: SQL + Data engineering questions
 - Use: Preparation for data engineer interviews
 - Gratis: Yes (con plan premium)
 
 **StrataScratch**
-- URL: https://www.stratascratch.com/
+
+- URL: <https://www.stratascratch.com/>
 - Tipo: Real interview questions
 - Use: Practice with questions from real companies (Meta, Google, etc.)
 
 ### Competencias
 
 **Kaggle**
-- URL: https://www.kaggle.com/
+
+- URL: <https://www.kaggle.com/>
 - Tipo: Data science competitions
 - Why: Real datasets, shared notebooks, ranking
 - Uso: Competitions, datasets, notebooks
@@ -594,18 +672,21 @@
 ### Python General
 
 **PCEP (Python Certified Entry-Level Programmer)**
+
 - Organization: Python Institute
 - Level: Entry
 - Costo: ~$59
 - Why: Official Python Certification for Beginners
 
 **PCAP (Python Certified Associate Programmer)**
+
 - Organization: Python Institute
 - Level: Associate
 - Costo: ~$295
 - Why: Demonstrates intermediate competence
 
 **PCPP (Python Certified Professional Programmer)**
+
 - Organization: Python Institute
 - Level: Professional
 - Cost: ~$195 each (2 exams)
@@ -614,6 +695,7 @@
 ### Cloud Providers
 
 **AWS Certified Data Engineer - Associate**
+
 - Organization: Amazon Web Services
 - Level: Associate
 - Costo: $150
@@ -621,6 +703,7 @@
 - Nota: Requiere Python para procesamiento
 
 **Google Cloud Professional Data Engineer**
+
 - Organization: Google Cloud
 - Level: Professional
 - Costo: $200
@@ -628,6 +711,7 @@
 - Note: Exams include Python/dataflow
 
 **Azure Data Engineer Associate**
+
 - Organization: Microsoft
 - Level: Associate
 - Costo: $165
@@ -636,6 +720,7 @@
 ### Databricks
 
 **Databricks Certified Data Engineer Associate**
+
 - Organization: Databricks
 - Level: Associate
 - Costo: $200
@@ -649,57 +734,66 @@
 ### Newsletters
 
 **Python Weekly**
-- URL: https://www.pythonweekly.com/
+
+- URL: <https://www.pythonweekly.com/>
 - Frecuencia: Semanal
 - Content: News, articles, projects, jobs
 - Why: Stay up to date with the Python ecosystem
 
 **PyCoder's Weekly**
-- URL: https://pycoders.com/
+
+- URL: <https://pycoders.com/>
 - Frecuencia: Semanal
 - Content: Tutorials, articles, projects
 
 **Real Python Newsletter**
-- URL: https://realpython.com/newsletter/
+
+- URL: <https://realpython.com/newsletter/>
 - Frecuencia: Semanal
 - Contenido: Tutoriales, tips, best practices
 
 **Data Engineering Weekly**
-- URL: https://www.dataengineeringweekly.com/
+
+- URL: <https://www.dataengineeringweekly.com/>
 - Frecuencia: Semanal
 - Contenido: Data engineering news, tools, articles
 
 ### Podcasts
 
 **Talk Python To Me**
-- URL: https://talkpython.fm/
+
+- URL: <https://talkpython.fm/>
 - Host: Michael Kennedy
 - Frecuencia: Semanal
 - Formato: Entrevistas con expertos Python
 - Why: Varied themes, high-level guests
 
 **Python Bytes**
-- URL: https://pythonbytes.fm/
+
+- URL: <https://pythonbytes.fm/>
 - Hosts: Michael Kennedy, Brian Okken
 - Frecuencia: Semanal
 - Formato: News y novedades Python (15-20 min)
 - Why: Stay up to date quickly
 
 **The Real Python Podcast**
-- URL: https://realpython.com/podcasts/rpp/
+
+- URL: <https://realpython.com/podcasts/rpp/>
 - Frecuencia: Semanal
 - Formato: Entrevistas y tutoriales
 - Why: Quality Real Python Content
 
 **Data Engineering Podcast**
-- URL: https://www.dataengineeringpodcast.com/
+
+- URL: <https://www.dataengineeringpodcast.com/>
 - Host: Tobias Macey
 - Frecuencia: Semanal
 - Formato: Entrevistas sobre herramientas y arquitecturas
 - Why: Deep dives in data engineering
 
 **DataFramed (DataCamp)**
-- URL: https://www.datacamp.com/podcast
+
+- URL: <https://www.datacamp.com/podcast>
 - Frecuencia: Semanal
 - Formato: Entrevistas con data professionals
 - Temas: Data science, engineering, analytics
@@ -711,18 +805,21 @@
 ### Roadmap.sh
 
 **Python Developer Roadmap**
-- URL: https://roadmap.sh/python
+
+- URL: <https://roadmap.sh/python>
 - Description: Interactive visual roadmap
 - Uso: Entender path completo de Python developer
 
 **Backend Developer Roadmap**
-- URL: https://roadmap.sh/backend
+
+- URL: <https://roadmap.sh/backend>
 - Description: Backend skills (includes Python)
 - Relevante para: APIs, services de data
 
 ### Rutas Sugeridas
 
 **Level 1: Fundamentos (1-2 meses)**
+
 1. Basic Python Syntax
 2. Structures de data
 3. Control de flujo
@@ -731,6 +828,7 @@
 6. resources: "Python Crash Course", Real Python basics
 
 **Level 2: Python Intermedio (1-2 meses)**
+
 1. OOP en Python
 2. Modules and packages
 3. List/dict comprehensions
@@ -740,6 +838,7 @@
 7. resources: "Fluent Python", Real Python intermediate
 
 **Level 3: Data con Python (2-3 meses)**
+
 1. NumPy arrays
 2. pandas DataFrames
 3. Data cleaning
@@ -749,6 +848,7 @@
 7. resources: "Python for Data Analysis", DataCamp
 
 **Level 4: Data Engineering (3-4 meses)**
+
 1. pipeline design patterns
 2. ETL/ELT pipelines
 3. Airflow/Prefect orchestration
@@ -759,6 +859,7 @@
 8. resources: "Data Engineering with Python", proyectos reales
 
 **Level 5: Advanced Topics (ongoing)**
+
 1. Spark y PySpark
 2. Data lakehouse (Delta Lake, Iceberg)
 3. Real-time streaming
@@ -809,6 +910,7 @@
 ## resources por Level de Experiencia
 
 ### Principiante (0-6 meses)
+
 - 📚 "Python Crash Course"
 - 🎓 Real Python - Python Basics
 - 🎥 Corey Schafer YouTube
@@ -816,6 +918,7 @@
 - 📰 Python Weekly newsletter
 
 ### Intermedio (6-12 meses)
+
 - 📚 "Fluent Python"
 - 🎓 DataCamp - Python Programming track
 - 🎥 ArjanCodes YouTube
@@ -823,6 +926,7 @@
 - 📰 PyCoder's Weekly
 
 ### Advanced (1-2 years)
+
 - 📚 "High Performance Python"
 - 📚 "Data Engineering with Python"
 - 🎓 Data Engineering Zoomcamp
@@ -843,6 +947,7 @@ This list of resources provides you with a complete path from beginner to profes
 5. **Continuous update** (Python and data engineering evolve quickly)
 
 **Start recommendation**:
+
 1. Lee "Python Crash Course" (1 mes)
 2. Completa tutoriales de Real Python (1 mes)
 3. Lee "Python for Data Analysis" (1 mes)

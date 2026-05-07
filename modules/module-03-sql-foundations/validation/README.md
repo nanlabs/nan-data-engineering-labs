@@ -4,7 +4,7 @@ This directory contains automated tests to validate the exercises in the SQL Fou
 
 ## 📋 Contenido
 
-```
+```text
 validation/
 ├── conftest.py              # Pytest configuration and fixtures
 ├── helpers.py               # Validation utilities
@@ -12,7 +12,7 @@ validation/
 ├── test_exercise_02.py      # Tests para Joins
 ├── test_exercises_03_06.py  # Tests para Aggregations, Window Functions, CTEs, Optimization
 └── README.md                # Este archivo
-```
+```text
 
 ## 🚀 Setup
 
@@ -24,7 +24,7 @@ cd modules/module-03-sql-foundations
 
 # Instalar pytest y dependencias
 pip install pytest pytest-postgresql psycopg2-binary python-dotenv
-```
+```text
 
 ### 2. Configurar database
 
@@ -45,6 +45,7 @@ psql -h localhost -U dataengineer -d ecommerce -c "SELECT COUNT(*) FROM users;"
 ### 3. Configurar Variables de Entorno (Opcional)
 
 Por defecto, los tests usan:
+
 - Host: `localhost`
 - Port: `5432`
 - Database: `ecommerce`
@@ -59,7 +60,7 @@ POSTGRES_PORT=5432
 POSTGRES_DB=ecommerce
 POSTGRES_USER=dataengineer
 POSTGRES_PASSWORD=training123
-```
+```text
 
 ## 🧪 Run Tests
 
@@ -68,7 +69,7 @@ POSTGRES_PASSWORD=training123
 ```bash
 # From the module directory
 pytest validation/ -v
-```
+```text
 
 ### Tests by Exercise
 
@@ -90,7 +91,7 @@ pytest validation/ -v -m exercise05
 
 # Exercise 06: Optimization
 pytest validation/ -v -m exercise06
-```
+```text
 
 ### Specific Tests
 
@@ -122,7 +123,7 @@ pytest validation/ -v -m "not slow"
 
 # Generate coverage report (requires pytest-cov)
 pytest validation/ --cov=validation --cov-report=html
-```
+```text
 
 ## 📊 Test Structure
 
@@ -162,7 +163,7 @@ def test_select_users(execute_query):
 
     assert len(results) == 5
     assert 'first_name' in results[0]
-```
+```text
 
 ### Test con Validaciones
 
@@ -183,7 +184,7 @@ def test_projection(execute_query):
         results,
         ['first_name', 'last_name', 'email']
     )
-```
+```text
 
 ### Test de Performance
 
@@ -266,39 +267,43 @@ def test_join_performance(db_cursor):
 **Causa**: database no inicializada.
 
 **Solution**:
+
 ```bash
 cd infrastructure
 docker-compose down -v
 docker-compose up -d
 sleep 5
 psql -h localhost -U dataengineer -d ecommerce -f init.sql
-```
+```text
 
 ### Error: "Connection refused"
 
 **Cause**: PostgreSQL is not running.
 
 **Solution**:
+
 ```bash
 cd infrastructure
 docker-compose up -d
 docker-compose ps  # Verificar estado
-```
+```text
 
 ### Error: "Table is empty"
 
 **Causa**: `init.sql`did not run correctly or does not have sample data.
 
 **Solution**:
+
 ```bash
 psql -h localhost -U dataengineer -d ecommerce -f infrastructure/init.sql
-```
+```text
 
 ### Tests Fallan Intermitentemente
 
 **Causa**: Rollback no funciona correctamente.
 
 **Solution**: Make sure`db_connection` tiene `autocommit=False`:
+
 ```python
 conn = psycopg2.connect(**DB_CONFIG)
 conn.autocommit = False
@@ -307,13 +312,14 @@ conn.autocommit = False
 ### Tests Muy Lentos
 
 **Solution**:
+
 ```bash
 # Excluir tests marcados como slow
 pytest validation/ -m "not slow"
 
 # Or run in parallel
 pytest validation/ -n auto
-```
+```text
 
 ## 📚 resources
 
@@ -407,7 +413,7 @@ jobs:
         with:
           name: test-results
           path: junit/test-results.xml
-```
+```text
 
 ---
 

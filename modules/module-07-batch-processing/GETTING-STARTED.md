@@ -5,6 +5,7 @@ Welcome to Module 07! This guide will help you get started with batch processing
 ## 🎯 Module Goals
 
 After completing this module, you will:
+
 - ✅ Understand batch processing fundamentals
 - ✅ Implement efficient data partitioning strategies
 - ✅ Use PySpark for distributed processing
@@ -15,18 +16,21 @@ After completing this module, you will:
 ## 📚 Learning Path
 
 ### Step 1: Setup (30 minutes)
+
 ```bash
 cd modules/module-07-batch-processing
 bash scripts/setup.sh
-```
+```text
 
 This will:
+
 - Create Python virtual environment
 - Install all dependencies (pandas, PySpark, pytest, etc.)
 - Generate sample data (10M transactions, 1M users, 100K products)
 - Run validation tests
 
 ### Step 2: Theory (3-4 hours)
+
 Read in this order:
 
 1. **theory/01-concepts.md** (7,500 words, ~2 hours)
@@ -52,6 +56,7 @@ Read in this order:
 ### Step 3: Exercises (8-10 hours)
 
 #### Exercise 01: Batch Basics (1.5-2 hours)
+
 **Focus**: Chunking, memory optimization, progress tracking
 
 ```bash
@@ -61,14 +66,16 @@ cd exercises/01-batch-basics
 # Implement starter/memory_optimizer.py
 # Compare with solutions
 pytest test_batch_basics.py -v
-```
+```text
 
 **Key Learnings**:
+
 - Read large files in chunks to avoid memory issues
 - Optimize DataFrame memory (int64→int32, object→category)
 - Track progress with tqdm
 
 #### Exercise 02: Data Partitioning (1.5-2 hours)
+
 **Focus**: Date, range, hash partitioning strategies
 
 ```bash
@@ -78,15 +85,17 @@ cd exercises/02-partitioning
 # Implement range_partitioner.py
 # Implement hash_partitioner.py
 # Benchmark performance
-```
+```text
 
 **Key Learnings**:
+
 - Partition by date for time-series data
 - Partition by range for numeric data
 - Partition by hash for even distribution
 - Benchmark partitioned vs non-partitioned reads
 
 #### Exercise 03: PySpark Basics (2-3 hours)
+
 **Focus**: Distributed processing with Apache Spark
 
 ```bash
@@ -98,6 +107,7 @@ cd exercises/03-pyspark-basics
 ```
 
 **Key Learnings**:
+
 - Create and configure SparkSession
 - Read/write Parquet with Spark
 - Filter, aggregate, join with Spark DataFrames
@@ -105,6 +115,7 @@ cd exercises/03-pyspark-basics
 - Cache DataFrames for reuse
 
 #### Exercise 04: Batch ETL pipeline (2-3 hours)
+
 **Focus**: Complete batch pipeline with error handling
 
 ```bash
@@ -114,9 +125,10 @@ cd exercises/04-batch-pipeline
 # Implement transformations.py
 # Implement error_handler.py
 # Implement pipeline_metrics.py
-```
+```text
 
 **Key Learnings**:
+
 - Extract from multiple sources
 - Transform with business logic
 - Load to partitioned output
@@ -124,6 +136,7 @@ cd exercises/04-batch-pipeline
 - Track pipeline metrics
 
 #### Exercise 05: Performance Optimization (1.5-2 hours)
+
 **Focus**: Caching, broadcast joins, partition tuning
 
 ```bash
@@ -133,15 +146,17 @@ cd exercises/05-optimization
 # Implement cache_manager.py
 # Implement broadcast_optimizer.py
 # Benchmark optimizations
-```
+```text
 
 **Key Learnings**:
+
 - Cache frequently reused DataFrames
 - Broadcast small tables for joins
 - Tune partition sizes (128MB-1GB)
 - Handle data skew
 
 #### Exercise 06: Production Jobs (1.5-2 hours)
+
 **Focus**: Production deployment, monitoring, SLA management
 
 ```bash
@@ -151,9 +166,10 @@ cd exercises/06-production-jobs
 # Implement retry_handler.py
 # Implement job_monitor.py
 # Implement quality_checks.py
-```
+```text
 
 **Key Learnings**:
+
 - Implement retry logic with exponential backoff
 - Monitor job metrics (duration, throughput)
 - Check data quality
@@ -180,13 +196,17 @@ bash scripts/validate.sh
 ## 🔧 Troubleshooting
 
 ### Issue: PySpark not starting
+
 **Solution**: Check Java installation
+
 ```bash
 java -version  # Should be Java 8 or 11
-```
+```text
 
 ### Issue: Memory errors with 10M records
+
 **Solution**: Process in chunks or increase memory
+
 ```python
 # Process in chunks
 for chunk in pd.read_csv("large_file.csv", chunksize=100000):
@@ -196,19 +216,23 @@ for chunk in pd.read_csv("large_file.csv", chunksize=100000):
 spark = SparkSession.builder \
     .config("spark.driver.memory", "8g") \
     .getOrCreate()
-```
+```text
 
 ### Issue: Tests failing
+
 **Solution**: Ensure data is generated
+
 ```bash
 # Re-run data generation
 python data/scripts/generate_users.py --num-users 10000
 python data/scripts/generate_products.py --num-products 1000
 python data/scripts/generate_transactions.py --num-transactions 100000
-```
+```text
 
 ### Issue: Slow data generation
+
 **Solution**: Generate smaller datasets for testing
+
 ```bash
 # Generate smaller datasets (faster)
 python data/scripts/generate_users.py --num-users 10000
@@ -219,14 +243,17 @@ python data/scripts/generate_transactions.py --num-transactions 100000
 ## 📖 Reference Materials
 
 ### Quick References
+
 - **assets/pyspark-quick-reference.md**: Complete PySpark cheat sheet
 - **assets/batch-processing-checklist.md**: Production checklist (100+ items)
 
 ### Code Examples
+
 - **exercises/01-batch-basics/solution/**: Complete implementations
 - **validation/test_module.py**: Working test examples
 
 ### Documentation
+
 - [Apache Spark Docs](https://spark.apache.org/docs/latest/)
 - [pandas Docs](https://pandas.pydata.org/docs/)
 - [Parquet Docs](https://parquet.apache.org/docs/)
@@ -234,39 +261,46 @@ python data/scripts/generate_transactions.py --num-transactions 100000
 ## 💡 Tips for Success
 
 ### 1. Start Small, Scale Up
+
 - Test with 1,000 records first
 - Then 10,000 records
 - Finally full 10M records
 
 ### 2. Use the Right Tool
+
 - **pandas**: < 1GB, single machine
 - **PySpark**: > 1GB, needs distribution
 - **Dask**: Middle ground (pandas API, distributed)
 
 ### 3. Parquet is Your Friend
+
 - 5-10x smaller than CSV
 - Columnar = faster queries
 - Built-in compression (snappy)
 - Schema included
 
 ### 4. Partition Wisely
+
 - Date partitioning: `year=2024/month=03/day=15/`
 - Avoid over-partitioning (< 1MB per partition)
 - Query only needed partitions
 
 ### 5. Monitor Everything
+
 - Track duration, throughput, errors
 - Set up alerts for failures
 - Log critical information
 - Use Spark UI for debugging
 
 ### 6. Test Thoroughly
+
 - Unit tests for transformations
 - Integration tests for pipelines
 - Performance tests with realistic data
 - Test error scenarios
 
 ### 7. Optimize Iteratively
+
 1. Make it work (correctness)
 2. Make it right (code quality)
 3. Make it fast (performance)
@@ -274,6 +308,7 @@ python data/scripts/generate_transactions.py --num-transactions 100000
 ## 🎯 Success Criteria
 
 You've completed this module when:
+
 - ✅ All theory files read and understood
 - ✅ All 6 exercises completed
 - ✅ All validation tests passing (35+ tests)
@@ -285,6 +320,7 @@ You've completed this module when:
 ## 🚀 Next Module
 
 After completing Module 07, proceed to:
+
 - **Module 08: Streaming Basics** - Learn real-time data processing
 - **Module 10: Workflow Orchestration** - Schedule batch jobs with Airflow
 

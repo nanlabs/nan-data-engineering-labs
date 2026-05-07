@@ -14,6 +14,7 @@
 **CloudFormation** = Infrastructure as Code para AWS. Define recursos en YAML/JSON.
 
 **Ventajas:**
+
 - **Reproducible:** Mismo template → misma infra
 - **Version control:** Git para infraestructura
 - **Rollback:** Si falla, revierte automáticamente
@@ -26,7 +27,7 @@
 ```bash
 cp -r starter/ my_solution/
 cd my_solution
-```
+```text
 
 ### Step 2: Completar Template
 
@@ -65,7 +66,7 @@ Outputs:
     Value: !Ref RawDataBucket
     Export:
       Name: !Sub '${AWS::StackName}-BucketName'
-```
+```text
 
 ### Step 3: Deploy Stack
 
@@ -75,7 +76,7 @@ aws --endpoint-url=http://localhost:4566 cloudformation create-stack \
   --template-body file://data-lake-stack.yaml \
   --parameters ParameterKey=Environment,ParameterValue=dev \
   --capabilities CAPABILITY_IAM
-```
+```text
 
 ### Step 4: Verify Stack
 
@@ -99,14 +100,14 @@ aws cloudformation describe-stacks --stack-name quickmart-data-lake \
 aws cloudformation update-stack \
   --stack-name quickmart-data-lake \
   --template-body file://data-lake-stack.yaml
-```
+```text
 
 ### Step 6: Delete Stack
 
 ```bash
 # Cleanup
 aws cloudformation delete-stack --stack-name quickmart-data-lake
-```
+```text
 
 ## 🧪 Validation
 
@@ -119,7 +120,7 @@ python3 test_cloudformation.py
 # ✓ IAM role created with policies
 # ✓ Lambda function deployed
 # ✓ Outputs contain bucket name
-```
+```text
 
 ## 📚 Deliverables
 

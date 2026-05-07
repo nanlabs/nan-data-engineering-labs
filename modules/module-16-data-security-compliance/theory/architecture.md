@@ -1,6 +1,7 @@
 # Security Architecture Patterns
 
 ## Table of Contents
+
 - [Multi-Account Architecture](#multi-account-architecture)
 - [Network Security Architecture](#network-security-architecture)
 - [Data Platform Security](#data-platform-security)
@@ -13,7 +14,7 @@
 
 ### AWS Organizations Structure
 
-```
+```text
 Root Organization
 ├── Security OU
 │   ├── Security Tooling Account (GuardDuty, Security Hub)
@@ -31,17 +32,19 @@ Root Organization
 │
 └── Sandbox OU
     └── Experiment Accounts (isolated)
-```
+```text
 
-### **Benefits of Multi-Account Strategy**:
+### **Benefits of Multi-Account Strategy**
+
 - **Isolation**: Blast radius containment, workload separation
 - **Billing**: Cost allocation by business unit
 - **Compliance**: Regulatory boundaries (PCI-DSS workloads isolated)
 - **Governance**: Centralized policy enforcement with SCPs
 
-### **Service Control Policies (SCPs)**:
+### **Service Control Policies (SCPs)**
 
 **Deny leaving organization**:
+
 ```json
 {
   "Version": "2012-10-17",
@@ -51,9 +54,10 @@ Root Organization
     "Resource": "*"
   }]
 }
-```
+```text
 
 **Deny disabling security services**:
+
 ```json
 {
   "Version": "2012-10-17",
@@ -72,7 +76,8 @@ Root Organization
 }
 ```
 
-### **AWS Control Tower**:
+### **AWS Control Tower**
+
 - **Guardrails**: Preventive (SCPs) and detective (Config rules)
 - **Account Factory**: Automated account provisioning
 - **Landing Zone**: Pre-configured multi-account baseline
@@ -84,7 +89,7 @@ Root Organization
 
 ### **VPC Design for Data Platform**
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                     VPC (10.0.0.0/16)                       │
 │                                                             │
@@ -111,11 +116,12 @@ Root Organization
 │  └───────────────────────────────────────────────────────┘ │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
-### **Security Groups (Stateful)**:
+### **Security Groups (Stateful)**
 
 **Data engineers: SSH + web access**:
+
 ```python
 {
     "IpProtocol": "tcp",
@@ -123,9 +129,10 @@ Root Organization
     "ToPort": 22,
     "IpRanges": [{"CidrIp": "10.0.0.0/8", "Description": "Internal only"}]
 }
-```
+```text
 
 **EMR cluster: Internal communication**:
+
 ```python
 {
     "IpProtocol": "-1",  # All protocols
@@ -133,9 +140,10 @@ Root Organization
 }
 ```
 
-### **Network ACLs (Stateless)**:
+### **Network ACLs (Stateless)**
 
 **Deny known bad IPs**:
+
 ```python
 {
     "RuleNumber": 50,
@@ -144,20 +152,23 @@ Root Organization
     "CidrBlock": "192.0.2.0/24",  # Known threat actor
     "Egress": False
 }
-```
+```text
 
-### **VPC Endpoints (PrivateLink)**:
+### **VPC Endpoints (PrivateLink)**
 
 **Benefits**:
+
 - Traffic doesn't leave AWS network
 - No NAT Gateway costs for AWS services
 - Improved security (no internet exposure)
 
 **Types**:
+
 - **Gateway Endpoints**: S3, DynamoDB (free)
 - **Interface Endpoints**: KMS, Secrets Manager, STS (charged)
 
 **Example: S3 Gateway Endpoint**:
+
 ```python
 import boto3
 
@@ -176,11 +187,11 @@ response = ec2.create_vpc_endpoint(
         }]
     })
 )
-```
+```text
 
-### **AWS PrivateLink for Data Sharing**:
+### **AWS PrivateLink for Data Sharing**
 
-```
+```text
 ┌──────────────────┐                       ┌──────────────────┐
 │  Consumer VPC    │                       │  Provider VPC    │
 │                  │                       │                  │
@@ -202,7 +213,7 @@ response = ec2.create_vpc_endpoint(
 
 ### **Secure Data Lake**
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────┐
 │                         Ingestion Layer                        │
 │                                                                │
@@ -272,9 +283,9 @@ response = ec2.create_vpc_endpoint(
 │  │  Detection)  │  │  Aggregation)│  │              │         │
 │  └──────────────┘  └──────────────┘  └──────────────┘         │
 └────────────────────────────────────────────────────────────────┘
-```
+```text
 
-### **Security Controls by Layer**:
+### **Security Controls by Layer**
 
 | Layer | Security Controls |
 |-------|-------------------|
@@ -288,16 +299,17 @@ response = ec2.create_vpc_endpoint(
 
 ## Zero Trust Architecture
 
-### **Core Principles**:
+### **Core Principles**
+
 1. **Never trust, always verify**: Authenticate every request
 2. **Least privilege access**: Grant minimal permissions
 3. **Assume breach**: Design for compromise scenarios
 4. **Verify explicitly**: Use all available signals (identity, location, device)
 5. **Microsegmentation**: Isolate workloads
 
-### **Implementation on AWS**:
+### **Implementation on AWS**
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────┐
 │                       User/Application                         │
 └───────────────────────────┬────────────────────────────────────┘
@@ -347,9 +359,10 @@ response = ec2.create_vpc_endpoint(
 └────────────────────────────────────────────────────────────────┘
 ```
 
-### **Zero Trust for Data Access**:
+### **Zero Trust for Data Access**
 
 **Dynamic permissions with session policies**:
+
 ```python
 import boto3
 import json
@@ -378,7 +391,7 @@ response = sts.assume_role(
 
 # Use temporary credentials
 credentials = response['Credentials']
-```
+```text
 
 ---
 
@@ -386,7 +399,7 @@ credentials = response['Credentials']
 
 ### **1. HIPAA-Compliant Data Analytics Platform**
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────┐
 │                    Requirements                                │
 │  - BAA with AWS                                                │
@@ -403,7 +416,7 @@ Architecture:
 - CloudTrail organization trail with log validation
 - AWS Config rules (encrypted volumes, MFA, etc.)
 - VPC Flow Logs (detect anomalous access)
-```
+```text
 
 ### **2. PCI-DSS Compliant Payment Data Platform**
 
@@ -424,11 +437,11 @@ Architecture:
 - Lambda functions (no cardholder data in logs)
 - Redshift (non-sensitive analytics only)
 - Security Hub (CIS AWS + PCI-DSS standards)
-```
+```text
 
 ### **3. GDPR-Compliant European Data Platform**
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────┐
 │                    GDPR Requirements                           │
 │  - Data residency (EU regions only)                           │
@@ -444,7 +457,7 @@ Architecture:
 - Macie for PII discovery
 - EventBridge + SNS for breach notification
 - Data deletion workflows (Step Functions)
-```
+```text
 
 ---
 

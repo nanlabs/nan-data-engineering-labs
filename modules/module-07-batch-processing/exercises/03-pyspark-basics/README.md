@@ -3,6 +3,7 @@
 ## 🎯 Objectives
 
 Introduction to Apache Spark for distributed batch processing:
+
 - Setup de SparkSession
 - DataFrames y transformations
 - Actions y lazy evaluation
@@ -14,6 +15,7 @@ Introduction to Apache Spark for distributed batch processing:
 ### Apache Spark
 
 Spark is the leading framework for big data processing:
+
 - **Distributed**: Procesa TB de datos en cluster
 - **In-Memory**: 100x faster than MapReduce
 - **Lazy Evaluation**: Optimiza execution plans
@@ -35,7 +37,7 @@ df_grouped = df_filtered.groupBy("category").sum("amount")
 
 # Action (executes)
 df_grouped.show()
-```
+```text
 
 ## 🏋️ Exercises
 
@@ -58,9 +60,10 @@ class SparkManager:
     def stop_session(spark: SparkSession):
         """Stop Spark session and cleanup."""
         pass
-```
+```text
 
 **Configuraciones importantes**:
+
 - `spark.executor.memory`: Memoria por executor
 - `spark.driver.memory`: Memoria del driver
 - `spark.sql.shuffle.partitions`: Partitions para shuffle
@@ -109,7 +112,7 @@ class SparkOperations:
     ) -> DataFrame:
         """Get top N per partition using window function."""
         pass
-```
+```text
 
 ### Parte 3: Performance Optimization
 
@@ -171,9 +174,10 @@ class SparkBatchPipeline:
         4. Write results
         """
         pass
-```
+```text
 
 **pipeline steps**:
+
 1. Read partitioned transactions
 2. Read users
 3. Join on user_id
@@ -190,13 +194,13 @@ Use generated data:
 cd ../../data/scripts
 python generate_transactions.py
 python generate_users.py
-```
+```text
 
 ## ✅ Validation
 
 ```bash
 pytest test_pyspark_basics.py -v
-```
+```text
 
 ## 💡 Hints
 
@@ -214,6 +218,7 @@ spark = SparkSession.builder \
     .config("spark.sql.shuffle.partitions", "100") \
     .getOrCreate()
 ```
+
 </details>
 
 <details>
@@ -234,7 +239,8 @@ df_agg = df.groupBy("category").agg(
 
 # Join
 df_joined = df1.join(df2, "user_id", "inner")
-```
+```text
+
 </details>
 
 <details>
@@ -252,7 +258,8 @@ df_ranked = df.withColumn("rank", rank().over(window))
 
 # Get top N
 df_top_n = df_ranked.filter(col("rank") <= 10)
-```
+```text
+
 </details>
 
 <details>
@@ -266,7 +273,8 @@ df_result = large_df.join(
     broadcast(small_df),
     "join_key"
 )
-```
+```text
+
 </details>
 
 ## 🎓 Learning Outcomes

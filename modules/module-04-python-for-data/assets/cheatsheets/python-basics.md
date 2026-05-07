@@ -3,6 +3,7 @@
 ## 📋 Variables y Tipos de Data
 
 ### Declaration of Variables
+
 ```python
 # Tipos basicos
 nombre = "Juan"                    # str
@@ -14,9 +15,10 @@ nada = None                        # NoneType
 # Verificar tipo
 type(nombre)  # <class 'str'>
 isinstance(edad, int)  # True
-```
+```text
 
 ### Type Conversion
+
 ```python
 # String a numero
 int("42")        # 42
@@ -31,11 +33,12 @@ bool(0)          # False
 bool("")         # False
 bool([])         # False
 bool(1)          # True
-```
+```text
 
 ## 📝 Strings
 
 ### Operaciones Comunes
+
 ```python
 texto = "Python para Data"
 
@@ -61,9 +64,10 @@ texto.split()           # ["Python", "para", "Data"]
 
 # Cleaning
 "  texto  ".strip()    # "texto"
-```
+```text
 
 ### F-Strings (Formateo)
+
 ```python
 nombre = "Ana"
 edad = 25
@@ -87,6 +91,7 @@ f"{nombre:<10}"                      # "Ana       "
 ## 📦 Colecciones
 
 ### Listas (Ordenadas, Mutables)
+
 ```python
 # Creation
 numeros = [1, 2, 3, 4, 5]
@@ -111,9 +116,10 @@ max(numeros)                   # Maximo
 min(numeros)                   # Minimo
 sorted(numeros)                # Ordenar (nueva lista)
 numeros.sort()                 # Ordenar in-place
-```
+```text
 
 ### Tuplas (Ordenadas, Inmutables)
+
 ```python
 # Creation
 coordenadas = (10, 20)
@@ -128,9 +134,10 @@ def obtener_data():
     return "Juan", 30, "Mexico"
 
 nombre, edad, pais = obtener_data()
-```
+```text
 
 ### Diccionarios (Clave-Valor)
+
 ```python
 # Creation
 persona = {
@@ -156,9 +163,10 @@ persona.items()                # dict_items([('nombre', 'Ana'), ...])
 
 # Verification
 "nombre" in persona            # True
-```
+```text
 
 ### Sets (Not ordered, unique)
+
 ```python
 # Creation
 numeros = {1, 2, 3, 4, 5}
@@ -180,6 +188,7 @@ a - b                          # {1, 2} diferencia
 ## 🔀 Control de Flujo
 
 ### Condicionales
+
 ```python
 # Basic if
 if edad >= 18:
@@ -203,11 +212,12 @@ else:
 
 # Operador ternario
 estado = "activo" if edad >= 18 else "inactivo"
-```
+```text
 
 ### Bucles
 
 #### For Loop
+
 ```python
 # Iterar lista
 for numero in [1, 2, 3, 4, 5]:
@@ -235,9 +245,10 @@ for i in range(10):
     if i == 8:
         break     # Salir del loop
     print(i)
-```
+```text
 
 #### While Loop
+
 ```python
 # Basic while
 contador = 0
@@ -250,11 +261,12 @@ while True:
     respuesta = input("¿Continuar? (s/n): ")
     if respuesta.lower() == 'n':
         break
-```
+```text
 
 ## 🎯 Funciones
 
 ### Basic Definition
+
 ```python
 # Funcion simple
 def saludar():
@@ -298,9 +310,10 @@ def crear_persona(**data):
     return data
 
 crear_persona(nombre="Ana", edad=25, ciudad="Madrid")
-```
+```text
 
 ### Lambda (Anonymous Functions)
+
 ```python
 # Sintaxis: lambda argumentos: expresion
 suma = lambda a, b: a + b
@@ -310,11 +323,12 @@ suma(3, 5)  # 8
 numeros = [1, 2, 3, 4, 5]
 pares = list(filter(lambda x: x % 2 == 0, numeros))  # [2, 4]
 cuadrados = list(map(lambda x: x**2, numeros))       # [1, 4, 9, 16, 25]
-```
+```text
 
 ## 🚀 Comprehensions
 
 ### List Comprehensions
+
 ```python
 # Basica
 cuadrados = [x**2 for x in range(10)]
@@ -332,9 +346,10 @@ mayusculas = [p.upper() for p in palabras]
 # Nested
 matriz = [[i*j for j in range(3)] for i in range(3)]
 # [[0, 0, 0], [0, 1, 2], [0, 2, 4]]
-```
+```text
 
 ### Dict Comprehensions
+
 ```python
 # Basica
 cuadrados_dict = {x: x**2 for x in range(5)}
@@ -352,15 +367,17 @@ invertido = {v: k for k, v in original.items()}
 ```
 
 ### Set Comprehensions
+
 ```python
 # Unique
 unicos = {x % 3 for x in range(10)}
 # {0, 1, 2}
-```
+```text
 
 ## ⚠️ Errores Comunes
 
 ### 1. Inconsistent Indentation
+
 ```python
 # ❌ Incorrect
 def funcion():
@@ -371,9 +388,10 @@ def funcion():
 def funcion():
     print("Hola")   # 4 espacios
     print("Mundo")  # 4 espacios
-```
+```text
 
 ### 2. Mutabilidad de Listas
+
 ```python
 # ❌ Cuidado
 lista1 = [1, 2, 3]
@@ -383,9 +401,10 @@ print(lista1)          # [1, 2, 3, 4] ¡Modificada!
 
 # ✅ Correct
 lista2 = lista1.copy()  # o lista1[:]
-```
+```text
 
 ### 3. Default Mutable Arguments
+
 ```python
 # ❌ Incorrect
 def agregar_item(item, lista=[]):

@@ -25,6 +25,7 @@ Al completar este exercise, serás capaz de:
 ## 📚 Context
 
 Construirás un **ETL Pipeline completo** orquestado por Step Functions que:
+
 1. Extrae datos de una API externa
 2. Validate la calidad de los datos
 3. Transforma datos en paralelo (customers y orders)
@@ -33,7 +34,7 @@ Construirás un **ETL Pipeline completo** orquestado por Step Functions que:
 
 **Arquitectura**:
 
-```
+```text
 ┌──────────────────────────┐
 │  EventBridge Schedule    │
 │  (Trigger diario 9 AM)   │
@@ -84,7 +85,7 @@ Construirás un **ETL Pipeline completo** orquestado por Step Functions que:
 │  │  Notify    │ (SNS: Send email)          │
 │  └────────────┘                             │
 └─────────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -160,7 +161,7 @@ def lambda_handler(event, context):
     except requests.exceptions.RequestException as e:
         logger.error(f"API request failed: {e}")
         raise Exception(f"Extraction failed: {e}")
-```
+```text
 
 ### 1.2 Validate (Validar calidad de datos)
 
@@ -268,7 +269,7 @@ def parse_s3_uri(uri: str) -> tuple:
 
 ### 1.3 Transform (Transformar datos)
 
-**` src/transform_customers.py`**:
+**`src/transform_customers.py`**:
 
 ```python
 """
@@ -332,7 +333,7 @@ def lambda_handler(event, context):
 def parse_s3_uri(uri: str) -> tuple:
     parts = uri.replace('s3://', '').split('/', 1)
     return parts[0], parts[1]
-```
+```text
 
 **`src/transform_orders.py`** (similar structure):
 
@@ -395,7 +396,7 @@ def lambda_handler(event, context):
 def parse_s3_uri(uri: str) -> tuple:
     parts = uri.replace('s3://', '').split('/', 1)
     return parts[0], parts[1]
-```
+```text
 
 ### 1.4 Load y Report
 
@@ -437,7 +438,7 @@ def lambda_handler(event, context):
         'orders': orders_result,
         'catalog_updated': True
     }
-```
+```text
 
 **`src/report.py`**:
 
@@ -615,7 +616,7 @@ def lambda_handler(event, context):
     }
   }
 }
-```
+```text
 
 ---
 
@@ -752,7 +753,7 @@ resource "aws_iam_role_policy" "eventbridge_step_functions" {
 output "state_machine_arn" {
   value = aws_sfn_state_machine.etl_pipeline.arn
 }
-```
+```text
 
 ---
 
@@ -777,7 +778,7 @@ aws stepfunctions start-execution \
 
 # Ver ejecución en consola
 echo "https://console.aws.amazon.com/states/home?region=us-east-1#/statemachines/view/$STATE_MACHINE_ARN"
-```
+```text
 
 ### 4.2 Monitor Execution
 

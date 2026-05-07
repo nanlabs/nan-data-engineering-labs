@@ -5,6 +5,7 @@ This guide walks you through completing and deploying the CloudMart Serverless D
 ## Overview
 
 You will create a complete serverless data lake on AWS implementing the **Medallion Architecture** with three layers:
+
 - **Bronze (Raw)**: Unprocessed data from source systems
 - **Silver (Processed)**: Cleaned, validated, and transformed data
 - **Gold (Curated)**: Business-ready aggregated and analytical data
@@ -12,6 +13,7 @@ You will create a complete serverless data lake on AWS implementing the **Medall
 ## Architecture Components
 
 The infrastructure includes:
+
 - **S3 Buckets**: Storage for each medallion layer + logs and Athena results
 - **AWS Lambda**: Serverless functions for data ingestion
 - **AWS Glue**: Crawlers for schema discovery, ETL jobs for transformations
@@ -26,14 +28,18 @@ Before you begin, ensure you have:
 
 1. **AWS Account** with appropriate permissions
 2. **Terraform** installed (v1.0+)
+
    ```bash
    terraform --version
-   ```
+   ```text
+
 3. **AWS CLI** configured with credentials
+
    ```bash
    aws configure
    aws sts get-caller-identity
    ```
+
 4. **Python 3.11+** for Lambda development
 5. Basic understanding of Terraform, S3, Lambda, and Glue
 
@@ -55,18 +61,20 @@ alert_email      = "your-email@example.com"
 # Optional: Adjust compute resources
 lambda_memory_mb         = 512
 glue_number_of_workers   = 2
-```
+```text
 
 ### Step 2: Complete TODOs in main.tf
 
 Work through each TODO comment in `main.tf`. Recommended order:
 
 #### A. S3 Lifecycle Configuration (~Line 90)
+
 **TODO**: Add lifecycle rules for raw_data bucket
 
 **Learning Objective**: Understand S3 storage class transitions for cost optimization
 
 **Solution Hint**:
+
 ```hcl
 rule {
   id     = "archive-old-raw-data"
@@ -95,22 +103,25 @@ rule {
     days_after_initiation = 7
   }
 }
-```
+```text
 
 **Reference**: [S3 Lifecycle Configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration)
 
 #### B. Lambda IAM Policy (~Line 240)
+
 **TODO**: Complete IAM policy for Lambda S3 access
 
 **Learning Objective**: Understand least-privilege IAM policies
 
 **What Lambda needs**:
+
 - Read from raw_data bucket
 - Write to processed_data bucket
 - Publish to SNS topic
 - Write CloudWatch logs
 
 **Solution Hint**:
+
 ```hcl
 policy = jsonencode({
   Version = "2012-10-17"
@@ -147,22 +158,26 @@ policy = jsonencode({
     }
   ]
 })
-```
+```text
 
 #### C. Glue IAM Role and Policy (~Line 275)
+
 **TODO**: Configure Glue service role and S3 access
 
 **Learning Objective**: Understand Glue permissions requirements
 
 **What Glue needs**:
+
 - Read/write all three S3 layers (bronze, silver, gold)
 - Access to logs bucket for scripts and temp files
 - Glue Data Catalog access (provided by AWS managed policy)
 
 #### D. SNS Email Subscription (~Line 320)
+
 **TODO**: Create email subscription for alerts
 
 **Solution Hint**:
+
 ```hcl
 resource "aws_sns_topic_subscription" "pipeline_alerts_email" {
   topic_arn = aws_sns_topic.data_pipeline_alerts.arn
@@ -174,6 +189,7 @@ resource "aws_sns_topic_subscription" "pipeline_alerts_email" {
 **Note**: You'll receive a confirmation email - click the link to activate
 
 #### E. Lambda Functions (~Line 335)
+
 **TODO**: Create Lambda functions for data ingestion
 
 **Learning Objective**: Deploy Lambda functions with Terraform
@@ -181,15 +197,17 @@ resource "aws_sns_topic_subscription" "pipeline_alerts_email" {
 **Steps for each function** (orders, customers, products, events):
 
 1. Create deployment package data source:
+
 ```hcl
 data "archive_file" "orders_ingestion_lambda" {
   type        = "zip"
   source_dir  = "${path.module}/../pipelines/lambda/orders_ingestion"
   output_path = "${path.module}/lambda_packages/orders_ingestion.zip"
 }
-```
+```text
 
-2. Create Lambda function:
+1. Create Lambda function:
+
 ```hcl
 resource "aws_lambda_function" "orders_ingestion" {
   function_name = "${var.project_name}-orders-ingestion-${var.environment}"
@@ -212,9 +230,10 @@ resource "aws_lambda_function" "orders_ingestion" {
     }
   }
 }
-```
+```text
 
-3. Create S3 trigger:
+1. Create S3 trigger:
+
 ```hcl
 resource "aws_lambda_permission" "allow_s3_orders" {
   statement_id  = "AllowExecutionFromS3"
@@ -236,16 +255,18 @@ resource "aws_s3_bucket_notification" "orders_trigger" {
 
   depends_on = [aws_lambda_permission.allow_s3_orders]
 }
-```
+```text
 
 Repeat for customers (JSON), products (CSV), and events (JSONL).
 
 #### F. Glue Crawlers (~Line 420)
+
 **TODO**: Create Glue crawlers for automatic schema discovery
 
 **Learning Objective**: Automate data catalog updates
 
 **Example for orders**:
+
 ```hcl
 resource "aws_glue_crawler" "bronze_orders" {
   name          = "${var.project_name}-bronze-orders-${var.environment}"
@@ -266,11 +287,13 @@ resource "aws_glue_crawler" "bronze_orders" {
 ```
 
 Create crawlers for:
+
 - Bronze: orders, customers, products, events
 - Silver: orders, customers, products
 - Gold: sales_summary, customer_360
 
 #### G. Glue ETL Jobs (~Line 465)
+
 **TODO**: Create Glue jobs for data transformations
 
 **Learning Objective**: Orchestrate PySpark ETL jobs
@@ -278,6 +301,7 @@ Create crawlers for:
 **Steps**:
 
 1. Upload script to S3:
+
 ```hcl
 resource "aws_s3_object" "glue_script_bronze_to_silver_orders" {
   bucket = aws_s3_bucket.logs.id
@@ -285,9 +309,10 @@ resource "aws_s3_object" "glue_script_bronze_to_silver_orders" {
   source = "${path.module}/../pipelines/glue/bronze_to_silver_orders.py"
   etag   = filemd5("${path.module}/../pipelines/glue/bronze_to_silver_orders.py")
 }
-```
+```text
 
-2. Create Glue job:
+1. Create Glue job:
+
 ```hcl
 resource "aws_glue_job" "bronze_to_silver_orders" {
   name     = "${var.project_name}-bronze-to-silver-orders-${var.environment}"
@@ -316,9 +341,10 @@ resource "aws_glue_job" "bronze_to_silver_orders" {
   number_of_workers = var.glue_number_of_workers
   timeout           = var.glue_job_timeout_minutes
 }
-```
+```text
 
 Create jobs for:
+
 - bronze_to_silver_orders
 - bronze_to_silver_customers
 - bronze_to_silver_products
@@ -326,9 +352,11 @@ Create jobs for:
 - silver_to_gold_customer_360
 
 #### H. CloudWatch Alarms (~Line 530)
+
 **TODO**: Create monitoring alarms
 
 **Example**:
+
 ```hcl
 resource "aws_cloudwatch_metric_alarm" "lambda_orders_errors" {
   alarm_name          = "${var.project_name}-lambda-orders-errors-${var.environment}"
@@ -347,7 +375,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_orders_errors" {
 
   alarm_actions = [aws_sns_topic.data_pipeline_alerts.arn]
 }
-```
+```text
 
 ### Step 3: Initialize and Validate Terraform
 
@@ -372,26 +400,29 @@ terraform plan
 terraform apply
 
 # Review the plan and type 'yes' to confirm
-```
+```text
 
 **Expected resources**: ~40-50 resources depending on how many TODOs you completed.
 
 ### Step 5: Verify Deployment
 
 1. **Check S3 buckets**:
+
    ```bash
    aws s3 ls | grep cloudmart
-   ```
+   ```text
 
 2. **Verify Lambda functions**:
+
    ```bash
    aws lambda list-functions --query 'Functions[?contains(FunctionName, `cloudmart`)].FunctionName'
    ```
 
 3. **Check Glue databases**:
+
    ```bash
    aws glue get-databases --query 'DatabaseList[].Name'
-   ```
+   ```text
 
 4. **Confirm SNS subscription**:
    - Check your email for confirmation message
@@ -400,6 +431,7 @@ terraform apply
 ### Step 6: Test the Pipeline
 
 1. **Upload sample data**:
+
    ```bash
    # Orders (CSV)
    aws s3 cp sample-orders.csv s3://your-bucket-raw/orders/
@@ -409,11 +441,13 @@ terraform apply
    ```
 
 2. **Monitor Lambda execution**:
+
    ```bash
    aws logs tail /aws/lambda/cloudmart-data-lake-orders-ingestion-dev --follow
-   ```
+   ```text
 
 3. **Run Glue crawler**:
+
    ```bash
    aws glue start-crawler --name cloudmart-data-lake-bronze-orders-dev
    ```
@@ -428,20 +462,25 @@ terraform apply
 ### Common Issues
 
 **1. S3 bucket already exists**
+
 - Error: `BucketAlreadyExists`
 - Solution: Change `s3_bucket_prefix` in terraform.tfvars to something unique
 
 **2. Lambda deployment package too large**
+
 - Error: `InvalidParameterValueException`
 - Solution: Ensure you're not including unnecessary files in lambda source_dir
 
 **3. Glue job fails with "Access Denied"**
+
 - Solution: Verify Glue IAM role has S3 read/write permissions for all layers
 
 **4. Crawler finds no tables**
+
 - Solution: Ensure data exists in S3 path, check folder structure matches expected format
 
 **5. Terraform apply hangs**
+
 - Solution: Check AWS CLI credentials are valid: `aws sts get-caller-identity`
 
 ### Validation Commands
@@ -458,7 +497,7 @@ terraform output
 
 # Destroy infrastructure (careful!)
 terraform destroy
-```
+```text
 
 ## Cost Optimization Tips
 
@@ -471,6 +510,7 @@ terraform destroy
 ## Expected Costs (Estimate)
 
 With light usage (dev environment):
+
 - S3 storage: $1-5/month
 - Lambda executions: $0-2/month (within free tier)
 - Glue crawler: $0.44/hour (only when running)

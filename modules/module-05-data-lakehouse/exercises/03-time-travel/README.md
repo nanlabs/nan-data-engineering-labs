@@ -3,6 +3,7 @@
 ## 🎯 Objective
 
 Dominar Delta Lake Time Travel for:
+
 - Consult historical versions
 -Rolelback to versiones anteriores
 - Audit and compliance
@@ -16,9 +17,11 @@ Dominar Delta Lake Time Travel for:
 ## 📋 Tareas
 
 ### Tarea 1: Crear and Modificar table with Versiones
+
 **ScrIPt**: `01_create_versions.py`
 
 Create to table with multIPle versions:
+
 1. V0: Crear table inicial (10K records)
 2. V1: Append 5K records
 3. V2: Update status='expinetwork' for transactions antiguas
@@ -26,6 +29,7 @@ Create to table with multIPle versions:
 5. Verificar historial with `.history()`
 
 ### Tarea 2: Time Travel Queries
+
 **ScrIPt**: `02_time_travel_queries.py`
 
 1. Specific version query:`versionAsOf(1)`
@@ -34,6 +38,7 @@ Create to table with multIPle versions:
 4. Restore archivo borrado by error
 
 ### Task 3: Audit and Rolelback
+
 **ScrIPt**: `03_audit_rolelback.py`
 
 1. to see historial completo of operaciones
@@ -66,7 +71,7 @@ df = spark.read.format("delta").option("timestampAsOf", "2024-01-01").load(path)
 # SQL
 spark.sql("SELECT * FROM table VERSION AS OF 2")
 spark.sql("SELECT * FROM table TIMESTAMP AS OF '2024-01-01'")
-```
+```text
 
 ### Use Cases
 

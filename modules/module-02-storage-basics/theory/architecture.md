@@ -72,7 +72,7 @@ graph TB
     style Bronze fill:#cd7f32,stroke:#8b4513,stroke-width:3px,color:#000
     style Silver fill:#c0c0c0,stroke:#808080,stroke-width:3px,color:#000
     style Gold fill:#ffd700,stroke:#daa520,stroke-width:3px,color:#000
-```
+```text
 
 ## File Format Decision Tree
 
@@ -101,7 +101,7 @@ graph TD
     style JSON fill:#fffacd,stroke:#daa520,stroke-width:2px
     style CSV fill:#ffb6c1,stroke:#c71585,stroke-width:2px
     style ORC fill:#dda0dd,stroke:#8b008b,stroke-width:2px
-```
+```text
 
 ## Partitioning Strategies
 
@@ -124,9 +124,10 @@ graph LR
     style D01 fill:#90ee90
     style D02 fill:#90ee90
     style D03 fill:#90ee90
-```
+```text
 
 **SQL Query with Partition Pruning:**
+
 ```sql
 SELECT * FROM transactions
 WHERE year = 2024
@@ -157,9 +158,10 @@ graph TB
     M1 --> DATA[data.parquet]
 
     style DATA fill:#ffd700
-```
+```text
 
 **Benefits:**
+
 - Query by event type: Skip 66% data
 - Query by country: Skip 50% data
 - Query by date: Skip 98% data
@@ -182,14 +184,15 @@ graph LR
 
     style D1 fill:#87ceeb
     style D2 fill:#87ceeb
-```
+```text
 
 **Use Case:** Millions of high-cardinality values (user_id)
+
 ```python
 # Generate hash bucket
 user_hash = hash(user_id) % 100  # 100 buckets
 partition_path = f"hash_bucket={user_hash:02d}/"
-```
+```text
 
 ## S3 Storage Classes
 
@@ -221,6 +224,7 @@ graph LR
 ```
 
 **Lifecycle Policy:**
+
 ```python
 lifecycle_rules = [
     {
@@ -241,7 +245,7 @@ lifecycle_rules = [
         ]
     }
 ]
-```
+```text
 
 ## Data Flow Patterns
 
@@ -267,7 +271,7 @@ sequenceDiagram
     Note over Gold: Size: 500MB<br/>Pre-aggregated
 
     Gold->>Consumer: 4. Query<br/>Athena/Presto<br/>< 5 seconds
-```
+```text
 
 ### Pattern 2: Streaming Ingestion
 
@@ -290,7 +294,7 @@ sequenceDiagram
     Note over Bronze,Silver: Hourly ETL Job
 
     Bronze->>Silver: 4. Convert to Parquet<br/>Partition: day<br/>Deduplicate
-```
+```text
 
 ### Pattern 3: Change Data Capture (CDC)
 
@@ -344,9 +348,10 @@ graph TB
     style WINNER fill:#32cd32,stroke:#006400,stroke-width:3px
     style CSV_GZIP fill:#ffb6c1
     style PARQUET_GZIP fill:#fffacd
-```
+```text
 
 **Benchmark Results:**
+
 | Format | Size | Write Time | Read Time (Scan) | Read Time (Filter) | Cost/Month |
 |--------|------|-------------|--------|----------|-----------|
 | CSV | 10GB | 2 min | 45 sec | 45 sec | $0.23 |
@@ -412,7 +417,7 @@ stateDiagram-v2
     }
 
     v4_good --> [*]
-```
+```text
 
 ### Schema Evolution Rules
 
@@ -440,7 +445,7 @@ graph TD
     style UNSAFE1 fill:#ffb6c1
     style UNSAFE2 fill:#ffb6c1
     style DEPLOY fill:#32cd32
-```
+```text
 
 ## Partitioning Performance Comparison
 
@@ -502,7 +507,7 @@ graph TB
     style A2 fill:#fff176
     style A3 fill:#ff8a65
     style A4 fill:#ff8a65
-```
+```text
 
 ## Architecture Decision Tree
 
@@ -534,7 +539,7 @@ graph TD
     style PARQUET_STD fill:#90ee90,stroke:#006400,stroke-width:3px
     style TIME_PART fill:#90ee90,stroke:#006400,stroke-width:2px
     style SUCCESS fill:#32cd32,stroke:#006400,stroke-width:4px
-```
+```text
 
 ## Summary
 
@@ -550,6 +555,7 @@ graph TD
 ### Reference Implementation
 
 See exercises for hands-on implementation of these architectures:
+
 - Exercise 01: Medallion data lake design
 - Exercise 02: Format conversion pipeline
 - Exercise 03: Partitioning strategies

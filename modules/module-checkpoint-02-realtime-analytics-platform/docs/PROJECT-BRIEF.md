@@ -62,6 +62,7 @@ Build a **Real-Time Analytics Platform** that provides sub-5-second data latency
 ### Project Scope
 
 **In Scope:**
+
 - Real-time event streaming infrastructure (Kinesis Data Streams)
 - Stream processing pipelines (Lambda, Kinesis Data Analytics)
 - Real-time state management (DynamoDB)
@@ -71,6 +72,7 @@ Build a **Real-Time Analytics Platform** that provides sub-5-second data latency
 - Cost optimization and monitoring
 
 **Out of Scope:**
+
 - Mobile application development (event generation simulated)
 - Machine learning models for fraud/demand prediction (future phase)
 - Multi-region deployment (future phase)
@@ -115,12 +117,14 @@ RideShare competes in a highly competitive ride-sharing market dominated by Uber
 | RideShare | 7% | Competitive pricing, local markets |
 
 **RideShare's Competitive Advantages:**
+
 - Lower commission rates (15% vs 25-30% for competitors)
 - Strong presence in mid-sized cities (less competition)
 - Better driver compensation leading to higher retention
 - Focus on customer service and safety
 
 **Current Weaknesses:**
+
 - **No real-time capabilities** (Uber/Lyft have sophisticated real-time systems)
 - Manual surge pricing (competitors have automated dynamic pricing)
 - Slower driver matching (competitors match in <30 seconds)
@@ -133,13 +137,15 @@ RideShare competes in a highly competitive ride-sharing market dominated by Uber
 **Problem**: Surge pricing decisions are made manually by operations team based on yesterday's data patterns.
 
 **Impact**:
+
 - Miss peak demand windows (e.g., sudden rainstorm, concert letting out)
 - Over-price during slow periods, driving customers to competitors
 - Under-price during high demand, leaving revenue on table
 - **Estimated annual loss: $7.5M** (15% of potential surge revenue)
 
 **Example Scenario**:
-```
+
+```text
 Friday 6pm - Large concert ends, 20,000 people need rides
 Current System:
 - Operations team not aware of surge until next day's report
@@ -151,13 +157,14 @@ With Real-Time System:
 - Auto-adjust surge multiplier to 2.5x within 1 minute
 - Attract more drivers to area with higher fares
 - Capture $25K additional revenue in 1 hour
-```
+```text
 
 #### 2. Poor Customer Experience from Slow Matching
 
 **Problem**: Cannot see real-time driver locations and availability, leading to inefficient rider-driver matching.
 
 **Impact**:
+
 - Average wait time: 8.5 minutes (competitors: 4 minutes)
 - 40% of customers wait >10 minutes
 - 15% of requests result in no driver found
@@ -165,7 +172,8 @@ With Real-Time System:
 - Lost annual revenue from churn: **$10M**
 
 **Customer Journey (Current State)**:
-```
+
+```text
 1. Customer requests ride (9:00:00 AM)
 2. Request sent to server, server queries database for nearby drivers
 3. Database reflects driver locations from 5 minutes ago (batch update)
@@ -179,29 +187,33 @@ With Real-Time System:
 **Problem**: Fraudulent activity (fake rides, payment fraud, driver fraud) detected 24 hours later through batch analysis.
 
 **Impact**:
+
 - Cannot stop fraud in progress
 - Fraudulent drivers complete multiple fake rides before detection
 - Payment fraud not caught until after payout to driver
 - **$100K monthly fraud losses** ($1.2M annually)
 
 **Common Fraud Patterns**:
+
 - **Route fraud**: Driver takes circular routes to inflate fare
 - **Ghost rides**: Fake rides between colluding driver and "rider"
 - **Payment fraud**: Stolen credit cards
 - **Bonus abuse**: Gaming referral and bonus systems
 
 **Current Detection (Batch)**:
-```
+
+```text
 Monday: Fraud occurs (10 fake rides)
 Tuesday 3am: Nightly ETL job processes Monday's data
 Tuesday 9am: Fraud detection models run on batch data
 Tuesday 10am: Fraud team reviews alerts (18-24 hours after fraud)
 Tuesday 11am: Driver account suspended
 Net Loss: ~$500 (10 rides × $50 average fraud amount)
-```
+```text
 
 **Desired State (Real-Time)**:
-```
+
+```text
 Monday: Fraud attempt (unusual route pattern detected in <5 seconds)
 Monday: Automatic alert to fraud team + temporary account flag
 Monday: Fraud team reviews within minutes, can stop ride in progress
@@ -214,12 +226,14 @@ Net Loss: ~$50 (1 ride × $50, vs 10 rides)
 **Problem**: Zero visibility into platform health and business metrics until next day's reports.
 
 **Impact**:
+
 - Cannot detect outages, degraded performance, or issues in real-time
 - Slow incident response (average 8 hours to detect and respond)
 - Customer support lacks real-time data to assist customers
 - **Estimated cost: 10 hours cumulative downtime per month**
 
 **Recent Incidents**:
+
 - Payment gateway failure went undetected for 4 hours (6pm-10pm Friday) → $200K lost transactions
 - Driver app bug caused GPS issues, detected next morning → 12 hours of poor service quality
 - Database performance degradation caused slow ride matching → Customers blamed platform, switched to Uber
@@ -229,12 +243,14 @@ Net Loss: ~$50 (1 ride × $50, vs 10 rides)
 **Problem**: Operations team manually performs tasks that should be automated.
 
 **Daily Manual Tasks**:
+
 - Set surge pricing multipliers for each city zone (50 cities × 10 zones = 500 manual updates)
 - Review yesterday's performance and adjust strategies
 - Generate reports for executives
 - Investigate customer complaints with stale data
 
 **Impact**:
+
 - Operations team of 20 people spending 50% time on manual tasks
 - Human error i n surge pricing decisions
 - Delayed response to market changes
@@ -264,7 +280,7 @@ Net Loss: ~$50 (1 ride × $50, vs 10 rides)
 
 #### Current Data Pipeline
 
-```
+```text
 ┌────────────────────────────────────────────────────┐
 │         Operational Systems (OLTP)                 │
 │                                                    │
@@ -295,9 +311,10 @@ Net Loss: ~$50 (1 ride × $50, vs 10 rides)
 │           Tableau (Business Intelligence)          │
 │      Dashboards refreshed daily at 7am             │
 └────────────────────────────────────────────────────┘
-```
+```text
 
 **Pipeline Characteristics**:
+
 - **Latency**: 24+ hours (data from Monday available Tuesday morning)
 - **Refresh Schedule**: Nightly (2am-7am batch window)
 - **Data Volume**: ~50 GB per day
@@ -369,7 +386,7 @@ CREATE TABLE ratings (
     comment TEXT,
     created_at TIMESTAMP
 );
-```
+```text
 
 ### Limitations of Current Architecture
 
@@ -433,6 +450,7 @@ The real-time analytics platform is successful if it:
 **Goal**: Ingest 100,000 events per minute with ability to scale to 1,000,000 events per minute.
 
 **Key Requirements**:
+
 - Four event streams: Rides, Driver Locations, Payments, Ratings
 - Event batching for cost optimization (500 records per batch)
 - Exactly-once delivery semantics (no duplicates or lost events)
@@ -440,6 +458,7 @@ The real-time analytics platform is successful if it:
 - Configurable retention (24-168 hours)
 
 **Success Metrics**:
+
 - Throughput: 100K+ events/min sustained, 1M+ events/min peak
 - Latency: <1 second from event generation to stream
 - Availability: 99.9% uptime
@@ -450,12 +469,14 @@ The real-time analytics platform is successful if it:
 **Goal**: Process streaming events with <3 second latency and enrich with contextual data.
 
 **Key Requirements**:
+
 - Lambda functions for simple transformations and enrichment
 - Kinesis Data Analytics for complex windowing and aggregations
 - Stateful processing with DynamoDB lookups
 - Error handling with retries and dead-letter queues
 
 **Success Metrics**:
+
 - Processing latency: <3 seconds (P95)
 - Throughput: Match ingestion rate (100K+ events/min)
 - Error rate: <0.5% failed processing
@@ -466,12 +487,14 @@ The real-time analytics platform is successful if it:
 **Goal**: Compute streaming aggregations with 1-minute granularity.
 
 **Key Requirements**:
+
 - **1-minute windows**: Ride counts, active drivers, revenue by city
 - **5-minute windows**: Surge pricing multipliers, demand/supply ratios
 - **1-hour windows**: Daily trends, hour-over-hour comparisons
 - **Top-N queries**: Busiest zones, highest-rated drivers
 
 **Success Metrics**:
+
 - Aggregation latency: <5 seconds from event to aggregated metric
 - Accuracy: 99.9% (compared to batch calculations)
 - Completeness: Handle 99%+ of events (account for late arrivals)
@@ -481,6 +504,7 @@ The real-time analytics platform is successful if it:
 **Goal**: Provide live operational dashboards with <10 second refresh for operations team and executives.
 
 **Key Requirements**:
+
 - **Operational Dashboard**: Active rides, available drivers, revenue (current), recent alters
 - **Executive Dashboard**: Daily trends, city comparisons, top performers
 - Auto-refresh without manual intervention
@@ -488,6 +512,7 @@ The real-time analytics platform is successful if it:
 - Role-based access control
 
 **Success Metrics**:
+
 - Dashboard refresh: <10 seconds
 - Query latency: <2 seconds
 - Concurrent users: 100+ without degradation
@@ -497,6 +522,7 @@ The real-time analytics platform is successful if it:
 **Goal**: Achieve >95% data quality across completeness, accuracy, and timeliness dimensions.
 
 **Key Requirements**:
+
 - Schema validation on all incoming events
 - Completeness checks (required fields present, no nulls)
 - Consistency checks (cross-stream validation)
@@ -504,6 +530,7 @@ The real-time analytics platform is successful if it:
 - Quality metrics tracked and visualized
 
 **Success Metrics**:
+
 - Data quality score: >95%
 - Invalid events: <1%
 - Detection latency: <30 seconds for quality issues
@@ -514,6 +541,7 @@ The real-time analytics platform is successful if it:
 **Goal**: Orchestrate batch and streaming workflows with automatic error handling and retry logic.
 
 **Key Requirements**:
+
 - Daily aggregation jobs (summarize previous day's data)
 - Weekly reporting (executive summaries, trends)
 - Error handling with exponential backoff (retry 3x)
@@ -521,6 +549,7 @@ The real-time analytics platform is successful if it:
 - Notifications on success/failure
 
 **Success Metrics**:
+
 - Workflow success rate: >99%
 - Failed task recovery: <5 minutes
 - Notification latency: <1 minute
@@ -541,6 +570,7 @@ The real-time analytics platform is successful if it:
 4. **Rating Events** (customer ratings after ride completion)
 
 **Requirements**:
+
 - Support for 100,000 events per minute (current load)
 - Auto-scaling to 1,000,000 events per minute (future growth)
 - Event ordering within partition key
@@ -574,6 +604,7 @@ The real-time analytics platform is successful if it:
    - Emit custom CloudWatch metrics
 
 **Requirements**:
+
 - Processing latency: <3 seconds (P95)
 - Exactly-once processing semantics
 - Idempotent operations (safe to retry)
@@ -604,6 +635,7 @@ The real-time analytics platform is successful if it:
    - Output to DynamoDB
 
 **Requirements**:
+
 - Window latency: <5 seconds (from event to windowed result)
 - Late arrival handling: 1-minute watermark tolerance
 - Exactly-once processing with checkpointing
@@ -632,6 +664,7 @@ The real-time analytics platform is successful if it:
    - Purpose: Pre-computed metrics for dashboards
 
 **Requirements**:
+
 - Read latency: <10ms (P99)
 - Write latency: <20ms (P99)
 - Capacity: Auto-scaling based on load
@@ -642,6 +675,7 @@ The real-time analytics platform is successful if it:
 **Description**: Archive all events to S3 for historical analysis and compliance.
 
 **S3 Structure**:
+
 ```
 s3://rideshare-events-archive/
 ├── raw/
@@ -658,9 +692,10 @@ s3://rideshare-events-archive/
 ├── processed/
 │   └── daily_aggregates/
 └── quality_reports/
-```
+```text
 
 **Requirements**:
+
 - Format: Parquet (columnar, compressed)
 - Partitioning: year/month/day/hour
 - Lifecycle policies: Transition to IA after 30 days, Glacier after 90 days
@@ -671,6 +706,7 @@ s3://rideshare-events-archive/
 **Description**: QuickSight dashboards for real-time monitoring and historical analysis.
 
 **Dashboard 1: Operational Dashboard** (for operations team)
+
 - **KPI Cards**: Active rides, Available drivers, Current revenue (today), Avg wait time
 - **Line Charts**: Rides over time (last 4 hours, 1-min granularity)
 - **Bar Charts**: Rides by city (top 10), Rides by status
@@ -679,6 +715,7 @@ s3://rideshare-events-archive/
 - **Refresh**: Every 10 seconds
 
 **Dashboard 2: Executive Dashboard** (for leadership)
+
 - **KPI Cards**: Today's metrics vs yesterday, MTD vs last month
 - **Line Charts**: Daily rides (last 30 days), Revenue trend, CSAT score
 - **Pie Chart**: Revenue by city
@@ -686,6 +723,7 @@ s3://rideshare-events-archive/
 - **Refresh**: Every 1 hour
 
 **Requirements**:
+
 - Data freshness: <10 seconds for operational, <1 hour for executive
 - Query latency: <2 seconds
 - Concurrent users: 100+
@@ -707,6 +745,7 @@ s3://rideshare-events-archive/
 | Cost Anomaly | Daily spend >$200 | SNS → Email (P2) |
 
 **Requirements**:
+
 - Alert latency: <1 minute from condition to notification
 - Alert fatigue: <10 alerts per day (avoid false positives)
 - On-call rotation: PagerDuty integration for P1 alerts
@@ -716,7 +755,8 @@ s3://rideshare-events-archive/
 **Description**: Step Functions workflows for batch jobs and complex orchestration.
 
 **Workflow 1: Daily Aggregation**
-```
+
+```text
 Start
 ├── Parallel Branch 1: Aggregate rides data
 │   ├── Query S3 (yesterday's rides)
@@ -736,9 +776,10 @@ Start
 
 Error Handling: Retry 3x with exponential backoff
 Schedule: Daily at 2:00 AM UTC
-```
+```text
 
 **Workflow 2: Weekly Reporting**
+
 ```
 Start
 ├── Fan-out: For each city (50 cities)
@@ -751,9 +792,10 @@ Start
 
 Error Handling: Continue on failure (individual city)
 Schedule: Weekly on Sunday at 3:00 AM UTC
-```
+```text
 
 **Requirements**:
+
 - Workflow success rate: >99%
 - Error recovery: Automatic retry 3x with exponential backoff
 - Visibility: CloudWatch Logs for debugging
@@ -806,6 +848,7 @@ Schedule: Weekly on Sunday at 3:00 AM UTC
 | Production (Future) | $5,000-10,000 | At 100M rides/month (10x growth) |
 
 **Cost Optimization Strategies**:
+
 - Use AWS Free Tier where eligible
 - Right-size Lambda memory and timeout
 - Optimize Kinesis shard count
@@ -852,7 +895,7 @@ Schedule: Weekly on Sunday at 3:00 AM UTC
   "estimated_fare": 15.50,
   "estimated_duration_minutes": 18
 }
-```
+```text
 
 #### Event: `ride_started`
 
@@ -869,7 +912,7 @@ Schedule: Weekly on Sunday at 3:00 AM UTC
   },
   "wait_time_seconds": 267  // time from request to start
 }
-```
+```text
 
 #### Event: `ride_completed`
 
@@ -902,6 +945,7 @@ Schedule: Weekly on Sunday at 3:00 AM UTC
 **Event Size**: ~500 bytes per event (excluding route waypoints)
 
 **Kinesis Configuration**:
+
 - Stream name: `rideshare-ride-events`
 - Shard count: 4 shards (250 rides/min per shard)
 - Retention: 24 hours
@@ -930,18 +974,20 @@ Schedule: Weekly on Sunday at 3:00 AM UTC
   "battery_level": 85,
   "app_version": "4.2.1"
 }
-```
+```text
 
 **Event Volume**: 500K drivers × 2 updates/minute (30-second interval) = 1M events/minute
 
 **Event Size**: ~250 bytes per event
 
 **Kinesis Configuration**:
+
 - Stream name: `rideshare-driver-locations`
 - Shard count: 10 shards (100K events/min per shard)
 - Retention: 24 hours
 
 **Note**: This is the highest-volume stream. Consider data reduction strategies:
+
 - Only send location if driver moved >50 meters
 - Dynamic interval (30s when moving, 2min when stationary)
 - Sample locations (e.g., send every other location for analytics)
@@ -967,7 +1013,7 @@ Schedule: Weekly on Sunday at 3:00 AM UTC
   "payment_method": "credit_card",  // credit_card, debit_card, paypal, apple_pay
   "card_last_four": "4242"
 }
-```
+```text
 
 #### Event: `payment_completed`
 
@@ -982,13 +1028,14 @@ Schedule: Weekly on Sunday at 3:00 AM UTC
   "processor_transaction_id": "txn_stripe_xyz789",
   "processing_time_ms": 2456
 }
-```
+```text
 
 **Event Volume**: ~10M payments/month = ~333K payments/day = ~231 payments/minute (avg)
 
 **Event Size**: ~300 bytes per event
 
 **Kinesis Configuration**:
+
 - Stream name: `rideshare-payment-events`
 - Shard count: 2 shards
 - Retention: 168 hours (7 days for compliance)
@@ -1020,6 +1067,7 @@ Schedule: Weekly on Sunday at 3:00 AM UTC
 **Event Size**: ~400 bytes per event
 
 **Kinesis Configuration**:
+
 - Stream name: `rideshare-rating-events`
 - Shard count: 1 shard
 - Retention: 24 hours
@@ -1030,7 +1078,7 @@ Schedule: Weekly on Sunday at 3:00 AM UTC
 
 The platform will follow a **Lambda Architecture** approach, combining real-time stream processing (speed layer) and batch processing (batch layer) for comprehensive analytics.
 
-```
+```text
                       ┌──────────────────────┐
                       │   Event Sources      │
                       │  (Mobile Apps, etc.) │
@@ -1043,13 +1091,14 @@ The platform will follow a **Lambda Architecture** approach, combining real-time
         │ Speed Layer  │  │  Batch Layer │  │ Serving │
         │ (Real-Time)  │  │ (Historical) │  │  Layer  │
         └──────────────┘  └──────────────┘  └─────────┘
-```
+```text
 
 ### Physical Architecture (AWS Services)
 
 See README.md for detailed architecture diagram.
 
 **Key Components**:
+
 - **Ingestion**: Kinesis Data Streams (4 streams)
 - **Processing**: Lambda (6 functions) + Kinesis Data Analytics (3 applications)
 - **Storage**: DynamoDB (3 tables) + S3 (3 buckets)
@@ -1068,11 +1117,13 @@ See README.md for detailed architecture diagram.
 ### Disaster Recovery
 
 **Backup Strategy**:
+
 - Kinesis: Data retained 24-168 hours (configurable)
 - DynamoDB: Point-in-time recovery (PITR) enabled, 35-day retention
 - S3: Versioning enabled, cross-region replication (optional for compliance)
 
 **Recovery Procedures**:
+
 - **Scenario 1: Lambda Function Failure** → Automatic retries (3x), DLQ for failed events, replay from Kinesis
 - **Scenario 2: Kinesis Stream Unavailable** → Events buffer in producer, circuit breaker after 5 minutes, replay when available
 - **Scenario 3: DynamoDB Throttling** → Auto-scaling triggers, write buffering, alert to ops team
@@ -1083,6 +1134,7 @@ See README.md for detailed architecture diagram.
 ### 1. Infrastructure as Code (Terraform)
 
 **Files**:
+
 - `main.tf`: Main configuration
 - `variables.tf`: Input variables
 - `outputs.tf`: Output values (ARNs, endpoints)
@@ -1097,6 +1149,7 @@ See README.md for detailed architecture diagram.
 - `sns.tf`: SNS topics
 
 **Acceptance Criteria**:
+
 - `terraform plan` shows 0 changes after initial apply
 - All resources tagged with: `Project=RideShare`, `Environment=dev/prod`, `ManagedBy=Terraform`
 - State stored remotely in S3 with locking (DynamoDB)
@@ -1105,6 +1158,7 @@ See README.md for detailed architecture diagram.
 ### 2. Event Producer Scripts
 
 **Files**:
+
 - `ride_event_producer.py`
 - `driver_location_producer.py`
 - `payment_producer.py`
@@ -1112,6 +1166,7 @@ See README.md for detailed architecture diagram.
 - `base_producer.py` (shared base class)
 
 **Acceptance Criteria**:
+
 - Generate realistic events based on probability distributions
 - Batch 500 records per PutRecords call
 - Retry on throttling with exponential backoff (3 retries, 1s, 2s, 4s)
@@ -1121,6 +1176,7 @@ See README.md for detailed architecture diagram.
 ### 3. Lambda Functions
 
 **Functions**:
+
 1. `ride_processor` - Process ride events
 2. `driver_location_processor` - Update driver availability
 3. `payment_processor` - Fraud detection and revenue aggregation
@@ -1129,6 +1185,7 @@ See README.md for detailed architecture diagram.
 6. `data_quality_checker` - Quality validation
 
 **Acceptance Criteria**:
+
 - Each function <10 MB deployment package
 - Appropriate timeout (30-60 seconds)
 - Memory sized appropriately (512-1024 MB)
@@ -1140,11 +1197,13 @@ See README.md for detailed architecture diagram.
 ### 4. Kinesis Data Analytics SQL Applications
 
 **Applications**:
+
 1. `surge_pricing_calculator.sql` - 5-minute windows, demand/supply ratio
 2. `real_time_metrics.sql` - 1-minute windows, KPIs
 3. `hot_spots_detector.sql` - Geospatial clustering
 
 **Acceptance Criteria**:
+
 - Correct window definitions (TUMBLE, HOP, SESSION)
 - Watermark handling for late arrivals (1-minute tolerance)
 - Output to Kinesis streams or DynamoDB
@@ -1153,10 +1212,12 @@ See README.md for detailed architecture diagram.
 ### 5. Step Functions Workflows
 
 **Workflows**:
+
 1. `daily_aggregation_workflow.json` - Parallel processing of daily aggregates
 2. `weekly_reporting_workflow.json` - Fan-out/fan-in pattern for reports
 
 **Acceptance Criteria**:
+
 - Visual workflow in Step Functions console
 - Error handling: Catch, Retry with exponential backoff
 - Parallel branches where appropriate
@@ -1166,10 +1227,12 @@ See README.md for detailed architecture diagram.
 ### 6. QuickSight Dashboards
 
 **Dashboards**:
+
 1. Operational Dashboard (real-time)
 2. Executive Dashboard (daily trends)
 
 **Acceptance Criteria**:
+
 - Data sources connected (DynamoDB, Athena)
 - Auto-refresh configured
 - Responsive design (works on mobile)
@@ -1179,16 +1242,19 @@ See README.md for detailed architecture diagram.
 ### 7. Monitoring and Alerting
 
 **CloudWatch Dashboards**:
+
 1. System Health Dashboard
 2. Business KPI Dashboard
 
 **CloudWatch Alarms**:
+
 - Lambda errors, duration, throttles
 - Kinesis throughput, throttles
 - DynamoDB throttles, latency
 - Cost anomaly detection
 
 **Acceptance Criteria**:
+
 - All critical metrics represented
 - Alarms have appropriate thresholds
 - SNS topics configured
@@ -1197,6 +1263,7 @@ See README.md for detailed architecture diagram.
 ### 8. Documentation
 
 **Documents**:
+
 1. README.md (overview, getting started)
 2. PROJECT-BRIEF.md (this document)
 3. IMPLEMENTATION-GUIDE.md (step-by-step instructions)
@@ -1206,6 +1273,7 @@ See README.md for detailed architecture diagram.
 7. docs/api-specifications.md (event schemas, APIs)
 
 **Acceptance Criteria**:
+
 - All documentation complete and accurate
 - Architecture diagrams (text-based or images)
 - Code comments for complex logic
@@ -1215,12 +1283,14 @@ See README.md for detailed architecture diagram.
 ### 9. Test Suite
 
 **Tests**:
+
 - Unit tests for Lambda functions (pytest)
 - Integration tests (end-to-end flows)
 - Load tests (simulate 10x traffic)
 - Chaos tests (inject failures)
 
 **Acceptance Criteria**:
+>
 - >80% code coverage
 - All tests pass in CI/CD pipeline
 - Load tests validate scalability
@@ -1259,10 +1329,12 @@ To prove your implementation meets requirements, demonstrate these scenarios:
 #### Scenario 1: Real-Time Surge Pricing
 
 **Setup**:
+
 1. Simulate 1,000 ride requests in NYC within 1 minute (surge event)
 2. Only 100 available drivers in that zone
 
 **Expected Outcome**:
+
 - Surge pricing calculator detects high demand within 5 minutes
 - Surge multiplier increases from 1.0x to 2.5x
 - New ride requests show updated pricing on operational dashboard within 10 seconds
@@ -1270,9 +1342,11 @@ To prove your implementation meets requirements, demonstrate these scenarios:
 #### Scenario 2: Fraud Detection
 
 **Setup**:
+
 1. Simulate suspicious ride: circular route, fare 3x higher than normal for distance
 
 **Expected Outcome**:
+
 - Payment processor flags ride as suspicious within 5 seconds
 - Fraud alert appears on operational dashboard
 - SNS notification sent to fraud team
@@ -1281,9 +1355,11 @@ To prove your implementation meets requirements, demonstrate these scenarios:
 #### Scenario 3: Driver Availability
 
 **Setup**:
+
 1. Simulate 1,000 driver location updates within 1 minute
 
 **Expected Outcome**:
+
 - Driver availability table updated in real-time
 - Operational dashboard shows updated "Available Drivers" count within 10 seconds
 - Geohashing enables fast location-based queries (<10ms)
@@ -1291,10 +1367,12 @@ To prove your implementation meets requirements, demonstrate these scenarios:
 #### Scenario 4: Workflow Orchestration
 
 **Setup**:
+
 1. Manually trigger daily aggregation workflow
 2. Inject failure in one parallel branch
 
 **Expected Outcome**:
+
 - Workflow executes parallel branches
 - Failed branch retries 3x with exponential backoff
 - SNS notification sent on final failure
@@ -1303,9 +1381,11 @@ To prove your implementation meets requirements, demonstrate these scenarios:
 #### Scenario 5: Load Testing
 
 **Setup**:
+
 1. Run load test: 10,000 events/second for 5 minutes (3M events)
 
 **Expected Outcome**:
+
 - Kinesis auto-scales (or on-demand mode handles load)
 - Lambda auto-scales to match throughput
 - DynamoDB auto-scales or on-demand mode handles writes
@@ -1375,6 +1455,7 @@ To prove your implementation meets requirements, demonstrate these scenarios:
 #### HIPAA (Future Consideration)
 
 If RideShare expands to medical transport:
+
 - BAA (Business Associate Agreement) with AWS
 - Encrypt PHI (Protected Health Information)
 - Access logs and audits
@@ -1403,10 +1484,12 @@ If RideShare expands to medical transport:
 #### Week 1: Infrastructure and Ingestion (7-8 hours)
 
 **Phase 1: Infrastructure Setup** (2-3 hours)
+
 - Day 1: Terraform setup, Kinesis streams, DynamoDB tables
 - Day 2: Lambda functions scaffolding, IAM roles, S3 buckets
 
 **Phase 2: Event Ingestion** (3-4 hours)
+
 - Day 3: Event producer scripts (rides, locations)
 - Day 4: Event producer scripts (payments, ratings), testing
 
@@ -1415,12 +1498,14 @@ If RideShare expands to medical transport:
 #### Week 2: Processing and Storage (8-9 hours)
 
 **Phase 3: Stream Processing** (5-6 hours)
+
 - Day 5: Lambda function - ride_processor
 - Day 6: Lambda function - driver_location_processor
 - Day 7: Lambda functions - payment_processor, rating_processor
 - Day 8: Kinesis Data Analytics - surge pricing, real-time metrics
 
 **Phase 4: State Management** (2-3 hours)
+
 - Day 9: DynamoDB table designs, CRUD operations
 - Day 10: DynamoDB Streams, indexing optimization
 
@@ -1429,10 +1514,12 @@ If RideShare expands to medical transport:
 #### Week 3: Orchestration and Quality (6-7 hours)
 
 **Phase 5: Workflow Orchestration** (3-4 hours)
+
 - Day 11: Step Functions - daily aggregation workflow
 - Day 12: Step Functions - weekly reporting workflow, EventBridge schedules
 
 **Phase 6: Data Quality** (2-3 hours)
+
 - Day 13: JSON Schema validation, quality framework
 - Day 14: Quality metrics, alerts
 
@@ -1441,13 +1528,16 @@ If RideShare expands to medical transport:
 #### Week 4: Visualization and Production Readiness (4-6 hours)
 
 **Phase 7: Visualization** (2-3 hours)
+
 - Day 15: QuickSight operational dashboard
 - Day 16: QuickSight executive dashboard
 
 **Phase 8: Monitoring and Alerts** (1-2 hours)
+
 - Day 17: CloudWatch dashboards, alarms, SNS notifications
 
 **Phase 9: Optimization** (1-2 hours)
+
 - Day 18: Performance tuning, cost optimization, load testing
 
 **Milestone 4**: Production-ready system with dashboards and monitoring
@@ -1622,6 +1712,7 @@ By completing this checkpoint, you should be able to:
 ### Appendix A: Event Schema Definitions
 
 See `schemas/` directory for complete JSON Schema definitions:
+
 - `ride_event.schema.json`
 - `driver_location.schema.json`
 - `payment_event.schema.json`

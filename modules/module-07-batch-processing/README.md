@@ -45,36 +45,42 @@ By the end of this module, you will be able to:
 ## Exercises
 
 ### 📖 Exercise 01: Batch Basics
+
 **Concepts**: Chunking, memory optimization, progress tracking
 **Tools**: pandas, tqdm
 **Data**: 10M transactions
 **Files**: BatchReader, MemoryOptimizer, comprehensive tests
 
 ### 📦 Exercise 02: Data Partitioning
+
 **Concepts**: Date, range, hash partitioning strategies
 **Tools**: pandas, pyarrow
 **Data**: Partitioned transactions (year/month/day)
 **Files**: DatePartitioner, RangePartitioner, HashPartitioner
 
 ### ⚡ Exercise 03: PySpark Basics
+
 **Concepts**: Distributed processing, Spark DataFrames
 **Tools**: PySpark 3.5
 **Data**: 10M transactions in distributed environment
 **Files**: SparkManager, SparkOperations, SparkOptimizer
 
 ### 🔄 Exercise 04: Batch ETL pipeline
+
 **Concepts**: Complete pipeline, error handling, metrics
 **Tools**: PySpark, great-expectations
 **Data**: Multi-table joins (transactions + users + products)
 **Files**: BatchETLPipeline, BusinessTransformations, PipelineMetrics
 
 ### 🚀 Exercise 05: Performance Optimization
+
 **Concepts**: Caching, broadcast joins, partition tuning
 **Tools**: PySpark, performance profiling
 **Data**: Benchmarking with 10M+ records
 **Files**: PartitionOptimizer, CacheManager, BroadcastOptimizer
 
 ### 🏭 Exercise 06: Production Jobs
+
 **Concepts**: Scheduling, monitoring, SLA management
 **Tools**: PySpark, logging, alerting
 **Data**: Production-ready batch processing
@@ -85,16 +91,19 @@ By the end of this module, you will be able to:
 ## 📚 Module Resources
 
 ### Theory Files (~16,000 words)
+
 - **01-concepts.md**: Batch processing fundamentals, partitioning, chunking
 - **02-architecture.md**: Spark architecture, pipeline patterns, optimization
 - **03-resources.md**: Tools, cloud services, learning resources
 
 ### Data Generation
+
 - **10M transactions** with date partitioning (year/month/day)
 - **1M users** with realistic profiles and spending patterns
 - **100K products** with categories, ratings, stock levels
 
 ### Assets
+
 - **batch-processing-checklist.md**: 100+ item production checklist
 - **pyspark-quick-reference.md**: Complete PySpark cheat sheet
 
@@ -122,13 +131,14 @@ pytest validation/ -v
 python data/scripts/generate_users.py --num-users 1000000
 python data/scripts/generate_products.py --num-products 100000
 python data/scripts/generate_transactions.py --num-transactions 10000000
-```
+```text
 
 ---
 
 ## Resources
 
 See [theory/03-resources.md](theory/03-resources.md) for:
+
 - Official documentation (Spark, pandas, AWS)
 - Video tutorials and workshops
 - Community resources and best practices
@@ -137,14 +147,16 @@ See [theory/03-resources.md](theory/03-resources.md) for:
 ## Validation
 
 Run all validations:
+
 ```bash
 bash scripts/validate.sh
-```
+```text
 
 Or use the global validation:
+
 ```bash
 make validate MODULE=module-{module_id}-{module["name"]}
-```
+```text
 
 ## Progress Checklist
 
@@ -161,6 +173,7 @@ make validate MODULE=module-{module_id}-{module["name"]}
 ## Next Steps
 
 After completing this module, you'll be ready for:
+
 - Module 08: Streaming Basics
 - Module 10: Workflow Orchestration
 - Module 15: Real-Time Analytics

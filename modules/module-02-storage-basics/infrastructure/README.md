@@ -19,19 +19,20 @@ LocalStack infrastructure for Module 02 exercises.
 ```bash
 cd infrastructure
 ./init.sh
-```
+```text
 
 Or with docker-compose:
+
 ```bash
 docker-compose up -d
-```
+```text
 
 ### Check Status
 
 ```bash
 docker-compose ps
 docker-compose logs -f
-```
+```text
 
 ### Stop Infrastructure
 
@@ -44,7 +45,7 @@ docker-compose down
 ```bash
 docker-compose down -v
 rm -rf localstack-data/
-```
+```text
 
 ## Configuration
 
@@ -55,12 +56,13 @@ export AWS_ACCESS_KEY_ID=test
 export AWS_SECRET_ACCESS_KEY=test
 export AWS_DEFAULT_REGION=us-east-1
 export AWS_ENDPOINT_URL=http://localhost:4566
-```
+```text
 
 Or use with AWS CLI:
+
 ```bash
 aws --endpoint-url=http://localhost:4566 s3 ls
-```
+```text
 
 ## Data Persistence
 
@@ -69,16 +71,18 @@ Data is stored in `./localstack-data/` and persists across restarts.
 ## Troubleshooting
 
 **Port conflict:**
+
 ```bash
 lsof -i :4566
 kill -9 <PID>
 ```
 
 **Reset everything:**
+
 ```bash
 docker-compose down -v
 rm -rf localstack-data/
 docker-compose up -d
-```
+```text
 
 For more help, see [docs/troubleshooting.md](../docs/troubleshooting.md)

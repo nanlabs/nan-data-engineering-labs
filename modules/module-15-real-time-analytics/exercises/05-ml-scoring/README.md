@@ -1,6 +1,7 @@
 # Exercise 05: ML Model Scoring in Streams
 
 ## Overview
+
 Integrate machine learning models with Apache Flink for real-time fraud scoring using SageMaker endpoints, featuring async I/O, feature engineering, and online learning.
 
 **Difficulty**: ⭐⭐⭐⭐ Expert
@@ -26,7 +27,7 @@ Integrate machine learning models with Apache Flink for real-time fraud scoring 
 
 ## Architecture
 
-```
+```text
 ┌──────────────────┐     ┌────────────────────┐     ┌──────────────────┐
 │  Kinesis Stream  │────>│   Flink Pipeline   │────>│  SageMaker       │
 │  (transactions)  │     │  Feature Engineer  │<────│  Endpoint        │
@@ -45,7 +46,7 @@ Integrate machine learning models with Apache Flink for real-time fraud scoring 
                          │  Feedback Loop  │
                          │  (Online Learn) │
                          └────────────────┘
-```
+```text
 
 ## Task 1: Train Fraud Model (30 minutes)
 
@@ -244,7 +245,7 @@ if __name__ == '__main__':
     print("\n" + "="*50)
     print("✓ TRAINING COMPLETE")
     print("="*50)
-```
+```text
 
 ## Task 2: Deploy Model to SageMaker (25 minutes)
 
@@ -681,7 +682,7 @@ def run_feature_engineering():
 
 if __name__ == '__main__':
     run_feature_engineering()
-```
+```text
 
 ## Task 4: Async Model Invocation (30 minutes)
 
@@ -889,7 +890,7 @@ def run_async_scoring():
 
 if __name__ == '__main__':
     run_async_scoring()
-```
+```text
 
 ## Task 5: Measure and Optimize Latency (20 minutes)
 
@@ -966,7 +967,7 @@ def run_with_monitoring():
     # Add latency tracker to pipeline
     # (insert after scored_stream in async_ml_scoring.py)
     pass  # See async_ml_scoring.py for integration
-```
+```text
 
 ## Validation Checklist
 
@@ -982,11 +983,13 @@ def run_with_monitoring():
 ## Expected Results
 
 **Model Performance**:
+
 - Training ROC-AUC: 0.95+
 - Precision: 90%+
 - Recall: 85%+
 
 **Latency**:
+
 - p50: 50ms
 - p95: 80ms
 - p99: 100ms
@@ -1002,15 +1005,17 @@ def run_with_monitoring():
 ### Problem: Model timeouts
 
 Check SageMaker endpoint:
+
 ```bash
 awslocal sagemaker describe-endpoint \
     --endpoint-name fraud-detection-endpoint
 ```
 
 Increase timeout or reduce traffic:
+
 ```python
 AsyncDataStream.unordered_wait(..., timeout=2000)
-```
+```text
 
 ## Key Learnings
 

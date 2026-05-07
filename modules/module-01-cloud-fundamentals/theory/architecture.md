@@ -69,12 +69,13 @@ graph TB
     C3 --> E2
     C3 --> E3
     C3 --> E4
-```
+```text
 
 ### Data Lake Zones
 
 **Raw Zone (Bronze Layer)**
-```
+
+```text
 Propósito: Almacenar datos en su formato original e inmutable
 Formato: Como llegaron (CSV, JSON, XML, Avro, binary)
 Particionamiento: Por fecha de ingestion
@@ -82,9 +83,10 @@ Retención: 30-90 días (luego a Archive)
 
 Ejemplo path:
 s3://company-datalake-raw/source=salesforce/year=2024/month=01/day=15/
-```
+```text
 
 **Processed Zone (Silver Layer)**
+
 ```
 Propósito: Datos limpiados, validados y transformados
 Formato: Parquet o ORC (columnar, comprimido)
@@ -94,10 +96,11 @@ Retención: 1-2 años en Standard, luego Standard-IA
 Ejemplo path:
 s3://company-datalake-processed/domain=sales/dataset=transactions/
 year=2024/month=01/day=15/
-```
+```text
 
 **Curated Zone (Gold Layer)**
-```
+
+```text
 Propósito: Datasets listos para análisis y reporting
 Formato: Parquet optimizado (sorted, bucketed)
 Particionamiento: Optimizado para queries comunes
@@ -106,9 +109,10 @@ Retención: Indefinida (con lifecycle a IA después de 6 meses)
 Ejemplo path:
 s3://company-datalake-curated/business_domain=finance/
 dataset=revenue_daily_summary/year=2024/month=01/
-```
+```text
 
 **Archive Zone**
+
 ```
 Propósito: Compliance y long-term retention
 Storage Class: S3 Glacier o Glacier Deep Archive
@@ -118,7 +122,7 @@ Costo: $0.00099/GB/mes (vs. $0.023 Standard)
 Restore time:
 - Glacier: 1-5 minutes (Expedited) a 12 hours (Bulk)
 - Deep Archive: 12-48 hours
-```
+```text
 
 ---
 
@@ -150,12 +154,13 @@ graph LR
     style B fill:#FF9900
     style E fill:#569A31
     style D1 fill:#527FFF
-```
+```text
 
 ### Components and Responsibilities
 
 **Kinesis Data Streams**
-```
+
+```text
 Capacidad: 1MB/sec write, 2MB/sec read per shard
 Retención: 24 hours (default) - 7 días (extended)
 Escalado: Manual (add/remove shards) o On-Demand (automático)
@@ -168,6 +173,7 @@ Costo: $0.015 per shard-hour = ~$11/mes per shard
 ```
 
 **Lambda as Consumer**
+
 ```python
 # Lambda triggered por Kinesis
 def lambda_handler(event, context):
@@ -180,10 +186,11 @@ def lambda_handler(event, context):
 
     # Batch processing: hasta 10,000 records por invocación
     return {'statusCode': 200, 'processed': len(event['Records'])}
-```
+```text
 
 **Kinesis Firehose (Delivery)**
-```
+
+```text
 Ventajas:
 - Entrega automática a S3 cada X minutes o Y MB
 - Puede transformar datos en ruta (Lambda)
@@ -196,9 +203,10 @@ Configuration típica:
 - Formato: JSON → Parquet
 - Compresión: Snappy
 - Destino: s3://datalake/streaming/year=!{timestamp:yyyy}/...
-```
+```text
 
 **DynamoDB for State**
+
 ```
 Uso: Almacenar estado actual para queries rápidas
 
@@ -209,7 +217,7 @@ Attributes: value, timestamp, metadata
 
 Query latency: Single-digit milliseconds
 Costo: On-Demand pricing (solo pagas por requests)
-```
+```text
 
 ---
 
@@ -240,7 +248,7 @@ graph TB
     style B fill:#FF9900
     style E1 fill:#945DF2
     style F1 fill:#569A31
-```
+```text
 
 ### Step Functions State Machine (Simplified)
 
@@ -318,7 +326,7 @@ graph TB
     }
   }
 }
-```
+```text
 
 ### Scheduling with CloudWatch Events
 
@@ -373,11 +381,12 @@ graph TB
     style D fill:#569A31
     style C1 fill:#FF9900
     style E fill:#FF9900
-```
+```text
 
 ### Pattern: File Processing Pipeline
 
 **Lambda 1: File Detector**
+
 ```python
 import boto3
 import json
@@ -409,9 +418,10 @@ def lambda_handler(event, context):
             )
 
     return {'statusCode': 200}
-```
+```text
 
 **Lambda 2: Direct Processor (Small Files)**
+
 ```python
 import pandas as pd
 from io import StringIO
@@ -432,9 +442,10 @@ def process_small_file(bucket, key):
         f's3://{OUTPUT_BUCKET}/{output_key}',
         compression='snappy'
     )
-```
+```text
 
 **Lambda 3: Batch Processor (Large Files)**
+
 ```python
 def lambda_handler(event, context):
     """Procesa archivos grandes por chunks"""
@@ -451,7 +462,8 @@ def lambda_handler(event, context):
 ### Design Considerations
 
 **Lambda limits:**
-```
+
+```text
 Memory: 128MB - 10GB
 Timeout: Máximo 15 minutes
 /tmp storage: 512MB (ephemeral)
@@ -461,10 +473,11 @@ Reglas de oro:
 - Archivos <10MB: Direct processing
 - Archivos 10MB-100MB: Chunk processing
 - Archivos >100MB: Usar Glue o EMR
-```
+```text
 
 **Dead Letter Queues (DLQ):**
-```
+
+```text
 Propósito: Capturar mensajes/archivos que fallan procesamiento
 
 Configuration:
@@ -529,12 +542,13 @@ graph TB
 
     style D1 fill:#E2574C
     style E1 fill:#FF694B
-```
+```text
 
 ### Redshift Architecture Deep Dive
 
 **Cluster Structure:**
-```
+
+```text
 Leader Node:
 - Recibe queries de clientes
 - Parsea y optimiza queries
@@ -550,9 +564,10 @@ Example cluster:
 - dc2.large: 2 vCPUs, 15GB RAM, 160GB SSD
 - 4 nodes = 8 vCPUs, 60GB RAM, 640GB storage
 - Cost: ~$250/mes On-Demand
-```
+```text
 
 **Distribution Styles:**
+
 ```sql
 -- EVEN: Distribución round-robin (default)
 CREATE TABLE logs (
@@ -577,6 +592,7 @@ CREATE TABLE dim_products (
 ```
 
 **Sort Keys:**
+
 ```sql
 -- Sort key mejora queries con WHERE y ORDER BY
 CREATE TABLE sales (
@@ -591,9 +607,10 @@ SORTKEY(sale_date, customer_id)
 
 -- Interleaved sort key: igual peso a todas las columnas
 INTERLEAVED SORTKEY(sale_date, customer_id, region)
-```
+```text
 
 **COPY Command (Bulk Load):**
+
 ```sql
 -- Forma más eficiente de cargar datos a Redshift
 COPY sales
@@ -605,7 +622,7 @@ FORMAT AS PARQUET;
 -- - Paralelo automático (todos los compute nodes participan)
 -- - Compresión automática
 -- - Load de 1TB puede tomar <30 minutes
-```
+```text
 
 ---
 
@@ -633,11 +650,12 @@ graph TB
     style A fill:#FF9900
     style B3 fill:#E74C3C
     style B1 fill:#3498DB
-```
+```text
 
 ### Cross-Account S3 Access Pattern
 
 **Shared Services Account (S3 Bucket Policy):**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -674,6 +692,7 @@ graph TB
 ```
 
 **Dev Account (IAM Role):**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -691,30 +710,33 @@ graph TB
     }
   ]
 }
-```
+```text
 
 ### Multi-Account Advantages
 
 **Security:**
-```
+
+```text
 - Blast radius limitado (breach en Dev no afecta Prod)
 - IAM policies más simples (menos condiciones complejas)
 - Compliance: separación de ambientes regulada
-```
+```text
 
 **Billing:**
+
 ```
 - Cost allocation por cuenta
 - Budgets y alertas específicas por ambiente
 - Reserved Instances compartidas vía Organizations
-```
+```text
 
 **Governance:**
-```
+
+```text
 - Service Control Policies (SCPs) a nivel Organization
 - Prevent actions no permitidas (ej: "No puedes deshabilitar CloudTrail")
 - Enforce tagging standards
-```
+```text
 
 ---
 
@@ -760,6 +782,7 @@ graph TB
 ### VPC Endpoints for Data Services
 
 **S3 Gateway Endpoint (FREE):**
+
 ```hcl
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = aws_vpc.main.id
@@ -775,9 +798,10 @@ resource "aws_vpc_endpoint" "s3" {
 # - Tráfico S3 no sale a Internet (más seguro)
 # - Sin cargos de NAT Gateway para tráfico S3
 # - Menor latencia
-```
+```text
 
 **Glue Interface Endpoint:**
+
 ```hcl
 resource "aws_vpc_endpoint" "glue" {
   vpc_id              = aws_vpc.main.id
@@ -791,11 +815,12 @@ resource "aws_vpc_endpoint" "glue" {
 
 # Costo: $0.01/hora + $0.01/GB transferido = ~$7/mes + data transfer
 # Beneficio: Glue jobs en VPC pueden acceder a Glue API sin Internet
-```
+```text
 
 ### Security Groups for Data Services
 
 **Redshift Security Group:**
+
 ```hcl
 resource "aws_security_group" "redshift" {
   name_prefix = "redshift-"
@@ -825,7 +850,7 @@ resource "aws_security_group" "redshift" {
     cidr_blocks = [aws_vpc.main.cidr_block]
   }
 }
-```
+```text
 
 ---
 
@@ -867,7 +892,8 @@ graph LR
 **Strategies by Service:**
 
 **S3 (Data Lake):**
-```
+
+```text
 Estrategia: Cross-Region Replication (CRR)
 RPO: Minutos (replicación asíncrona pero rápida)
 RTO: Minutos (solo actualizar endpoints)
@@ -888,10 +914,11 @@ aws s3api put-bucket-replication \
       }
     }]
   }'
-```
+```text
 
 **RDS (Metadata Stores):**
-```
+
+```text
 Estrategia: Cross-Region Read Replica
 RPO: Segundos (replicación binlog continua)
 RTO: Minutos (promote replica to standalone)
@@ -903,7 +930,8 @@ aws rds promote-read-replica \
 ```
 
 **Redshift (Data Warehouse):**
-```
+
+```text
 Estrategia: Automated snapshot copy to DR region
 RPO: Horas (depende de snapshot schedule)
 RTO: Horas (restore desde snapshot)
@@ -914,7 +942,7 @@ aws redshift enable-snapshot-copy \
   --cluster-identifier my-cluster \
   --destination-region us-west-2 \
   --retention-period 7
-```
+```text
 
 ---
 
@@ -941,9 +969,10 @@ graph TB
 
     style C fill:#945DF2
     style B fill:#FF9900
-```
+```text
 
 **Lambda Cluster Manager:**
+
 ```python
 import boto3
 
@@ -1023,7 +1052,8 @@ def lambda_handler(event, context):
 ```
 
 **Savings Calculation:**
-```
+
+```text
 Scenario: Process nocturno que toma 2 hours/día
 
 Opción A: EMR Cluster 24/7
@@ -1038,7 +1068,7 @@ Opción C: Cluster ephemeral con Spot (2 Core Spot)
 - Core Spot: 2 × $0.077 × 2 × 30 = $9.24
 - Total: $20.76/mes
 - Ahorro: 95%
-```
+```text
 
 ---
 
@@ -1091,7 +1121,7 @@ graph TB
 
     style B1 fill:#FF9900
     style E1 fill:#E74C3C
-```
+```text
 
 ### CloudWatch Custom Metrics for Pipelines
 
@@ -1207,7 +1237,7 @@ resource "aws_cloudwatch_metric_alarm" "pipeline_error_rate" {
 
   alarm_actions = [aws_sns_topic.pipeline_alerts.arn]
 }
-```
+```text
 
 ---
 

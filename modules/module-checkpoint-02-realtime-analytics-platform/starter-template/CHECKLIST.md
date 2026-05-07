@@ -9,12 +9,14 @@ Use this checklist to track your progress through the project. Check off items a
 ### 1.1 Core Infrastructure Definition
 
 #### Terraform Configuration
+
 - [ ] Configure AWS provider in `main.tf`
   - [ ] Set AWS region
   - [ ] Configure default tags
   - [ ] Set up backend for state management
 
 #### Kinesis Data Stream
+
 - [ ] Create Kinesis Data Stream resource in Terraform
   - [ ] Stream name: `ride-events-stream`
   - [ ] Configure shard count (start with 2)
@@ -23,6 +25,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Add stream mode configuration
 
 #### DynamoDB Tables
+
 - [ ] Create `rides_table` DynamoDB table
   - [ ] Set partition key: `ride_id` (String)
   - [ ] Set sort key: `timestamp` (Number)
@@ -41,6 +44,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Add TTL for old metrics
 
 #### S3 Buckets
+
 - [ ] Create `raw-events-bucket`
   - [ ] Enable versioning
   - [ ] Enable server-side encryption (AES256 or KMS)
@@ -62,6 +66,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 1.2 Variables and Outputs Configuration
 
 #### Variables Definition
+
 - [ ] Define `environment` variable (dev, staging, prod)
 - [ ] Define `aws_region` variable with default
 - [ ] Define `project_name` variable
@@ -73,6 +78,7 @@ Use this checklist to track your progress through the project. Check off items a
 - [ ] Create `terraform.tfvars` file with values
 
 #### Outputs Configuration
+
 - [ ] Export Kinesis stream ARN
 - [ ] Export Kinesis stream name
 - [ ] Export `rides_table` name and ARN
@@ -84,26 +90,36 @@ Use this checklist to track your progress through the project. Check off items a
 ### 1.3 Infrastructure Deployment
 
 - [ ] Initialize Terraform
+
   ```bash
   cd infrastructure/terraform
   terraform init
-  ```
+  ```text
+
 - [ ] Validate Terraform configuration
+
   ```bash
   terraform validate
   ```
+
 - [ ] Format Terraform files
+
   ```bash
   terraform fmt -recursive
-  ```
+  ```text
+
 - [ ] Generate and review execution plan
+
   ```bash
   terraform plan -out=tfplan
   ```
+
 - [ ] Apply infrastructure changes
+
   ```bash
   terraform apply tfplan
-  ```
+  ```text
+
 - [ ] Verify resources in AWS Console
   - [ ] Kinesis stream is active
   - [ ] DynamoDB tables created
@@ -117,6 +133,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 2.1 Kinesis Utilities Implementation
 
 #### KinesisProducer Class (`pipelines/producers/common/kinesis_utils.py`)
+
 - [ ] Create `KinesisProducer` class
   - [ ] Initialize with stream name and boto3 client
   - [ ] Add configuration for batch size and retry logic
@@ -152,6 +169,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 2.2 Ride Event Producer Implementation
 
 #### Event Generation (`pipelines/producers/ride_event_producer.py`)
+
 - [ ] Import required libraries (boto3, json, datetime, random, argparse)
 - [ ] Define event schemas as dataclasses or dicts
 
@@ -195,6 +213,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Implement graceful shutdown on SIGINT
 
 #### CLI Configuration
+
 - [ ] Add `--stream-name` argument (required)
 - [ ] Add `--rate` argument for events per second (default: 10)
 - [ ] Add `--duration` argument in seconds (default: run indefinitely)
@@ -203,6 +222,7 @@ Use this checklist to track your progress through the project. Check off items a
 - [ ] Add `--profile` argument for AWS profile
 
 #### Testing
+
 - [ ] Test producer with low rate (1 event/sec)
 - [ ] Test producer with high rate (100 events/sec)
 - [ ] Verify events in Kinesis Data Viewer
@@ -215,6 +235,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 3.1 DynamoDB Utilities Implementation
 
 #### DynamoDBClient Class (`pipelines/lambda/common/dynamodb_utils.py`)
+
 - [ ] Create `DynamoDBClient` class
   - [ ] Initialize with table name and boto3 resource
   - [ ] Add retry configuration
@@ -260,6 +281,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 3.2 Ride Processor Lambda Implementation
 
 #### Lambda Handler (`pipelines/lambda/rides_processor/handler.py`)
+
 - [ ] Import required libraries (json, boto3, base64, datetime, logging)
 - [ ] Initialize DynamoDB and S3 clients
 - [ ] Set up logging
@@ -331,6 +353,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 3.3 Lambda Infrastructure Configuration
 
 #### Terraform Lambda Resources
+
 - [ ] Create IAM role for Lambda
   - [ ] Add trust policy for Lambda service
 
@@ -373,6 +396,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Link to Lambda function
 
 #### Deployment
+
 - [ ] Run `terraform apply` to deploy Lambda
 - [ ] Verify Lambda function in AWS Console
 - [ ] Verify event source mapping is enabled
@@ -385,12 +409,14 @@ Use this checklist to track your progress through the project. Check off items a
 ### 4.1 AWS Glue Catalog Configuration
 
 #### Glue Database
+
 - [ ] Add Glue database resource to Terraform
   - [ ] Database name: `ride_analytics_db`
   - [ ] Add description
   - [ ] Add catalog ID
 
 #### Glue Crawler
+
 - [ ] Create IAM role for Glue Crawler
   - [ ] Add trust policy for Glue service
   - [ ] Add policy for S3 read access
@@ -458,6 +484,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Add refresh frequency recommendation
 
 #### Query Testing
+
 - [ ] Create Athena workgroup in Terraform
 - [ ] Set up S3 location for query results
 - [ ] Test each query in Athena console
@@ -473,6 +500,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 5.1 Airflow DAG Development
 
 #### Batch Processing DAG (`airflow/dags/batch_processing_dag.py`)
+
 - [ ] Import Airflow modules (DAG, operators, sensors)
 - [ ] Define default DAG arguments
   - [ ] Owner
@@ -483,7 +511,7 @@ Use this checklist to track your progress through the project. Check off items a
 
 - [ ] Create DAG definition
   - [ ] DAG ID: `ride_analytics_batch_processing`
-  - [ ] Schedule interval: `@daily` (0 0 * * *)
+  - [ ] Schedule interval: `@daily` (0 0 ** *)
   - [ ] Catchup: False
   - [ ] Max active runs: 1
   - [ ] Tags: ['ride_analytics', 'batch']
@@ -518,6 +546,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Attach visualization or link to dashboard
 
 - [ ] Define task dependencies
+
   ```python
   task1 >> task2 >> task3 >> task4 >> task5
   ```
@@ -528,6 +557,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 5.2 Airflow Deployment
 
 #### Docker Compose Configuration
+
 - [ ] Update `docker-compose.yml` in project root
   - [ ] Add Airflow services (webserver, scheduler, worker)
   - [ ] Configure PostgreSQL database for Airflow metadata
@@ -540,20 +570,27 @@ Use this checklist to track your progress through the project. Check off items a
 - [ ] Create `requirements.txt` for Airflow with AWS providers
 
 #### Airflow Initialization
+
 - [ ] Start Airflow services
+
   ```bash
   docker-compose up -d
-  ```
+  ```text
+
 - [ ] Initialize Airflow database
+
   ```bash
   docker-compose exec airflow-webserver airflow db init
   ```
+
 - [ ] Create Airflow admin user
+
   ```bash
   docker-compose exec airflow-webserver airflow users create \
     --username admin --password admin --firstname Admin --lastname User \
     --role Admin --email admin@example.com
-  ```
+  ```text
+
 - [ ] Configure AWS connection in Airflow UI
 - [ ] Verify DAG appears in Airflow UI
 - [ ] Enable DAG
@@ -567,6 +604,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 6.1 CloudWatch Dashboard Configuration
 
 #### Dashboard Definition (`monitoring/cloudwatch/ride_analytics_dashboard.json`)
+
 - [ ] Create dashboard JSON structure
 - [ ] Set dashboard name and region
 
@@ -608,12 +646,15 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Set widget positions and sizes
 
 #### Dashboard Deployment
+
 - [ ] Deploy dashboard using AWS CLI
+
   ```bash
   aws cloudwatch put-dashboard \
     --dashboard-name RideAnalyticsMonitoring \
     --dashboard-body file://monitoring/cloudwatch/ride_analytics_dashboard.json
   ```
+
 - [ ] Verify dashboard in CloudWatch console
 - [ ] Test all widgets display data correctly
 - [ ] Share dashboard link with team
@@ -621,6 +662,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 6.2 CloudWatch Alarms Configuration
 
 #### Terraform Alarm Resources
+
 - [ ] **Alarm 1: High Lambda Error Rate**
   - [ ] Create SNS topic for alerts
   - [ ] Create CloudWatch alarm
@@ -653,6 +695,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 6.3 Grafana Dashboard (Optional)
 
 #### Grafana Setup
+
 - [ ] Add Grafana service to `docker-compose.yml`
 - [ ] Configure volume for Grafana data persistence
 - [ ] Start Grafana container
@@ -660,6 +703,7 @@ Use this checklist to track your progress through the project. Check off items a
 - [ ] Change default admin password
 
 #### Dashboard Creation
+
 - [ ] Add CloudWatch datasource
   - [ ] Configure AWS credentials
   - [ ] Test connection
@@ -684,6 +728,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 7.1 Infrastructure Tests
 
 #### Test File (`validation/test_infrastructure.py`)
+
 - [ ] Import pytest and boto3
 - [ ] Create fixtures for AWS clients
 
@@ -721,6 +766,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 7.2 Pipeline Tests
 
 #### Test File (`validation/test_streaming_pipeline.py`)
+
 - [ ] Import required libraries and fixtures
 
 - [ ] Test: Producer can send to Kinesis
@@ -768,6 +814,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 7.3 Data Quality Tests
 
 #### Test File (`validation/test_data_quality.py`)
+
 - [ ] Import pytest and data validation libraries
 
 - [ ] Test: Event schema validation
@@ -806,11 +853,14 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Assert no invalid transitions
 
 #### Run All Tests
+
 - [ ] Execute pytest
+
   ```bash
   cd validation
   pytest -v --tb=short
-  ```
+  ```text
+
 - [ ] Review test results
 - [ ] Fix any failing tests
 - [ ] Aim for test first with this:
@@ -825,6 +875,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 8.1 Production Deployment
 
 #### Production Configuration
+
 - [ ] Create `prod.tfvars` file
   - [ ] Set environment = "prod"
   - [ ] Increase Kinesis shard count (4-8)
@@ -834,17 +885,20 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Enable cross-region replication (optional)
 
 - [ ] Create production Terraform workspace
+
   ```bash
   terraform workspace new prod
   terraform workspace select prod
   ```
 
 - [ ] Review production changes
+
   ```bash
   terraform plan -var-file=prod.tfvars
-  ```
+  ```text
 
 - [ ] Deploy to production
+
   ```bash
   terraform apply -var-file=prod.tfvars
   ```
@@ -856,6 +910,7 @@ Use this checklist to track your progress through the project. Check off items a
 ### 8.2 Performance Optimization
 
 #### Kinesis Optimization
+
 - [ ] Monitor Kinesis metrics for hot shards
 - [ ] Calculate required throughput (MB/s, records/s)
 - [ ] Right-size shard count
@@ -864,14 +919,17 @@ Use this checklist to track your progress through the project. Check off items a
 - [ ] Test with load testing tool
 
 #### Lambda Optimization
+
 - [ ] Enable AWS X-Ray for tracing
 - [ ] Analyze Lambda execution traces
 - [ ] Review memory usage with CloudWatch Insights
+
   ```sql
   filter @type = "REPORT"
   | stats max(@memorySize / 1024 / 1024) as provisioned_memory_mb,
           max(@maxMemoryUsed / 1024 / 1024) as max_memory_used_mb
-  ```
+  ```text
+
 - [ ] Adjust memory based on profiling
 - [ ] Optimize cold start if needed
   - [ ] Consider provisioned concurrency
@@ -881,6 +939,7 @@ Use this checklist to track your progress through the project. Check off items a
 - [ ] Configure Lambda timeout optimally
 
 #### DynamoDB Optimization
+
 - [ ] Review DynamoDB access patterns
 - [ ] Analyze hot partition keys
 - [ ] Optimize GSI queries
@@ -893,6 +952,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Set min/max capacity
 
 #### S3 Optimization
+
 - [ ] Review object size distribution
 - [ ] Implement S3 Select for query optimization
 - [ ] Enable S3 Transfer Acceleration if uploading from far regions
@@ -903,12 +963,14 @@ Use this checklist to track your progress through the project. Check off items a
 ### 8.3 Cost Optimization
 
 #### Cost Analysis
+
 - [ ] Enable AWS Cost Explorer
 - [ ] Tag all resources with project and environment tags
 - [ ] Review cost breakdown by service
 - [ ] Identify top cost drivers
 
 #### Optimization Actions
+
 - [ ] **Kinesis**: Right-size shard count for actual throughput
 - [ ] **Lambda**:
   - [ ] Optimize memory to reduce duration
@@ -931,6 +993,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Use CloudWatch Logs Insights efficiently
 
 #### Cost Monitoring
+
 - [ ] Set up AWS Budget
   - [ ] Monthly budget threshold
   - [ ] Alert at 80% and 100%
@@ -943,6 +1006,7 @@ Use this checklist to track your progress through the project. Check off items a
 ## Final Checklist
 
 ### Documentation
+
 - [ ] Complete README.md with:
   - [ ] Architecture diagram (draw.io, lucidchart, or ASCII)
   - [ ] Setup instructions
@@ -972,6 +1036,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Contact information for support
 
 ### Evidence Collection
+
 - [ ] Take screenshots of:
   - [ ] Kinesis stream with active shards
   - [ ] DynamoDB tables with sample data
@@ -994,6 +1059,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Cost per million events processed
 
 ### Video Demo
+
 - [ ] Record 5-10 minute video demonstration
   - [ ] Start with architecture overview (slides or diagram)
   - [ ] Show AWS Console with deployed resources
@@ -1009,6 +1075,7 @@ Use this checklist to track your progress through the project. Check off items a
 - [ ] Include link in submission
 
 ### Submission Preparation
+
 - [ ] Clean up code
   - [ ] Remove commented-out code
   - [ ] Remove debug print statements
@@ -1032,6 +1099,7 @@ Use this checklist to track your progress through the project. Check off items a
   - [ ] Architecture diagram PNG/PDF
 
 ### Final Review
+
 - [ ] Review all checklist items completed
 - [ ] Re-run all tests one final time
 - [ ] Verify production deployment still working

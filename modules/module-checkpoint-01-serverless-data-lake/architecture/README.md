@@ -30,6 +30,7 @@ This architecture documentation includes **6 detailed Mermaid diagrams** coverin
 GitHub natively supports Mermaid diagrams in Markdown files. Simply view these `.mmd` files on GitHub and they will render automatically.
 
 **Steps:**
+
 1. Push this repository to GitHub
 2. Navigate to the `architecture/` folder
 3. Click on any `.mmd` file
@@ -42,9 +43,10 @@ Use the **Mermaid Preview** extension for VS Code:
 ```bash
 # Install the extension
 code --install-extension bierner.markdown-mermaid
-```
+```text
 
 **Steps:**
+
 1. Open any `.mmd` file in VS Code
 2. Press `Ctrl+Shift+V` (or `Cmd+Shift+V` on Mac)
 3. The preview pane will render the Mermaid diagram
@@ -54,6 +56,7 @@ code --install-extension bierner.markdown-mermaid
 Use the official online editor at [https://mermaid.live](https://mermaid.live):
 
 **Steps:**
+
 1. Go to [https://mermaid.live](https://mermaid.live)
 2. Copy the content of any `.mmd` file
 3. Paste into the editor
@@ -63,14 +66,16 @@ Use the official online editor at [https://mermaid.live](https://mermaid.live):
 ### Option 4: Documentation Tools
 
 **MkDocs with Mermaid Plugin:**
+
 ```bash
 pip install mkdocs-mermaid2-plugin
-```
+```text
 
 **Docusaurus:**
+
 ```bash
 npm install @docusaurus/theme-mermaid
-```
+```text
 
 **Confluence:**
 Use the "Mermaid Charts & Diagrams" plugin
@@ -84,6 +89,7 @@ Use the "Mermaid Charts & Diagrams" plugin
 **Purpose:** Provides a complete bird's-eye view of the entire serverless data lake architecture.
 
 **Key Components:**
+
 - **Data Sources (4):**
   - E-commerce transactions (CSV)
   - Customer profiles (JSON)
@@ -105,6 +111,7 @@ Use the "Mermaid Charts & Diagrams" plugin
   - **Gold/Curated:** Business-ready aggregated data
 
 **Use Cases:**
+
 - Executive presentations
 - Solution architecture reviews
 - Documentation for stakeholders
@@ -117,6 +124,7 @@ Use the "Mermaid Charts & Diagrams" plugin
 **Purpose:** Detailed breakdown of how data flows from source systems into the data lake.
 
 **Key Processes:**
+
 1. **File Upload:** Data arrives in S3 landing buckets
 2. **Event Trigger:** S3 event notification triggers Lambda
 3. **Validation:** Lambda validates file format, schema, size
@@ -126,17 +134,20 @@ Use the "Mermaid Charts & Diagrams" plugin
 7. **Logging:** All activities logged to CloudWatch
 
 **Decision Points:**
+
 - File format validation (CSV, JSON, Parquet)
 - Schema validation (required fields)
 - Size validation (min/max thresholds)
 - Duplicate detection
 
 **Error Scenarios:**
+
 - Invalid file format → move to error bucket
 - Schema mismatch → log and alert
 - Parsing failure → retry with exponential backoff
 
 **Monitoring:**
+
 - Lambda execution metrics
 - S3 PUT/GET operations
 - Error rates and types
@@ -151,6 +162,7 @@ Use the "Mermaid Charts & Diagrams" plugin
 **Pipeline Stages:**
 
 **Stage 1: Bronze to Silver (Cleaning & Validation)**
+
 - Remove duplicates
 - Handle null values
 - Standardize data types
@@ -159,6 +171,7 @@ Use the "Mermaid Charts & Diagrams" plugin
 - Add audit columns (ingestion_timestamp, source_system)
 
 **Stage 2: Silver to Gold (Aggregation & Enrichment)**
+
 - Join related datasets
 - Calculate derived metrics
 - Aggregate by business dimensions
@@ -166,12 +179,14 @@ Use the "Mermaid Charts & Diagrams" plugin
 - Apply business logic
 
 **ETL Job Types:**
+
 1. **Transactions ETL:** Process sales transactions
 2. **Customers ETL:** Clean and deduplicate customer data
 3. **Products ETL:** Maintain product master data
 4. **Analytics ETL:** Process web analytics events
 
 **Data Quality Checks:**
+
 - Row count validation
 - Column completeness checks
 - Data type validation
@@ -180,11 +195,13 @@ Use the "Mermaid Charts & Diagrams" plugin
 - Business rule validation
 
 **Job Dependencies:**
+
 - Bronze→Silver jobs run after ingestion
 - Silver→Gold jobs wait for Silver completion
 - Analytics jobs depend on all Gold tables
 
 **Orchestration:**
+
 - AWS Glue Workflows
 - CloudWatch Events for scheduling
 - Step Functions for complex workflows
@@ -215,26 +232,30 @@ cloudmart_datalake (Catalog)
     ├── dim_products (Table)
     ├── dim_date (Table)
     └── agg_daily_sales (Table)
-```
+```text
 
 **Crawler Strategy:**
+
 - **Bronze Crawlers:** Run after ingestion (event-driven)
 - **Silver Crawlers:** Run after Bronze→Silver ETL
 - **Gold Crawlers:** Run after Silver→Gold ETL
 - **Schedule:** Daily for incremental updates
 
 **Partition Management:**
+
 - Date-based partitioning (year/month/day)
 - Automatic partition discovery by crawlers
 - Manual partition addition via MSCK REPAIR
 - Partition pruning for query optimization
 
 **Schema Evolution:**
+
 - Schema versioning in catalog
 - Backward-compatible changes
 - Schema validation in ETL jobs
 
 **Athena Integration:**
+
 - Query execution via catalog metadata
 - Table statistics for query optimization
 - Partition projection for performance
@@ -249,6 +270,7 @@ cloudmart_datalake (Catalog)
 **Security Layers:**
 
 **1. Identity & Access Management (IAM)**
+
 - **Lambda Execution Role:**
   - Read/write S3
   - Write CloudWatch Logs
@@ -265,6 +287,7 @@ cloudmart_datalake (Catalog)
 - **Principle of Least Privilege:** Each service has only necessary permissions
 
 **2. Data Encryption**
+
 - **At Rest:**
   - S3 bucket encryption (SSE-KMS)
   - Customer-managed KMS keys
@@ -275,6 +298,7 @@ cloudmart_datalake (Catalog)
   - VPC endpoints (private network)
 
 **3. S3 Bucket Security**
+
 - **Bucket Policies:**
   - Deny unencrypted uploads
   - Enforce MFA delete
@@ -284,6 +308,7 @@ cloudmart_datalake (Catalog)
 - **Cross-Region Replication:** DR strategy
 
 **4. Network Security**
+
 - **VPC Endpoints (Optional):**
   - S3 Gateway Endpoint
   - Glue Interface Endpoint
@@ -292,6 +317,7 @@ cloudmart_datalake (Catalog)
 - **Security Groups:** Control service-to-service communication
 
 **5. Audit & Compliance**
+
 - **CloudTrail:**
   - All API calls logged
   - Log file integrity validation
@@ -305,6 +331,7 @@ cloudmart_datalake (Catalog)
   - Configuration change tracking
 
 **6. Data Governance**
+
 - **Lake Formation (Future):**
   - Fine-grained access control
   - Column-level security
@@ -322,6 +349,7 @@ cloudmart_datalake (Catalog)
 **Optimization Strategies:**
 
 **1. S3 Storage Optimization**
+
 - **Lifecycle Policies:**
   - Bronze (Raw): 30 days → Glacier, 90 days → Deep Archive
   - Silver (Processed): 60 days → IA, 180 days → Glacier
@@ -335,6 +363,7 @@ cloudmart_datalake (Catalog)
   - Partition by date (year/month/day)
 
 **2. Lambda Optimization**
+
 - **Memory Allocation:**
   - Right-size memory (1024MB typical)
   - Monitor duration/memory usage
@@ -346,6 +375,7 @@ cloudmart_datalake (Catalog)
   - Use provisioned concurrency for critical paths
 
 **3. Glue ETL Optimization**
+
 - **DPU (Data Processing Unit) Tuning:**
   - Start with 2 DPUs, scale based on data volume
   - Monitor job metrics to right-size
@@ -360,6 +390,7 @@ cloudmart_datalake (Catalog)
   - Better compression, faster queries
 
 **4. Athena Query Optimization**
+
 - **Partition Pruning:**
   - Always filter on partition keys
   - Reduces data scanned (primary cost driver)
@@ -374,6 +405,7 @@ cloudmart_datalake (Catalog)
   - Enable result caching (24 hours)
 
 **5. Cost Monitoring & Alerts**
+
 - **Cost Allocation Tags:**
   - Tag all resources: project, environment, team
   - Track costs by dimension
@@ -388,11 +420,13 @@ cloudmart_datalake (Catalog)
   - Resource utilization tracking
 
 **6. Reserved Capacity (Future)**
+
 - **Savings Plans:** For predictable workloads
 - **Reserved Concurrency:** For Lambda
 - **Glue Data Processing Units:** Long-term discount
 
 **Cost Targets:**
+
 - **Development:** < $50/month
 - **Production (Small):** < $200/month
 - **Production (Medium):** < $500/month
@@ -402,76 +436,94 @@ cloudmart_datalake (Catalog)
 ## 🎯 Key Design Decisions
 
 ### 1. Serverless-First Approach
+
 **Decision:** Use AWS serverless services (Lambda, Glue, Athena) exclusively
 **Rationale:**
+
 - No infrastructure management
 - Pay-per-use pricing model
 - Automatic scaling
 - Lower operational overhead
 
 **Trade-offs:**
+
 - Cold start latency (Lambda)
 - Service limits (Lambda 15min timeout)
 - Less control over infrastructure
 
 ### 2. Three-Zone Data Lake (Bronze/Silver/Gold)
+
 **Decision:** Implement medallion architecture with three zones
 **Rationale:**
+
 - Clear separation of concerns
 - Progressive data quality improvement
 - Enables data lineage tracking
 - Supports different access patterns
 
 **Trade-offs:**
+
 - Increased storage costs (data duplication)
 - More ETL jobs to maintain
 - Higher complexity
 
 ### 3. Event-Driven Ingestion
+
 **Decision:** Use S3 events to trigger Lambda for ingestion
 **Rationale:**
+
 - Real-time processing
 - No polling overhead
 - Scalable by design
 - Loose coupling
 
 **Trade-offs:**
+
 - Eventual consistency
 - Requires careful error handling
 - Potential duplicate events
 
 ### 4. Glue Data Catalog as Metadata Store
+
 **Decision:** Use Glue Data Catalog instead of external metastore (Hive, etc.)
 **Rationale:**
+
 - Native AWS integration
 - No additional infrastructure
 - Shared by Glue and Athena
 - Serverless
 
 **Trade-offs:**
+
 - AWS vendor lock-in
 - Limited to AWS ecosystem
 
 ### 5. Parquet as Standard Format
+
 **Decision:** Standardize on Parquet for Silver and Gold zones
 **Rationale:**
+
 - Columnar storage (query performance)
 - Excellent compression
 - Schema evolution support
 - Industry standard
 
 **Trade-offs:**
+
 - Not human-readable
 - Write overhead vs. row formats
 
 ### 6. Date-Based Partitioning
+
 **Decision:** Partition all tables by year/month/day
 **Rationale:**
+
 - Most queries filter by date
 - Efficient partition pruning
 - Standard pattern easy to understand
 
 **Trade-offs:**
+
 - Too many partitions for small datasets
 - Metadata overhead
 
@@ -480,15 +532,19 @@ cloudmart_datalake (Catalog)
 ## 📂 Navigation Guide
 
 ### For Solution Architects
+
 Start with: `01-high-level-architecture.mmd` → `05-security-architecture.mmd` → `06-cost-optimization.mmd`
 
 ### For Data Engineers
+
 Start with: `02-data-ingestion-flow.mmd` → `03-etl-pipeline.mmd` → `04-data-catalog.mmd`
 
 ### For DevOps Engineers
+
 Start with: `05-security-architecture.mmd` → `06-cost-optimization.mmd` → `01-high-level-architecture.mmd`
 
 ### For Business Stakeholders
+
 Start with: `01-high-level-architecture.mmd` → `06-cost-optimization.mmd`
 
 ---
@@ -518,6 +574,7 @@ Start with: `01-high-level-architecture.mmd` → `06-cost-optimization.mmd`
    - Partition strategy updates
 
 ### Version Control
+
 - All diagrams are version-controlled in Git
 - Use conventional commit messages
 - Tag releases with version numbers
@@ -527,17 +584,20 @@ Start with: `01-high-level-architecture.mmd` → `06-cost-optimization.mmd`
 ## 📚 Additional Resources
 
 ### Mermaid Documentation
+
 - [Official Mermaid Docs](https://mermaid-js.github.io/mermaid/)
 - [Flowchart Syntax](https://mermaid-js.github.io/mermaid/#/flowchart)
 - [Sequence Diagrams](https://mermaid-js.github.io/mermaid/#/sequenceDiagram)
 - [C4 Diagrams](https://mermaid-js.github.io/mermaid/#/c4c)
 
 ### AWS Architecture
+
 - [AWS Architecture Center](https://aws.amazon.com/architecture/)
 - [Data Lake Best Practices](https://aws.amazon.com/big-data/datalakes-and-analytics/)
 - [Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
 
 ### Related Documentation
+
 - [../IMPLEMENTATION-GUIDE.md](../IMPLEMENTATION-GUIDE.md) - Step-by-step implementation
 - [../ARCHITECTURE-DECISIONS.md](../ARCHITECTURE-DECISIONS.md) - ADR records
 - [../COST-ESTIMATION.md](../COST-ESTIMATION.md) - Detailed cost breakdown
@@ -568,4 +628,4 @@ To add or modify diagrams:
 
 **Last Updated:** March 2026
 **Maintained By:** CloudMart Data Engineering Team
-**Contact:** data-engineering@cloudmart.example.com
+**Contact:** <data-engineering@cloudmart.example.com>

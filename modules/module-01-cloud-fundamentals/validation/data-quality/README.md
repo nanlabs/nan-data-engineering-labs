@@ -9,31 +9,34 @@ Validate la calidad, integridad y formato de los datos procesados por los exerci
 ## 🎯 Tipos de Tests a Agregar
 
 ### Schema Validation
+
 ```python
 def test_transaction_schema():
     """Validate que los datos cumplen con el schema JSON"""
     # Verify campos requeridos
     # Validate tipos de datos
     # Verify rangos de valores
-```
+```text
 
 ### Data Integrity
+
 ```python
 def test_no_duplicates():
     """Verify que no hay transacciones duplicadas"""
 
 def test_referential_integrity():
     """Verify relaciones entre datasets"""
-```
+```text
 
 ### Format Validation
+
 ```python
 def test_csv_format():
     """Verify formato runcto de CSV"""
 
 def test_json_format():
     """Verify JSON válido"""
-```
+```text
 
 ## 📝 Ejemplo de Test
 
@@ -64,7 +67,7 @@ def test_transaction_data_quality():
 
 ```bash
 pytest validation/data-quality/ -v
-```
+```text
 
 ## 📚 Herramientas Recomendadas
 

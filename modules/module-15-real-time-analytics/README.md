@@ -18,6 +18,7 @@ Master real-time analytics on AWS using **Kinesis Data Analytics**, **Apache Fli
 You'll learn to process millions of events per second, build sub-second dashboards, detect fraud patterns, and integrate machine learning models into streaming pipelines.
 
 **Key Topics**:
+
 - AWS Kinesis Data Analytics for Apache Flink
 - Flink SQL and Table API
 - Real-time aggregations and windows
@@ -72,15 +73,17 @@ This module contains:
 ### Setup (15 minutes)
 
 1. **Prerequisites Check**:
+
    ```bash
    # Verify Module 08 completed
    test -f ../module-08-streaming-basics/STATUS.md && echo "✓ Module 08 ready"
 
    # Check AWS CLI configured
    aws sts get-caller-identity
-   ```
+   ```text
 
 2. **Start Infrastructure**:
+
    ```bash
    # Start LocalStack (for local development)
    docker-compose -f infrastructure/docker-compose.yml up -d
@@ -90,24 +93,28 @@ This module contains:
    ```
 
 3. **Verify Setup**:
+
    ```bash
    # Should see Kinesis streams created
    awslocal kinesis list-streams
-   ```
+   ```text
 
 ### Learning Path (10-12 hours)
 
 **Week 1: Analytics Fundamentals** (4-5 hours)
+
 - Read `theory/concepts.md` (sections 1-5)
 - Complete Exercise 01: Kinesis Analytics SQL
 - Complete Exercise 02: Flink Table API
 
 **Week 2: Advanced Patterns** (3-4 hours)
+
 - Read `theory/concepts.md` (sections 6-8)
 - Complete Exercise 03: Real-Time Dashboards
 - Complete Exercise 04: CEP Fraud Detection
 
 **Week 3: Production Readiness** (3-4 hours)
+
 - Read `theory/best-practices.md`
 - Complete Exercise 05: ML Scoring
 - Complete Exercise 06: Production Deployment
@@ -117,11 +124,13 @@ This module contains:
 ## Exercises
 
 ### Exercise 01: Kinesis Analytics SQL (~2 hours)
+
 **Difficulty**: ⭐⭐ Intermediate
 
 Build your first Kinesis Data Analytics application using SQL to analyze streaming clickstream data.
 
 **What You'll Learn**:
+
 - Create source and sink tables in Flink SQL
 - Implement tumbling windows for 1-minute aggregations
 - Filter and transform streaming events
@@ -130,11 +139,13 @@ Build your first Kinesis Data Analytics application using SQL to analyze streami
 **Key Concepts**: SQL on streams, window functions, continuous queries
 
 ### Exercise 02: Flink Table API (~2 hours)
+
 **Difficulty**: ⭐⭐⭐ Advanced
 
 Use Flink's Python Table API for complex analytics operations.
 
 **What You'll Learn**:
+
 - Sliding windows for moving averages
 - Stream joins (regular and interval joins)
 - Top-N queries (most popular products)
@@ -143,11 +154,13 @@ Use Flink's Python Table API for complex analytics operations.
 **Key Concepts**: Table API, sliding windows, stream joins, top-N
 
 ### Exercise 03: Real-Time Dashboards (~2 hours)
+
 **Difficulty**: ⭐⭐ Intermediate
 
 Build interactive dashboards that update in real-time.
 
 **What You'll Learn**:
+
 - QuickSight with streaming data sources
 - CloudWatch custom metrics and dashboards
 - Amazon Managed Grafana integration
@@ -156,11 +169,13 @@ Build interactive dashboards that update in real-time.
 **Key Concepts**: Visualization, metrics, alerting, auto-refresh
 
 ### Exercise 04: CEP Fraud Detection (~2-3 hours)
+
 **Difficulty**: ⭐⭐⭐⭐ Advanced
 
 Detect fraudulent patterns using Complex Event Processing.
 
 **What You'll Learn**:
+
 - Flink CEP pattern definition
 - MATCH_RECOGNIZE in SQL
 - Sequence detection (failed login attempts)
@@ -170,11 +185,13 @@ Detect fraudulent patterns using Complex Event Processing.
 **Key Concepts**: CEP, pattern matching, temporal logic, fraud detection
 
 ### Exercise 05: ML Scoring (~2 hours)
+
 **Difficulty**: ⭐⭐⭐ Advanced
 
 Integrate machine learning models for real-time predictions.
 
 **What You'll Learn**:
+
 - SageMaker endpoint invocation from Flink
 - Async I/O for low latency
 - Feature engineering in streams
@@ -183,11 +200,13 @@ Integrate machine learning models for real-time predictions.
 **Key Concepts**: ML inference, feature engineering, async I/O, model serving
 
 ### Exercise 06: Production Deployment (~2-3 hours)
+
 **Difficulty**: ⭐⭐⭐⭐ Advanced
 
 Deploy a production-ready analytics application with full observability.
 
 **What You'll Learn**:
+
 - Blue/green deployment strategy
 - Auto-scaling configuration
 - CloudWatch alarms and SNS alerts
@@ -201,19 +220,23 @@ Deploy a production-ready analytics application with full observability.
 ## Resources
 
 ### AWS Documentation
+
 - [Kinesis Data Analytics Developer Guide](https://docs.aws.amazon.com/kinesisanalytics/latest/java/what-is.html)
 - [Flink SQL Reference](https://docs.aws.amazon.com/kinesisanalytics/latest/dev/sql-reference.html)
 - [QuickSight User Guide](https://docs.aws.amazon.com/quicksight/latest/user/welcome.html)
 
 ### Books
+
 - **"Stream Processing with Apache Flink"** by Fabian Hueske (O'Reilly, 2019)
 - **"Streaming Systems"** by Tyler Akidau (O'Reilly, 2018)
 
 ### Online Courses
+
 - **AWS Skill Builder**: "Building Streaming Data Analytics Solutions on AWS" (Free)
 - **Udemy**: "Apache Flink: The Ultimate Streaming Course" by DataCouch (~$15)
 
 ### Community
+
 - [Apache Flink Slack](https://flink.apache.org/community.html#slack)
 - [AWS Big Data Blog](https://aws.amazon.com/blogs/big-data/)
 - [Stack Overflow - apache-flink tag](https://stackoverflow.com/questions/tagged/apache-flink)
@@ -233,7 +256,7 @@ bash scripts/validate.sh
 
 # Or use global validation
 make validate MODULE=module-15-real-time-analytics
-```
+```text
 
 ---
 
@@ -256,10 +279,12 @@ make validate MODULE=module-15-real-time-analytics
 After completing this module, you're ready for:
 
 **Parallel Tracks** (No dependencies):
+
 - **Module 16**: Data Security & Compliance
 - **Module 17**: Cost Optimization
 
 **Final Integration**:
+
 - **Module 18**: Advanced Architectures (requires 05, 07, 08, 14, 15)
 - **Checkpoint 03**: Enterprise Data Lakehouse (capstone project)
 
@@ -268,16 +293,19 @@ After completing this module, you're ready for:
 ## Estimated Costs
 
 **LocalStack** (Free local development):
+
 - All exercises can be completed locally
 - No AWS charges
 
 **AWS (Optional real deployment)**:
+
 - Kinesis Data Streams (4 shards): ~$43/month
 - Kinesis Data Analytics (2 KPUs): ~$158/month
 - S3, CloudWatch, DynamoDB: ~$20/month
 - **Total**: ~$221/month (delete after exercises to minimize cost)
 
 **Cost-Saving Tips**:
+
 - Use on-demand Kinesis (30% cheaper for variable workloads)
 - Scale analytics during business hours only
 - Delete resources immediately after completion
@@ -287,11 +315,13 @@ After completing this module, you're ready for:
 ## Support
 
 **Issues?**
+
 - Check [troubleshooting guide](theory/best-practices.md#troubleshooting)
 - Search [Stack Overflow](https://stackoverflow.com/questions/tagged/apache-flink)
 - Ask in [Flink Slack](https://flink.apache.org/community.html#slack)
 
 **Feedback?**
+
 - Open an issue in the training repository
 - Suggest improvements via pull request
 

@@ -10,6 +10,7 @@
 ## 📚 Conceptos
 
 ### Basic CTE
+
 ```sql
 WITH high_value_orders AS (
     SELECT * FROM orders WHERE total_amount > 500
@@ -20,9 +21,10 @@ SELECT
     hvo.total_amount
 FROM high_value_orders hvo
 INNER JOIN users u ON hvo.user_id = u.user_id;
-```
+```text
 
 ### Multiple CTEs
+
 ```sql
 WITH
 user_stats AS (
@@ -35,14 +37,15 @@ top_users AS (
 SELECT u.*, tu.num_orders
 FROM users u
 INNER JOIN top_users tu ON u.user_id = tu.user_id;
-```
+```text
 
 ### Subquery en WHERE
+
 ```sql
 -- Products more expensive than average
 SELECT * FROM products
 WHERE price > (SELECT AVG(price) FROM products);
-```
+```text
 
 ## 🎓 Exercises
 

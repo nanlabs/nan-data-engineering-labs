@@ -6,7 +6,7 @@ This directory contains the complete Docker infrastructure configuration for the
 
 ## 🏗️ Arquitectura
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                 LAKEHOUSE INFRASTRUCTURE                     │
 │                                                              │
@@ -22,11 +22,12 @@ This directory contains the complete Docker infrastructure configuration for the
 │                     │  (PostgreSQL)     │                   │
 │                     └───────────────────┘                   │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## 🐳 services
 
 ### 1. **MinIO** (S3-Compatible Storage)
+
 - **Port API**: 9000
 - **Port Console**: 9001
 - **Cnetworkenciales**: minioadmin/minioadmin
@@ -40,6 +41,7 @@ This directory contains the complete Docker infrastructure configuration for the
   - `events` - Event logs
 
 ### 2. **Apache Spark**
+
 - **Master UI**: 8080
 - **Worker UI**: 8081
 - **Master URL**: spark://spark-master:7077
@@ -51,17 +53,20 @@ This directory contains the complete Docker infrastructure configuration for the
   - Hive Metastore
 
 ### 3. **Hive Metastore**
+
 - **Port**: 9083
 - **Backend**: PostgreSQL
 - **Purpose**: Metadata catalog for Delta Lake and Iceberg
 
 ### 4. **PostgreSQL**
+
 - **Port**: 5432
 - **Database**: metastore
 - **User**: hive/hive
 - **Purpose**: Backend for Hive Metastore
 
 ### 5. **Jupyter Lab**
+
 - **Port**: 8888
 - **not authentication** (local development)
 - **Pre-instalado**:
@@ -85,9 +90,10 @@ This directory contains the complete Docker infrastructure configuration for the
 cd infrastructure
 chmod +x init-scrIPts/download-jars.sh
 ./init-scrIPts/download-jars.sh
-```
+```text
 
 this scrIPt descarga:
+
 - Delta Lake JARs (core, storage)
 - Apache Iceberg JAR
 - Hadoop AWS connector
@@ -117,18 +123,18 @@ curl HTTP://localhost:9000/minio/health/live
 
 # Verificar Jupyter
 curl HTTP://localhost:8888
-```
+```text
 
 ### Paso 4: Acceder to las interfaces
 
-- **Spark Master UI**: HTTP://localhost:8080
-- **Spark Worker UI**: HTTP://localhost:8081
-- **MinIO Console**: HTTP://localhost:9001 (minioadmin/minioadmin)
-- **Jupyter Lab**: HTTP://localhost:8888
+- **Spark Master UI**: <HTTP://localhost:8080>
+- **Spark Worker UI**: <HTTP://localhost:8081>
+- **MinIO Console**: <HTTP://localhost:9001> (minioadmin/minioadmin)
+- **Jupyter Lab**: <HTTP://localhost:8888>
 
 ## 📁 Structure of Archivos
 
-```
+```text
 infrastructure/
 ├── docker-compose.yml           # Definición of servicios
 ├── .env.example                 # Variables of entorno (template)
@@ -147,7 +153,7 @@ infrastructure/
 │
 └── init-scrIPts/                # ScrIPts of inicialización
     └── download-jars.sh         # Descarga JARs necesarios
-```
+```text
 
 ## 🔧 Settings
 
@@ -160,6 +166,7 @@ cp .env.example .env
 ```
 
 Variables princIPales:
+
 - `MINIO_ROOT_USER/PASSWORD`: Cnetworkenciales MinIO
 - `SPARK_WORKER_CORES`: Cores per worker
 - `SPARK_WORKER_MEMORY`: Memory by worker
@@ -173,7 +180,7 @@ Variables princIPales:
 docker-compose up -d --scale spark-worker=3
 
 # Verificar in Spark Master UI (HTTP://localhost:8080)
-```
+```text
 
 ### resources Recomendados
 
@@ -207,7 +214,7 @@ df.write.format("delta").save("s3a://bronze/events")
 
 # Leer desde Delta Lake
 df = spark.read.format("delta").load("s3a://bronze/events")
-```
+```text
 
 ### Acceder to MinIO desde Python
 
@@ -225,7 +232,7 @@ s3 = boto3.client(
 # Listar buckets
 buckets = s3.list_buckets()
 print(buckets)
-```
+```text
 
 ### PySpark Shell
 
@@ -250,7 +257,7 @@ df.write.format("delta").save("s3a://bronze/test_table")
 # Verificar metadata
 deltaTable = DeltaTable.forPath(spark, "s3a://bronze/test_table")
 print(deltaTable.history().show())
-```
+```text
 
 ### Verificar Iceberg
 
@@ -269,7 +276,7 @@ spark.sql("INSERT INTO iceberg.default.test_table VALUES (1, 'test')")
 
 # Query
 spark.sql("SELECT * FROM iceberg.default.test_table").show()
-```
+```text
 
 ## 🛠️ Mantenimiento
 
@@ -283,7 +290,7 @@ docker-compose logs -f
 docker-compose logs -f spark-master
 docker-compose logs -f minio
 docker-compose logs -f jupyter
-```
+```text
 
 ### Reiniciar services
 
@@ -306,7 +313,7 @@ docker-compose down -v
 
 # Reiniciar desde cero
 docker-compose up -d
-```
+```text
 
 ### Update Images
 
@@ -316,7 +323,7 @@ docker-compose pull
 
 # Recrear contenedores
 docker-compose up -d --force-recreate
-```
+```text
 
 ## 🐛 Troubleshooting
 
@@ -331,7 +338,7 @@ docker-compose logs
 
 # Liberar resources
 docker system prune -to
-```
+```text
 
 ### Problem: Spark not he/she can conectar to MinIO
 
@@ -355,7 +362,7 @@ cd init-scrIPts
 
 # Verificar que are in the directory correcto
 ls -la ../spark/jars/
-```
+```text
 
 ### Problem: Port in uso
 
@@ -365,7 +372,7 @@ lsof -i :8080
 lsof -i :9000
 
 # Cambiar port in docker-compose.yml or .env
-```
+```text
 
 ## 📚 Additional Resources
 

@@ -67,24 +67,28 @@ python data/scripts/generate_data.py --quality clean --output data/generated/
 
 # 5. Validate completion
 ./scripts/validate.sh
-```
+```text
 
 ## 🛠️ Technologies
 
 ### Core Frameworks
+
 - **Great Expectations** 0.18+ - Validaciones empresariales
 - **Pandera** 0.17+ - Schema-based validation
 - **PyDeequ** 1.1+ - Big data quality (Spark)
 
 ### Profiling & Analysis
+
 - **ydata-profiling** 4.5+ - Automatic profiling
 - **scipy** 1.11+ - Statistical methods
 
 ### Anomaly Detection
+
 - **PyOD** 1.1+ - Outlier detection algorithms
 - **scikit-learn** 1.3+ - Isolation Forest, LOF
 
 ### Testing
+
 - **pytest** 7.4+ - Testing framework
 - **pytest-cov** 4.1+ - Coverage reports
 
@@ -113,7 +117,7 @@ pytest validation/ --cov=. --cov-report=html
 # Full validation
 
 ./scripts/validate.sh
-```
+```text
 
 ## 📊 Module Metrics
 

@@ -14,6 +14,7 @@ This comprehensive implementation guide provides step-by-step instructions for b
 ### Development Methodology
 
 **Iterative Development**:
+
 1. Start with single domain (Finance) for proof-of-concept
 2. Validate architecture with small dataset (1GB)
 3. Scale to remaining domains (HR, Sales, Operations)
@@ -30,12 +31,14 @@ Monitor AWS costs daily. Set up billing alerts before starting Phase 0.
 ## Phase 0: Environment Setup (2-3 hours)
 
 ### Objectives
+
 - Configure AWS account and billing
 - Set up development tools
 - Create initial infrastructure
 - Establish project structure
 
 ### Prerequisites Checklist
+
 - [ ] AWS account with AdministratorAccess
 - [ ] Python 3.9+ installed
 - [ ] Terraform 1.3+ installed
@@ -81,7 +84,7 @@ aws cloudwatch put-metric-alarm \
   --threshold 150 \
   --comparison-operator GreaterThanThreshold \
   --alarm-actions arn:aws:sns:us-east-1:ACCOUNT_ID:lakehouse-billing-alerts
-```
+```text
 
 #### Configure AWS CLI
 
@@ -102,7 +105,7 @@ aws sts get-caller-identity
 #     "Account": "123456789012",
 #     "Arn": "arn:aws:iam::123456789012:user/your-username"
 # }
-```
+```text
 
 ### Step 0.2: Project Structure Setup
 
@@ -162,7 +165,7 @@ EOF
 
 git add .gitignore
 git commit -m "Add .gitignore"
-```
+```text
 
 ### Step 0.3: Python Environment Setup
 
@@ -279,7 +282,7 @@ terraform init
 
 # Validate configuration
 terraform validate
-```
+```text
 
 ### Step 0.5: Create S3 Buckets with Terraform
 
@@ -425,7 +428,7 @@ terraform apply -auto-approve
 
 # Verify bucket creation
 aws s3 ls | grep lakehouse
-```
+```text
 
 ### Step 0.6: Create Glue Data Catalog
 
@@ -480,7 +483,7 @@ terraform apply -auto-approve
 
 # Verify database creation
 aws glue get-databases | jq '.DatabaseList[].Name'
-```
+```text
 
 ### Step 0.7: IAM Roles for Glue
 
@@ -575,13 +578,14 @@ aws ce get-cost-and-usage \
   --granularity DAILY \
   --metrics BlendedCost \
   --group-by Type=DIMENSION,Key=SERVICE
-```
+```text
 
 ---
 
 ## Phase 1: Raw Data Ingestion (3-4 hours)
 
 ### Objectives
+
 - Generate synthetic data for all domains
 - Implement landing zone (Raw layer)
 - Set up batch ingestion pipeline
@@ -716,7 +720,7 @@ EOF
 
 # Run data generation
 python generate_synthetic_data.py
-```
+```text
 
 ### Step 1.2: Upload to S3 Raw Layer
 
@@ -731,7 +735,7 @@ aws s3 sync ../data/raw/ s3://${BUCKET_NAME}/raw/ \
 
 # Verify upload
 aws s3 ls s3://${BUCKET_NAME}/raw/ --recursive --human-readable
-```
+```text
 
 ### Step 1.3: Create Glue Crawler for Raw Data
 
@@ -839,13 +843,14 @@ aws athena start-query-execution \
   --result-configuration OutputLocation=s3://${BUCKET_NAME}/athena-results/
 
 # Expected: ~100,000 finance transactions
-```
+```text
 
 ---
 
 ## Phase 2: Bronze Layer (3-4 hours)
 
 ### Objectives
+
 - Convert CSV to Parquet format
 - Add audit metadata (ingestion timestamp, source system)
 - Implement partitioning strategy
@@ -1008,7 +1013,7 @@ BUCKET_NAME=$(terraform -chdir=../infrastructure output -raw lakehouse_bucket_na
 spark-submit \
   --packages io.delta:delta-core_2.12:2.3.0 \
   bronze_etl.py ${BUCKET_NAME}
-```
+```text
 
 ### Step 2.2: Create Glue Crawlers for Bronze Layer
 
@@ -1041,7 +1046,7 @@ terraform apply -auto-approve
 
 # Run crawlers
 aws glue start-crawler --name datacorp-lakehouse-bronze-finance-dev
-```
+```text
 
 ### Validation Checkpoint 2
 
@@ -1064,6 +1069,7 @@ aws glue get-partitions \
 ## Phase 3: Delta Lake Setup (4-5 hours)
 
 ### Objectives
+
 - Install Delta Lake dependencies
 - Convert Bronze Parquet to Delta Lake format
 - Configure ACID tra transactions
@@ -1094,36 +1100,42 @@ aws glue get-partitions \
 ### Common Issues
 
 #### Issue: Glue Job Fails with "Access Denied"
+
 **Solution**: Verify IAM role has S3 and KMS permissions
+
 ```bash
 aws iam get-role-policy --role-name datacorp-lakehouse-glue-service-dev --policy-name glue-s3-access
-```
+```text
 
 #### Issue: Athena Query Times Out
+
 **Solution**: Optimize with partitioning and file compaction
+
 ```sql
 -- Check table statistics
 SHOW PARTITIONS table_name;
 ANALYZE TABLE table_name COMPUTE STATISTICS;
-```
+```text
 
 #### Issue: Cost Exceeds Budget
+
 **Solution**: Identify expensive services
+
 ```bash
 aws ce get-cost-and-usage \
   --time-period Start=2026-03-01,End=2026-03-10 \
   --granularity DAILY \
   --metrics BlendedCost \
   --group-by Type=DIMENSION,Key=SERVICE
-```
+```text
 
 ---
 
 ## 📚 Additional Resources
 
-- AWS Glue Documentation: https://docs.aws.amazon.com/glue/
-- Delta Lake Documentation: https://docs.delta.io/
-- Great Expectations: https://docs.greatexpectations.io/
+- AWS Glue Documentation: <https://docs.aws.amazon.com/glue/>
+- Delta Lake Documentation: <https://docs.delta.io/>
+- Great Expectations: <https://docs.greatexpectations.io/>
 
 ---
 

@@ -23,20 +23,23 @@ This directory contains comprehensive test suites for the Real-Time Analytics Pl
 ### Required Tools
 
 1. **Python 3.8+**
+
    ```bash
    python3 --version
-   ```
+   ```text
 
 2. **AWS CLI**
+
    ```bash
    aws --version
    aws configure
    ```
 
 3. **pytest and Dependencies**
+
    ```bash
    pip install -r requirements.txt
-   ```
+   ```text
 
 ### AWS Permissions
 
@@ -68,7 +71,7 @@ Before running tests, ensure the following AWS resources are deployed:
 
 ```bash
 cd modules/module-checkpoint-02-realtime-analytics-platform/validation
-```
+```text
 
 ### 2. Install Dependencies
 
@@ -82,20 +85,20 @@ pip install -r requirements.txt
 export AWS_REGION=us-east-1
 export PROJECT_NAME=rideshare-analytics
 export ENVIRONMENT=dev
-```
+```text
 
 ### 4. Run All Tests
 
 ```bash
 chmod +x run_tests.sh
 ./run_tests.sh --all
-```
+```text
 
 ### 5. View Results
 
 ```bash
 ls -lh test-results/
-```
+```text
 
 ---
 
@@ -119,7 +122,7 @@ validation/
     ├── coverage/              # Coverage reports
     ├── html-report/           # HTML test reports
     └── *.xml                  # JUnit XML reports
-```
+```text
 
 ---
 
@@ -132,6 +135,7 @@ validation/
 **Purpose**: Validate AWS resource deployment and configuration
 
 **Tests Include**:
+
 - ✓ Kinesis stream exists and is active
 - ✓ DynamoDB table exists with correct schema
 - ✓ Lambda functions are deployed with proper configuration
@@ -140,9 +144,10 @@ validation/
 - ✓ S3 buckets exist with correct permissions
 
 **Run Command**:
+
 ```bash
 pytest acceptance-tests/test_infrastructure.py -v
-```
+```text
 
 ### 2. Streaming Pipeline Tests
 
@@ -151,6 +156,7 @@ pytest acceptance-tests/test_infrastructure.py -v
 **Purpose**: Validate end-to-end data flow through streaming pipeline
 
 **Tests Include**:
+
 - ✓ Events ingested into Kinesis
 - ✓ Lambda processing triggered
 - ✓ Data written to DynamoDB
@@ -159,9 +165,10 @@ pytest acceptance-tests/test_infrastructure.py -v
 - ✓ Duplicate event handling
 
 **Run Command**:
+
 ```bash
 pytest acceptance-tests/test_streaming_pipeline.py -v
-```
+```text
 
 ### 3. Data Quality Tests
 
@@ -170,6 +177,7 @@ pytest acceptance-tests/test_streaming_pipeline.py -v
 **Purpose**: Validate data integrity and quality constraints
 
 **Tests Include**:
+
 - ✓ Schema validation
 - ✓ Required fields present
 - ✓ Data type correctness
@@ -178,6 +186,7 @@ pytest acceptance-tests/test_streaming_pipeline.py -v
 - ✓ Format consistency
 
 **Run Command**:
+
 ```bash
 pytest acceptance-tests/test_data_quality.py -v
 ```
@@ -189,6 +198,7 @@ pytest acceptance-tests/test_data_quality.py -v
 **Purpose**: Load testing and performance benchmarking
 
 **Tests Include**:
+
 - ✓ Kinesis throughput (1000 events/sec)
 - ✓ Sustained load testing (60s+)
 - ✓ Lambda latency measurements (p50, p95, p99)
@@ -197,11 +207,13 @@ pytest acceptance-tests/test_data_quality.py -v
 - ✓ CloudWatch metrics validation
 
 **Run Command**:
+
 ```bash
 pytest test_performance.py -v
-```
+```text
 
 **Performance Thresholds**:
+
 - Kinesis: 1000 events/sec peak, 100 events/sec sustained
 - Lambda P99 latency: < 5 seconds
 - Lambda P95 latency: < 3 seconds
@@ -214,6 +226,7 @@ pytest test_performance.py -v
 **Purpose**: Validate Step Functions workflows
 
 **Tests Include**:
+
 - ✓ Daily aggregation workflow execution
 - ✓ Weekly reporting workflow execution
 - ✓ State transitions validation
@@ -222,9 +235,10 @@ pytest test_performance.py -v
 - ✓ Integration with Lambda and S3
 
 **Run Command**:
+
 ```bash
 pytest test_orchestration.py -v
-```
+```text
 
 ---
 
@@ -238,7 +252,7 @@ The `run_tests.sh` script provides a comprehensive test execution framework with
 
 ```bash
 ./run_tests.sh --all
-```
+```text
 
 #### Unit Tests Only
 
@@ -250,19 +264,19 @@ The `run_tests.sh` script provides a comprehensive test execution framework with
 
 ```bash
 ./run_tests.sh --integration
-```
+```text
 
 #### Performance Tests Only
 
 ```bash
 ./run_tests.sh --performance
-```
+```text
 
 #### Orchestration Tests Only
 
 ```bash
 ./run_tests.sh --orchestration
-```
+```text
 
 #### With Coverage Report
 
@@ -274,13 +288,13 @@ The `run_tests.sh` script provides a comprehensive test execution framework with
 
 ```bash
 ./run_tests.sh --all --html
-```
+```text
 
 #### Verbose Output
 
 ```bash
 ./run_tests.sh --all --verbose
-```
+```text
 
 ### Using pytest Directly
 
@@ -288,7 +302,7 @@ The `run_tests.sh` script provides a comprehensive test execution framework with
 
 ```bash
 pytest validation/ -v
-```
+```text
 
 #### Run Specific Test File
 
@@ -300,20 +314,20 @@ pytest validation/test_performance.py -v
 
 ```bash
 pytest validation/test_performance.py::TestKinesisThroughput -v
-```
+```text
 
 #### Run Specific Test Method
 
 ```bash
 pytest validation/test_performance.py::TestKinesisThroughput::test_peak_throughput_1000_events_per_second -v
-```
+```text
 
 #### Run with Markers
 
 ```bash
 pytest validation/ -v -m "performance"
 pytest validation/ -v -m "not slow"
-```
+```text
 
 #### Generate Coverage Report
 
@@ -325,7 +339,7 @@ pytest validation/ --cov --cov-report=html:htmlcov --cov-report=term
 
 ```bash
 pytest validation/ -v -n auto
-```
+```text
 
 ---
 
@@ -345,7 +359,7 @@ export ENVIRONMENT=dev
 # Test Configuration (optional)
 export SKIP_SETUP=false
 export TEST_TIMEOUT=300
-```
+```text
 
 ### Configuration File
 
@@ -357,7 +371,7 @@ AWS_REGION=us-east-1
 PROJECT_NAME=rideshare-analytics
 ENVIRONMENT=dev
 RESOURCE_PREFIX=rideshare-analytics-dev
-```
+```text
 
 Load environment variables:
 
@@ -372,7 +386,7 @@ If using multiple AWS profiles:
 ```bash
 export AWS_PROFILE=dev-profile
 aws configure --profile dev-profile
-```
+```text
 
 ---
 
@@ -426,7 +440,7 @@ jobs:
       uses: codecov/codecov-action@v2
       with:
         files: ./validation/test-results/coverage/coverage.xml
-```
+```text
 
 ### GitLab CI
 
@@ -454,7 +468,7 @@ test:
   only:
     - main
     - develop
-```
+```text
 
 ### Jenkins Pipeline
 
@@ -510,18 +524,20 @@ pipeline {
 **Error**: `Unable to locate credentials`
 
 **Solution**:
+
 ```bash
 aws configure
 # OR
 export AWS_ACCESS_KEY_ID=your_key
 export AWS_SECRET_ACCESS_KEY=your_secret
-```
+```text
 
 #### 2. Resource Not Found
 
 **Error**: `ResourceNotFoundException`
 
 **Solution**:
+
 - Verify infrastructure is deployed: `aws cloudformation list-stacks`
 - Check resource naming: Ensure `PROJECT_NAME` and `ENVIRONMENT` match deployed resources
 - Verify AWS region: Ensure `AWS_REGION` is correct
@@ -531,6 +547,7 @@ export AWS_SECRET_ACCESS_KEY=your_secret
 **Error**: `AccessDeniedException`
 
 **Solution**:
+
 - Check IAM permissions for the user/role
 - Verify IAM policies include required actions
 - Check resource-based policies (S3 bucket policies, etc.)
@@ -540,6 +557,7 @@ export AWS_SECRET_ACCESS_KEY=your_secret
 **Error**: `TimeoutError: Execution did not complete`
 
 **Solution**:
+
 - Increase timeout in test configuration
 - Check CloudWatch logs for Lambda errors
 - Verify Step Functions execution didn't stall
@@ -549,11 +567,12 @@ export AWS_SECRET_ACCESS_KEY=your_secret
 **Error**: `ModuleNotFoundError: No module named 'boto3'`
 
 **Solution**:
+
 ```bash
 pip install -r requirements.txt
 # OR
 pip install boto3 pytest pytest-cov faker
-```
+```text
 
 ### Debugging Tests
 
@@ -561,7 +580,7 @@ pip install boto3 pytest pytest-cov faker
 
 ```bash
 pytest validation/ -v -s
-```
+```text
 
 #### Run Single Test
 
@@ -573,7 +592,7 @@ pytest validation/test_performance.py::TestKinesisThroughput::test_peak_throughp
 
 ```python
 import pdb; pdb.set_trace()
-```
+```text
 
 #### Check AWS Resources
 
@@ -589,7 +608,7 @@ aws lambda list-functions --query "Functions[?contains(FunctionName, 'rideshare'
 
 # List Step Functions
 aws stepfunctions list-state-machines
-```
+```text
 
 #### View CloudWatch Logs
 
@@ -601,7 +620,7 @@ aws logs tail /aws/lambda/rideshare-analytics-dev-stream-processor --follow
 aws logs filter-log-events \
   --log-group-name /aws/lambda/rideshare-analytics-dev-stream-processor \
   --filter-pattern "ERROR"
-```
+```text
 
 ---
 

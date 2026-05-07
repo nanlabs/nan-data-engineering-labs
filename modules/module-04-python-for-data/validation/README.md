@@ -6,7 +6,7 @@ This directory contains the **integrated validation suite** for the entire Modul
 
 ## Structure
 
-```
+```text
 validation/
 ├── README.md                    # Este file
 ├── conftest.py                  # Configuration global de pytest
@@ -14,7 +14,7 @@ validation/
 ├── test_data_quality.py         # Validation de calidad de datasets
 ├── test_module_completeness.py  # Verifies everything is complete
 └── pytest.ini                   # Configuration de pytest
-```
+```text
 
 ---
 
@@ -68,7 +68,7 @@ pytest validation/test_data_quality.py -v
 
 # Solo completitud
 pytest validation/test_module_completeness.py -v
-```
+```text
 
 ### Run ALL module tests
 
@@ -141,7 +141,7 @@ jobs:
       - name: Run tests
         run: |
           pytest exercises/ validation/ -v --cov
-```
+```text
 
 ---
 
@@ -155,7 +155,7 @@ jobs:
 cd training-cloud-data
 export PYTHONPATH=$PYTHONPATH:$PWD
 pytest modules/module-04-python-for-data/validation/ -v
-```
+```text
 
 ### Problema: Datasets no encontrados
 
@@ -164,7 +164,7 @@ pytest modules/module-04-python-for-data/validation/ -v
 ```bash
 cd modules/module-04-python-for-data
 ls data/raw/  # Debe mostrar los 5 datasets
-```
+```text
 
 ### Problema: Tests lentos
 

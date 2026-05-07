@@ -19,9 +19,9 @@
 
 **Kubernetes (K8s)** es un sistema open-source para automatizar deployment, scaling y management de aplicaciones containerizadas.
 
-###¿Por qué Kubernetes para Data Engineering?
+### ¿Por qué Kubernetes para Data Engineering?
 
-```
+```text
 ✅ Unified Platform
    - Batch jobs (Spark, dbt)
    - Streaming (Kafka, Flink)
@@ -42,7 +42,7 @@
    - Helm charts (Airflow, Superset, MLflow)
    - Operators (Spark, Flink, Airflow)
    - Service mesh (Istio, Linkerd)
-```
+```text
 
 ---
 
@@ -52,7 +52,7 @@
 
 ### Arquitectura EKS
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │                    Amazon EKS Architecture                    │
 ├──────────────────────────────────────────────────────────────┤
@@ -143,7 +143,7 @@ spec:
     persistentVolumeClaim:
       claimName: efs-pvc
   restartPolicy: OnFailure
-```
+```text
 
 ### Namespaces
 
@@ -158,7 +158,7 @@ kubectl config set-context --current --namespace=data-engineering
 
 # Apply manifest to namespace
 kubectl apply -f deployment.yaml -n data-engineering
-```
+```text
 
 ### Labels y Selectors
 
@@ -176,7 +176,7 @@ spec:
   selector:
     app: airflow
     component: webserver
-```
+```text
 
 ---
 
@@ -276,9 +276,10 @@ spec:
       resources:
         requests:
           storage: 100Gi
-```
+```text
 
 **Diferencias clave**:
+
 - StatefulSet: Pods tienen identidad estable (postgres-0, postgres-1, postgres-2)
 - Deployment: Pods tienen nombres aleatorios (api-7d8f9-xyz)
 - StatefulSet: Persistent Volume por pod
@@ -304,7 +305,7 @@ spec:
   ports:
   - port: 80
     targetPort: 8080
-```
+```text
 
 **LoadBalancer** - External access (creates AWS ALB/NLB):
 
@@ -323,7 +324,7 @@ spec:
   ports:
   - port: 443
     targetPort: 8080
-```
+```text
 
 **Headless Service** - For StatefulSets (DNS without load balancing):
 
@@ -341,11 +342,12 @@ spec:
 ```
 
 DNS resolution:
-```
+
+```text
 postgres-0.postgres-headless.data-engineering.svc.cluster.local
 postgres-1.postgres-headless.data-engineering.svc.cluster.local
 postgres-2.postgres-headless.data-engineering.svc.cluster.local
-```
+```text
 
 ### Ingress (AWS Load Balancer Controller)
 
@@ -382,7 +384,7 @@ spec:
             name: airflow-webserver
             port:
               number: 8080
-```
+```text
 
 ---
 
@@ -421,7 +423,7 @@ spec:
   resources:
     requests:
       storage: 500Gi
-```
+```text
 
 ### EFS Volumes (Shared Storage)
 
@@ -437,7 +439,7 @@ parameters:
   provisioningMode: efs-ap
   fileSystemId: fs-12345678
   directoryPerms: "700"
-```
+```text
 
 **Usage**:
 
@@ -453,7 +455,7 @@ spec:
   resources:
     requests:
       storage: 100Gi
-```
+```text
 
 ---
 
@@ -497,7 +499,7 @@ spec:
       items:
       - key: spark.conf
         path: spark-defaults.conf
-```
+```text
 
 ### Secrets
 
@@ -514,7 +516,7 @@ kubectl create secret generic ssh-key \
   --from-file=id_rsa=~/.ssh/id_rsa
 
 # From AWS Secrets Manager (with External Secrets Operator)
-```
+```text
 
 **External Secrets Operator** (best practice):
 
@@ -548,7 +550,7 @@ spec:
   - secretKey: password
     remoteRef:
       key: prod/database/password
-```
+```text
 
 ---
 
@@ -626,7 +628,7 @@ spec:
     onFailureRetryInterval: 10
     onSubmissionFailureRetries: 5
     onSubmissionFailureRetryInterval: 20
-```
+```text
 
 **IRSA (IAM Roles for Service Accounts)**:
 
@@ -656,7 +658,7 @@ resource "aws_iam_role_policy_attachment" "spark_s3" {
   role       = aws_iam_role.spark.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
-```
+```text
 
 **Kubernetes ServiceAccount**:
 
@@ -668,7 +670,7 @@ metadata:
   namespace: data-engineering
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::123456789:role/eks-spark-role
-```
+```text
 
 ### Monitor Spark Jobs
 
@@ -701,7 +703,7 @@ helm install prometheus prometheus-community/kube-prometheus-stack \
   --namespace monitoring \
   --create-namespace \
   --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false
-```
+```text
 
 **ServiceMonitor** para custom metrics:
 
@@ -719,7 +721,7 @@ spec:
   - port: metrics
     interval: 30s
     path: /metrics
-```
+```text
 
 ### Container Insights (AWS)
 
@@ -728,7 +730,7 @@ Enable CloudWatch Container Insights:
 ```bash
 # Deploy Fluent Bit
 kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluent-bit-quickstart.yaml
-```
+```text
 
 **CloudWatch Logs Insights Query**:
 
@@ -743,6 +745,7 @@ fields @timestamp, kubernetes.namespace_name, kubernetes.pod_name, log
 ### Grafana Dashboards
 
 Import community dashboards:
+
 - **Kubernetes Cluster Monitoring**: Dashboard ID 7249
 - **Kubernetes Pod Resources**: Dashboard ID 6417
 - **Node Exporter Full**: Dashboard ID 1860
@@ -767,9 +770,10 @@ spec:
       limits:
         memory: "4Gi"
         cpu: "2000m"  # 2 CPU cores
-```
+```text
 
 **QoS Classes**:
+
 1. **Guaranteed**: requests = limits (highest priority)
 2. **Burstable**: requests < limits
 3. **BestEffort**: no requests/limits (lowest priority)
@@ -795,7 +799,7 @@ spec:
             operator: In
             values:
             - r5.4xlarge  # Memory-optimized
-```
+```text
 
 ### Pod Disruption Budget
 
@@ -811,7 +815,7 @@ spec:
   selector:
     matchLabels:
       app: data-api
-```
+```text
 
 ### Horizontal Pod Autoscaler
 
@@ -873,7 +877,7 @@ data:
       - .*-spot-.*  # Prefer spot instances
     5:
       - .*-ondemand-.*
-```
+```text
 
 ---
 
@@ -894,16 +898,19 @@ data:
 ### Recomendaciones
 
 **Usa ECS Fargate si**:
+
 - Equipos pequeños sin experiencia K8s
 - Workloads serverless/esporádicos
 - No necesitas features avanzados de K8s
 
 **Usa ECS EC2 si**:
+
 - Necesitas GPUs
 - Workload 24/7 predecible
 - Quieres control sobre instances
 
 **Usa EKS si**:
+
 - Multi-cloud strategy
 - Ecosistema K8s (Helm, Operators)
 - Stateful applications complejas

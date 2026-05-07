@@ -38,12 +38,14 @@ This document provides actionable best practices for cloud cost optimization bas
 ### 1. Design Phase
 
 **BP-01: Start Small, Scale Based on Data**
+
 - ✅ Begin with t3.small, not m5.4xlarge
 - ✅ Use serverless for new workloads (Lambda, Fargate)
 - ✅ Monitor for 2-4 weeks before committing to RIs
 - ❌ Don't "future-proof" with oversized resources
 
 **BP-02: Choose the Right Pricing Model**
+
 ```python
 # Decision framework
 def recommend_pricing_model(workload_characteristics):
@@ -83,9 +85,10 @@ print("\n🎯 Pricing Model Recommendations:\n")
 for workload in workloads:
     rec = recommend_pricing_model(workload)
     print(f"  {workload['name']}: {rec}")
-```
+```text
 
 **BP-03: Design for Multi-Tenancy**
+
 - Share infrastructure across customers (reduce per-customer cost)
 - Use resource tagging for per-tenant cost tracking
 - Implement fair-use policies
@@ -93,6 +96,7 @@ for workload in workloads:
 ### 2. Development Phase
 
 **BP-04: Tag Everything from Creation**
+
 ```python
 # Tag on creation (Terraform example)
 resource "aws_instance" "web" {
@@ -129,9 +133,10 @@ data "aws_iam_policy_document" "require_tags" {
     }
   }
 }
-```
+```text
 
 **BP-05: Implement Auto-Shutdown for Dev/Test**
+
 ```python
 # Lambda to stop dev instances nightly
 def lambda_handler(event, context):
@@ -162,9 +167,10 @@ def lambda_handler(event, context):
 
 # EventBridge schedule: Mon-Fri 8 PM, start at 8 AM
 # Runs 14 hours off, saves 14/24 = 58% on dev infrastructure
-```
+```text
 
 **BP-06: Use Infrastructure as Code**
+
 - Terraform state tracks all resources (no orphans)
 - Destroy entire environments easily (`terraform destroy`)
 - Consistent tagging via variables
@@ -172,6 +178,7 @@ def lambda_handler(event, context):
 ### 3. Testing Phase
 
 **BP-07: Test on Spot/Smaller Instances**
+
 ```bash
 # CI/CD pipeline on Spot (GitHub Actions example)
 runs-on: ec2-spot-runner  # 70% cheaper than on-demand runners
@@ -183,6 +190,7 @@ test:
 ```
 
 **BP-08: Clean Up Test Data Automatically**
+
 ```python
 # Delete test resources after 7 days
 lifecycle_rule = {
@@ -193,17 +201,19 @@ lifecycle_rule = {
         'Expiration': {'Days': 7}
     }]
 }
-```
+```text
 
 ### 4. Production Phase
 
 **BP-09: Commit to Savings Plans Gradually**
+
 - Month 1-3: Monitor baseline usage
 - Month 4: Purchase 50% coverage (1-year SP)
 - Month 7: Increase to 70% coverage
 - Review quarterly, adjust coverage
 
 **BP-10: Implement Budget Alerts**
+
 ```python
 # Budget with graduated alerts
 BUDGET_ALERTS = [
@@ -213,9 +223,10 @@ BUDGET_ALERTS = [
     {'threshold': 110, 'type': 'ACTUAL', 'action': 'Deny new EC2 launch'},
     {'threshold': 100, 'type': 'FORECASTED', 'action': 'Notify CFO'}
 ]
-```
+```text
 
 **BP-11: Enable Cost Anomaly Detection**
+
 - AWS-managed ML service (no cost)
 - Detects unusual spending patterns
 - Alerts on anomalies >$100 or >20% deviation
@@ -225,11 +236,13 @@ BUDGET_ALERTS = [
 ### EC2
 
 **BP-12: Use Latest Generation Instances**
+
 - m6i 20% better price/performance than m5
 - Graviton2/3 (ARM) 20-40% cheaper than Intel
 - Network-optimized for high throughput
 
 **BP-13: EBS Optimization**
+
 ```python
 # Right-size EBS volumes
 EBS_BEST_PRACTICES = {
@@ -250,9 +263,10 @@ EBS_BEST_PRACTICES = {
         'cost': '$0.05/GB-month'
     }
 }
-```
+```text
 
 **BP-14: Stop Instead of Terminate**
+
 - Stopped instances: No EC2 charge, EBS charge only ($0.08/GB-month)
 - Useful for dev/test environments
 - Can start quickly when needed
@@ -260,6 +274,7 @@ EBS_BEST_PRACTICES = {
 ### Lambda
 
 **BP-15: Optimize Memory Allocation**
+
 ```python
 # Benchmark different memory configs
 MEMORY_CONFIG_RESULTS = {
@@ -275,11 +290,13 @@ MEMORY_CONFIG_RESULTS = {
 ```
 
 **BP-16: Minimize Cold Starts**
+
 - Keep functions warm with EventBridge (scheduled invocations)
 - Use Provisioned Concurrency sparingly (expensive: $0.000004167 per GB-second)
 - Reduce deployment package size (faster cold start)
 
 **BP-17: Use ARM/Graviton2 Runtime**
+
 ```python
 # 20% discount + 19% better performance
 lambda_function = {
@@ -289,11 +306,12 @@ lambda_function = {
     'MemorySize': 256
 }
 # Same code, 20% cheaper, 19% faster
-```
+```text
 
 ### S3
 
 **BP-18: Lifecycle Everything**
+
 ```python
 # Default lifecycle for all buckets
 DEFAULT_LIFECYCLE = {
@@ -311,9 +329,10 @@ DEFAULT_LIFECYCLE = {
 # Intelligent-Tiering: $0.0025/1000 objects (monitoring fee)
 # Automatic optimization, no retrieval fees
 # Best for unknown access patterns
-```
+```text
 
 **BP-19: Delete Incomplete Multipart Uploads**
+
 ```python
 # These can accumulate and cost $$ invisibly
 lifecycle_rule = {
@@ -328,9 +347,10 @@ lifecycle_rule = {
 s3 = boto3.client('s3')
 response = s3.list_multipart_uploads(Bucket='my-bucket')
 print(f"Incomplete uploads: {len(response.get('Uploads', []))}")
-```
+```text
 
 **BP-20: Use S3 Select**
+
 - Query CSV/JSON in S3 without downloading
 - 80% cheaper than scanning full objects
 - Reduce data transfer and Lambda processing time
@@ -338,6 +358,7 @@ print(f"Incomplete uploads: {len(response.get('Uploads', []))}")
 ### RDS
 
 **BP-21: Use Aurora Serverless for Variable Loads**
+
 ```python
 # Aurora Serverless v2: Scales in 0.5 ACU increments
 AURORA_SERVERLESS_COST = {
@@ -363,11 +384,13 @@ monthly_cost = (
 ```
 
 **BP-22: Stop RDS Dev Instances**
+
 - Stop: $0.08/GB-month storage only (no instance cost)
 - Automated with Lambda (nightly stop, morning start)
 - Savings: 58% (14 off-hours / 24 hours)
 
 **BP-23: Use Read Replicas Wisely**
+
 - Each replica = 100% of instance cost
 - Evaluate: Can ElastiCache serve reads instead? (90% cheaper)
 - Use cross-region replicas only for DR (not reads)
@@ -375,6 +398,7 @@ monthly_cost = (
 ### DynamoDB
 
 **BP-24: Choose Capacity Mode Carefully**
+
 ```python
 # Break-even analysis
 def dynamodb_cost_comparison(requests_per_month):
@@ -413,9 +437,10 @@ for requests in [1_000_000, 10_000_000, 100_000_000]:
     print(f"  ✅ Winner: {result['recommendation'].upper()}")
 
 # Rule of thumb: On-Demand cheaper if <15% utilization
-```
+```text
 
 **BP-25: Enable Auto-Scaling for DynamoDB**
+
 - Provisioned capacity with auto-scaling (best of both)
 - Target 70% utilization
 - Scale based on consumed capacity CloudWatch metric
@@ -425,6 +450,7 @@ for requests in [1_000_000, 10_000_000, 100_000_000]:
 ### Visibility
 
 **BP-26: Enable Cost Explorer Day 1**
+
 ```bash
 # Enable Cost Explorer for organization
 aws ce update-cost-allocation-tags-status \
@@ -437,9 +463,10 @@ aws ce update-cost-allocation-tags-status \
 # Create Cost and Usage Report (most detailed)
 aws cur put-report-definition \
   --report-definition file://cur-definition.json
-```
+```text
 
 **BP-27: Set Up Daily Cost Dashboard**
+
 - Slack/email with yesterday's cost vs budget
 - Alert on >10% day-over-day increase
 - Show top 5 services by cost
@@ -447,11 +474,13 @@ aws cur put-report-definition \
 ### Accountability
 
 **BP-28: Implement Showback First, Chargeback Later**
+
 - Start with monthly cost reports per team (no financial impact)
 - After 3-6 months, introduce chargeback (budget from team P&L)
 - Drives cost-aware behavior without initial friction
 
 **BP-29: Make Cost Visible to Engineers**
+
 ```python
 # Add cost to deployment notifications
 SLACK_DEPLOYMENT_MESSAGE = """
@@ -466,9 +495,10 @@ SLACK_DEPLOYMENT_MESSAGE = """
 
 Approval: Auto-approved (<5% budget impact)
 """
-```
+```text
 
 **BP-30: Include Cost in Architecture Reviews**
+
 - TCO calculation required for new systems
 - Cost-benefit analysis in design docs
 - Alternative options evaluated (e.g., Lambda vs EC2)
@@ -476,6 +506,7 @@ Approval: Auto-approved (<5% budget impact)
 ### Optimization
 
 **BP-31: Monthly Right-Sizing Review**
+
 ```python
 # Automate right-sizing recommendation extraction
 def get_monthly_right_sizing_tasks():
@@ -508,12 +539,14 @@ def get_monthly_right_sizing_tasks():
 ```
 
 **BP-32: Quarterly Commitment Review**
+
 - Review RI/SP utilization (target >85%)
 - Review RI/SP coverage (target 65-75%)
 - Increase commitments if coverage <60% and util >90%
 - Decrease if utilization <75% (wasted commitment)
 
 **BP-33: Weekly Waste Cleanup**
+
 ```python
 # Automated weekly waste report
 WASTE_PATTERNS = [
@@ -548,11 +581,12 @@ WASTE_PATTERNS = [
         'action': 'Consider VPC endpoints instead'
     }
 ]
-```
+```text
 
 ### Automation
 
 **BP-34: Auto-Tag on Resource Creation**
+
 ```python
 # EventBridge rule to tag new resources
 def tag_new_resource(event):
@@ -573,9 +607,10 @@ def tag_new_resource(event):
         ResourceARNList=[resource_arn],
         Tags=tags
     )
-```
+```text
 
 **BP-35: Automated Right-Sizing Actions**
+
 ```python
 # Auto-resize resources with <20% CPU for 30 days
 def auto_right_size(dry_run=True):
@@ -620,11 +655,12 @@ def auto_right_size(dry_run=True):
                 })
 
     return actions_taken
-```
+```text
 
 ## Tagging Best Practices
 
 **BP-36: Mandatory Tag Policy**
+
 ```python
 MANDATORY_TAGS = {
     'CostCenter': {
@@ -667,6 +703,7 @@ def check_required_tags(resource):
 ```
 
 **BP-37: Tag Inheritance**
+
 - Use tag propagation: EBS inherits from EC2, snapshots inherit from volumes
 - CloudFormation stacks: Tag stack, all resources inherit
 - AWS Organizations: Tag OUs, apply to member accounts
@@ -674,6 +711,7 @@ def check_required_tags(resource):
 ## Data Transfer Best Practices
 
 **BP-38: Use VPC Endpoints**
+
 ```python
 # Avoid NAT Gateway for AWS services
 VPC_ENDPOINT_SAVINGS = {
@@ -696,14 +734,16 @@ VPC_ENDPOINT_SAVINGS = {
 
 # Rule: Always use gateway endpoints (S3, DynamoDB) - they're free
 # Evaluate interface endpoints if >100 GB/month to service
-```
+```text
 
 **BP-39: Use CloudFront for Static Assets**
+
 - Reduce S3 GET requests (90%+ cache hit rate)
 - Reduce data transfer (CloudFront charges less than S3 egress)
 - Savings: $0.085/GB (S3 transfer) → $0.085/GB (CloudFront) but 90% cached
 
 **BP-40: Keep Data in Same Region**
+
 ```python
 # Data transfer costs
 DATA_TRANSFER_PRICING = {
@@ -717,11 +757,12 @@ DATA_TRANSFER_PRICING = {
 # Best practice: Design data locality
 # ✅ S3 bucket + Lambda in us-east-1
 # ❌ S3 in us-east-1, Lambda in us-west-2 (cross-region transfer)
-```
+```text
 
 ## Monitoring and Alerting
 
 **BP-41: Daily Cost Anomaly Checks**
+
 ```python
 # Check for anomalies every morning
 def daily_cost_anomaly_report():
@@ -750,9 +791,10 @@ def daily_cost_anomaly_report():
         send_slack_alert(report)
     else:
         print("✅ No cost anomalies detected")
-```
+```text
 
 **BP-42: Set Up Billing Alarms**
+
 - CloudWatch billing metric (us-east-1 only)
 - Alert at 50%, 75%, 90%, 100% of budget
 - Escalation: Email → Slack → PagerDuty
@@ -760,6 +802,7 @@ def daily_cost_anomaly_report():
 ## Development Best Practices
 
 **BP-43: Cost-Aware CI/CD**
+
 ```yaml
 # GitHub Actions: Use Spot runners
 runs-on:
@@ -778,11 +821,13 @@ runs-on:
 ```
 
 **BP-44: Ephemeral Environments**
+
 - Create review environments on PR open
 - Delete on PR merge/close
 - Savings: 80% vs permanent staging environments
 
 **BP-45: Use LocalStack for Local Development**
+
 ```yaml
 # docker-compose.yml
 services:
@@ -791,11 +836,12 @@ services:
     environment:
       - SERVICES=s3,dynamodb,lambda,sqs
     # Free for core services, avoids AWS dev costs
-```
+```text
 
 ## Cleanup and Hygiene
 
 **BP-46: Automated Resource Tagging Scanner**
+
 ```python
 # Weekly scan for untagged resources
 def scan_untagged_resources():
@@ -826,14 +872,16 @@ def scan_untagged_resources():
     print(f"    Target: <5% of resources")
 
     return untagged
-```
+```text
 
 **BP-47: Quarterly Access Pattern Review**
+
 - S3 Storage Lens: Check object age and access patterns
 - Move infrequently accessed data to IA or Glacier
 - Identify and delete abandoned buckets
 
 **BP-48: Annual Architecture Review**
+
 - Re-evaluate technology choices (new services, pricing changes)
 - Benchmark against industry standards
 - Set next year's cost optimization goals
@@ -841,41 +889,49 @@ def scan_untagged_resources():
 ## Anti-Patterns to Avoid
 
 ### ❌ Anti-Pattern 1: Over-Provisioning for "Just in Case"
+
 - **Problem**: Provisioning for theoretical peak load that never happens
 - **Impact**: 50-70% waste on idle capacity
 - **Solution**: Start small, auto-scale based on actual load
 
 ### ❌ Anti-Pattern 2: Ignoring Data Transfer Costs
+
 - **Problem**: Cross-region replication without justification
 - **Impact**: 10-20% of total cloud spend
 - **Solution**: Keep data and compute in same region, use CloudFront
 
 ### ❌ Anti-Pattern 3: Default Instance Types
+
 - **Problem**: Using m5.large for everything without analysis
 - **Impact**: 30-50% over-spending (could use t3.small for many workloads)
 - **Solution**: Right-size from actual metrics, use Compute Optimizer
 
 ### ❌ Anti-Pattern 4: Manual Resource Management
+
 - **Problem**: Creating resources via console, no automation
 - **Impact**: Orphaned resources, inconsistent tagging, hidden costs
 - **Solution**: Infrastructure as Code (Terraform, CloudFormation)
 
 ### ❌ Anti-Pattern 5: No Lifecycle Policies
+
 - **Problem**: All S3 data in Standard storage class forever
 - **Impact**: 50-80% wasted storage costs
 - **Solution**: Default lifecycle on all buckets, intelligent-tiering minimum
 
 ### ❌ Anti-Pattern 6: Buying RIs Too Early
+
 - **Problem**: Committing to 3-year RIs on day 1
 - **Impact**: Wrong instance type/size, wasted commitment
 - **Solution**: Monitor 3 months, start with 1-year RIs or Savings Plans
 
 ### ❌ Anti-Pattern 7: Ignoring Spot for Batch
+
 - **Problem**: Running batch jobs on On-Demand instances
 - **Impact**: Paying 3-5x more than necessary
 - **Solution**: EMR/Batch with Spot (checkpointing for fault tolerance)
 
 ### ❌ Anti-Pattern 8: Not Tracking Unit Economics
+
 - **Problem**: Only looking at total spend, not cost per customer/transaction
 - **Impact**: Can't identify efficiency gains or regressions
 - **Solution**: Calculate unit economics monthly, track trends
@@ -883,6 +939,7 @@ def scan_untagged_resources():
 ## Security and Compliance Considerations
 
 **BP-49: Principle of Least Privilege for Cost APIs**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -906,9 +963,10 @@ def scan_untagged_resources():
     }
   ]
 }
-```
+```text
 
 **BP-50: Separate Cost Reporting from Resource Management**
+
 - FinOps team: Read-only Cost Explorer access
 - Engineering: Resource management but cost visibility
 - Finance: Full billing access
@@ -916,6 +974,7 @@ def scan_untagged_resources():
 ## Checklist for New Projects
 
 ### Before Launch
+
 - [ ] Cost estimate completed (monthly run rate)
 - [ ] Tagging strategy defined and enforced (all 4 mandatory tags)
 - [ ] Budget created with alerts (monthly limit + forecasted)
@@ -925,6 +984,7 @@ def scan_untagged_resources():
 - [ ] Serverless-first evaluation completed
 
 ### First Month
+
 - [ ] Monitor actual vs estimated cost (variance analysis)
 - [ ] Review CloudWatch metrics (CPU, memory, network)
 - [ ] Check for idle resources weekly
@@ -932,6 +992,7 @@ def scan_untagged_resources():
 - [ ] Cost anomaly detection enabled
 
 ### Months 2-3
+
 - [ ] Right-sizing review (Compute Optimizer recommendations)
 - [ ] Evaluate commitment options (RI/SP ROI analysis)
 - [ ] Optimize storage (access patterns, lifecycle transitions)
@@ -939,6 +1000,7 @@ def scan_untagged_resources():
 - [ ] Set up automated cost reports (weekly to team)
 
 ### Month 4+
+
 - [ ] Purchase initial commitments (50-60% coverage)
 - [ ] Implement automated cleanup (idle resources)
 - [ ] Cost optimization KPIs tracked (coverage, utilization, waste)
@@ -948,16 +1010,19 @@ def scan_untagged_resources():
 ## Organizational Best Practices
 
 **BP-51: Dedicate FinOps Resources**
+
 - 1 FTE per $10M annual cloud spend
 - Engineers spend 10% time on cost optimization
 - Monthly FinOps meeting (engineering + finance)
 
 **BP-52: Incentivize Cost Optimization**
+
 - Team bonuses tied to cost efficiency improvements
 - Cost savings shared: 30% to team budget, 70% to company
 - Engineer recognition for significant optimizations
 
 **BP-53: Continuous Education**
+
 - Quarterly cost optimization training
 - AWS Well-Architected reviews annually
 - FinOps Certified Practitioner for 1-2 team members
@@ -967,12 +1032,14 @@ def scan_untagged_resources():
 ### Case Study 1: E-Commerce Platform
 
 **Before**:
+
 - 50 EC2 instances (all m5.2xlarge, all On-Demand, 24/7)
 - 100 TB S3 (all Standard storage class)
 - RDS (db.r5.4xlarge, 24/7)
 - **Cost**: $18,500/month
 
 **Optimizations**:
+
 1. Right-sized EC2 (10x m5.2xlarge, 20x m5.xlarge, 20x m5.large)
 2. Purchased 3-year RIs for 60% baseline
 3. S3 lifecycle: 10 TB Standard, 30 TB IA, 60 TB Glacier
@@ -986,12 +1053,14 @@ def scan_untagged_resources():
 ### Case Study 2: Data Analytics Startup
 
 **Before**:
+
 - EMR cluster (5x m5.4xlarge, 24/7)
 - S3 (50 TB, all Standard)
 - Athena queries (1 TB scanned per query, 500 queries/month)
 - **Cost**: $15,000/month
 
 **Optimizations**:
+
 1. EMR: Run 6 hours/day (batch processing only)
 2. EMR: 80% Spot instances (task nodes)
 3. S3: Convert CSV to Parquet (90% size reduction)
@@ -1005,6 +1074,7 @@ def scan_untagged_resources():
 ### Case Study 3: SaaS Company (500K users)
 
 **Before**:
+
 - API: 20x c5.xlarge (24/7, all On-Demand)
 - RDS: db.m5.8xlarge (over-sized for peak only)
 - No cost visibility (no tags)
@@ -1012,6 +1082,7 @@ def scan_untagged_resources():
 - **Unit cost**: $0.05 per user per month
 
 **Optimizations**:
+
 1. API: Migrated to Lambda + API Gateway (500M requests/month)
 2. Database: Aurora Serverless v2 (0.5-64 ACU auto-scaling)
 3. CloudFront for static assets (90% cache hit rate)
@@ -1026,30 +1097,35 @@ def scan_untagged_resources():
 ## Cost Optimization Roadmap
 
 ### Months 1-3: Foundation
+
 - Enable Cost Explorer and CUR
 - Implement tagging strategy (80%+ compliance)
 - Set up budgets and alerts
 - Establish weekly cost reviews
 
 ### Months 4-6: Quick Wins
+
 - Stop dev/test instances off-hours (15-30% savings)
 - Delete unused resources (5-10% savings)
 - S3 lifecycle policies (20-40% storage savings)
 - Right-size obvious over-provisioning (10-20% savings)
 
 ### Months 7-12: Strategic Optimization
+
 - Purchase initial RIs/SPs (50-60% coverage)
 - Implement Auto Scaling (20-30% compute savings)
 - Migrate appropriate workloads to serverless
 - Establish FinOps KPI dashboard
 
 ### Year 2: Continuous Improvement
+
 - Increase commitment coverage to 70-75%
 - Automated right-sizing actions
 - Cost anomaly detection with auto-remediation
 - Achieve FinOps maturity Level 3-4
 
 ### Year 2+ Target
+
 - <10% waste ratio
 - >85% commitment utilization
 - >75% commitment coverage
@@ -1058,26 +1134,31 @@ def scan_untagged_resources():
 ## Common Mistakes and How to Avoid Them
 
 ### Mistake 1: Optimizing in Isolation
+
 - **Problem**: Engineering optimizes without talking to finance
 - **Solution**: Monthly FinOps meetings with all stakeholders
 - **Impact**: Misaligned priorities, duplicate efforts
 
 ### Mistake 2: Focus Only on Large Costs
+
 - **Problem**: Ignoring $100/month wastes (1000 of them = $100K/year)
 - **Solution**: Automated weekly cleanup of small waste
 - **Impact**: Death by a thousand cuts
 
 ### Mistake 3: Committing Too Much Too Fast
+
 - **Problem**: 90% RI coverage on month 1, then architecture changes
 - **Solution**: Scale commitments gradually (50% → 60% → 70% over 12 months)
 - **Impact**: Wasted commitments, <70% utilization
 
 ### Mistake 4: No Cost Testing in Pre-Prod
+
 - **Problem**: Deploying to production without cost validation
 - **Solution**: Run load tests in staging, extrapolate to production scale
 - **Impact**: Bill shock, emergency optimization
 
 ### Mistake 5: Manual Optimization Only
+
 - **Problem**: Relying on humans to find and fix waste
 - **Solution**: Automate detection and remediation (80% of common patterns)
 - **Impact**: Optimization doesn't scale with growth
@@ -1112,12 +1193,14 @@ COST_OPTIMIZATION_KPIS = {
 ### Cost Optimization Tools
 
 **AWS Native**:
+
 - Cost Explorer: Visualization and filtering
 - Compute Optimizer: ML-powered right-sizing
 - Trusted Advisor: Best practice checks (Business Support+ plan)
 - Cost Anomaly Detection: Automated anomaly identification
 
 **Third-Party**:
+
 - CloudHealth (by VMware): Multi-cloud cost management
 - Cloudability (by Apptio): Advanced analytics and forecasting
 - Spot.io: Automated Spot instance management
@@ -1127,6 +1210,7 @@ COST_OPTIMIZATION_KPIS = {
 ### Automation Scripts
 
 **BP-54: Cost Optimization Bot**
+
 ```python
 # Slack bot for cost queries
 @slack_app.command("/cost")
@@ -1169,11 +1253,12 @@ def cost_command(ack, command, say):
         ced = boto3.client('ce-anomaly-detection')
         # ... anomaly query logic
         pass
-```
+```text
 
 ## Summary
 
 This guide covered 54 best practices across:
+
 - Design (start small, right pricing model, multi-tenancy)
 - Development (tag everything, auto-shutdown, IaC)
 - Testing (Spot for CI, cleanup test data)
@@ -1184,6 +1269,7 @@ This guide covered 54 best practices across:
 - Anti-patterns (over-provisioning, ignoring transfer costs)
 
 **Priority Order**:
+
 1. **Week 1**: Enable Cost Explorer, implement tagging, set budgets
 2. **Month 1**: Clean up obvious waste (idle resources, unattached volumes)
 3. **Month 2**: Right-size resources based on metrics
@@ -1191,6 +1277,7 @@ This guide covered 54 best practices across:
 5. **Month 4+**: Purchase commitments, automate optimization
 
 **Expected Results**:
+
 - Month 1: 10-20% savings (quick wins)
 - Month 3: 25-35% savings (right-sizing)
 - Month 6: 35-45% savings (commitments)

@@ -18,27 +18,31 @@ spark = SparkSession.builder \
 df = spark.read.parquet("s3://bucket/data/")
 result = df.groupBy("category").agg({"amount": "sum"})
 result.write.parquet("s3://bucket/output/")
-```
+```text
 
 **features**:
+
 - ✅ In-memory processing (100x faster que MapReduce)
 - ✅ Lazy evaluation + query optimization
 - ✅ Automatic fault tolerance
 - ✅ APIs: Python, Scala, Java, R, SQL
 
 **When to use**:
+
 - Datasets > 100GB
 - Procesamiento distribuido necesario
 - Joins y aggregations complejas
 - ML pipelines
 
 **Ecosistema Spark**:
+
 - **Spark SQL**: Queries SQL sobre DataFrames
 - **Spark Streaming**: Micro-batch streaming
 - **MLlib**: Machine learning
 - **GraphX**: Graph processing
 
 **Deployment**:
+
 - Local mode (desarrollo)
 - Standalone cluster
 - YARN (Hadoop)
@@ -60,21 +64,24 @@ chunk_size = 100000
 for chunk in pd.read_csv("large_file.csv", chunksize=chunk_size):
     processed = transform(chunk)
     processed.to_parquet("output.parquet", mode="append")
-```
+```text
 
 **features**:
+
 - ✅ Simple API
 - ✅ Rich ecosystem
 - ✅ Excelente para prototyping
 - ❌ Single-machine (no distribuido)
 
 **When to use**:
+
 - Datasets < 10GB
 - Rapid prototyping
 - Single-machine suficiente
 - Data science interactivo
 
 **Extensiones**:
+
 - **Dask**: Pandas-style API, distributed
 - **Modin**: Drop-in replacement, parallelizado
 - **Polars**: Rust-based, faster
@@ -94,15 +101,17 @@ result = df.groupby("category").amount.sum()
 
 # Compute (ejecuta)
 result_computed = result.compute()
-```
+```text
 
 **features**:
+
 - ✅ Pandas-compatible API
 - ✅ Escala a cluster
 - ✅ Out-of-core processing
 - ✅ Scheduler inteligente
 
 **When to use**:
+
 - Pandas code that does not scale
 - Datasets 10GB - 10TB
 - Quieres API familiar (Pandas)
@@ -123,11 +132,13 @@ with beam.Pipeline() as pipeline:
 ```
 
 **features**:
+
 - ✅ Same code for batch and stream
 - ✅ Portable (Spark, Flink, Dataflow)
 - ✅ Windowing avanzado
 
 **Runners**:
+
 - DirectRunner (local)
 - DataflowRunner (GCP)
 - FlinkRunner
@@ -149,15 +160,17 @@ SELECT
 FROM {{ ref('orders') }}
 WHERE status = 'completed'
 GROUP BY 1, 2
-```
+```text
 
 **features**:
+
 - ✅ SQL-based transformations
 - ✅ Lineage tracking
 - ✅ Testing framework
 - ✅ Documentation auto-generada
 
 **When to use**:
+
 - Data warehouse transformations
 - Analytics engineering
 - SQL-first approach
@@ -182,9 +195,10 @@ aws emr create-cluster \
   --instance-type m5.xlarge \
   --instance-count 3 \
   --use-default-roles
-```
+```text
 
 **features**:
+
 - ✅ Managed Spark, Hive, Presto
 - ✅ Auto-scaling
 - ✅ S3 integration
@@ -221,9 +235,10 @@ glueContext.write_dynamic_frame.from_options(
     connection_type="s3",
     connection_options={"path": "s3://bucket/output/"}
 )
-```
+```text
 
 **features**:
+
 - ✅ Serverless (no cluster management)
 - ✅ Glue Catalog (metastore)
 - ✅ Auto-scaling
@@ -250,6 +265,7 @@ response = batch.submit_job(
 ```
 
 **When to use**:
+
 - Docker-based jobs
 - HPC workloads
 - Non-Spark batch jobs
@@ -271,7 +287,7 @@ gcloud dataproc clusters create batch-cluster \
 gcloud dataproc jobs submit pyspark script.py \
   --cluster=batch-cluster \
   --region=us-central1
-```
+```text
 
 #### 2. Cloud Dataflow
 
@@ -293,9 +309,10 @@ with beam.Pipeline(options=options) as pipeline:
      | beam.io.ReadFromText('gs://bucket/input/*')
      | beam.Map(process)
      | beam.io.WriteToText('gs://bucket/output/'))
-```
+```text
 
 **features**:
+
 - ✅ Unified batch + stream
 - ✅ Auto-scaling
 - ✅ Streaming SQL
@@ -314,7 +331,7 @@ spark = SparkSession.builder.appName("Batch").getOrCreate()
 df = spark.read.parquet("abfss://container@account.dfs.core.windows.net/data/")
 result = df.groupBy("category").sum("amount")
 result.write.parquet("abfss://container@account.dfs.core.windows.net/output/")
-```
+```text
 
 #### 2. Azure Databricks
 
@@ -345,7 +362,7 @@ import polars as pl
 
 # dask: Distributed pandas
 import dask.dataframe as dd
-```
+```text
 
 ### Data Quality
 
@@ -362,7 +379,7 @@ suite.expect_column_values_to_be_between("amount", 0, 10000)
 
 # Validate
 results = context.run_checkpoint(checkpoint_name="daily_check")
-```
+```text
 
 ### Monitoring
 
@@ -381,7 +398,7 @@ from tqdm import tqdm
 
 for chunk in tqdm(chunks, desc="Processing"):
     process(chunk)
-```
+```text
 
 ### Schema Management
 
@@ -411,15 +428,18 @@ transaction = Transaction(**data)
 ### Official Documentation
 
 **Apache Spark**:
+
 - 📖 [Spark Programming Guide](https://spark.apache.org/docs/latest/rdd-programming-guide.html)
 - 📖 [Spark SQL Guide](https://spark.apache.org/docs/latest/sql-programming-guide.html)
 - 📖 [PySpark API](https://spark.apache.org/docs/latest/api/python/)
 
 **Pandas**:
+
 - 📖 [User Guide](https://pandas.pydata.org/docs/user_guide/index.html)
 - 📖 [10 Minutes to pandas](https://pandas.pydata.org/docs/user_guide/10min.html)
 
 **Dask**:
+
 - 📖 [Best Practices](https://docs.dask.org/en/latest/best-practices.html)
 - 📖 [DataFrame API](https://docs.dask.org/en/latest/dataframe.html)
 
@@ -440,27 +460,30 @@ Quick reference para data engineering
 ### Cursos
 
 🎓 **Databricks Academy**
+
 - Apache Spark Programming with Databricks
 - Advanced Apache Spark
 - Delta Lake
 
 🎓 **Coursera**
+
 - Big Data Specialization (UC San Diego)
 - Data Engineering with Google Cloud
 
 🎓 **edX**
+
 - Big Data Analysis with Apache Spark (Berkeley)
 
 ### Blogs & Comunidades
 
 🌐 **The Databricks Blog**
-https://databricks.com/blog
+<https://databricks.com/blog>
 
 🌐 **Netflix Tech Blog**
-https://netflixtechblog.com/ (Data Platform posts)
+<https://netflixtechblog.com/> (Data Platform posts)
 
 🌐 **Airbnb Engineering**
-https://medium.com/airbnb-engineering
+<https://medium.com/airbnb-engineering>
 
 🌐 **r/dataengineering** (Reddit)
 Community Q&A
@@ -472,17 +495,20 @@ Community Q&A
 ### IDEs
 
 **Jupyter Notebooks**:
+
 ```bash
 pip install jupyterlab
 jupyter lab
-```
+```text
 
 **VS Code**:
+
 - Python extension
 - Jupyter extension
 - Remote SSH para clusters
 
 **DataSpell** (JetBrains):
+
 - IDE especializado para data
 
 ### Development Workflow
@@ -506,7 +532,7 @@ spark-submit \
   --num-executors 10 \
   --executor-memory 4g \
   batch_job.py --date 2024-03-07
-```
+```text
 
 ### Debugging
 
@@ -518,9 +544,10 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Ver Spark UI en http://localhost:4040
-```
+```text
 
 **Spark UI Tabs**:
+
 - **Jobs**: Jobs ejecutados
 - **Stages**: Stages y tasks
 - **Storage**: Cached RDDs/DataFrames
@@ -543,6 +570,7 @@ df.to_csv("output.csv")  # 10x más grande y lento
 ```
 
 **Comparison**:
+
 - CSV: 10 GB, 20 min read
 - Parquet (snappy): 2 GB, 2 min read
 
@@ -555,7 +583,7 @@ df.to_csv("output.csv")  # 10x más grande y lento
 # → 80-160 partitions óptimo
 
 df.repartition(100)
-```
+```text
 
 ### 3. Broadcast Small Tables
 
@@ -564,7 +592,7 @@ from pyspark.sql.functions import broadcast
 
 # Broadcast tabla < 10MB
 result = large_df.join(broadcast(small_df), "key")
-```
+```text
 
 **Speedup**: 10-100x for small joins
 
@@ -582,7 +610,7 @@ result = df_grouped.collect()  # Execute todo optimizado
 # ❌ No use collect() en medio del pipeline
 df_filtered = df.filter(df.amount > 100).collect()  # Trae todo a driver
 df_selected = pd.DataFrame(df_filtered).select("id", "amount")  # Ahora es Pandas
-```
+```text
 
 ### 5. Monitoring
 
@@ -633,30 +661,35 @@ logger.info({
 ## 🎯 Checklist de Batch Job
 
 ### Design
+
 - [ ] Definir input/output schemas
 - [ ] Design partitioning strategy
 - [ ] Planificar error handling
 - [ ] Documentar dependencies
 
 ### Implementation
+
 - [ ] Usar formato columnr (Parquet)
 - [ ] Implementar idempotencia
 - [ ] Agregar logging estructurado
 - [ ] Configurar checkpointing
 
 ### Testing
+
 - [ ] Unit tests para transformations
 - [ ] Integration tests end-to-end
 - [ ] Performance tests con dataset realista
 - [ ] Validar data quality
 
 ### Deployment
+
 - [ ] Configurar cluster resources
 - [ ] Setup monitoring & alerting
 - [ ] Documentar runbook
 - [ ] Planificar rollback strategy
 
 ### Operations
+
 - [ ] Monitor duration y throughput
 - [ ] Track data quality metrics
 - [ ] Review Spark UI periodically

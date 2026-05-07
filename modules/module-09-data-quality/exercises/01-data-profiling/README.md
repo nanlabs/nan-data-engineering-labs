@@ -6,10 +6,12 @@
 ## 🎯 Goals
 
 By completing this exercise, you will be able to:
+
 - Analyze datasets to understand their structure and content
 - Identify basic quality problems (nulls, duplicates,
 
  outliers)
+
 - Generate automatic profiling reports
 - Calculate descriptive statistical metrics
 - Visualize data distributions
@@ -24,12 +26,12 @@ By completing this exercise, you will be able to:
 
 ## 📁 Archivos
 
-```
+```text
 exercises/01-data-profiling/
 ├── README.md                    # Este archivo
 ├── solution.py                  # Solution completa
 └── exercises.ipynb              # Notebook con exercises
-```
+```text
 
 ## 🚀 Setup
 
@@ -43,7 +45,7 @@ python data/scripts/generate_data.py --quality poor
 
 # Abre el notebook
 jupyter notebook exercises/01-data-profiling/exercises.ipynb
-```
+```text
 
 ## 📝 Exercises
 
@@ -80,10 +82,11 @@ def profile_dataset(df: pd.DataFrame, name: str) -> dict:
 # Uso
 profile = profile_dataset(customers, "Customers")
 print(profile)
-```
+```text
 
 **Expected Output:**
-```
+
+```text
 {
     'name': 'Customers',
     'rows': 10000,
@@ -93,7 +96,7 @@ print(profile)
     'duplicates': 800,
     'memory_mb': 0.85
 }
-```
+```text
 
 **Task 1.2: Profiling por column**
 
@@ -181,7 +184,7 @@ outliers_zscore = detect_outliers_zscore(transactions, 'amount', threshold=3.0)
 
 print(f"Outliers por IQR: {len(outliers_iqr)}")
 print(f"Outliers por Z-score: {len(outliers_zscore)}")
-```
+```text
 
 **Task 1.4: Missing Data Analysis**
 
@@ -219,7 +222,7 @@ def visualize_missing(df: pd.DataFrame):
     plt.show()
 
 visualize_missing(customers)
-```
+```text
 
 ---
 
@@ -246,7 +249,7 @@ profile.to_file("customers_profile.html")
 # Abrir en navegador
 import webbrowser
 webbrowser.open("customers_profile.html")
-```
+```text
 
 **Task 2.2: Comparar Datasets**
 
@@ -305,7 +308,7 @@ def plot_distributions(df: pd.DataFrame, numeric_columns: list):
 # Uso
 numeric_cols = ['amount', 'quantity', 'total']
 plot_distributions(transactions, numeric_cols)
-```
+```text
 
 **Task 3.2: Correlation Matrix**
 
@@ -327,7 +330,7 @@ def plot_correlation_matrix(df: pd.DataFrame):
     plt.show()
 
 plot_correlation_matrix(transactions)
-```
+```text
 
 ---
 
@@ -392,7 +395,7 @@ class DataQualityProfiler:
 profiler = DataQualityProfiler(customers, "Customers")
 report = profiler.run_full_profile()
 profiler.print_report()
-```
+```text
 
 ---
 
@@ -418,9 +421,9 @@ You have successfully completed this exercise if:
 
 ## 📚 Additional Resources
 
-- **ydata-profiling docs**: https://docs.profiling.ydata.ai/
-- **Pandas profiling**: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.describe.html
-- **Seaborn gallery**: https://seaborn.pydata.org/examples/index.html
+- **ydata-profiling docs**: <https://docs.profiling.ydata.ai/>
+- **Pandas profiling**: <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.describe.html>
+- **Seaborn gallery**: <https://seaborn.pydata.org/examples/index.html>
 
 ## ➡️ Next Exercise
 

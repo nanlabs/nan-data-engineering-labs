@@ -31,11 +31,13 @@ By completing this module, you will:
 ## 📋 Prerequisites
 
 ### Required Modules
+
 - ✅ **Module 03**: SQL Foundations
 - ✅ **Module 05**: Data Lakehouse Architecture
 - ✅ **Module 06**: ETL Fundamentals (recommended)
 
 ### Technical Requirements
+
 - 💳 Snowflake Trial Account (30 days FREE, $400 credits)
 - 🌐 Modern web browser (Chrome/Firefox/Safari)
 - 🖥️ SnowSQL CLI (optional)
@@ -49,7 +51,7 @@ By completing this module, you will:
 
 ### Three-Layer Design
 
-```
+```text
 ┌──────────────────────────────────────────┐
 │       Cloud Services Layer               │
 │  Query Optimization │ Metadata │ Security│
@@ -65,9 +67,10 @@ By completing this module, you will:
 │       Storage Layer                      │
 │  Micro-partitions │ Columnar │ Compressed│
 └──────────────────────────────────────────┘
-```
+```text
 
 ### Key Benefits
+
 - **Elastic Scaling**: Spin up/down warehouses in seconds
 - **Zero Administration**: Fully managed, no infrastructure
 - **Separation of Concerns**: Independent scaling of storage/compute
@@ -79,6 +82,7 @@ By completing this module, you will:
 ## 🚀 Key Features
 
 ### 1. Virtual Warehouses
+
 - **Independent compute clusters** (X-Small to 6X-Large)
 - **Auto-suspend**: Idle timeout (60s-60min)
 - **Auto-resume**: Automatic on query
@@ -86,15 +90,17 @@ By completing this module, you will:
 - **Cost**: 1-512 credits/hour ($2-4 per credit)
 
 ### 2. Zero-Copy Cloning
+
 - **Instant clones**: No data duplication
 - **FREE**: Until clone diverges
 - **Use cases**: Dev/test, backups, experimentation
 
 ```sql
 CREATE DATABASE dev_db CLONE prod_db;  -- Instant!
-```
+```text
 
 ### 3. Time Travel
+
 - **Query historical data**: 1-90 days
 - **Restore dropped objects**: UNDROP TABLE
 - **Point-in-time recovery**: Clone from timestamp
@@ -105,16 +111,19 @@ UNDROP TABLE customers;
 ```
 
 ### 4. Secure Data Sharing
+
 - **No data movement**: Live access
 - **Provider/Consumer model**: Granular control
 - **Data Marketplace**: Public datasets
 
 ### 5. Streams & Tasks (CDC)
+
 - **Streams**: Track INSERT/UPDATE/DELETE
 - **Tasks**: Scheduled SQL (cron or triggered)
 - **Serverless**: No dedicated warehouse
 
 ### 6. Snowpipe
+
 - **Event-driven**: Auto-load from S3/Azure/GCS
 - **Near real-time**: <1 minute latency
 - **Cost-efficient**: 0.06 credits per 1,000 files
@@ -123,7 +132,7 @@ UNDROP TABLE customers;
 
 ## 📁 Module Structure
 
-```
+```text
 module-bonus-02-snowflake-data-cloud/
 ├── README.md                    # This file
 ├── COST-ALERT.md                # Cost management
@@ -167,7 +176,7 @@ module-bonus-02-snowflake-data-cloud/
     ├── customers.csv
     ├── orders.csv
     └── events.json
-```
+```text
 
 ---
 
@@ -181,6 +190,7 @@ module-bonus-02-snowflake-data-cloud/
 | **Module Total** | **$0-25** | **$0 with trial** |
 
 See [COST-ALERT.md](COST-ALERT.md) for:
+
 - Trial signup steps
 - Resource Monitor setup
 - Credit usage tracking
@@ -191,11 +201,13 @@ See [COST-ALERT.md](COST-ALERT.md) for:
 ## 🎓 Certifications
 
 ### SnowPro Core ($175)
+
 - **Topics**: Architecture, Warehouses, Loading, Security
 - **Duration**: 2 hours, 100 questions
 - **This module prepares you** ✅
 
 ### SnowPro Advanced: Data Engineer ($375)
+
 - **Prerequisites**: SnowPro Core
 - **Topics**: Streams/Tasks, Snowpipe, Performance tuning
 
@@ -204,13 +216,16 @@ See [COST-ALERT.md](COST-ALERT.md) for:
 ## 📖 Getting Started
 
 ### Step 1: Setup (30 min)
-1. Sign up for trial: https://signup.snowflake.com/
+
+1. Sign up for trial: <https://signup.snowflake.com/>
 2. Follow [theory/setup-guide.md](theory/setup-guide.md)
 3. Create training database & warehouse
 4. Set Resource Monitor (optional)
 
 ### Step 2: Notebooks (6-8 hours)
+
 Complete 6 SQL notebooks in order:
+
 1. Virtual Warehouses (sizing, auto-suspend)
 2. Zero-Copy Cloning (dev environments)
 3. Time Travel (historical queries)
@@ -219,7 +234,9 @@ Complete 6 SQL notebooks in order:
 6. Data Sharing (provider/consumer)
 
 ### Step 3: Exercises (12-15 hours)
+
 Practice with 6 hands-on labs:
+
 1. **Warehouse Optimization** (⭐⭐⭐, 2h)
 2. **Zero-Copy Dev Environments** (⭐⭐⭐, 2h)
 3. **Time Travel Recovery** (⭐⭐⭐⭐, 2.5h)
@@ -241,6 +258,7 @@ Practice with 6 hands-on labs:
 | Cost (small) | $2-4/hour | $5-8/hour | $0.25/hour |
 
 **Choose Snowflake for**:
+
 - SQL-heavy analytics
 - Instant dev/test clones
 - Secure data sharing
@@ -251,12 +269,14 @@ Practice with 6 hands-on labs:
 ## 📚 Resources
 
 ### Official Docs
+
 - [Snowflake Documentation](https://docs.snowflake.com/)
 - [Virtual Warehouses](https://docs.snowflake.com/en/user-guide/warehouses.html)
 - [Zero-Copy Cloning](https://docs.snowflake.com/en/user-guide/tables-cloning.html)
 - [Time Travel](https://docs.snowflake.com/en/user-guide/data-time-travel.html)
 
 ### Community
+
 - [Snowflake Community](https://community.snowflake.com/)
 
 ---
@@ -275,7 +295,8 @@ For repository contract checks, run from project root:
 ```bash
 PYTHON=python
 $PYTHON scripts/validate_learning_labs.py --module module-bonus-02-snowflake-data-cloud
-```
+```text
+
 - [Snowflake University](https://learn.snowflake.com/) (free courses)
 - [Quick Starts](https://quickstarts.snowflake.com/)
 
@@ -284,6 +305,7 @@ $PYTHON scripts/validate_learning_labs.py --module module-bonus-02-snowflake-dat
 ## 🎯 Next Steps
 
 After completing this module:
+
 1. ✅ Build a real-world Snowflake project
 2. ✅ Explore Snowflake Marketplace datasets
 3. ✅ Study for SnowPro Core certification

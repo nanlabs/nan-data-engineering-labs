@@ -42,7 +42,7 @@ This guide walks you through creating a Databricks account, setting up your work
 
 ### Step 1: Sign Up (5 minutes)
 
-1. **Visit:** https://community.cloud.databricks.com/login.html
+1. **Visit:** <https://community.cloud.databricks.com/login.html>
 2. **Click:** "Sign up for Community Edition"
 3. **Fill out form:**
    - First name, Last name
@@ -55,6 +55,7 @@ This guide walks you through creating a Databricks account, setting up your work
 ### Step 2: Explore Workspace (2 minutes)
 
 After login, you'll see:
+
 - **Workspace**: Folder for notebooks
 - **Compute**: Create clusters
 - **Data**: Browse tables (DBFS)
@@ -63,6 +64,7 @@ After login, you'll see:
 ### Step 3: Limitations to Note
 
 Community Edition has:
+
 - ✅ Full Spark and Delta Lake capabilities
 - ✅ Unlimited usage time
 - ✅ 15GB storage
@@ -83,7 +85,7 @@ Databricks runs on AWS, Azure, or GCP. For this module:
 
 **Recommended:** AWS (most common, well-documented)
 
-1. **Visit:** https://www.databricks.com/try-databricks
+1. **Visit:** <https://www.databricks.com/try-databricks>
 2. **Select:** "Start Free Trial"
 3. **Choose:** AWS (or Azure/GCP if preferred)
 
@@ -110,6 +112,7 @@ Databricks runs on AWS, Azure, or GCP. For this module:
 ### Step 3: Payment Information (3 minutes)
 
 **⚠️ Credit card required but:**
+
 - You **won't be charged** during 14-day trial
 - Trial auto-expires (no auto-conversion to paid)
 - Set up billing alerts as precaution
@@ -122,6 +125,7 @@ Databricks runs on AWS, Azure, or GCP. For this module:
 ### Step 4: Workspace Setup (2 minutes)
 
 After account creation:
+
 1. **Workspace URL assigned:** `https://dbc-xxxxxxxx-xxxx.cloud.databricks.com`
 2. **Bookmark this URL** (your permanent workspace link)
 3. **Explore:** Left sidebar shows all features
@@ -157,7 +161,8 @@ Organize your work:
 
 1. **Go to:** Workspace → Users → [your-email]
 2. **Create folders:**
-   ```
+
+   ```text
    /Users/your-email@example.com/
    ├── training/
    │   ├── module-bonus-01/
@@ -182,6 +187,7 @@ Organize your work:
 ### Cluster Types
 
 For this module:
+
 - **Exercises:** Use All-Purpose cluster (interactive)
 - **Production (if applicable):** Use Job clusters
 
@@ -195,23 +201,28 @@ For this module:
 **Cluster Name:** `training-cluster`
 
 **Cluster Mode:**
+
 - Community Edition: Single Node (only option)
 - Trial/Enterprise: Standard (single-user recommended)
 
 **Databricks Runtime Version:**
+
 - **Recommended:** 14.3 LTS (Long Term Support)
 - Includes: Spark 3.5.x, Delta Lake, ML libraries
 
 **Node Type:**
+
 - Community Edition: Predefined (cannot change)
 - Trial AWS: `m5.xlarge` (4 vCPU, 16GB RAM) - sufficient for module
 - Trial Azure: `Standard_DS3_v2`
 
 **Auto-scaling:**
+
 - Trial: Enable (min 2, max 4 workers)
 - Cost-conscious: Disable (fixed 2 workers)
 
 **Auto-termination:**
+
 - ✅ **Enable:** 30 minutes (IMPORTANT for cost control)
 
 **Advanced Options:**
@@ -226,7 +237,7 @@ spark.sql.adaptive.coalescePartitions.enabled true
 
 # For Unity Catalog (Trial only)
 spark.databricks.unityCatalog.enabled true
-```
+```text
 
 **Init Scripts:** (Leave empty for now)
 
@@ -251,10 +262,11 @@ spark.databricks.unityCatalog.enabled true
 ### Method 1: Manual Upload (Recommended for Learning)
 
 1. **Download notebooks** from course repository:
+
    ```bash
    git clone https://github.com/your-org/training-cloud-data
    cd training-cloud-data/modules/module-bonus-01-databricks-lakehouse/notebooks
-   ```
+   ```text
 
 2. **In Databricks:**
    - Go to: Workspace → Users → [your-email] → training
@@ -277,6 +289,7 @@ More advanced, better for version control:
 4. **Click:** "Create Repo"
 
 **Benefits:**
+
 - Auto-sync with Git
 - Pull latest updates
 - Commit changes from Databricks
@@ -316,7 +329,7 @@ conda install -c conda-forge databricks-cli
 
 # Verify installation
 databricks --version
-```
+```text
 
 ### Step 2: Generate Access Token
 
@@ -339,15 +352,16 @@ databricks configure --token
 # Enter when prompted:
 # Databricks Host: https://dbc-xxxxxxxx-xxxx.cloud.databricks.com
 # Token: dapi1234567890abcdef... (paste your token)
-```
+```text
 
 **Test connection:**
+
 ```bash
 # List workspaces
 databricks workspace ls /Users/your-email@example.com
 
 # Should show your folders
-```
+```text
 
 ### Step 4: Common CLI Commands
 
@@ -379,6 +393,7 @@ databricks jobs run-now --job-id <job-id>
 Before starting exercises:
 
 ### Community Edition
+
 - [ ] Account created at community.cloud.databricks.com
 - [ ] Logged in successfully
 - [ ] Single-node cluster created and running
@@ -386,6 +401,7 @@ Before starting exercises:
 - [ ] Can run simple cell: `print("Hello Databricks!")`
 
 ### Trial Account
+
 - [ ] Trial account created (AWS/Azure/GCP)
 - [ ] Workspace URL bookmarked
 - [ ] Billing alert set ($10 threshold)
@@ -403,14 +419,16 @@ Before starting exercises:
 **Error:** "Could not launch cluster"
 
 **Solutions:**
+
 1. Check cloud provider status (AWS/Azure/GCP outage?)
 2. Try different instance type (m5.large instead of m5.xlarge)
 3. Check quota limits (trial accounts have limits)
-4. Contact Databricks support: help@databricks.com
+4. Contact Databricks support: <help@databricks.com>
 
 ### Issue: "Notebook not found" when importing
 
 **Solution:**
+
 - Ensure path is correct: `/Users/your-email@example.com/training/`
 - Create parent folders first
 - Check file format: Must be `.py`, `.sql`, `.scala`, or `.r`
@@ -420,16 +438,18 @@ Before starting exercises:
 **Error:** "User does not have permission on catalog 'main'"
 
 **Solution:**
+
 ```sql
 -- Grant yourself access (run as admin)
 GRANT USE CATALOG, USE SCHEMA, CREATE TABLE ON CATALOG main TO `your-email@example.com`;
-```
+```text
 
 ### Issue: Cluster auto-terminated while I was working
 
 **Explanation:** 30-minute idle timeout triggered
 
 **Solution:**
+
 - Restart cluster: Compute → Select cluster → Start
 - Adjust timeout: Cluster → Edit → Auto-termination (increase to 60 min)
 - **Note:** Longer timeout = higher costs
@@ -439,10 +459,13 @@ GRANT USE CATALOG, USE SCHEMA, CREATE TABLE ON CATALOG main TO `your-email@examp
 **Error:** "OutOfMemoryError: Java heap space"
 
 **Solutions:**
+
 1. Increase driver memory:
+
    ```python
    spark.conf.set("spark.driver.memory", "8g")
-   ```
+   ```text
+
 2. Use larger instance type (m5.xlarge → m5.2xlarge)
 3. Process data in smaller batches
 4. Enable auto-scaling (add more workers)
@@ -450,11 +473,13 @@ GRANT USE CATALOG, USE SCHEMA, CREATE TABLE ON CATALOG main TO `your-email@examp
 ### Issue: Notebooks run slowly
 
 **Possible causes:**
+
 1. Single-node cluster (Community Edition limitation)
 2. Large dataset (>1GB on single node)
 3. Cold start (first run after cluster start)
 
 **Solutions:**
+
 1. Upgrade to multi-node cluster (Trial/Enterprise)
 2. Cache frequently-used DataFrames: `df.cache()`
 3. Use Delta Lake optimization: `OPTIMIZE table_name`
@@ -463,11 +488,13 @@ GRANT USE CATALOG, USE SCHEMA, CREATE TABLE ON CATALOG main TO `your-email@examp
 ### Issue: Trial expired
 
 **After 14 days:**
+
 1. Workspace becomes read-only
 2. Cannot create new clusters
 3. Can export notebooks (download backups)
 
 **Options:**
+
 1. Sign up for paid account
 2. Use Community Edition (lose Unity Catalog access)
 3. Request trial extension (education/non-profit)
@@ -475,10 +502,11 @@ GRANT USE CATALOG, USE SCHEMA, CREATE TABLE ON CATALOG main TO `your-email@examp
 ### Issue: Unexpected charges
 
 **If you see charges during trial:**
+
 1. Check billing dashboard: Account → Billing
 2. Identify source (likely cluster running 24/7)
 3. Terminate all clusters: Compute → Terminate All
-4. Contact support for refund: help@databricks.com
+4. Contact support for refund: <help@databricks.com>
    - Screenshot billing dashboard
    - Explain: "Accidental cluster left running"
    - Usually refunded within 48 hours
@@ -500,6 +528,7 @@ Once setup is complete:
    - Select your cluster
 
 4. **Run first cell**
+
    ```python
    print("✅ Setup complete! Ready to learn Databricks.")
    ```
@@ -511,23 +540,25 @@ Once setup is complete:
 
 ## Useful Resources
 
-- **Databricks Academy:** https://academy.databricks.com (free courses)
-- **Documentation:** https://docs.databricks.com
-- **Community Forums:** https://community.databricks.com
-- **YouTube Tutorials:** https://www.youtube.com/c/Databricks
-- **Status Page:** https://status.databricks.com
+- **Databricks Academy:** <https://academy.databricks.com> (free courses)
+- **Documentation:** <https://docs.databricks.com>
+- **Community Forums:** <https://community.databricks.com>
+- **YouTube Tutorials:** <https://www.youtube.com/c/Databricks>
+- **Status Page:** <https://status.databricks.com>
 
 ---
 
 ## Support
 
 **Questions about setup?**
-- Community Forums: https://community.databricks.com
-- Databricks Help Center: help@databricks.com
+
+- Community Forums: <https://community.databricks.com>
+- Databricks Help Center: <help@databricks.com>
 - Course instructor or TA
 
 **Billing questions:**
-- Email: billing@databricks.com
+
+- Email: <billing@databricks.com>
 - Include: Workspace ID, issue description
 
 ---

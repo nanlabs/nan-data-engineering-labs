@@ -24,13 +24,13 @@ def etl_pipeline(source, destination):
     
     # Load
     df.to_parquet(destination)
-```
+```text
 
 ### Flatten JSON
 
 ```python
 df = pd.json_normalize(data, sep='_')
-```
+```text
 
 ## Exercises
 
@@ -51,6 +51,6 @@ Usa TODOS los datasets en `data/raw/`.
 
 ```bash
 pytest exercises/05-data-transformation/tests/ -v
-```
+```text
 
 ➡️ **Siguiente**: Exercise 06

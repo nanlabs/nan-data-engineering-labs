@@ -18,6 +18,7 @@ This document covers the fundamental concepts of Databricks, Delta Lake, Unity C
 ### What is Databricks?
 
 **Databricks** is a unified analytics platform built on top of Apache Spark, providing:
+
 - **Collaborative workspace** for data engineers, data scientists, and analysts
 - **Managed Spark clusters** with auto-scaling and optimizations
 - **Delta Lake** for reliable data lakes with ACID transactions
@@ -27,7 +28,7 @@ This document covers the fundamental concepts of Databricks, Delta Lake, Unity C
 
 ### Architecture Layers
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │         Databricks Workspace (Control Plane)        │
 │  - Notebooks, Jobs, Clusters, SQL, ML, Repos        │
@@ -42,7 +43,7 @@ This document covers the fundamental concepts of Databricks, Delta Lake, Unity C
 │        Cloud Storage (Data Plane - Storage)         │
 │      - S3 (AWS), ADLS (Azure), GCS (Google)         │
 └─────────────────────────────────────────────────────┘
-```
+```text
 
 ### Key Benefits
 
@@ -64,6 +65,7 @@ This document covers the fundamental concepts of Databricks, Delta Lake, Unity C
 ### Key Features
 
 #### 1. ACID Transactions
+
 ```python
 # Multiple writers can safely write to the same table
 spark.sql("""
@@ -73,19 +75,22 @@ spark.sql("""
     WHEN MATCHED THEN UPDATE SET *
     WHEN NOT MATCHED THEN INSERT *
 """)
-```
+```text
 
 **Without Delta Lake:**
+
 - Corrupted data if multiple writers
 - No isolation between reads and writes
 - Failed jobs leave partial data
 
 **With Delta Lake:**
+
 - Serializable isolation (no dirty reads)
 - Atomic commits (all-or-nothing)
 - Concurrent reads and writes safely
 
 #### 2. Time Travel (Data Versioning)
+
 ```python
 # Query data as it was 7 days ago
 df = spark.read.format("delta") \
@@ -102,12 +107,14 @@ spark.sql("RESTORE customers TO VERSION AS OF 10")
 ```
 
 **Use Cases:**
+
 - Rollback to previous known-good state
 - Audit and compliance (who changed what when)
 - Reproduce ML training data from specific dates
 - Compare data across time periods
 
 #### 3. Schema Evolution
+
 ```python
 # Add new columns without breaking existing queries
 df_with_new_column.write.format("delta") \
@@ -119,9 +126,10 @@ df_with_new_column.write.format("delta") \
 # - New columns (filled with NULL for old rows)
 # - Column type changes (with validation)
 # - Column reordering
-```
+```text
 
 #### 4. UPSERT (Merge) Support
+
 ```python
 from delta.tables import DeltaTable
 
@@ -138,9 +146,10 @@ delta_table.alias("target").merge(
     "name": "source.name",
     "created_at": "current_timestamp()"
 }).execute()
-```
+```text
 
 **Use Cases:**
+
 - Change Data Capture (CDC) from databases
 - Slowly Changing Dimensions (SCD)
 - Incremental updates to analytical tables
@@ -148,6 +157,7 @@ delta_table.alias("target").merge(
 #### 5. Data Skipping
 
 Delta Lake automatically collects **min/max statistics** for each file:
+
 ```python
 # Query with WHERE clause
 df = spark.read.format("delta").load("/path/to/table") \
@@ -157,11 +167,12 @@ df = spark.read.format("delta").load("/path/to/table") \
 # - Files where max(date) < '2024-01-01' (skipped)
 # - Files where region != 'US-EAST' (skipped)
 # Result: Read only 5% of files instead of 100%
-```
+```text
 
 **Impact:** 10-100x faster queries on large tables
 
 #### 6. Z-Ordering (Multi-Dimensional Clustering)
+
 ```python
 # Optimize table for common query patterns
 spark.sql("""
@@ -171,14 +182,16 @@ spark.sql("""
 ```
 
 **Before Z-Ordering:**
-```
+
+```text
 File1: region=[US, EU, ASIA], date=[2020-2024] (all over the place)
 File2: region=[US, EU, ASIA], date=[2020-2024] (all over the place)
 → Must scan all files for region='US' AND date='2024'
-```
+```text
 
 **After Z-Ordering:**
-```
+
+```text
 File1: region=[US], date=[2024] (co-located)
 File2: region=[EU], date=[2023] (co-located)
 → Scan only File1 (90% file skip rate)
@@ -192,7 +205,7 @@ File2: region=[EU], date=[2023] (co-located)
 
 Every Delta table has a transaction log that records all changes:
 
-```
+```text
 my_table/
 ├── _delta_log/
 │   ├── 00000000000000000000.json  ← Version 0 (initial commit)
@@ -202,21 +215,24 @@ my_table/
 ├── part-00000-xxx.parquet
 ├── part-00001-xxx.parquet
 └── part-00002-xxx.parquet
-```
+```text
 
 Each log file contains:
+
 - **Add**: New files added
 - **Remove**: Files deleted (logically, not physically)
 - **Metadata**: Schema, partitioning, properties
 - **Protocol**: Delta Lake version
 
 **Reading a Delta Table:**
+
 1. Read transaction log from newest to oldest
 2. Reconstruct current state (list of active files)
 3. Read Parquet files
 4. Apply schema and filters
 
 **Writing to a Delta Table:**
+
 1. Write Parquet files to storage
 2. Append to transaction log (atomic)
 3. If log write succeeds, commit succeeds
@@ -242,6 +258,7 @@ Each log file contains:
 | **Vacuum Old Versions** | ❌ N/A | ✅ `VACUUM` command |
 
 **When to Use:**
+
 - **Parquet**: Immutable archives, one-time writes
 - **Delta Lake**: Production tables, frequent updates, multi-user access
 
@@ -252,6 +269,7 @@ Each log file contains:
 ### What is Unity Catalog?
 
 **Unity Catalog** is a unified governance solution for data and AI assets providing:
+
 - **Fine-grained access control** (table, column, row-level)
 - **Data lineage** (track data flows across pipelines)
 - **Data discovery** (search and explore datasets)
@@ -262,7 +280,7 @@ Each log file contains:
 
 Unity Catalog uses a **three-level namespace** (vs traditional two-level):
 
-```
+```text
 catalog.schema.table
    ↓      ↓      ↓
   dev.sales.customers
@@ -271,13 +289,15 @@ catalog.schema.table
 ```
 
 **Traditional (Hive):**
-```
+
+```text
 database.table
    ↓      ↓
 sales.customers (no environment separation)
-```
+```text
 
 **Benefits:**
+
 1. **Environment isolation**: dev, staging, prod in same workspace
 2. **Multi-tenant**: team1, team2, team3 catalogs
 3. **Clear ownership**: Each catalog has owner
@@ -287,7 +307,7 @@ sales.customers (no environment separation)
 
 #### Hierarchy
 
-```
+```text
 Metastore (root)
 └── Catalog
     └── Schema
@@ -309,7 +329,7 @@ GRANT SELECT ON TABLE prod.sales.customers TO `data-analysts`;
 
 -- Column level (mask PII)
 GRANT SELECT(id, name, email) ON TABLE prod.sales.customers TO `external-partners`;
-```
+```text
 
 #### Row-Level Security
 
@@ -321,7 +341,7 @@ RETURN is_account_group_member('admin') OR current_user() = customer_owner;
 
 -- Apply to table
 ALTER TABLE prod.sales.customers SET ROW FILTER prod.sales.customer_filter ON (owner);
-```
+```text
 
 **Result:** Users can only see rows they own (unless admin)
 
@@ -344,26 +364,29 @@ FROM prod.sales.customers;
 
 -- Grant access to masked view
 GRANT SELECT ON VIEW prod.sales.customers_masked TO `data-analysts`;
-```
+```text
 
 ### Data Lineage
 
 Unity Catalog automatically tracks:
+
 - **Column-level lineage**: Which downstream columns depend on which upstream columns
 - **Table lineage**: Data flow through pipelines
 - **Notebook lineage**: Which notebooks read/write which tables
 - **Job lineage**: Which jobs produce which outputs
 
 **Example:**
+
 ```
 S3 raw data
   → Bronze table (ingestion notebook)
     → Silver table (transformation job)
       → Gold table (aggregation notebook)
         → Dashboard (SQL query)
-```
+```text
 
 **View in UI:**
+
 - Data Explorer → Table → Lineage tab
 - See all upstream sources and downstream consumers
 - Track data quality issues to root cause
@@ -371,11 +394,13 @@ S3 raw data
 ### Data Discovery
 
 **Search capabilities:**
+
 - Full-text search across table names, comments, tags
 - Filter by catalog, schema, owner, modified date
 - Browse by tags (e.g., "PII", "financial", "experimental")
 
 **Metadata enrichment:**
+
 ```sql
 -- Add table comment
 COMMENT ON TABLE customers IS 'Customer master data from Salesforce';
@@ -385,7 +410,7 @@ ALTER TABLE customers ALTER COLUMN email COMMENT 'Customer email (PII)';
 
 -- Add tags
 ALTER TABLE customers SET TAGS ('pii' = 'high', 'department' = 'sales');
-```
+```text
 
 ---
 
@@ -395,7 +420,7 @@ ALTER TABLE customers SET TAGS ('pii' = 'high', 'department' = 'sales');
 
 A data design pattern that organizes data into **Bronze**, **Silver**, and **Gold** layers:
 
-```
+```text
 Bronze (Raw) → Silver (Cleaned) → Gold (Aggregated) → Analytics/ML
 ```
 
@@ -406,12 +431,14 @@ Bronze (Raw) → Silver (Cleaned) → Gold (Aggregated) → Analytics/ML
 **Purpose:** Ingest raw data as-is, no transformations
 
 **Characteristics:**
+
 - Exact copy of source data
 - All columns preserved
 - Append-only (immutable)
 - Audit columns: `_ingested_at`, `_source_file`
 
 **Example:**
+
 ```python
 # Ingest JSON from S3
 df = spark.read.json("s3://raw-data/events/2024-03-09/")
@@ -420,9 +447,10 @@ df = df.withColumn("_ingested_at", current_timestamp())
 df.write.format("delta") \
     .mode("append") \
     .save("/mnt/bronze/events")
-```
+```text
 
 **Benefits:**
+
 - Fast ingestion (no processing)
 - Complete history retained
 - Re-process easily if logic changes
@@ -432,6 +460,7 @@ df.write.format("delta") \
 **Purpose:** Clean, deduplicate, and conform data
 
 **Transformations:**
+
 - Remove duplicates
 - Fix data types
 - Standardize formats
@@ -439,6 +468,7 @@ df.write.format("delta") \
 - Filter invalid records
 
 **Example:**
+
 ```python
 bronze_df = spark.read.format("delta").load("/mnt/bronze/events")
 
@@ -452,9 +482,10 @@ silver_df.write.format("delta") \
     .mode("overwrite") \
     .option("mergeSchema", "true") \
     .save("/mnt/silver/events")
-```
+```text
 
 **Benefits:**
+
 - Single source of truth
 - Consistent data quality
 - Ready for joins and aggregations
@@ -464,12 +495,14 @@ silver_df.write.format("delta") \
 **Purpose:** Business-level aggregations for analytics and ML
 
 **Characteristics:**
+
 - Denormalized (star schema, wide tables)
 - Pre-aggregated metrics
 - Slowly Changing Dimensions (SCD)
 - Optimized for queries
 
 **Example:**
+
 ```python
 silver_events = spark.read.format("delta").load("/mnt/silver/events")
 silver_users = spark.read.format("delta").load("/mnt/silver/users")
@@ -487,9 +520,10 @@ gold_df = silver_events \
 gold_df.write.format("delta") \
     .mode("overwrite") \
     .save("/mnt/gold/daily_active_users")
-```
+```text
 
 **Benefits:**
+
 - Fast query performance
 - Simple for analysts (no complex joins)
 - Consistent metrics across teams
@@ -511,6 +545,7 @@ gold_df.write.format("delta") \
 **Purpose:** Collaborative environment for notebooks, jobs, clusters
 
 **Features:**
+
 - Folder organization
 - Git integration (Repos)
 - Access control (workspace ACLs)
@@ -519,16 +554,19 @@ gold_df.write.format("delta") \
 ### 2. Clusters
 
 **Types:**
+
 - **All-Purpose**: Interactive development, notebooks
 - **Job Clusters**: Automated jobs (cheaper, ephemeral)
 - **SQL Warehouses**: Optimized for SQL queries
 
 **Cluster Modes:**
+
 - **Standard**: Single user, full admin access
 - **High Concurrency**: Multi-user, table ACLs, query isolation
 - **Single Node**: No workers, for small data
 
 **Auto-Scaling:**
+
 ```python
 {
   "autoscale": {
@@ -542,12 +580,14 @@ gold_df.write.format("delta") \
 ### 3. Notebooks
 
 **Languages Supported:**
+
 - Python (PySpark)
 - SQL
 - Scala
 - R
 
 **Magic Commands:**
+
 ```python
 %python  # Python cell
 %sql     # SQL cell
@@ -555,9 +595,10 @@ gold_df.write.format("delta") \
 %sh      # Shell commands
 %fs      # DBFS file system commands
 %md      # Markdown documentation
-```
+```text
 
 **Collaborative Features:**
+
 - Real-time co-editing
 - Comments and threads
 - Version control (Git integration)
@@ -568,12 +609,14 @@ gold_df.write.format("delta") \
 **Purpose:** Schedule and orchestrate data pipelines
 
 **Features:**
+
 - Task dependencies (DAG)
 - Retry logic
 - Email/webhook alerts
 - Job clusters (auto-terminate)
 
 **Example YAML:**
+
 ```yaml
 tasks:
   - task_key: bronze_ingestion
@@ -587,19 +630,21 @@ tasks:
     notebook_task:
       notebook_path: /Repos/project/transform_silver
     new_cluster: {...}
-```
+```text
 
 ### 5. Databricks SQL
 
 **Purpose:** BI and dashboards for analysts
 
 **Features:**
+
 - Visual query builder
 - Dashboards with auto-refresh
 - Alerts (e.g., "Sales < threshold")
 - SQL endpoints (optimized for queries)
 
 **Use Cases:**
+
 - Executive dashboards
 - Self-service analytics
 - Scheduled reports
@@ -609,12 +654,14 @@ tasks:
 **Purpose:** ML lifecycle management
 
 **Components:**
+
 - **Tracking**: Log experiments (params, metrics, artifacts)
 - **Projects**: Package ML code for reproducibility
 - **Models**: Model registry (staging, production)
 - **Model Serving**: Deploy models as REST APIs
 
 **Example:**
+
 ```python
 import mlflow
 
@@ -630,7 +677,7 @@ with mlflow.start_run():
 
     # Log model
     mlflow.sklearn.log_model(model, "model")
-```
+```text
 
 ---
 
@@ -643,22 +690,26 @@ with mlflow.start_run():
 **Enabled by default** on Databricks Runtime 9.1+
 
 **Best for:**
+
 - SQL queries
 - DataFrame operations (filter, join, aggregate)
 - Parquet/Delta read/write
 
 **Limitations:**
+
 - User-defined functions (UDFs) fall back to JVM
 - Some advanced Spark features not supported
 
 ### 2. Adaptive Query Execution (AQE)
 
 **Automatic optimizations:**
+
 - Dynamic partition pruning
 - Join strategy changes (broadcast vs shuffle)
 - Skew handling
 
 **Enable:**
+
 ```python
 spark.conf.set("spark.sql.adaptive.enabled", "true")
 ```
@@ -666,12 +717,14 @@ spark.conf.set("spark.sql.adaptive.enabled", "true")
 ### 3. Caching
 
 **Persist frequently-used DataFrames:**
+
 ```python
 df.cache()  # Lazy (triggered on first action)
 df.persist(StorageLevel.MEMORY_AND_DISK)  # Spill to disk if memory full
-```
+```text
 
 **Delta Cache (automatic):**
+
 - Caches Delta/Parquet files on cluster SSD
 - Transparent (no code changes)
 - Speeds up repeated queries 2-10x
@@ -679,6 +732,7 @@ df.persist(StorageLevel.MEMORY_AND_DISK)  # Spill to disk if memory full
 ### 4. Partitioning
 
 **Hive-style partitioning:**
+
 ```python
 df.write.format("delta") \
     .partitionBy("year", "month") \
@@ -687,9 +741,10 @@ df.write.format("delta") \
 # Results in:
 # /path/to/table/year=2024/month=01/part-xxx.parquet
 # /path/to/table/year=2024/month=02/part-xxx.parquet
-```
+```text
 
 **Best practices:**
+
 - Partition by commonly-filtered columns (date, region)
 - Avoid over-partitioning (<1GB per partition ideal)
 - Max 1000-2000 partitions per table
@@ -699,13 +754,14 @@ df.write.format("delta") \
 **Problem:** Small files slow down queries (more overhead)
 
 **Solution:**
+
 ```python
 # Optimize (combine small files into larger ones)
 spark.sql("OPTIMIZE customers")
 
 # Target file size: 1GB (configurable)
 spark.conf.set("spark.databricks.delta.optimize.maxFileSize", 1073741824)
-```
+```text
 
 **Run weekly:** Part of maintenance workflows
 
@@ -714,6 +770,7 @@ spark.conf.set("spark.databricks.delta.optimize.maxFileSize", 1073741824)
 **Problem:** Time travel keeps old versions forever (storage cost)
 
 **Solution:**
+
 ```python
 # Delete files older than 7 days (after retention period)
 spark.sql("VACUUM customers RETAIN 168 HOURS")  # 7 days = 168 hours

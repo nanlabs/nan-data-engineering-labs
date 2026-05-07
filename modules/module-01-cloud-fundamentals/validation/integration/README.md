@@ -9,28 +9,31 @@ Validate que múltiples servicios AWS funcionan runctamente en conjunto (S3 → 
 ## 🎯 Tipos de Tests a Agregar
 
 ### Event-Driven Workflows
+
 ```python
 def test_s3_to_lambda_trigger():
     """Verify que subir a S3 dispara Lambda"""
 
 def test_lambda_to_sqs_delivery():
     """Verify que Lambda envía mensajes a SQS"""
-```
+```text
 
 ### End-to-End Scenarios
+
 ```python
 def test_csv_validation_pipeline():
     """Test completo: S3 upload → Lambda validation → SQS notification"""
-```
+```text
 
 ### Cross-Service Communication
+
 ```python
 def test_cloudwatch_logs_generated():
     """Verify que Lambda genera logs en CloudWatch"""
 
 def test_sns_notification_sent():
     """Verify que SNS envía notificaciones"""
-```
+```text
 
 ## 📝 Ejemplo de Test
 
@@ -76,7 +79,7 @@ def test_complete_validation_pipeline():
 
 ```bash
 pytest validation/integration/ -v
-```
+```text
 
 ## ⏱️ Consideraciones
 

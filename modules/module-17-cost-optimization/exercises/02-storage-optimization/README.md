@@ -14,7 +14,7 @@
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                   S3 Storage Classes                        │
 │                                                             │
@@ -42,7 +42,7 @@
 │  │  $0.023 Frequent + $0.0125 Infrequent + $0.004 Archive│
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Tasks
 
@@ -98,9 +98,9 @@ response = s3control.put_storage_lens_configuration(
 
 print("✓ S3 Storage Lens enabled")
 print("  Reports available in 24-48 hours")
-```
+```text
 
-2. **Analyze storage by bucket and prefix**:
+1. **Analyze storage by bucket and prefix**:
 
 ```python
 s3 = boto3.client('s3')
@@ -279,9 +279,9 @@ print(f"\n💰 Estimated Savings (1000 GB):")
 print(f"  Current Cost (all Standard): ${current:.2f}/month")
 print(f"  Optimized Cost (lifecycle): ${optimized:.2f}/month")
 print(f"  Savings: ${savings:.2f}/month ({pct:.1f}%)")
-```
+```text
 
-2. **Configure S3 Intelligent-Tiering**:
+1. **Configure S3 Intelligent-Tiering**:
 
 ```python
 # Enable Intelligent-Tiering for buckets with unknown access patterns
@@ -308,7 +308,7 @@ print("✓ Intelligent-Tiering configured")
 print("  Automatic transitions: Frequent ↔ Infrequent (30 days)")
 print("  Archive Access: After 90 days of no access")
 print("  Deep Archive: After 180 days of no access")
-```
+```text
 
 ### Task 3: Optimize Data Formats
 
@@ -344,9 +344,9 @@ print(f"  CSV: {csv_size / 1024**2:.2f} MB")
 print(f"  Parquet (Snappy): {parquet_size / 1024**2:.2f} MB")
 print(f"  Compression: {compression_ratio:.1f}% reduction")
 print(f"  Storage Savings: ${(csv_size - parquet_size) / 1024**3 * 0.023:.2f}/month")
-```
+```text
 
-2. **Benchmark query performance and cost**:
+1. **Benchmark query performance and cost**:
 
 ```python
 import time
@@ -477,9 +477,9 @@ if patterns.get('Cold Data (> 180 days)', 0) > total * 0.3:
     print("  ✓ High percentage of cold data → Aggressive Glacier transitions")
 else:
     print("  ✓ Frequent access → Use Intelligent-Tiering")
-```
+```text
 
-2. **Implement optimized lifecycle policy**:
+1. **Implement optimized lifecycle policy**:
 
 ```python
 # Advanced lifecycle policy with multiple rules
@@ -563,7 +563,7 @@ print(f"  Current Cost (all Standard): ${current:.2f}")
 print(f"  Optimized Cost (lifecycle): ${optimized:.2f}")
 print(f"  Monthly Savings: ${savings:.2f} ({pct:.1f}%)")
 print(f"  Annual Savings: ${savings * 12:.2f}")
-```
+```text
 
 ### Task 3: Configure Intelligent-Tiering
 
@@ -596,7 +596,7 @@ print("  3. Not accessed for 90 days → Archive Access ($0.004/GB)")
 print("  4. Not accessed for 180 days → Deep Archive ($0.00099/GB)")
 print("  5. Accessed → Automatically moves back to Frequent tier")
 print("\n  Monitoring fee: $0.0025 per 1000 objects (small price for auto-optimization)")
-```
+```text
 
 ## Validation Checklist
 
@@ -612,16 +612,19 @@ print("\n  Monitoring fee: $0.0025 per 1000 objects (small price for auto-optimi
 ## Troubleshooting
 
 **Issue**: Lifecycle policy not transitioning objects
+
 - **Solution**: Check object size (min 128 KB for IA, Glacier)
 - Verify policy status is 'Enabled'
 - Wait 24-48 hours for first transition
 
 **Issue**: Intelligent-Tiering shows no savings
+
 - **Solution**: Ensure monitoring is enabled
 - Check object sizes (min 128 KB)
 - Wait 30+ days for first transitions
 
 **Issue**: Parquet files larger than CSV
+
 - **Solution**: Use appropriate compression (Snappy for balance, Gzip for max compression)
 - Ensure data types are optimized (int32 vs int64)
 - Remove unnecessary columns before writing
@@ -637,6 +640,7 @@ print("\n  Monitoring fee: $0.0025 per 1000 objects (small price for auto-optimi
 ## Real-World Impact
 
 **Case Study**: E-commerce data lake (10 TB storage)
+
 - **Before**: 10 TB Standard ($230/month)
 - **After**: Lifecycle + Parquet (5 TB effective)
   - 1 TB Standard ($23)

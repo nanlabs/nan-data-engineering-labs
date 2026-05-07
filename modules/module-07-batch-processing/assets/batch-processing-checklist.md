@@ -3,6 +3,7 @@
 ## 📋 Pre-Development
 
 ### Requirements Gathering
+
 - [ ] Definir input data sources
 - [ ] Identificar output requirements
 - [ ] Determine SLA (maximum execution time)
@@ -10,6 +11,7 @@
 - [ ] Identificar dependencies (otros jobs, external systems)
 
 ### Design
+
 - [ ] Elegir estrategia de procesamiento (full load vs incremental)
 - [ ] Design partitioning strategy
 - [ ] Definir retention policy
@@ -19,6 +21,7 @@
 ## 🏗️ Development
 
 ### Code Quality
+
 - [ ] Seguir coding standards
 - [ ] Implementar logging estructurado
 - [ ] Agregar type hints (Python)
@@ -26,6 +29,7 @@
 - [ ] Code review completed
 
 ### Performance
+
 - [ ] Usar formato columnr (Parquet)
 - [ ] Implementar partitioning apropiado
 - [ ] Optimizar dtypes para memoria
@@ -34,6 +38,7 @@
 - [ ] Evitar shuffles innecesarios
 
 ### Data Quality
+
 - [ ] Validar input data exists
 - [ ] Check for null values
 - [ ] Validate value ranges
@@ -42,6 +47,7 @@
 - [ ] Check record counts
 
 ### Error Handling
+
 - [ ] Try-catch on critical operations
 - [ ] Retry logic con exponential backoff
 - [ ] Dead letter queue para registros fallidos
@@ -49,6 +55,7 @@
 - [ ] Logging detallado de errores
 
 ### Idempotence
+
 - [ ] Usar mode='overwrite' o upsert
 - [ ] Partition overwriting correcto
 - [ ] No duplicar datos en append
@@ -57,6 +64,7 @@
 ## ✅ Testing
 
 ### Unit Tests
+
 - [ ] Test transformations individuales
 - [ ] Test data validation functions
 - [ ] Test error scenarios
@@ -64,12 +72,14 @@
 - [ ] Coverage > 80%
 
 ### Integration Tests
+
 - [ ] Test complete pipeline E2E
 - [ ] Test con sample production data
 - [ ] Test joins con todas las tables
 - [ ] Test partition reading/writing
 
 ### Performance Tests
+
 - [ ] Benchmark con dataset realista
 - [ ] Verificar throughput (records/sec)
 - [ ] Medir memory usage
@@ -78,6 +88,7 @@
 ## 📊 Monitoring & Observability
 
 ### Metrics
+
 - [ ] Track duration (total y por stage)
 - [ ] Track records processed
 - [ ] Track data volume (GB)
@@ -86,6 +97,7 @@
 - [ ] Track success/failure status
 
 ### Logging
+
 - [ ] Log start/end timestamps
 - [ ] Log configuration used
 - [ ] Log record counts en cada stage
@@ -93,6 +105,7 @@
 - [ ] Structured logging (JSON format)
 
 ### Alerting
+
 - [ ] Alerta si job falla
 - [ ] Alerta si SLA excede
 - [ ] Alerta si quality checks fallan
@@ -101,6 +114,7 @@
 ## 🚀 Deployment
 
 ### Configuration
+
 - [ ] Externalizar config (YAML/JSON)
 - [ ] Separar configs por ambiente (dev/staging/prod)
 - [ ] Parametrizar execution_date
@@ -108,6 +122,7 @@
 - [ ] Usar secrets manager para sensitive data
 
 ### Documentation
+
 - [ ] README con job description
 - [ ] Input/output schemas documentados
 - [ ] Dependency graph
@@ -115,6 +130,7 @@
 - [ ] SLA documentado
 
 ### Infrastructure
+
 - [ ] Cluster size apropiado
 - [ ] Executor/driver memory configurado
 - [ ] Shuffle partitions optimizados
@@ -124,18 +140,21 @@
 ## 🔄 Production Operations
 
 ### Scheduling
+
 - [ ] Cron schedule configurado
 - [ ] Dependencies declaradas
 - [ ] Backfill strategy documentada
 - [ ] Retry policy configurada
 
 ### Maintenance
+
 - [ ] Data retention implementada
 - [ ] Logs retention configurada
 - [ ] Old partitions cleanup automatizado
 - [ ] Health check agregado
 
 ### Disaster Recovery
+
 - [ ] Backup strategy definida
 - [ ] Recovery procedure documentada
 - [ ] Checkpoint recovery testeado
@@ -144,12 +163,14 @@
 ## 📈 Post-Deployment
 
 ### Monitoring
+
 - [ ] Dashboard creado (Grafana, DataDog, etc.)
 - [ ] Metrics baseline establecido
 - [ ] SLA tracking activo
 - [ ] On-call rotation definida
 
 ### Optimization
+
 - [ ] Review performance metrics semanalmente
 - [ ] Identificar bottlenecks
 - [ ] Optimize queries lentos
@@ -157,6 +178,7 @@
 - [ ] Review cost metrics
 
 ### Continuous Improvement
+
 - [ ] Collect feedback de usuarios
 - [ ] Revisar incidents y post-mortems
 - [ ] Actualizar documentation

@@ -1,6 +1,7 @@
 # Exercise 04: Audit & Compliance
 
 ## Overview
+
 Implement comprehensive audit logging with CloudTrail, automated compliance checking with AWS Config, compliance dashboards, and automated remediation for GDPR, HIPAA, and SOC 2 requirements.
 
 **Difficulty**: ⭐⭐⭐ Advanced

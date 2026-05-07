@@ -37,7 +37,7 @@ This guide provides step-by-step instructions for implementing the CloudMart Ser
 
 ### 1.2 Implementation Phases
 
-```
+```text
 Phase 1: Infrastructure Setup (4-5 hours)
 ├── S3 bucket creation
 ├── IAM roles and policies
@@ -67,7 +67,7 @@ Phase 5: Analytics & Querying (3-4 hours)
 ├── Query development
 ├── Performance optimization
 └── Visualization integration
-```
+```text
 
 ### 1.3 Expected Outcomes
 
@@ -88,11 +88,13 @@ By the end of this implementation, you will have:
 ### 2.1 Technical Requirements
 
 **AWS Account:**
+
 - Active AWS account with admin access (or sufficient permissions)
 - AWS CLI installed and configured
 - AWS Free Tier eligible (recommended to minimize costs)
 
 **Development Environment:**
+
 - Python 3.9 or later
 - AWS CLI v2
 - Git
@@ -100,6 +102,7 @@ By the end of this implementation, you will have:
 - Terminal/Shell access
 
 **Knowledge Prerequisites:**
+
 - Modules 01-06 completed
 - AWS fundamentals (S3, IAM, Lambda)
 - Python programming
@@ -125,7 +128,7 @@ aws configure
 # - AWS Secret Access Key
 # - Default region: us-east-1 (or your preferred region)
 # - Default output format: json
-```
+```text
 
 ### 2.3 Project Structure Setup
 
@@ -158,13 +161,13 @@ export PROJECT_NAME="cloudmart-datalake"
 export ENVIRONMENT="dev"
 export S3_BUCKET_PREFIX="cloudmart-dl"
 export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-```
+```text
 
 Load environment:
 
 ```bash
 source .env
-```
+```text
 
 ---
 
@@ -172,7 +175,7 @@ source .env
 
 ### 3.1 High-Level Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                        DATA SOURCES                              │
 ├─────────────┬────────────┬────────────┬────────────────────────┤
@@ -280,7 +283,7 @@ aws s3 mb s3://${PROJECT}-scripts-${ACCOUNT_ID} --region ${REGION}
 
 # Verify buckets
 aws s3 ls | grep cloudmart
-```
+```text
 
 #### 4.1.2 Enable Versioning
 
@@ -297,7 +300,7 @@ aws s3api put-bucket-versioning \
 aws s3api put-bucket-versioning \
     --bucket ${PROJECT}-curated-${ACCOUNT_ID} \
     --versioning-configuration Status=Enabled
-```
+```text
 
 #### 4.1.3 Enable Server-Side Encryption
 
@@ -314,7 +317,7 @@ Create encryption configuration file `encryption-config.json`:
     }
   ]
 }
-```
+```text
 
 Apply encryption:
 
@@ -357,7 +360,7 @@ Create `lifecycle-raw.json`:
     }
   ]
 }
-```
+```text
 
 Apply lifecycle policy:
 
@@ -365,7 +368,7 @@ Apply lifecycle policy:
 aws s3api put-bucket-lifecycle-configuration \
     --bucket ${PROJECT}-raw-${ACCOUNT_ID} \
     --lifecycle-configuration file://lifecycle-raw.json
-```
+```text
 
 #### 4.1.5 Create S3 Folder Structure
 
@@ -387,7 +390,7 @@ aws s3api put-object --bucket ${PROJECT}-curated-${ACCOUNT_ID} --key fact_orders
 aws s3api put-object --bucket ${PROJECT}-curated-${ACCOUNT_ID} --key dim_customers/
 aws s3api put-object --bucket ${PROJECT}-curated-${ACCOUNT_ID} --key dim_products/
 aws s3api put-object --bucket ${PROJECT}-curated-${ACCOUNT_ID} --key fact_clickstream/
-```
+```text
 
 ### 4.2 IAM Roles and Policies
 
@@ -458,7 +461,7 @@ Create `lambda-execution-policy.json`:
     }
   ]
 }
-```
+```text
 
 Create the role:
 
@@ -477,7 +480,7 @@ aws iam put-role-policy \
 # Get role ARN (save this!)
 LAMBDA_ROLE_ARN=$(aws iam get-role --role-name cloudmart-lambda-ingestion-role --query 'Role.Arn' --output text)
 echo "Lambda Role ARN: $LAMBDA_ROLE_ARN"
-```
+```text
 
 #### 4.2.2 Glue Service Role
 
@@ -496,7 +499,7 @@ Create `glue-trust-policy.json`:
     }
   ]
 }
-```
+```text
 
 Create `glue-service-policy.json`:
 
@@ -566,7 +569,7 @@ aws iam put-role-policy \
 # Get role ARN
 GLUE_ROLE_ARN=$(aws iam get-role --role-name cloudmart-glue-service-role --query 'Role.Arn' --output text)
 echo "Glue Role ARN: $GLUE_ROLE_ARN"
-```
+```text
 
 #### 4.2.3 Athena Query Role
 
@@ -616,7 +619,7 @@ Create `athena-user-policy.json`:
     }
   ]
 }
-```
+```text
 
 ### 4.3 CloudFormation Template
 
@@ -901,7 +904,7 @@ Outputs:
     Value: !Ref GlueDatabase
     Export:
       Name: !Sub '${ProjectName}-glue-db-name'
-```
+```text
 
 Deploy the CloudFormation stack:
 
@@ -942,7 +945,7 @@ aws iam list-roles | grep cloudmart
 aws cloudformation describe-stacks \
     --stack-name cloudmart-datalake-infrastructure \
     --query 'Stacks[0].StackStatus'
-```
+```text
 
 **Expected Result:** All resources created successfully, stack status = `CREATE_COMPLETE`
 
@@ -1168,7 +1171,7 @@ def validate_json_record(record, data_type):
             return False
 
     return True
-```
+```text
 
 #### 5.1.2 Create Deployment Package
 
@@ -1190,7 +1193,7 @@ zip -r lambda_deployment.zip .
 aws s3 cp lambda_deployment.zip s3://cloudmart-datalake-scripts-${ACCOUNT_ID}/lambda/
 
 cd ..
-```
+```text
 
 #### 5.1.3 Deploy Lambda Function
 
@@ -1242,7 +1245,7 @@ aws lambda add-permission \
     --action lambda:InvokeFunction \
     --principal s3.amazonaws.com \
     --source-arn arn:aws:s3:::${RAW_BUCKET}
-```
+```text
 
 #### 5.2.2 Configure S3 Event Notification
 
@@ -1337,7 +1340,7 @@ Create `s3-notification-config.json`:
     }
   ]
 }
-```
+```text
 
 Update placeholders and apply:
 
@@ -1353,7 +1356,7 @@ sed -i "s/ACCOUNT_ID/${ACCOUNT_ID}/g" s3-notification-config.json
 aws s3api put-bucket-notification-configuration \
     --bucket ${RAW_BUCKET} \
     --notification-configuration file://s3-notification-config.json
-```
+```text
 
 ### 5.3 Testing Data Ingestion
 
@@ -1399,7 +1402,7 @@ Create `sample_customers.json`:
     "country": "UK"
   }
 ]
-```
+```text
 
 Create `sample_products.json`:
 
@@ -1427,7 +1430,7 @@ Create `sample_products.json`:
     "stock_quantity": 75
   }
 ]
-```
+```text
 
 Create `sample_clickstream.json`:
 
@@ -1458,7 +1461,7 @@ Create `sample_clickstream.json`:
     "session_id": "SES67890"
   }
 ]
-```
+```text
 
 #### 5.3.2 Upload Sample Data
 
@@ -1482,7 +1485,7 @@ aws s3 ls s3://${PROCESSED_BUCKET}/ --recursive
 # Download processed file to verify
 aws s3 cp s3://${PROCESSED_BUCKET}/orders/year=2026/month=03/day=09/sample_orders.jsonl ./verify_orders.jsonl
 cat verify_orders.jsonl
-```
+```text
 
 **Expected Result:** Files processed and saved to processed bucket in partitioned format.
 
@@ -1504,7 +1507,7 @@ GLUE_DB=$(aws cloudformation describe-stacks \
 
 # Verify database
 aws glue get-database --name ${GLUE_DB}
-```
+```text
 
 ### 6.2 Create Glue Crawlers
 
@@ -1526,7 +1529,7 @@ aws glue create-crawler \
     --table-prefix processed_ \
     --schema-change-policy "{\"UpdateBehavior\": \"UPDATE_IN_DATABASE\", \"DeleteBehavior\": \"LOG\"}" \
     --configuration '{"Version":1.0,"Grouping":{"TableGroupingPolicy":"CombineCompatibleSchemas"}}'
-```
+```text
 
 #### 6.2.2 Crawler for Customers
 
@@ -1552,7 +1555,7 @@ aws glue create-crawler \
     --table-prefix processed_ \
     --schema-change-policy "{\"UpdateBehavior\": \"UPDATE_IN_DATABASE\", \"DeleteBehavior\": \"LOG\"}" \
     --configuration '{"Version":1.0,"Grouping":{"TableGroupingPolicy":"CombineCompatibleSchemas"}}'
-```
+```text
 
 #### 6.2.4 Crawler for Clickstream
 
@@ -1565,7 +1568,7 @@ aws glue create-crawler \
     --table-prefix processed_ \
     --schema-change-policy "{\"UpdateBehavior\": \"UPDATE_IN_DATABASE\", \"DeleteBehavior\": \"LOG\"}" \
     --configuration '{"Version":1.0,"Grouping":{"TableGroupingPolicy":"CombineCompatibleSchemas"}}'
-```
+```text
 
 ### 6.3 Run Crawlers
 
@@ -1584,7 +1587,7 @@ aws glue get-crawler --name cloudmart-crawler-orders --query 'Crawler.State'
 aws glue get-crawler --name cloudmart-crawler-customers --query 'Crawler.State'
 aws glue get-crawler --name cloudmart-crawler-products --query 'Crawler.State'
 aws glue get-crawler --name cloudmart-crawler-clickstream --query 'Crawler.State'
-```
+```text
 
 ### 6.4 Verify Data Catalog
 
@@ -1688,14 +1691,14 @@ df_summary.write \
     .save(summary_path)
 
 job.commit()
-```
+```text
 
 #### 7.1.2 Upload Script to S3
 
 ```bash
 # Upload ETL script
 aws s3 cp glue_etl_orders.py s3://cloudmart-datalake-scripts-${ACCOUNT_ID}/glue/
-```
+```text
 
 #### 7.1.3 Create Glue ETL Job
 
@@ -1732,7 +1735,7 @@ aws glue create-job \
     --glue-version "4.0" \
     --number-of-workers 2 \
     --worker-type "G.1X"
-```
+```text
 
 ### 7.2 ETL Job for Customers Dimension
 
@@ -1817,7 +1820,7 @@ aws glue create-job \
     --glue-version "4.0" \
     --number-of-workers 2 \
     --worker-type "G.1X"
-```
+```text
 
 ### 7.3 ETL Job for Products Dimension
 
@@ -1879,7 +1882,7 @@ df_cleaned.write \
     .save(target_path)
 
 job.commit()
-```
+```text
 
 ```bash
 # Upload and create job
@@ -1907,7 +1910,7 @@ aws glue create-job \
     --glue-version "4.0" \
     --number-of-workers 2 \
     --worker-type "G.1X"
-```
+```text
 
 ### 7.4 Run ETL Jobs
 
@@ -1958,7 +1961,7 @@ aws glue create-crawler \
 aws glue start-crawler --name cloudmart-crawler-curated-orders
 aws glue start-crawler --name cloudmart-crawler-curated-customers
 aws glue start-crawler --name cloudmart-crawler-curated-products
-```
+```text
 
 ---
 
@@ -1981,7 +1984,7 @@ aws athena create-work-group \
     --name cloudmart-analytics \
     --configuration "ResultConfigurationUpdates={OutputLocation=s3://${ATHENA_RESULTS_BUCKET}/}" \
     --description "CloudMart Analytics Workgroup"
-```
+```text
 
 ### 8.2 Sample Athena Queries
 
@@ -1998,7 +2001,7 @@ SELECT
 FROM curated_fact_orders
 GROUP BY year, month
 ORDER BY year DESC, month DESC;
-```
+```text
 
 Execute via CLI:
 
@@ -2030,7 +2033,7 @@ SELECT
 FROM curated_dim_customers
 GROUP BY customer_segment
 ORDER BY customer_count DESC;
-```
+```text
 
 #### 8.2.3 Product Performance Query
 
@@ -2048,7 +2051,7 @@ LEFT JOIN curated_fact_orders o ON p.product_id = o.product_id
 GROUP BY p.product_id, p.name, p.category, p.price
 ORDER BY total_revenue DESC
 LIMIT 10;
-```
+```text
 
 ### 8.3 Create Saved Queries
 
@@ -2077,7 +2080,7 @@ aws athena create-named-query \
     --database ${GLUE_DB} \
     --query-string "SELECT stock_status, COUNT(*) as product_count, AVG(price) as avg_price FROM curated_dim_products GROUP BY stock_status;" \
     --description "Product inventory status overview"
-```
+```text
 
 ```bash
 chmod +x athena_saved_queries.sh
@@ -2102,7 +2105,7 @@ SET TBLPROPERTIES (
   'projection.month.digits' = '2',
   'storage.location.template' = 's3://CURATED_BUCKET/fact_orders/year=${year}/month=${month}'
 );
-```
+```text
 
 ---
 
@@ -2155,7 +2158,7 @@ aws athena wait query-execution-complete --query-execution-id ${QUERY_ID}
 aws athena get-query-results --query-execution-id ${QUERY_ID}
 
 echo "=== All tests completed successfully! ==="
-```
+```text
 
 ### 9.2 Data Quality Checks
 
@@ -2221,7 +2224,7 @@ for check in quality_checks:
         print(f"Result: {results['ResultSet']['Rows']}\n")
     except Exception as e:
         print(f"Error: {str(e)}\n")
-```
+```text
 
 ---
 
@@ -2274,7 +2277,7 @@ aws cloudwatch put-dashboard \
     }
   ]
 }
-```
+```text
 
 ### 10.2 CloudWatch Alarms
 
@@ -2303,7 +2306,7 @@ aws cloudwatch put-metric-alarm \
     --evaluation-periods 1 \
     --threshold 0 \
     --comparison-operator LessThanOrEqualToThreshold
-```
+```text
 
 ---
 
@@ -2317,11 +2320,12 @@ aws s3api put-bucket-intelligent-tiering-configuration \
     --bucket ${CURATED_BUCKET} \
     --id EntirePrefix \
     --intelligent-tiering-configuration file://intelligent-tiering.json
-```
+```text
 
 ### 11.2 Athena Query Optimization
 
 Best practices:
+
 - Use partitioning
 - Use columnar formats (Parquet)
 - Compress data (Snappy)
@@ -2351,16 +2355,18 @@ aws glue get-jobs --query 'Jobs[?starts_with(Name, `cloudmart`)].{Name:Name, Max
 #### Issue: Lambda function timing out
 
 **Solution:**
+
 ```bash
 # Increase timeout
 aws lambda update-function-configuration \
     --function-name cloudmart-data-ingestion \
     --timeout 900
-```
+```text
 
 #### Issue: Glue crawler not finding partitions
 
 **Solution:**
+
 ```bash
 # Manually add partition
 aws glue create-partition \
@@ -2372,11 +2378,12 @@ aws glue create-partition \
             "Location": "s3://'${PROCESSED_BUCKET}'/orders/year=2026/month=03/"
         }
     }'
-```
+```text
 
 #### Issue: Athena query fails
 
 **Solution:**
+
 ```bash
 # Check query execution details
 aws athena get-query-execution --query-execution-id ${QUERY_ID}
@@ -2387,7 +2394,7 @@ aws athena start-query-execution \
     --query-string "$athena_query" \
     --query-execution-context "Database=${GLUE_DB}" \
     --result-configuration "OutputLocation=s3://${ATHENA_RESULTS_BUCKET}/"
-```
+```text
 
 ### 12.2 Debugging Commands
 
@@ -2415,6 +2422,7 @@ aws glue get-table --database-name ${GLUE_DB} --name curated_fact_orders --query
 ### 13.1 Architecture Diagram
 
 Create using draw.io or similar tool showing:
+
 - Data sources
 - S3 buckets (zones)
 - Lambda functions
@@ -2425,6 +2433,7 @@ Create using draw.io or similar tool showing:
 ### 13.2 Technical Documentation
 
 Include:
+
 - Infrastructure setup details
 - IAM policies and roles
 - Lambda function code
@@ -2435,6 +2444,7 @@ Include:
 ### 13.3 Operations Runbook
 
 Document:
+
 - Daily operations procedures
 - Monitoring checkpoints
 - Incident response procedures
@@ -2488,6 +2498,7 @@ Congratulations! You've successfully implemented a production-ready serverless d
 **Total Implementation Cost:** ~$25-30/month (with sample data)
 
 **Skills Demonstrated:**
+
 - AWS serverless architecture
 - Python development
 - PySpark/ETL development

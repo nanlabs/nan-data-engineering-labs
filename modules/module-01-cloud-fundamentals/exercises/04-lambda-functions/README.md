@@ -14,6 +14,7 @@
 **Lambda** = Compute sin servidores. Ejecutas código sin gestionar infraestructura.
 
 **Event Sources:**
+
 - S3 (ObjectCreated, ObjectRemoved)
 - SQS (message polling)
 - API Gateway (HTTP requests)
@@ -24,6 +25,7 @@
 ### Step 1: Scenario
 
 QuickMart necesita:
+
 - **Validate CSV uploads** (schema, data quality)
 - **Transform JSON logs** (parse, enrich, send to CloudWatch)
 - **Generate thumbnails** for product images
@@ -34,7 +36,7 @@ QuickMart necesita:
 ```bash
 cp -r starter/ my_solution/
 cd my_solution
-```
+```text
 
 ### Step 3: Implement Lambda Functions
 
@@ -48,7 +50,7 @@ def lambda_handler(event, context):
     # TODO: Validate schema
     # TODO: Return validation report
     pass
-```
+```text
 
 #### Function 2: Log Transformer
 
@@ -59,7 +61,7 @@ def lambda_handler(event, context):
     # TODO: Parse and enrich (add timestamp, user_id)
     # TODO: Write to processed/ folder
     pass
-```
+```text
 
 ### Step 4: Desplegar con CLI
 
@@ -90,7 +92,7 @@ s3.put_bucket_notification_configuration(
         }]
     }
 )
-```
+```text
 
 ### Step 6: Testing
 
@@ -103,7 +105,7 @@ aws --endpoint-url=http://localhost:4566 logs tail /aws/lambda/csv-validator
 
 # Verify processed files
 aws s3 ls s3://my-data-lake/processed/
-```
+```text
 
 ## 🧪 Validation
 
@@ -117,7 +119,7 @@ python3 test_lambda.py
 # ✓ Upload CSV → Lambda invoked
 # ✓ Validation report generated
 # ✓ Invalid records logged
-```
+```text
 
 ## 📚 Deliverables
 

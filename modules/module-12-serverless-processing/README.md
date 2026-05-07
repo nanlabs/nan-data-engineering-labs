@@ -123,6 +123,7 @@ Al completar este module, serás capaz de:
 ## 🚀 Getting Started
 
 See `theory/resources.md` for:
+
 - Official AWS documentation
 
 ### 1. Setup del Entorno
@@ -137,7 +138,7 @@ chmod +x scripts/setup.sh
 
 # Activar virtual environment
 source venv/bin/activate
-```
+```text
 
 ### 2. Configurar AWS
 
@@ -147,11 +148,12 @@ aws configure
 
 # Verificar acceso
 aws sts get-caller-identity
-```
+```text
 
 ### 3. Comenzar con la Theory
 
 Read los archivos de theory en orden:
+
 1. `theory/01-serverless-fundamentals.md`
 2. `theory/02-serverless-data-processing.md`
 3. `theory/03-serverless-patterns.md`
@@ -168,35 +170,41 @@ cd exercises/01-first-lambda
 # Exercise 2
 cd ../02-s3-event-processing
 # ...y así sucesivamente
-```
+```text
 
 ## 📊 Stack Tecnológico
 
 ### Core Services
+
 - **AWS Lambda** - Compute serverless
 - **API Gateway** - REST APIs
 - **Step Functions** - Workflow orchestration
 - **EventBridge** - Event routing
 
 ### Data Services
+
 - **S3** - Data Lake storage
 - **DynamoDB** - NoSQL database
 - **Kinesis** - Stream processing
 - **Glue Data Catalog** - Metadata management
 
 ### Messaging
+
 - **SQS** - Message queuing (Standard & FIFO)
 - **SNS** - Pub/Sub messaging
 
 ### Observability
+
 - **CloudWatch** - Logs, metrics, dashboards
 - **X-Ray** - Distributed tracing
 
 ### Infrastructure
+
 - **Terraform** - Infrastructure as Code
 - **GitHub Actions** - CI/CD
 
 ### Development
+
 - **Python 3.11** - Runtime
 - **pytest** - Testing framework
 - **moto** - AWS mocking
@@ -222,23 +230,26 @@ cd ../02-s3-event-processing
 8. Final Project (opcional, 8-10 hours)
 
 Total estimado: 25-30 hours
-```
+```text
 
 ## 📈 Criterios de Evaluación
 
 ### Conocimiento Teórico (30%)
+
 - [ ] Comprensión de serverless fundamentals
 - [ ] Event-driven architecture patterns
 - [ ] AWS Lambda lifecycle y optimizations
 - [ ] Step Functions state machines
 
 ### Implementación Práctica (40%)
+
 - [ ] 6 exercises completeds
 - [ ] Código funcional y bien documentado
 - [ ] Infrastructure as Code implementado
 - [ ] Tests pasando (>80% coverage)
 
 ### Production Readiness (30%)
+
 - [ ] Observability implementada
 - [ ] Security best practices aplicadas
 - [ ] CI/CD pipeline funcional
@@ -247,18 +258,21 @@ Total estimado: 25-30 hours
 ## 🔍 Troubleshooting
 
 ### Lambda Timeout
+
 ```python
 # Aumentar timeout en Terraform
 timeout = 300  # 5 minutes
-```
+```text
 
 ### Cold Start Issues
+
 ```python
 # Usar reserved concurrency
 reserved_concurrent_executions = 10
-```
+```text
 
 ### Permission Errors
+
 ```bash
 # Verificar IAM role
 aws iam get-role --role-name lambda-role
@@ -267,22 +281,26 @@ aws iam get-role --role-name lambda-role
 ## 📚 Recursos Adicionales
 
 ### Documentación Oficial
+
 - [AWS Lambda Developer Guide](https://docs.aws.amazon.com/lambda/)
 - [Step Functions Guide](https://docs.aws.amazon.com/step-functions/)
 - [API Gateway Documentation](https://docs.aws.amazon.com/apigateway/)
 
 ### Herramientas
+
 - [AWS SAM](https://aws.amazon.com/serverless/sam/) - Serverless Application Model
 - [LocalStack](https://localstack.cloud/) - Local AWS testing
 - [Serverless Framework](https://www.serverless.com/)
 
 ### Libros
+
 - "Serverless Architectures on AWS" - Peter Sbarski
 - "Production-Ready Serverless" - Yan Cui
 
 ## 🤝 Contribuciones
 
 ¿Encontraste un error? ¿Tienes sugerencias?
+
 - Abre un issue en GitHub
 - Envía un pull request
 - Contacta al instructor
@@ -299,13 +317,13 @@ Ejecutar todas las validaciones:
 
 ```bash
 bash scripts/validate.sh
-```
+```text
 
 O usar la validation global:
 
 ```bash
 make validate MODULE=module-12-serverless-processing
-```
+```text
 
 ## Progress Checklist
 
@@ -322,11 +340,11 @@ make validate MODULE=module-12-serverless-processing
 ## 🎯 Próximos Steps
 
 Una vez completed este module, continúa con:
+
 - **[Module 13: Container Orchestration](../module-13-container-orchestration/)** - Kubernetes y ECS
 - **[Module 15: Real-Time Analytics](../module-15-real-time-analytics/)** - Kinesis Analytics
 
 ¡Buena suerte con tu aprendizaje serverless! 🚀
-
 
 ## Objective
 

@@ -225,7 +225,7 @@ passed, df_clean, df_quarantined = engine.validate(transactions, "Raw Data Inges
 
 if not passed:
     raise ValueError("Quality gates failed! Pipeline stopped.")
-```
+```text
 
 ---
 
@@ -403,7 +403,7 @@ with dag:
     # Define dependencies
     start >> extract >> validate_raw >> transform >> validate_transformed >> load >> end
     validate_raw >> quarantine_alert >> end
-```
+```text
 
 ---
 
@@ -527,7 +527,7 @@ for i in range(10):
 
     print(f"Circuit state: {circuit_breaker.get_state()}")
     time.sleep(1)
-```
+```text
 
 ---
 
@@ -818,7 +818,7 @@ class ProductionDataPipeline:
 # Uso
 pipeline = ProductionDataPipeline("transactions_etl")
 result = pipeline.run(transactions)
-```
+```text
 
 ---
 
@@ -840,9 +840,10 @@ result = pipeline.run(transactions)
 - Quarantine strategy
 - SLA enforcement
 
-## 🎉 Module Completed!
+## 🎉 Module Completed
 
 You have completed the Data Quality module. Now you have:
+
 - Knowledge of 6 dimensions of quality
 - Experiencia con Great Expectations
 - Habilidades de anomaly detection
@@ -852,8 +853,8 @@ You have completed the Data Quality module. Now you have:
 ## 📚 Additional Resources
 
 - **Data Quality Book**: "Data Quality: The Accuracy Dimension" by Joseph M. Juran
-- **GE in Production**: https://docs.greatexpectations.io/docs/guides/setup/configuring_metadata_stores/
-- **Airflow Best Practices**: https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html
+- **GE in Production**: <https://docs.greatexpectations.io/docs/guides/setup/configuring_metadata_stores/>
+- **Airflow Best Practices**: <https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html>
 
 ## ➡️ Upcoming Modules
 

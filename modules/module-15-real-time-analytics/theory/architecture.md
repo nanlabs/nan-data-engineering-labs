@@ -17,7 +17,7 @@
 
 ### Basic Real-Time Pipeline
 
-```
+```text
 ┌──────────────┐    ┌───────────────────┐    ┌─────────────────┐
 │              │    │   Kinesis Data    │    │    Kinesis      │
 │  Producers   │───▶│     Streams       │───▶│  Data Analytics │
@@ -33,23 +33,26 @@
                                │ Lambda         │ OpenSearch     │
                                │ Firehose       │ Redshift       │
                                └────────────────┴────────────────┘
-```
+```text
 
 ### Components
 
 **1. Amazon Kinesis Data Streams**
+
 - **Purpose**: Durable buffer for streaming data
 - **Capacity**: Shards (1 MB/sec writes, 2 MB/sec reads per shard)
 -Auto-scaling**: On-demand or provisioned mode
 - **Retention**: 24 hours to 365 days
 
 **2. Kinesis Data Analytics for Apache Flink**
+
 - **Purpose**: Process and analyze streams with SQL or Flink
 - **Compute**: Kinesis Processing Units (KPUs) - 1 vCPU + 4 GB memory
 - **Scaling**: Auto-scaling based on CPU utilization
 - **Checkpointing**: Automatic snapshots to S3
 
 **3. Amazon Kinesis Data Firehose**
+
 - **Purpose**: Load streams to data lakes/warehouses
 - **Transformations**: Lambda for data transformation
 - **Buffering**: Time (60s-900s) or size (1-128 MB)
@@ -57,7 +60,7 @@
 
 ### Reference Architecture
 
-```
+```text
                           ┌─────────────────────────────────────────┐
                           │                                         │
                           │      Real-Time Analytics Platform       │
@@ -99,7 +102,7 @@
 
 ### Flink Application Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │              Kinesis Data Analytics for Apache Flink            │
 │                                                                  │
@@ -121,11 +124,12 @@
 │  Checkpointing: Every 60 seconds to S3                         │
 │  Snapshots: Manual or automated for deployments                │
 └─────────────────────────────────────────────────────────────────┘
-```
+```text
 
 ### Flink SQL Application
 
 **Table Definitions**:
+
 ```sql
 -- Source: Kinesis Data Stream
 CREATE TABLE user_events (
@@ -173,27 +177,29 @@ WHERE event_type = 'page_view'
 GROUP BY
     page,
     TUMBLE(event_time, INTERVAL '1' MINUTE);
-```
+```text
 
 ### Deployment Patterns
 
 **1. Blue/Green Deployment**
+
 ```
 1. Current application running on snapshot v1
 2. Deploy new code as snapshot v2
 3. Test v2 with subset of traffic
 4. Switch traffic to v2
 5. Rollback to v1 if issues detected
-```
+```text
 
 **2. Canary Deployment**
-```
+
+```text
 1. Deploy new version alongside current
 2. Route 10% traffic to new version
 3. Monitor metrics (latency, errors)
 4. Gradually increase to 50%, then 100%
 5. Decommission old version
-```
+```text
 
 ---
 
@@ -211,17 +217,19 @@ GROUP BY
 │                   (Aggregation)   Athena         (Refresh 1s)  │
 │                                                                 │
 └────────────────────────────────────────────────────────────────┘
-```
+```text
 
 **Architecture Options**:
 
 **Option 1: DynamoDB Backend** (sub-second latency)
+
 - Flink writes aggregates to DynamoDB
 - QuickSight SPICE refresh every 1 second
 - Best for: Key metrics, gauges, counters
 - Cost: ~$200/month for 10K writes/sec
 
 **Option 2: Athena + S3** (minute latency)
+
 - Flink writes Parquet to S3 (every minute)
 - Glue crawler updates catalog
 - QuickSight queries via Athena
@@ -229,6 +237,7 @@ GROUP BY
 - Cost: ~$50/month for 1 GB data scanned/day
 
 **Option 3: Redshift** (5-10 second latency)
+
 - Kinesis Firehose loads to Redshift
 - QuickSight queries Redshift
 - Best for: Complex joins, large datasets
@@ -236,7 +245,7 @@ GROUP BY
 
 ### CloudWatch Dashboards
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │           CloudWatch Dashboard (Free, 3-second refresh)       │
 │                                                               │
@@ -250,9 +259,10 @@ GROUP BY
 │  │  [Page View] [Button Click] [Form Submit] [Error]      │ │
 │  └─────────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────────┘
-```
+```text
 
 **Publishing Metrics from Flink**:
+
 ```python
 from pyflink.datastream.functions import ProcessFunction
 import boto3
@@ -281,7 +291,7 @@ class MetricsPublisher(ProcessFunction):
 
 ### Managed Grafana on AWS
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────┐
 │                 Amazon Managed Grafana                          │
 │                                                                 │
@@ -297,7 +307,7 @@ class MetricsPublisher(ProcessFunction):
 │  - Dashboard variables                                          │
 │  - SSO integration                                              │
 └────────────────────────────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -305,7 +315,7 @@ class MetricsPublisher(ProcessFunction):
 
 ### Lambda Architecture
 
-```
+```text
                         ┌──────────────────────────────────────┐
                         │         Data Sources                  │
                         └───────────────┬──────────────────────┘
@@ -336,18 +346,20 @@ class MetricsPublisher(ProcessFunction):
 ```
 
 **Pros**:
+
 - ✅ Accurate batch results
 - ✅ Fault tolerance (reprocess batch)
 - ✅ Handles late data well
 
 **Cons**:
+
 - ❌ Maintain two codebases (batch + speed)
 - ❌ Complex serving layer (merge logic)
 - ❌ Higher operational cost
 
 ### Kappa Architecture
 
-```
+```text
                         ┌──────────────────────────────────────┐
                         │         Data Sources                  │
                         └───────────────┬──────────────────────┘
@@ -370,20 +382,23 @@ class MetricsPublisher(ProcessFunction):
               │  DynamoDB │  │    S3     │  │ OpenSearch│
               │  (Cur)    │  │  (Hist)   │  │  (Search) │
               └───────────┘  └───────────┘  └───────────┘
-```
+```text
 
 **Pros**:
+
 - ✅ Single codebase (simpler)
 - ✅ True real-time processing
 - ✅ Lower operational cost
 - ✅ Reprocessing by replaying stream
 
 **Cons**:
+
 - ❌ Stream replay can be slow
 - ❌ Requires long retention (costly)
 - ❌ More complex error handling
 
 **When to Use**:
+
 - **Lambda**: When batch accuracy is critical (finance, compliance)
 - **Kappa**: When real-time is paramount, data patterns stable
 
@@ -395,7 +410,7 @@ class MetricsPublisher(ProcessFunction):
 
 **Concept**: Store all changes as immutable events, derive current state by replaying events.
 
-```
+```text
 Traditional:
 ┌─────────────────┐
 │   Account       │
@@ -421,7 +436,8 @@ Event Sourcing:
 ```
 
 **Implementation with Kinesis**:
-```
+
+```text
 ┌──────────────┐       ┌─────────────────┐       ┌──────────────┐
 │   Commands   │  ───▶ │ Kinesis Streams │  ───▶ │   Flink      │
 │ (API calls)  │       │  (Event Store)  │       │ (Projection) │
@@ -432,13 +448,13 @@ Event Sourcing:
                                               │  DynamoDB          │
                                               │  (Current State)   │
                                               └────────────────────┘
-```
+```text
 
 ### CQRS (Command Query Responsibility Segregation)
 
 **Separate read and write models**:
 
-```
+```text
 ┌──────────────┐                              ┌──────────────────┐
 │              │                              │                  │
 │   Commands   │─────────▶ Write Model ───────▶│  Event Stream    │
@@ -466,6 +482,7 @@ Event Sourcing:
 ```
 
 **Benefits**:
+
 - ✅ Optimized read models (denormalized for queries)
 - ✅ Independent scaling of reads and writes
 - ✅ Multiple read models for different use cases
@@ -477,7 +494,7 @@ Event Sourcing:
 
 ### Active-Active Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                          Global Real-Time Analytics                      │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -505,15 +522,17 @@ Region 1 (us-east-1)                         Region 2 (eu-west-1)
 │  └─────────────────┘    │                 │  └─────────────────┘    │
 │                          │                 │                          │
 └──────────────────────────┘                 └──────────────────────────┘
-```
+```text
 
 **Key Features**:
+
 - **Cross-Region Replication**: Kinesis streams replicate to secondary region
 - **DynamoDB Global Tables**: Multi-region, multi-master replication
 - **Route 53**: Route users to nearest region
 - **S3 Cross-Region Replication**: Backup and historical data
 
 **Latency**:
+
 - Same-region reads: <10 ms
 - Cross-region replication: 500-1000 ms
 
@@ -523,7 +542,7 @@ Region 1 (us-east-1)                         Region 2 (eu-west-1)
 
 ### Tiered Storage Strategy
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────┐
 │                     Data Lifecycle                              │
 │                                                                 │
@@ -535,7 +554,8 @@ Region 1 (us-east-1)                         Region 2 (eu-west-1)
 ```
 
 **Cost Breakdown**:
-```
+
+```text
 Service                  | Cost/Month | Use Case
 ─────────────────────────┼────────────┼──────────────────────
 Kinesis Data Streams     | $100       | 4 shards, 1 MB/sec
@@ -546,9 +566,10 @@ Glue Crawler             | $10        | 1 run/hour
 Athena                   | $5         | 100 GB scanned/month
 ──────────────────────────────────────────────────────────────
 Total                    | $588/month
-```
+```text
 
 **Optimization Strategies**:
+
 1. **On-Demand Kinesis**: Save 70% for variable workloads
 2. **Reserved Capacity**: Save 50% for DynamoDB predictable workloads
 3. **Lifecycle Policies**: Move S3 data to IA/Glacier after 30/90 days
@@ -561,7 +582,7 @@ Total                    | $588/month
 
 ### Encryption at Rest and In Transit
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────┐
 │                    Encrypted Data Pipeline                      │
 │                                                                 │
@@ -583,6 +604,7 @@ Total                    | $588/month
 ### IAM Roles and Permissions
 
 **Flink Application Role**:
+
 ```json
 {
   "Version": "2012-10-17",
@@ -615,17 +637,19 @@ Total                    | $588/month
     }
   ]
 }
-```
+```text
 
 ### Compliance (GDPR, HIPAA)
 
 **GDPR Considerations**:
+
 - **Right to be Forgotten**: Implement event tombstones or data deletion jobs
 - **Data Minimization**: Only collect necessary fields
 - **Consent Management**: Track consent in events
 - **Data Retention**: Automate deletion after retention period
 
 **HIPAA Compliance**:
+
 - **BAA with AWS**: Sign Business Associate Agreement
 - **Encryption**: Enable KMS encryption for all services
 - **Access Logging**: CloudTrail for all API calls
@@ -638,18 +662,21 @@ Total                    | $588/month
 ### Key Takeaways
 
 **Architecture Patterns**:
+
 - **Lambda**: Batch + speed layers (accuracy priority)
 - **Kappa**: Pure streaming (real-time priority)
 - **Event Sourcing**: Immutable event log, replay for state
 - **CQRS**: Separate read/write models for optimization
 
 **AWS Services**:
+
 - **Kinesis Data Streams**: Durable, scalable streaming buffer
 - **Kinesis Data Analytics**: Managed Flink for SQL/Java/Python
 - **QuickSight**: Real-time dashboards
 - **CloudWatch**: Metrics and alerting
 
 **Best Practices**:
+
 - Auto-scaling for cost optimization
 - Multi-region for global users
 - Encryption everywhere (TLS + KMS)

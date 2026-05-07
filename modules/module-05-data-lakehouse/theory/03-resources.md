@@ -18,12 +18,13 @@
 ### Delta Lake
 
 #### 📖 Main Documentation
-- **Delta Lake Docs**: HTTPs://docs.delta.io/
+
+- **Delta Lake Docs**: <HTTPs://docs.delta.io/>
   - Complete Guide to Delta Lake
   - Quickstart, API reference, best practices
   - Updated regularly
 
-- **Delta Lake GitHub**: HTTPs://github.com/delta-io/delta
+- **Delta Lake GitHub**: <HTTPs://github.com/delta-io/delta>
   - Open-source source code
   - Issues, PRs, roadmap
   - Community contributions
@@ -31,41 +32,51 @@
 #### 🔧 Specific Guides
 
 **Quickstart**:
-```
+
+```text
 HTTPs://docs.delta.io/latest/quick-start.html
-```
+```text
+
 - Setup in 5 minutos
 - Primer programa Delta Lake
 - Examples Python and Scala
 
 **Table Operations**:
-```
+
+```text
 HTTPs://docs.delta.io/latest/delta-batch.html
 ```
+
 - CREATE, READ, UPDATE, DELETE
 - MERGE, OPTIMIZE, VACUUM
 - Time travel queries
 
 **Streaming**:
-```
+
+```text
 HTTPs://docs.delta.io/latest/delta-streaming.html
-```
+```text
+
 - Structunetwork Streaming with Delta
 - Checkpoints and fault tolerance
 - Exactly-once semantics
 
 **Schema Evolution**:
-```
+
+```text
 HTTPs://docs.delta.io/latest/delta-batch.html#automatic-schema-evolution
 ```
+
 - Automatic schema merge
 - Schema enforcement
 - Type widening
 
 **Optimizations**:
-```
+
+```text
 HTTPs://docs.delta.io/latest/optimizations-oss.html
-```
+```text
+
 - Z-ordering
 - Compaction
 - data skIPping
@@ -74,76 +85,93 @@ HTTPs://docs.delta.io/latest/optimizations-oss.html
 #### 📊 APIs
 
 **Python (PySpark)**:
-```
+
+```text
 HTTPs://docs.delta.io/latest/api/python/index.html
 ```
+
 - DeltaTable class
 - Read/write operations
 - Table utilities
 
 **Scala**:
-```
+
+```text
 HTTPs://docs.delta.io/latest/api/scala/index.html
-```
+```text
+
 - io.delta.tables package
 - API completo Scala
 
 **SQL**:
-```
+
+```text
 HTTPs://docs.delta.io/latest/delta-batch.html#sql-support
 ```
+
 - DDL and DML statements
 - Delta-specific extensions
 
 ### Apache Iceberg
 
 #### 📖 Documentation PrincIPal
-- **Iceberg Docs**: HTTPs://iceberg.apache.org/docs/latest/
+
+- **Iceberg Docs**: <HTTPs://iceberg.apache.org/docs/latest/>
   - Complete Apache Iceberg Documentation
   - Concepts, architecture, guides
 
-- **Iceberg GitHub**: HTTPs://github.com/apache/iceberg
+- **Iceberg GitHub**: <HTTPs://github.com/apache/iceberg>
   - Repositorio oficial Apache
   - Issues, PRs, releases
 
 #### 🔧 Specific Guides
 
 **Getting Started**:
-```
+
+```text
 HTTPs://iceberg.apache.org/docs/latest/getting-started/
-```
+```text
+
 - Setup inicial
 - Crear primera table
 - Basic queries
 
 **Python API (PyIceberg)**:
-```
+
+```text
 HTTPs://py.iceberg.apache.org/
 ```
+
 - pyiceberg library
 - Read/write tables
 - Schema evolution
 
 **Spark Integration**:
-```
+
+```text
 HTTPs://iceberg.apache.org/docs/latest/spark-configuration/
-```
+```text
+
 - Spark configuration for Iceberg
 - Catalogs (Hive, Hadoop, Glue)
 - Performance tuning
 
 **Table Evolution**:
-```
+
+```text
 HTTPs://iceberg.apache.org/docs/latest/evolution/
 ```
+
 - Schema evolution
 - Partition evolution
 - Table migration
 
 **Maintenance**:
-```
+
+```text
 HTTPs://iceberg.apache.org/docs/latest/maintenance/
-```
+```text
+
 - Expire snapshots
 - Compact data files
 - Remove orphan files
@@ -151,9 +179,11 @@ HTTPs://iceberg.apache.org/docs/latest/maintenance/
 #### 📊 Comparisons
 
 **Iceberg vs Delta Lake**:
-```
+
+```text
 HTTPs://iceberg.apache.org/docs/latest/delta-lake-comparison/
 ```
+
 - Feature comparison oficial
 - Trade-offs and diferencias
 - Casos of uso recomendados
@@ -161,22 +191,27 @@ HTTPs://iceberg.apache.org/docs/latest/delta-lake-comparison/
 ### PySpark
 
 #### 📖 Documentation
-- **PySpark Docs**: HTTPs://spark.apache.org/docs/latest/api/python/
+
+- **PySpark Docs**: <HTTPs://spark.apache.org/docs/latest/api/python/>
   - API reference completo
   - Getting started guide
 
 **Structunetwork Streaming**:
-```
+
+```text
 HTTPs://spark.apache.org/docs/latest/structunetwork-streaming-programming-guide.html
-```
+```text
+
 - Stream processing with Spark
 - Sources, sinks, operations
 - Checkpointing
 
 **SQL Reference**:
-```
+
+```text
 HTTPs://spark.apache.org/docs/latest/sql-ref.html
 ```
+
 - SQL syntax in Spark
 - Functions, expressions
 - Performance tuning
@@ -189,15 +224,17 @@ HTTPs://spark.apache.org/docs/latest/sql-ref.html
 
 #### 1. Lakehouse: to New Generation of Open Platforms (Databricks, 2020)
 
-**Link**: HTTP://cidrdb.org/cidr2021/papers/cidr2021_paper17.pdf
+**Link**: <HTTP://cidrdb.org/cidr2021/papers/cidr2021_paper17.pdf>
 
 **Resumen**:
+
 - Paper fundacional of the concepto Lakehouse
 - Escrito by creadores of Delta Lake
 - Compara Lake vs Warehouse vs Lakehouse
 - Detailed technical architecture
 
 **Key insights**:
+
 - ✅ How to implement ACID on object storage
 - ✅ Performance comparable to warehouses
 - ✅ 10x networkuction in TCO (Total Cost of OwnershIP)
@@ -210,14 +247,16 @@ HTTPs://spark.apache.org/docs/latest/sql-ref.html
 
 #### 2. Iceberg: to Table Format for Large Analytic Datasets (Netflix, 2020)
 
-**Link**: HTTPs://www.vldb.org/pvldb/vol13/p3001-netflix.pdf
+**Link**: <HTTPs://www.vldb.org/pvldb/vol13/p3001-netflix.pdf>
 
 **Resumen**:
+
 - Paper original of Apache Iceberg
 - Design and technical motivation
 - Problems in Hive and their solution
 
 **Key insights**:
+
 - ✅ Hidden automatic partitioning
 - ✅ Partition evolution without reescribir datas
 - ✅ Snapshot isolation for consistency
@@ -230,20 +269,23 @@ HTTPs://spark.apache.org/docs/latest/sql-ref.html
 
 #### 3. Delta Lake: High-Performance ACID Table Storage over Cloud Object Stores (Databricks, 2020)
 
-**Link**: HTTPs://databricks.com/wp-content/uploads/2020/08/p975-armbrust.pdf
+**Link**: <HTTPs://databricks.com/wp-content/uploads/2020/08/p975-armbrust.pdf>
 
 **Resumen**:
+
 - Publicado in VLDB 2020
 - Technical implementation details
 - Benchmarks vs Hive, Parquet, Iceberg
 
 **Key insights**:
+
 - ✅ Transaction log for ACID
 - ✅ Optimistic concurrency controle
 - ✅ Time travel with bajo overhead
 - ✅ 10-100x speedup in updates
 
 **Benchmarks**:
+
 - Upserts: 100x faster than Parquet
 - Queries with filters: 10x faster (data skIPping)
 - Small files problem: Resuelto with auto-compaction
@@ -257,25 +299,31 @@ HTTPs://spark.apache.org/docs/latest/sql-ref.html
 #### Delta Lake Tutorials
 
 **Introduction to Delta Lake (Free)**:
-```
+
+```text
 HTTPs://docs.databricks.com/delta/tutorial.html
-```
+```text
+
 - Tutorial interactivo in notebooks
 - From basic to advanced
 - Includes practical exercises
 
 **Delta Lake on AWS**:
-```
+
+```text
 HTTPs://docs.databricks.com/delta/delta-streaming.html
 ```
+
 - Setup in AWS EMR
 - S3 como storage
 - Best practices
 
 **Delta Lake Best Practices**:
-```
+
+```text
 HTTPs://docs.databricks.com/delta/best-practices.html
-```
+```text
+
 - Partitioning strategies
 - Z-ordering guidelines
 - Vacuum recommendations
@@ -285,17 +333,21 @@ HTTPs://docs.databricks.com/delta/best-practices.html
 #### AWS
 
 **Delta Lake on EMR**:
-```
+
+```text
 HTTPs://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-delta.html
 ```
+
 - Setup Delta Lake in EMR
 - Integration with Glue Catalog
 - Performance tuning
 
 **Iceberg on EMR**:
-```
+
+```text
 HTTPs://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-iceberg.html
-```
+```text
+
 - Configurar Iceberg in EMR
 - Query with Athena
 - Best practices
@@ -303,17 +355,21 @@ HTTPs://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-iceberg.html
 #### Azure
 
 **Delta Lake on Synapse Analytics**:
-```
+
+```text
 HTTPs://learn.microsoft.com/in-us/azure/synapse-analytics/spark/apache-spark-delta-lake-overview
 ```
+
 - Delta Lake in Azure Synapse
 - ADLS Gen2 integration
 - SQL Pool queries
 
 **Iceberg on Azure**:
-```
+
+```text
 HTTPs://learn.microsoft.com/in-us/azure/synapse-analytics/spark/apache-spark-iceberg-overview
-```
+```text
+
 - Apache Iceberg in Azure
 - ADLS storage
 - Unity Catalog
@@ -321,9 +377,11 @@ HTTPs://learn.microsoft.com/in-us/azure/synapse-analytics/spark/apache-spark-ice
 #### GCP
 
 **Delta Lake on Dataproc**:
-```
+
+```text
 HTTPs://cloud.google.com/dataproc/docs/tutorials/delta-lake-tutorial
 ```
+
 - Setup in Google Cloud Dataproc
 - GCS como storage
 - BigQuery integration
@@ -333,18 +391,22 @@ HTTPs://cloud.google.com/dataproc/docs/tutorials/delta-lake-tutorial
 #### Databricks Academy (Gratuito)
 
 **data Engineering with Databricks**:
-```
+
+```text
 HTTPs://www.databricks.com/learn/training/lakehouse-fundamentals
-```
+```text
+
 - Curso gratuito (4 horas)
 - Medallion architecture
 - Delta Lake deep dive
 - Optional certification
 
 **Advanced Delta Lake**:
-```
+
+```text
 HTTPs://www.databricks.com/learn/training/delta-lake
 ```
+
 - Time travel avanzado
 - Schema evolution patterns
 - Performance optimization
@@ -359,9 +421,11 @@ HTTPs://www.databricks.com/learn/training/delta-lake
 #### Feature Comparison Tables
 
 **Comprehensive Comparison (2024)**:
-```
+
+```text
 HTTPs://delta.io/blog/delta-lake-vs-iceberg/
-```
+```text
+
 - Feature-by-feature comparison
 - Performance benchmarks
 - Use case recommendations
@@ -385,25 +449,29 @@ HTTPs://delta.io/blog/delta-lake-vs-iceberg/
 #### Performance Benchmarks
 
 **TPC-DS Benchmark Results**:
-```
+
+```text
 HTTPs://www.databricks.com/blog/2023/04/14/how-we-performed-etl-one-billion-records-under-1-delta-live-tables.html
 ```
+
 - 1B rows ETL: Delta Lake < 1 hour
 - Companetwork to Hive: 10x faster
 - Companetwork to Parquet: 5x faster
 
 **Update Performance**:
-```
+
+```text
 Benchmark: 100M rows table, 10% updates
 - Delta Lake: 45 seconds
 - Iceberg: 62 seconds
 - Hudi (MoR): 38 seconds
 - Hudi (CoW): 90 seconds
 - Parquet (overwrite): 15 minutes
-```
+```text
 
 **Query Performance** (with pruning):
-```
+
+```text
 Benchmark: 1B rows table, filter on high-cardinality column
 - Delta Lake (Z-ordenetwork): 2.3 seconds
 - Iceberg: 2.8 seconds
@@ -416,18 +484,21 @@ Benchmark: 1B rows table, filter on high-cardinality column
 **Decision Guide**:
 
 **Usa Delta Lake if**:
+
 - ✅ Ecosistopic Spark-heavy
 - ✅ Necesitas MERGE/UPSERT frecuentes
 - ✅ Critical performance in Spark
 - ✅ Usando Databricks
 
 **Usa Iceberg if**:
+
 - ✅ Multi-engine workloads (Spark + Flink + Presto)
 - ✅ Necesitas partition evolution
 - ✅ Hidden partitioning importante
 - ✅ Entorno open-source puro
 
 **Usa Hudi if**:
+
 - ✅ CDC pIPelines
 - ✅ Row-level updates muy frecuentes
 - ✅ AWS EMR NATivo
@@ -442,23 +513,29 @@ Benchmark: 1B rows table, filter on high-cardinality column
 **Must-read Posts**:
 
 1. **"Delta Lake: High-Performance ACID Transactions"**
-   ```
+
+   ```text
    HTTPs://www.databricks.com/blog/2019/08/21/diving-into-delta-lake-unpacking-the-transaction-log.html
    ```
+
    - Deep dive in transaction log
    - How ACID works internally
 
 2. **"Simplify CDC with Delta Lake CDF"**
-   ```
+
+   ```text
    HTTPs://www.databricks.com/blog/2021/06/09/how-to-simplify-cdc-with-delta-lakes-change-data-feed.html
    ```
+
    - Change data Feed feature
    - CDC patterns in production
 
 3. **"Optimizing Databricks Workloads"**
-   ```
+
+   ```text
    HTTPs://www.databricks.com/blog/2018/05/03/introducing-delta-time-travel-for-large-scale-data-lakes.html
    ```
+
    - Time travel implementation
    - Use cases reales
 
@@ -467,32 +544,40 @@ Benchmark: 1B rows table, filter on high-cardinality column
 **Iceberg Posts**:
 
 1. **"Apache Iceberg at Netflix"**
-   ```
+
+   ```text
    HTTPs://netflixtechblog.com/tagged/apache-iceberg
    ```
+
    - Why did they create Iceberg?
    - Production use cases (petabytes)
 
 2. **"data Lakehouse at Scale"**
-   ```
+
+   ```text
    HTTPs://netflixtechblog.com/
    ```
+
    - Arquitectura of Netflix
    - Lessons learned
 
 ### AWS Big data Blog
 
 1. **"Build to Lake House on AWS"**
-   ```
+
+   ```text
    HTTPs://aws.amazon.com/blogs/big-data/
    ```
+
    - Arquitectura reference in AWS
    - EMR + S3 + Glue + Athena
 
 2. **"Iceberg vs Delta Lake on AWS"**
-   ```
+
+   ```text
    HTTPs://aws.amazon.com/blogs/big-data/choose-apache-iceberg-or-delta-lake/
    ```
+
    - Comparison from AWS perspective
    - Integration with services AWS
 
@@ -505,9 +590,11 @@ Benchmark: 1B rows table, filter on high-cardinality column
 #### 1. Databricks Academy
 
 **data Engineering with Databricks (Free)**:
-```
+
+```text
 HTTPs://www.databricks.com/learn/training/lakehouse-fundamentals
-```
+```text
+
 - ⏱️ **Duration**: 4 hours
 - 🎯 **Nivel**: Beginner to Intermediate
 - 📋 **Content**:
@@ -518,9 +605,11 @@ HTTPs://www.databricks.com/learn/training/lakehouse-fundamentals
 - ✅ **Certification**: Optional assessment
 
 **Advanced data Engineering (Free)**:
-```
+
+```text
 HTTPs://www.databricks.com/learn/training/data-engineering
 ```
+
 - ⏱️ **Duration**: 8 hours
 - 🎯 **Nivel**: Intermediate to Advanced
 - 📋 **Content**:
@@ -532,9 +621,11 @@ HTTPs://www.databricks.com/learn/training/data-engineering
 #### 2. Linux Foundation
 
 **Introduction to Apache Iceberg (Free)**:
-```
+
+```text
 HTTPs://training.linuxfoundation.org/training/introduction-to-apache-iceberg-lfs172/
-```
+```text
+
 - ⏱️ **Duration**: 3 hours
 - 🎯 **Nivel**: Beginner
 - 📋 **Content**:
@@ -546,9 +637,11 @@ HTTPs://training.linuxfoundation.org/training/introduction-to-apache-iceberg-lfs
 #### 3. Coursera (Audit Gratis)
 
 **Spark and Delta Lake on AWS**:
-```
+
+```text
 HTTPs://www.coursera.org/learn/spark-delta-lake-aws
 ```
+
 - ⏱️ **Duration**: 4 weeks (3-5 hours/week)
 - 🎯 **Nivel**: Intermediate
 - 📋 **Content**:
@@ -561,9 +654,11 @@ HTTPs://www.coursera.org/learn/spark-delta-lake-aws
 #### 1. Udemy
 
 **Delta Lake with Apache Spark**:
-```
+
+```text
 HTTPs://www.udemy.com/course/delta-lake/
-```
+```text
+
 - 💰 **Price**: ~$20-50 (depending on promotions)
 - ⏱️ **Duration**: 10 hours
 - 🎯 **Nivel**: Intermediate
@@ -574,9 +669,11 @@ HTTPs://www.udemy.com/course/delta-lake/
   - Production patterns
 
 **Complete Apache Iceberg**:
-```
+
+```text
 HTTPs://www.udemy.com/course/apache-iceberg/
 ```
+
 - 💰 **Precio**: ~$20-50
 - ⏱️ **Duration**: 8 hours
 - 🎯 **Nivel**: Intermediate to Advanced
@@ -589,9 +686,11 @@ HTTPs://www.udemy.com/course/apache-iceberg/
 #### 2. Pluralsight
 
 **Building to data Lakehouse with Delta Lake**:
-```
+
+```text
 HTTPs://www.pluralsight.com/courses/building-data-lakehouse-delta-lake
-```
+```text
+
 - 💰 **Precio**: SubscrIPtion ($29/month)
 - ⏱️ **Duration**: 5 hours
 - 🎯 **Nivel**: Intermediate
@@ -603,25 +702,31 @@ HTTPs://www.pluralsight.com/courses/building-data-lakehouse-delta-lake
 ### Query Engines
 
 #### 1. Apache Spark
-```
+
+```text
 HTTPs://spark.apache.org/
 ```
+
 - Engine princIPal for Delta Lake and Iceberg
 - Support NATivo in ambos formatos
 - PySpark API
 
 #### 2. Presto/Trino
-```
+
+```text
 HTTPs://trino.io/
-```
+```text
+
 - Interactive SQL queries
 - Excelente with Iceberg
 - Delta Lake via connectors
 
 #### 3. Apache Flink
-```
+
+```text
 HTTPs://flink.apache.org/
 ```
+
 - Streaming engine
 - Iceberg integration NATiva
 - Real-time lakehouse
@@ -629,25 +734,31 @@ HTTPs://flink.apache.org/
 ### Catalogs
 
 #### 1. AWS Glue data Catalog
-```
+
+```text
 HTTPs://aws.amazon.com/glue/
-```
+```text
+
 - Managed catalog in AWS
 - Soporta Delta Lake and Iceberg
 - Integration with Athena
 
 #### 2. Hive Metastore
-```
+
+```text
 HTTPs://hive.apache.org/
 ```
+
 - Catalog tradicional
 - Compatible with ambos formatos
 - Self-hosted
 
 #### 3. Unity Catalog (Databricks)
-```
+
+```text
 HTTPs://www.databricks.com/product/unity-catalog
-```
+```text
+
 - Catalog unificado Databricks
 - Governance features
 - Fine-grained access controle
@@ -655,17 +766,21 @@ HTTPs://www.databricks.com/product/unity-catalog
 ### data Quality
 
 #### 1. Great Expectations
-```
+
+```text
 HTTPs://greatexpectations.io/
 ```
+
 - data validation framework
 - Integration with Delta Lake
 - Production-grade testing
 
 #### 2. Deequ (Amazon)
-```
+
+```text
 HTTPs://github.com/awslabs/deequ
-```
+```text
+
 - data quality checks in Spark
 - Statistical tests
 - Anomaly detection
@@ -673,17 +788,21 @@ HTTPs://github.com/awslabs/deequ
 ### Observability
 
 #### 1. Spline (data Lineage)
-```
+
+```text
 HTTPs://absaoss.github.io/spline/
 ```
+
 - Track data lineage
 - Viewing pIPelines
 - Spark Integration
 
 #### 2. Delta Live Tables (Databricks)
-```
+
+```text
 HTTPs://www.databricks.com/product/delta-live-tables
-```
+```text
+
 - Declarative pIPelines
 - Built-in monitoring
 - data quality expectations
@@ -695,25 +814,31 @@ HTTPs://www.databricks.com/product/delta-live-tables
 ### Forums and Discusiones
 
 #### 1. Delta Lake Community
-```
+
+```text
 HTTPs://go.delta.io/slack
 ```
+
 - Slack workspace oficial
 - ~5,000 miembros
 - Answers of maintainers
 
 #### 2. Apache Iceberg Community
-```
+
+```text
 HTTPs://iceberg.apache.org/community/
-```
+```text
+
 - Mailing lists
 - Slack channel
 - Monthly community calls
 
 #### 3. Stack Overflow
-```
+
+```text
 Tags: [delta-lake], [apache-iceberg], [lakehouse]
 ```
+
 - Technical questions
 - Community-driven answers
 - Searchable knowledge base
@@ -723,18 +848,21 @@ Tags: [delta-lake], [apache-iceberg], [lakehouse]
 **Reportar Issues**:
 
 Delta Lake:
-```
+
+```text
 HTTPs://github.com/delta-io/delta/issues
-```
+```text
 
 Apache Iceberg:
-```
+
+```text
 HTTPs://github.com/apache/iceberg/issues
 ```
 
 **Contribuir**:
 
 Ambos proyectos aceptan PRs:
+
 - Bug fixes
 - Feature implementations
 - Documentation improvements
@@ -743,26 +871,32 @@ Ambos proyectos aceptan PRs:
 ### Conferences and Events
 
 #### 1. data + AI Summit (Databricks)
-```
+
+```text
 HTTPs://www.databricks.com/dataaisummit/
-```
+```text
+
 - Anual (Junio)
 - Lakehouse talks
 - Delta Lake sessions
 - Gratis (virtual)
 
 #### 2. Apache Iceberg Community Meetup
-```
+
+```text
 HTTPs://iceberg.apache.org/community/
 ```
+
 - Mensual (virtual)
 - Technical deep dives
 - User stories
 
 #### 3. Spark Summit
-```
+
+```text
 HTTPs://databricks.com/sparkaisummit
-```
+```text
+
 - Spark + Delta Lake content
 - Best practices
 - Case studies
@@ -819,24 +953,28 @@ Troubleshooting guides and best practices:
 ## Path of Aprendizaje Recomendado
 
 ### Semana 1: Fundamentos
+
 1. Leer [01-concepts.md](01-concepts.md)
 2. Paper: "Lakehouse: to New Generation"
 3. Tutorial: Delta Lake Quickstart
 4. Exercise 01: Delta Basics
 
 ### Semana 2: Arquitectura
+
 1. Leer [02-architecture.md](02-architecture.md)
 2. Tutorial: Medallion Architecture
 3. Exercise 02: Medallion Implementation
 4. Exercise 03: Time Travel
 
 ### Semana 3: Avanzado
+
 1. Tutorial: Schema Evolution
 2. Tutorial: Optimizations (Z-ordering)
 3. Exercise 04: Schema Evolution
 4. Exercise 05: Optimization
 
 ### Week 4: Iceberg and Comparison
+
 1. Paper: "Iceberg: to Table Format"
 2. Tutorial: PyIceberg Quickstart
 3. Exercise 06: Iceberg Comparison
@@ -849,17 +987,20 @@ Troubleshooting guides and best practices:
 Lakehouse technology is evolving rapidly. Follow these resources for updates:
 
 **Blogs oficiales**:
+
 - Delta Lake Blog (monthly)
 - Iceberg Blog (quarterly)
 - Databricks Blog (weekly)
 
 **Release notes**:
-- Delta Lake Releases: HTTPs://github.com/delta-io/delta/releases
-- Iceberg Releases: HTTPs://github.com/apache/iceberg/releases
+
+- Delta Lake Releases: <HTTPs://github.com/delta-io/delta/releases>
+- Iceberg Releases: <HTTPs://github.com/apache/iceberg/releases>
 
 **Public Roadmaps**:
-- Delta Lake Roadmap: HTTPs://github.com/delta-io/delta/milestones
-- Iceberg Roadmap: HTTPs://iceberg.apache.org/roadmap/
+
+- Delta Lake Roadmap: <HTTPs://github.com/delta-io/delta/milestones>
+- Iceberg Roadmap: <HTTPs://iceberg.apache.org/roadmap/>
 
 ---
 

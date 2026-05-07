@@ -15,11 +15,11 @@
 
 ### Patrón 1: Event-Driven ETL
 
-```
+```text
 S3 Upload → Lambda (Transform) → S3 (Processed)
                 ↓
            DynamoDB (Metadata)
-```
+```text
 
 **Caso de uso**: Transformar archivos CSV a Parquet al subirlos a S3.
 
@@ -55,7 +55,7 @@ def lambda_handler(event, context):
     )
 
     return {'output': f's3://{bucket}/{output_key}'}
-```
+```text
 
 ### Patrón 2: Fan-Out Processing
 
@@ -64,7 +64,7 @@ S3 Upload → SNS Topic
               ├→ Lambda 1 (Validation)
               ├→ Lambda 2 (Transform)
               └→ Lambda 3 (Metadata extraction)
-```
+```text
 
 **Caso de uso**: Procesar un archivo en paralelo (validation, transformación, metadata).
 
@@ -101,11 +101,11 @@ def transform_file(event, context):
 def extract_metadata(event, context):
     message = json.loads(event['Records'][0]['Sns']['Message'])
     # Extraer metadata...
-```
+```text
 
 ### Patrón 3: Stream Processing
 
-```
+```text
 Kinesis Stream → Lambda (Process) → S3/DynamoDB
                      ↓
            CloudWatch Metrics
@@ -128,7 +128,7 @@ def lambda_handler(event, context):
 
         # Agregar métricas
         update_metrics(log_entry)
-```
+```text
 
 ---
 
@@ -183,7 +183,7 @@ def lambda_handler(event, context):
     final_result = pd.concat(results).groupby(level=0).sum()
 
     return {'status': 'success', 'results': final_result.to_dict()}
-```
+```text
 
 ### S3 Select: SQL en Archivos
 
@@ -218,9 +218,10 @@ def lambda_handler(event, context):
             results.append(data)
 
     return ''.join(results)
-```
+```text
 
 **Ventajas S3 Select**:
+
 - ✅ 80% menos datos transferidos
 - ✅ 400% más rápido que descargar archivo completo
 - ✅ Soporta CSV, JSON, Parquet
@@ -296,7 +297,7 @@ Definido en **Amazon States Language (ASL)** - JSON que describe el workflow.
     }
   }
 }
-```
+```text
 
 ### Tipos de States
 
@@ -311,7 +312,7 @@ Definido en **Amazon States Language (ASL)** - JSON que describe el workflow.
     "Next": "CheckValidation"
   }
 }
-```
+```text
 
 #### 2. Choice (Condicional)
 
@@ -333,7 +334,7 @@ Definido en **Amazon States Language (ASL)** - JSON que describe el workflow.
     ]
   }
 }
-```
+```text
 
 #### 3. Parallel (Ejecutar en paralelo)
 
@@ -389,7 +390,7 @@ Definido en **Amazon States Language (ASL)** - JSON que describe el workflow.
     "End": true
   }
 }
-```
+```text
 
 #### 5. Wait (Esperar)
 
@@ -401,7 +402,7 @@ Definido en **Amazon States Language (ASL)** - JSON que describe el workflow.
     "Next": "RetryTask"
   }
 }
-```
+```text
 
 ### ETL Pipeline Completo con Step Functions
 
@@ -497,7 +498,7 @@ Definido en **Amazon States Language (ASL)** - JSON que describe el workflow.
     }
   }
 }
-```
+```text
 
 ### Integración con Lambda
 
@@ -547,7 +548,7 @@ def lambda_handler(event, context):
         'record_count': len(result),
         'status': 'success'
     }
-```
+```text
 
 ---
 
@@ -574,7 +575,7 @@ def lambda_handler(event, context):
             'EventBusName': 'default'
         }]
     )
-```
+```text
 
 **EventBridge Rule** (Terraform):
 
@@ -594,7 +595,7 @@ resource "aws_cloudwatch_event_target" "lambda" {
   target_id = "SendToLambda"
   arn       = aws_lambda_function.notifier.arn
 }
-```
+```text
 
 ### SQS + Lambda: Reliable Processing
 
@@ -604,9 +605,10 @@ resource "aws_cloudwatch_event_target" "lambda" {
 S3 Upload → SQS Queue → Lambda (Batch processing)
                 ↓
           DLQ (errores)
-```
+```text
 
 **Ventajas**:
+
 - ✅ **Decoupling**: Si Lambda falla, mensaje no se pierde
 - ✅ **Throttling control**: Lambda procesa a su propio ritmo
 - ✅ **Retry automático**: Mensajes fallidos vuelven a la cola
@@ -630,7 +632,7 @@ def lambda_handler(event, context):
 
     # Si return exitoso, mensajes se eliminan de la cola
     return {'statusCode': 200}
-```
+```text
 
 **Terraform configuration**:
 
@@ -658,7 +660,7 @@ resource "aws_lambda_event_source_mapping" "sqs_trigger" {
   batch_size       = 10
   enabled          = true
 }
-```
+```text
 
 ---
 
@@ -678,7 +680,7 @@ SQS (1 mensaje por archivo)
 Lambda (Process file)
    ↓
 S3 (Processed)
-```
+```text
 
 **Lambda 1: Detector de archivos nuevos**
 
@@ -714,7 +716,7 @@ def lambda_handler(event, context):
                 'size': obj['Size']
             })
         )
-```
+```text
 
 ### Pattern 2: Large File Processing
 
@@ -722,7 +724,7 @@ def lambda_handler(event, context):
 
 **Solution**: Dividir en chunks y procesar en paralelo.
 
-```
+```text
 S3 (large file)
    ↓
 Lambda (Splitter) → Invoca múltiples...
@@ -770,7 +772,7 @@ def lambda_handler(event, context):
         )
 
     return {'chunks_created': num_chunks}
-```
+```text
 
 ```python
 # Lambda Processor (procesa un chunk)
@@ -798,13 +800,13 @@ def lambda_handler(event, context):
     )
 
     return {'chunk_id': event['chunk_id'], 'output': output_key}
-```
+```text
 
 ### Pattern 3: Real-Time Aggregation
 
 **Caso de uso**: Agregar métricas en tiempo real (ej: conteo de eventos por minuto).
 
-```
+```text
 EventBridge → Lambda → DynamoDB (atomic counters)
 ```
 
@@ -823,7 +825,7 @@ def lambda_handler(event, context):
         UpdateExpression='ADD count :inc',
         ExpressionAttributeValues={':inc': 1}
     )
-```
+```text
 
 ---
 
@@ -841,7 +843,7 @@ def lambda_handler(event, context):
     glue.start_crawler(Name='my-data-crawler')
 
     return {'status': 'Crawler started'}
-```
+```text
 
 ### Lambda + Glue Job
 
@@ -865,7 +867,7 @@ def lambda_handler(event, context):
                 '--S3_OUTPUT': event['output_path']
             }
         )
-```
+```text
 
 ### Athen + Lambda
 
@@ -928,7 +930,7 @@ fields @timestamp, @message
 | filter @message like /ERROR/
 | sort @timestamp desc
 | limit 20
-```
+```text
 
 ### Custom Metrics
 
@@ -951,7 +953,7 @@ def lambda_handler(event, context):
             'Timestamp': datetime.utcnow()
         }]
     )
-```
+```text
 
 ### X-Ray Tracing
 
@@ -970,7 +972,7 @@ def lambda_handler(event, context):
         subsegment.put_annotation('record_count', len(result))
 
     return result
-```
+```text
 
 ---
 
@@ -1030,7 +1032,7 @@ def lambda_handler(event, context):
         # Error inesperado (raise para retry)
         print(f"Unexpected error: {e}")
         raise
-```
+```text
 
 ### 3. Secrets Management
 
@@ -1058,7 +1060,7 @@ def lambda_handler(event, context):
         user=db_creds['username'],
         password=db_creds['password']
     )
-```
+```text
 
 ### 4. Testing
 
@@ -1087,7 +1089,7 @@ def test_lambda_handler_success(mock_boto3):
 
     assert result['statusCode'] == 200
     mock_s3.get_object.assert_called_once()
-```
+```text
 
 ---
 

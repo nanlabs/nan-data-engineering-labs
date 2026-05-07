@@ -42,7 +42,7 @@ cd ~/terraform-exercises/04-data-infrastructure
 
 mkdir -p {modules,scripts,docs}
 touch main.tf variables.tf outputs.tf terraform.tfvars
-```
+```text
 
 #### 1.2. Configuration Principal del Data Lake
 
@@ -458,7 +458,7 @@ resource "aws_s3_bucket_public_access_block" "all_buckets" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-```
+```text
 
 </details>
 
@@ -508,7 +508,7 @@ variable "tags" {
     Owner = "DataTeam"
   }
 }
-```
+```text
 
 </details>
 
@@ -534,7 +534,7 @@ Buckets creados:
 - datalake-staging-dev (temporary)
 - datalake-quarantine-dev (failed data)
 - datalake-logs-dev (access logs)
-```
+```text
 
 ---
 
@@ -826,7 +826,7 @@ output "glue_info" {
     sample_table = aws_glue_catalog_table.sample_data.name
   }
 }
-```
+```text
 
 </details>
 
@@ -973,7 +973,7 @@ output "athena_info" {
     results_bucket = aws_s3_bucket.athena_results.id
   }
 }
-```
+```text
 
 </details>
 
@@ -1010,26 +1010,29 @@ output "data_lake_summary" {
     environment = var.environment
   }
 }
-```
+```text
 
 </details>
 
 ```bash
 terraform apply -auto-approve
 terraform output
-```
+```text
 
 ---
 
 ## Troubleshooting
 
 ### Problema 1: Glue Crawler Falla
+
 **Solution:** Verificar permisos IAM del rol de Glue
 
 ### Problema 2: Athena Query Timeout
+
 **Solution:** Aumentar bytes_scanned_cutoff_per_query
 
 ### Problema 3: Lifecycle Policy No Aplica
+
 **Solution:** Verificar que objetos tengan LastModified correcto
 
 ---

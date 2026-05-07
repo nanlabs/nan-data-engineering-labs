@@ -50,7 +50,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # 6. Install development dependencies
 pip install boto3 botocore requests jsonschema pytest black flake8 aws-xray-sdk
-```
+```text
 
 ### AWS Account Preparation
 
@@ -80,7 +80,7 @@ aws cloudwatch put-metric-alarm \
   --evaluation-periods 1 \
   --threshold 80 \
   --comparison-operator GreaterThanThreshold
-```
+```text
 
 ## Phase 1: Infrastructure Setup
 
@@ -99,7 +99,7 @@ cd terraform
 touch main.tf variables.tf outputs.tf backend.tf
 touch iam.tf kinesis.tf lambda.tf dynamodb.tf s3.tf
 touch step-functions.tf eventbridge.tf cloudwatch.tf sns.tf
-```
+```text
 
 ### Step 1.2: Configure Terraform Backend
 
@@ -204,7 +204,7 @@ variable "lambda_memory_size" {
   type        = number
   default     = 512
 }
-```
+```text
 
 ### Step 1.4: Create Kinesis Streams
 
@@ -303,7 +303,7 @@ resource "aws_kms_alias" "kinesis" {
   name          = "alias/${var.project_name}-kinesis-${var.environment}"
   target_key_id = aws_kms_key.kinesis.key_id
 }
-```
+```text
 
 ### Step 1.5: Create DynamoDB Tables
 
@@ -429,7 +429,7 @@ resource "aws_dynamodb_table" "aggregated_metrics" {
     enabled = true
   }
 }
-```
+```text
 
 ### Step 1.6: Create S3 Buckets
 
@@ -591,7 +591,7 @@ resource "aws_iam_role_policy" "lambda_ride_processor" {
 
 # Additional IAM roles for other Lambda functions would follow similar pattern
 # (driver_location_processor, payment_processor, rating_processor)
-```
+```text
 
 ### Step 1.8: Deploy Infrastructure
 
@@ -622,9 +622,10 @@ terraform output > outputs.txt
 aws kinesis list-streams
 aws dynamodb list-tables
 aws s3 ls | grep rideshare
-```
+```text
 
 **Expected Results**:
+
 - 4 Kinesis streams created
 - 3 DynamoDB tables created
 - 2 S3 buckets created
@@ -651,7 +652,7 @@ touch src/__init__.py
 touch src/producers/__init__.py
 touch src/lambda/__init__.py
 touch src/common/__init__.py
-```
+```text
 
 ### Step 2.2: Create Base Producer Class
 
@@ -899,7 +900,7 @@ if __name__ == '__main__':
 
     producer = RideEventProducer(args.stream_name)
     producer.run(args.rate, args.duration)
-```
+```text
 
 ### Step 2.4: Test Event Producers
 
@@ -929,9 +930,10 @@ aws kinesis get-shard-iterator \
 
 # Use the shard iterator to get records
 aws kinesis get-records --shard-iterator <ITERATOR_FROM_PREVIOUS_COMMAND> | jq '.Records[0].Data' | base64 -d | jq .
-```
+```text
 
 **Follow similar patterns for**:
+
 - `driver_location_producer.py`
 - `payment_producer.py`
 - `rating_producer.py`
@@ -972,7 +974,7 @@ class Config:
     # Processing settings
     BATCH_SIZE = int(os.environ.get('BATCH_SIZE', '100'))
     MAX_RETRIES = int(os.environ.get('MAX_RETRIES', '3'))
-```
+```text
 
 **File: `src/common/logger.py`**
 
@@ -1222,7 +1224,7 @@ def update_metric(metric_name: str, value: float, operation: str = 'set'):
             )
     except Exception as e:
         logger.error(f"Error updating metric {metric_name}: {e}")
-```
+```text
 
 ### Step 3.3: Package and Deploy Lambda
 
@@ -1241,7 +1243,7 @@ aws s3 cp ride_processor.zip s3://rideshare-lambda-artifacts-dev-ACCOUNT_ID/
 # Deploy
 cd ~/rideshare-platform/terraform
 terraform apply
-```
+```text
 
 ### Step 3.4: Configure Event Source Mapping
 
@@ -1253,13 +1255,14 @@ aws lambda create-event-source-mapping \
   --batch-size 100 \
   --starting-position LATEST \
   --maximum-batching-window-in-seconds 5
-```
+```text
 
 ## Phase 4-9: Continue Implementation
 
 Due to space constraints, the remaining phases (State Management, Workflow Orchestration, Data Quality, Visualization, Monitoring, and Optimization) follow similar patterns as demonstrated above.
 
 **Key principles to follow**:
+
 1. Implement incrementally
 2. Test after each component
 3. Monitor metrics and logs
@@ -1334,7 +1337,7 @@ def test_end_to_end_flow():
 
     assert 'Item' in response
     assert response['Item']['status'] == 'requested'
-```
+```text
 
 ### Load Tests
 
@@ -1355,7 +1358,7 @@ def test_1000_events_per_second():
     # - No throttling errors
     # - Lambda invocations match event count
     # - DynamoDB writes successful
-```
+```text
 
 ## Best Practices
 

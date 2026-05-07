@@ -3,6 +3,7 @@
 ## 🎯 Objectives
 
 Learn los fundamentos de batch processing:
+
 - Procesar archivos grandes que no caben en memoria
 - Implementar chunking eficiente
 - Memory management con pandas
@@ -22,7 +23,7 @@ df = pd.read_csv('huge_file.csv')  # OOM Error!
 # ✅ Bueno: Procesa en chunks
 for chunk in pd.read_csv('huge_file.csv', chunksize=100000):
     process(chunk)  # Procesa 100K records cada vez
-```
+```text
 
 ### Memory-Efficient DataTypes
 
@@ -33,7 +34,7 @@ df['user_id'] = int64  # 8 bytes por valor
 # Optimize dtypes
 df['user_id'] = int32  # 4 bytes (suficiente para IDs)
 df['category'] = 'category'  # Muy eficiente para strings repetidos
-```
+```text
 
 ## 🏋️ Exercises
 
@@ -42,6 +43,7 @@ df['category'] = 'category'  # Muy eficiente para strings repetidos
 **Archivo**: `starter/batch_reader.py`
 
 Implement un `BatchReader` que:
+
 1. Read archivos CSV en chunks
 2. Procesa cada chunk
 3. Agrega resultados
@@ -55,14 +57,16 @@ class BatchReader:
     def process_chunks(self, transform_fn) -> pd.DataFrame:
         """Process file in chunks and aggregate results."""
         pass
-```
+```text
 
 **Testing**:
+
 ```bash
 python starter/batch_reader.py
 ```
 
 **Esperado**:
+
 - Read archivo en chunks de 100K
 - Apply transformation to each chunk
 - Retorna resultado agregado
@@ -72,6 +76,7 @@ python starter/batch_reader.py
 **Archivo**: `starter/memory_optimizer.py`
 
 Implement optimizaciones de memoria:
+
 1. Detect optimal data types
 2. Convert dtypes automatically
 3. Reporta ahorro de memoria
@@ -87,14 +92,16 @@ class MemoryOptimizer:
     def memory_usage_mb(df: pd.DataFrame) -> float:
         """Calculate DataFrame memory usage in MB."""
         pass
-```
+```text
 
 **Testing**:
+
 ```bash
 python starter/memory_optimizer.py
-```
+```text
 
 **Esperado**:
+
 - int64 → int32 cuando posible
 - object → category para strings repetidos
 - float64 → float32 when precision not critical
@@ -113,9 +120,10 @@ class BatchProcessor:
     def process_with_progress(self, filepath: str):
         """Process file with progress bar."""
         pass
-```
+```text
 
 **Features**:
+
 - Progress bar con tqdm
 - ETA (tiempo estimado)
 - Records/second throughput
@@ -142,6 +150,7 @@ class BatchAggregator:
 ```
 
 **Aggregations a implement**:
+
 - Total records
 - Sum de amounts
 - Count by category
@@ -161,7 +170,7 @@ python generate_transactions.py \
   --format csv \
   --partition-by none \
   --output-dir ../raw/transactions_small
-```
+```text
 
 ## ✅ Validation
 
@@ -171,7 +180,7 @@ pytest test_batch_basics.py -v
 
 # Run con coverage
 pytest test_batch_basics.py --cov=starter --cov-report=html
-```
+```text
 
 ## 💡 Hints
 
@@ -189,7 +198,8 @@ def process_chunks(filepath, chunksize=100000):
 
     # Combine results
     return pd.concat(results, ignore_index=True)
-```
+```text
+
 </details>
 
 <details>
@@ -217,6 +227,7 @@ def optimize_ints(df, col):
 
     return 'int64'
 ```
+
 </details>
 
 <details>
@@ -234,7 +245,8 @@ with tqdm(total=total_lines, desc="Processing") as pbar:
     for chunk in chunks:
         process(chunk)
         pbar.update(len(chunk))
-```
+```text
+
 </details>
 
 <details>
@@ -255,12 +267,14 @@ class Aggregator:
         chunk_counts = chunk['category'].value_counts()
         for cat, count in chunk_counts.items():
             self.category_counts[cat] = self.category_counts.get(cat, 0) + count
-```
+```text
+
 </details>
 
 ## 🎓 Learning Outcomes
 
 After completing this exercise, you will know:
+
 - ✅ How to process files > RAM with chunking
 - ✅ Optimizar memory usage con dtypes correctos
 - ✅ Implementar progress tracking profesional

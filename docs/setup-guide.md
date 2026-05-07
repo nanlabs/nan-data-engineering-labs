@@ -54,7 +54,7 @@ docker --version
 docker compose version
 python3 --version
 git --version
-```
+```text
 
 ### macOS
 
@@ -79,7 +79,7 @@ docker --version
 docker compose version
 python3 --version
 git --version
-```
+```text
 
 ### Windows (WSL2)
 
@@ -97,7 +97,7 @@ wsl --install
 # 5. Enable WSL2 backend in Docker Desktop settings
 
 # 6. Open Ubuntu terminal and follow Linux instructions above
-```
+```text
 
 ---
 
@@ -115,7 +115,8 @@ ls -la
 ```
 
 Expected structure:
-```
+
+```text
 nan-data-engineering-labs/
 ├── docker-compose.yml
 ├── Makefile
@@ -127,7 +128,7 @@ nan-data-engineering-labs/
 ├── shared/
 ├── scripts/
 └── docs/
-```
+```text
 
 ### 2. Run Automated Setup
 
@@ -137,9 +138,10 @@ chmod +x scripts/setup-environment.sh
 
 # Run setup
 bash scripts/setup-environment.sh
-```
+```text
 
 The setup script will:
+
 1. ✅ Verify Docker and Python installations
 2. ✅ Create Python virtual environment
 3. ✅ Install Python dependencies
@@ -181,7 +183,7 @@ make up
 
 # Or using docker-compose directly
 docker-compose up -d
-```
+```text
 
 ### Verify Services Are Running
 
@@ -198,7 +200,7 @@ docker-compose ps
 # - spark-master (running)
 # - spark-worker (running)
 # - minio (running)
-```
+```text
 
 ### Test Service Connectivity
 
@@ -214,18 +216,18 @@ curl http://localhost:9001
 
 # Test Trino
 curl http://localhost:8080/ui/
-```
+```text
 
 ### Service Endpoints
 
 | Service | Endpoint | Credentials |
 |---------|----------|-------------|
-| LocalStack | http://localhost:4566 | test/test |
-| MinIO Console | http://localhost:9001 | minioadmin/minioadmin |
-| MinIO API | http://localhost:9000 | minioadmin/minioadmin |
+| LocalStack | <http://localhost:4566> | test/test |
+| MinIO Console | <http://localhost:9001> | minioadmin/minioadmin |
+| MinIO API | <http://localhost:9000> | minioadmin/minioadmin |
 | PostgreSQL | localhost:5432 | cloudde/cloudde123 |
-| Trino UI | http://localhost:8080 | - |
-| Spark UI | http://localhost:8081 | - |
+| Trino UI | <http://localhost:8080> | - |
+| Spark UI | <http://localhost:8081> | - |
 | Kafka | localhost:29092 | - |
 
 ---
@@ -258,7 +260,7 @@ Default output format: json
 
 # Use with LocalStack
 aws --endpoint-url=http://localhost:4566 --profile localstack s3 ls
-```
+```text
 
 ### Python Virtual Environment
 
@@ -272,7 +274,7 @@ deactivate
 # Install additional packages if needed
 pip install <package-name>
 pip freeze > requirements-custom.txt
-```
+```text
 
 ---
 
@@ -292,7 +294,7 @@ python shared/utilities/data_generators.py
 
 # Check progress tracking
 make progress
-```
+```text
 
 ### Manual Service Tests
 
@@ -325,7 +327,7 @@ docker exec -it cloud-de-kafka kafka-topics \
 # List topics
 docker exec -it cloud-de-kafka kafka-topics \
   --list --bootstrap-server localhost:9092
-```
+```text
 
 #### Spark
 
@@ -335,7 +337,7 @@ docker exec -it cloud-de-spark-master spark-shell --version
 
 # Open Spark UI in browser
 open http://localhost:8081
-```
+```text
 
 ---
 
@@ -344,6 +346,7 @@ open http://localhost:8081
 ### Docker Issues
 
 **Problem:** Docker daemon not running
+
 ```bash
 # Linux
 sudo systemctl start docker
@@ -354,9 +357,10 @@ sudo systemctl enable docker
 
 # Windows
 # Start Docker Desktop
-```
+```text
 
 **Problem:** Permission denied
+
 ```bash
 # Linux - add user to docker group
 sudo usermod -aG docker $USER
@@ -364,17 +368,19 @@ newgrp docker
 ```
 
 **Problem:** Port already in use
+
 ```bash
 # Find process using port
 sudo lsof -i :4566  # Replace with your port
 
 # Kill process
 kill -9 <PID>
-```
+```text
 
 ### LocalStack Issues
 
 **Problem:** LocalStack not starting
+
 ```bash
 # Check logs
 docker-compose logs localstack
@@ -386,20 +392,22 @@ docker-compose restart localstack
 docker-compose down
 docker volume rm nan-data-engineering-labs_localstack-volume
 docker-compose up -d
-```
+```text
 
 **Problem:** Services not available
+
 ```bash
 # Check which services are running
 curl http://localhost:4566/_localstack/health
 
 # Restart specific service
 docker-compose restart localstack
-```
+```text
 
 ### Python Issues
 
 **Problem:** Module not found
+
 ```bash
 # Ensure venv is activated
 source venv/bin/activate
@@ -409,6 +417,7 @@ pip install -r requirements.txt
 ```
 
 **Problem:** Python version mismatch
+
 ```bash
 # Check Python version
 python --version
@@ -416,11 +425,12 @@ python --version
 # Use specific version
 python3.9 -m venv venv
 source venv/bin/activate
-```
+```text
 
 ### Network Issues
 
 **Problem:** Cannot connect to services
+
 ```bash
 # Check if services are running
 docker-compose ps
@@ -432,7 +442,7 @@ docker network inspect nan-data-engineering-labs_cloud-de-network
 # Restart networking
 docker-compose down
 docker-compose up -d
-```
+```text
 
 ---
 
@@ -446,7 +456,7 @@ make down
 
 # Or
 docker-compose down
-```
+```text
 
 ### Clean All Data
 
@@ -471,7 +481,7 @@ rm .env
 
 # Run setup again
 bash scripts/setup-environment.sh
-```
+```text
 
 ---
 
@@ -489,7 +499,7 @@ python scripts/generate_structure.py
 # Rebuild Docker images
 docker-compose pull
 docker-compose up -d --force-recreate
-```
+```text
 
 ### Update Python Dependencies
 
@@ -499,7 +509,7 @@ source venv/bin/activate
 
 # Update packages
 pip install --upgrade -r requirements.txt
-```
+```text
 
 ---
 
@@ -533,7 +543,7 @@ make up
 # End your day
 make down
 deactivate
-```
+```text
 
 ### Backup Your Work
 
@@ -544,7 +554,7 @@ tar -czf my-solutions-$(date +%Y%m%d).tar.gz \
 
 # Backup progress
 cp -r modules/ backup/modules-$(date +%Y%m%d)/
-```
+```text
 
 ---
 

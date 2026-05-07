@@ -48,7 +48,7 @@ mkdir -p environments/prod
 
 # Archivos principales
 touch main.tf variables.tf outputs.tf terraform.tfvars
-```
+```text
 
 #### 1.2. Crear el Module S3 Bucket
 
@@ -197,7 +197,7 @@ resource "aws_s3_bucket_policy" "this" {
   bucket = aws_s3_bucket.this.id
   policy = var.bucket_policy
 }
-```
+```text
 
 </details>
 
@@ -310,7 +310,7 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-```
+```text
 
 </details>
 
@@ -419,7 +419,7 @@ module "my_bucket" {
     Application = "my-app"
   }
 }
-```
+```text
 
 ## Inputs
 
@@ -443,7 +443,8 @@ module "my_bucket" {
 ## Examples
 
 Ver `examples/` directory.
-```
+
+```text
 
 </details>
 
@@ -567,7 +568,7 @@ module "analytics_bucket" {
     Critical    = "true"
   }
 }
-```
+```text
 
 </details>
 
@@ -622,7 +623,7 @@ terraform output
 
 # Verificar modules
 ls -la .terraform/modules/
-```
+```text
 
 ### Output Esperado
 
@@ -641,7 +642,7 @@ all_bucket_arns = [
   "arn:aws:s3:::module-processed-data-dev",
   "arn:aws:s3:::module-analytics-data-dev",
 ]
-```
+```text
 
 ### Conceptos Clave
 
@@ -805,7 +806,7 @@ variable "max_object_size" {
     error_message = "max_object_size debe ser mayor que min_object_size."
   }
 }
-```
+```text
 
 </details>
 
@@ -987,7 +988,7 @@ output "complete_example" {
     lifecycle      = module.complete_bucket.lifecycle_summary
   }
 }
-```
+```text
 
 </details>
 
@@ -1000,7 +1001,7 @@ terraform apply -auto-approve
 
 # Ver outputs detallados
 terraform output -json | jq '.'
-```
+```text
 
 ### Output Esperado
 
@@ -1046,7 +1047,7 @@ terraform output -json | jq '.'
     }
   }
 }
-```
+```text
 
 ### Conceptos Clave
 
@@ -1278,7 +1279,7 @@ output "environments_summary" {
     }
   }
 }
-```
+```text
 
 </details>
 
@@ -1363,7 +1364,7 @@ output "logging_infrastructure" {
     }
   }
 }
-```
+```text
 
 </details>
 
@@ -1376,7 +1377,7 @@ terraform state list | wc -l
 
 # Ver detalles de un module específico
 terraform state show 'module.data_lake_buckets["raw"].aws_s3_bucket.this'
-```
+```text
 
 ### Output Esperado
 
@@ -1815,7 +1816,7 @@ resource "aws_iam_role_policy" "data_analyst" {
     ]
   })
 }
-```
+```text
 
 </details>
 
@@ -1892,7 +1893,7 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-```
+```text
 
 </details>
 
@@ -1960,7 +1961,7 @@ output "data_lake_summary" {
     versioning      = var.enable_versioning
   }
 }
-```
+```text
 
 </details>
 
@@ -2017,7 +2018,7 @@ terraform apply -auto-approve
 # Ver infraestructura creada
 terraform output
 terraform state list | grep module.my_data_lake
-```
+```text
 
 ### Output Esperado
 
@@ -2038,7 +2039,7 @@ bucket_uris = {
   "gold" = "s3://analytics-gold-dev"
   "silver" = "s3://analytics-silver-dev"
 }
-```
+```text
 
 ### Conceptos Clave
 
@@ -2076,7 +2077,7 @@ You will learn a consumir modules del Terraform Registry público, evaluarlos, y
 
 # Ejemplo: terraform-aws-modules/s3-bucket/aws
 # URL: https://registry.terraform.io/modules/terraform-aws-modules/s3-bucket/aws
-```
+```text
 
 #### 5.2. Usar Module Público
 
@@ -2226,8 +2227,9 @@ module "my_data_pipeline" {
   source = "./modules/data-pipeline"
   # ...
 }
-```
-```
+```text
+
+```text
 
 </details>
 
@@ -2285,7 +2287,7 @@ echo "  - Mantenimiento activo (< 6 meses desde último update)"
 echo "  - Documentación clara"
 echo "  - Compatible con tu versión de Terraform"
 echo "  - De fuentes confiables (terraform-aws-modules, HashiCorp, etc.)"
-```
+```text
 
 </details>
 
@@ -2318,9 +2320,9 @@ You will learn a versionar tus modules propios, publicarlos en Git, y gestionar 
 <details>
 <summary>📄 modules/s3-bucket/VERSION - Semantic Versioning</summary>
 
-```
+```text
 1.0.0
-```
+```text
 
 </details>
 
@@ -2363,7 +2365,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 ### Added
 - Versión alpha inicial
 - Funcionalidad básica de bucket
-```
+```text
 
 </details>
 
@@ -2517,7 +2519,7 @@ echo "module \"$MODULE_NAME\" {"
 echo "  source = \"git::$REMOTE_URL?ref=$LATEST_TAG\""
 echo "  # ..."
 echo "}"
-```
+```text
 
 </details>
 
@@ -2584,7 +2586,7 @@ module "s3_from_http" {
 # version = "~> 1.0"     # >= 1.0.0 y < 2.0.0
 # version = "~> 1.0.4"   # >= 1.0.4 y < 1.1.0
 # version = ">= 1.0, < 2.0"  # Entre 1.0 y 2.0
-```
+```text
 
 </details>
 
@@ -2609,9 +2611,10 @@ Seguimos [SemVer](https://semver.org/): MAJOR.MINOR.PATCH
 module "dev" {
   source = "./modules/s3-bucket"  # Local, siempre latest
 }
-```
+```text
 
 ### Staging
+
 ```hcl
 module "staging" {
   source = "git::...?ref=develop"  # Branch develop
@@ -2621,17 +2624,19 @@ module "staging" {
 ```
 
 ### Producción
+
 ```hcl
 module "prod" {
   source = "git::...?ref=v1.0.5"  # Tag específico
   # O version constraint estricto:
   # version = "1.0.5"  # Exactamente esta versión
 }
-```
+```text
 
 ## Proceso de Actualización
 
 ### 1. Actualización de PATCH (1.0.0 → 1.0.1)
+
 **Riesgo: Bajo** - Solo bug fixes
 
 ```bash
@@ -2643,9 +2648,10 @@ terraform init -upgrade
 2. Actualizar version en terraform code
 3. terraform plan (revisar cambios)
 4. Aplicar en horario de mantenimiento
-```
+```text
 
 ### 2. Actualización de MINOR (1.0.0 → 1.1.0)
+
 **Riesgo: Medio** - Nuevas features
 
 ```bash
@@ -2655,9 +2661,10 @@ terraform init -upgrade
 4. Actualizar staging
 5. Esperar 1-2 weeks
 6. Actualizar producción con plan/apply cuidadoso
-```
+```text
 
 ### 3. Actualización de MAJOR (1.0.0 → 2.0.0)
+
 **Riesgo: Alto** - Breaking changes
 
 ```bash
@@ -2686,11 +2693,11 @@ terraform show upgrade.tfplan | grep -E "(destroy|replace)"
 
 # 4. Si todo OK, aplicar
 terraform apply upgrade.tfplan
-```
+```text
 
 ## Rollback Strategy
 
-### Si algo sale mal:
+### Si algo sale mal
 
 ```bash
 # Opción 1: Revertir a versión anterior
@@ -2706,7 +2713,7 @@ terraform apply upgrade.tfplan
 terraform destroy -target=module.problematic
 # Revertir código
 terraform apply
-```
+```text
 
 ## Best Practices
 
@@ -2754,7 +2761,8 @@ jobs:
           release_name: Release ${{ github.ref }}
           body: |
             Ver CHANGELOG.md para detalles
-```
+```text
+
 ```
 
 </details>
@@ -2767,7 +2775,7 @@ chmod +x version-module.sh
 # Simular publicación (sin remote real)
 echo "En producción, ejecutarías:"
 echo "./publish-module.sh s3-bucket origin"
-```
+```text
 
 ### Output Esperado
 
@@ -2779,7 +2787,7 @@ echo "./publish-module.sh s3-bucket origin"
 
 ✨ Versionado completed
 Actualiza CHANGELOG.md con los cambios de esta versión
-```
+```text
 
 ### Conceptos Clave
 
@@ -2797,25 +2805,29 @@ Actualiza CHANGELOG.md con los cambios de esta versión
 ### Problema 1: Module Not Found
 
 **Error:**
-```
+
+```text
 Error: Module not installed
 ```
 
 **Solution:**
+
 ```bash
 # Re-inicializar para descargar modules
 terraform init
 terraform init -upgrade  # Forzar actualización
-```
+```text
 
 ### Problema 2: Module Version Conflict
 
 **Error:**
-```
+
+```text
 Error: Unsatisfiable version constraints
-```
+```text
 
 **Solution:**
+
 ```hcl
 # Revisar version constraints en todos los modules
 # Ajustar para ser compatible
@@ -2827,39 +2839,44 @@ module "example" {
 ### Problema 3: Circular Dependency en Modules
 
 **Error:**
-```
+
+```text
 Error: Cycle: module.a, module.b
-```
+```text
 
 **Solution:**
+
 ```hcl
 # Red iseñar arquitectura para eliminar ciclo
 # O usar depends_on explícitamente si es válido
-```
+```text
 
 ### Problema 4: Output No Disponible
 
 **Error:**
+
 ```
 Error: Unsupported attribute: module.x has no attribute "y"
-```
+```text
 
 **Solution:**
+
 ```hcl
 # Verificar que el output existe en el module
 # Ver modules/module-name/outputs.tf
-```
+```text
 
 ### Problema 5: Module Cacheado
 
 **Problema:** Cambios en module local no se reflejan
 
 **Solution:**
+
 ```bash
 # Limpiar cache de modules
 rm -rf .terraform/modules
 terraform init
-```
+```text
 
 ---
 
@@ -2905,6 +2922,7 @@ terraform init
 **Continúa con:** [Exercise 04 - Data Infrastructure](../04-data-infrastructure/README.md)
 
 En el próximo exercise aplicarás todo lo aprendido para construir una infraestructura completa de datos con:
+
 - Data Lake multi-capa completo
 - AWS Glue para catalogado
 - Athena para queries

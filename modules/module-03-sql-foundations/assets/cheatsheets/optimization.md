@@ -3,30 +3,35 @@
 ## 1. EXPLAIN - Query Plan Analysis
 
 ### Basic EXPLAIN
+
 ```sql
 EXPLAIN SELECT * FROM users WHERE country = 'US';
-```
+```text
 
 **Output includes**:
+
 - Scan method (Seq Scan, Index Scan, etc.)
 - Cost estimates (startup..total)
 - Row estimates
 
 ### EXPLAIN ANALYZE
+
 ```sql
 EXPLAIN ANALYZE SELECT * FROM users WHERE country = 'US';
-```
+```text
 
 **Difference**: Actually executes query and shows:
+
 - Actual execution time
 - Actual row counts
 - Difference between estimate and actual
 
 ### EXPLAIN Options (PostgreSQL)
+
 ```sql
 EXPLAIN (ANALYZE, BUFFERS, VERBOSE, FORMAT JSON)
 SELECT * FROM users WHERE country = 'US';
-```
+```text
 
 - **ANALYZE**: Execute and show actual times
 - **BUFFERS**: Show I/O statistics
@@ -85,6 +90,7 @@ Bitmap Heap Scan on users  (cost=5.00..50.00 rows=200 width=100)
 ## 3. Indexes
 
 ### B-Tree Index (Default)
+
 ```sql
 -- Single column
 CREATE INDEX idx_users_country ON users(country);
@@ -96,30 +102,34 @@ CREATE INDEX idx_users_country_city ON users(country, city);
 -- Good for: WHERE country = 'US' AND city = 'NYC'
 -- Good for: WHERE country = 'US'
 -- BAD for: WHERE city = 'NYC' (can't use index)
-```
+```text
 
 **Use cases**:
+
 - Equality (=), range (<, >, BETWEEN)
 - ORDER BY, sorting
 - Most general-purpose queries
 
 ### Unique Index
+
 ```sql
 CREATE UNIQUE INDEX idx_users_email ON users(email);
-```
+```text
 
 Enforces uniqueness + provides index benefits.
 
 ### Partial Index
+
 ```sql
 -- Index only active users
 CREATE INDEX idx_users_active ON users(country)
 WHERE is_active = TRUE;
-```
+```text
 
 **Benefits**: Smaller index, faster queries on subset
 
 ### Expression Index
+
 ```sql
 -- Index on computed value
 CREATE INDEX idx_users_lower_email ON users(LOWER(email));
@@ -129,6 +139,7 @@ SELECT * FROM users WHERE LOWER(email) = 'test@example.com';
 ```
 
 ### Covering Index (Index-Only Scan)
+
 ```sql
 -- Include additional columns
 CREATE INDEX idx_users_country_name ON users(country)
@@ -136,7 +147,7 @@ INCLUDE (first_name, last_name);
 
 -- Query can be satisfied from index alone:
 SELECT first_name, last_name FROM users WHERE country = 'US';
-```
+```text
 
 ---
 
@@ -145,45 +156,52 @@ SELECT first_name, last_name FROM users WHERE country = 'US';
 ### Good Index Candidates
 
 ✅ **WHERE clause columns**
+
 ```sql
 -- Frequently filter by status
 CREATE INDEX idx_orders_status ON orders(status);
-```
+```text
 
 ✅ **JOIN columns**
+
 ```sql
 -- Foreign keys should always be indexed
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
-```
+```text
 
 ✅ **ORDER BY columns**
+
 ```sql
 -- Frequently sort by date
 CREATE INDEX idx_orders_date ON orders(order_date DESC);
 ```
 
 ✅ **High cardinality columns**
+
 ```sql
 -- email has many unique values (good)
 CREATE INDEX idx_users_email ON users(email);
-```
+```text
 
 ### Poor Index Candidates
 
 ❌ **Low cardinality columns**
+
 ```sql
 -- gender typically has 2-3 values (poor candidate)
 -- Index won't help much
 CREATE INDEX idx_users_gender ON users(gender);  -- Not recommended
-```
+```text
 
 ❌ **Small tables**
+
 ```sql
 -- If table has < 1000 rows, index overhead > benefit
-```
+```text
 
 ❌ **Columns with many NULLs**
+
 ```sql
 -- If 90% of values are NULL, index is inefficient
 ```
@@ -193,15 +211,17 @@ CREATE INDEX idx_users_gender ON users(gender);  -- Not recommended
 ## 5. Query Optimization Techniques
 
 ### SELECT Only What You Need
+
 ```sql
 -- ❌ BAD: Fetches unnecessary data
 SELECT * FROM users;
 
 -- ✅ GOOD: Only fetch needed columns
 SELECT user_id, first_name, last_name FROM users;
-```
+```text
 
 ### Use WHERE to Filter Early
+
 ```sql
 -- ❌ BAD: Filters after join
 SELECT u.*, o.*
@@ -216,9 +236,10 @@ WITH delivered_orders AS (
 SELECT u.*, do.*
 FROM users u
 INNER JOIN delivered_orders do ON u.user_id = do.user_id;
-```
+```text
 
 ### Avoid SELECT DISTINCT When Possible
+
 ```sql
 -- ❌ SLOW: Requires sorting/deduplication
 SELECT DISTINCT user_id FROM orders;
@@ -230,15 +251,17 @@ SELECT user_id FROM orders GROUP BY user_id;
 SELECT user_id FROM orders WHERE EXISTS (
     SELECT 1 FROM users WHERE users.user_id = orders.user_id
 );
-```
+```text
 
 ### Use LIMIT for Testing
+
 ```sql
 -- When developing query, use LIMIT to test quickly
 SELECT * FROM large_table WHERE condition LIMIT 100;
 ```
 
 ### Avoid Functions on Indexed Columns in WHERE
+
 ```sql
 -- ❌ BAD: Can't use index on email
 SELECT * FROM users WHERE LOWER(email) = 'test@example.com';
@@ -250,9 +273,10 @@ CREATE INDEX idx_users_lower_email ON users(LOWER(email));
 -- OR normalize on INSERT:
 INSERT INTO users (email) VALUES (LOWER('Test@Example.com'));
 SELECT * FROM users WHERE email = 'test@example.com';
-```
+```text
 
 ### EXISTS vs IN
+
 ```sql
 -- For large subqueries, EXISTS is often faster
 -- ❌ SLOWER: IN with large result set
@@ -265,9 +289,10 @@ WHERE EXISTS (
     SELECT 1 FROM orders o
     WHERE o.user_id = u.user_id AND o.total_amount > 100
 );
-```
+```text
 
 ### JOIN vs Subquery
+
 ```sql
 -- JOIN is usually faster for small-medium datasets
 -- ✅ GOOD: JOIN
@@ -280,13 +305,14 @@ INNER JOIN orders o ON u.user_id = o.user_id;
 SELECT u.*
 FROM users u
 WHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.user_id);
-```
+```text
 
 ---
 
 ## 6. Avoiding Common Anti-Patterns
 
 ### Implicit Type Conversion
+
 ```sql
 -- ❌ BAD: user_id is integer, comparing with string
 SELECT * FROM users WHERE user_id = '123';
@@ -296,6 +322,7 @@ SELECT * FROM users WHERE user_id = 123;
 ```
 
 ### OR with Different Columns (Can't Use Index)
+
 ```sql
 -- ❌ SLOW: Can't efficiently use indexes
 SELECT * FROM users WHERE country = 'US' OR city = 'London';
@@ -304,9 +331,10 @@ SELECT * FROM users WHERE country = 'US' OR city = 'London';
 SELECT * FROM users WHERE country = 'US'
 UNION
 SELECT * FROM users WHERE city = 'London';
-```
+```text
 
 ### NOT IN with NULLs
+
 ```sql
 -- ❌ DANGEROUS: NOT IN returns no rows if subquery has NULL
 SELECT * FROM users WHERE user_id NOT IN (SELECT user_id FROM blocked);
@@ -316,9 +344,10 @@ SELECT * FROM users u
 WHERE NOT EXISTS (
     SELECT 1 FROM blocked b WHERE b.user_id = u.user_id
 );
-```
+```text
 
 ### Wildcard at Beginning of LIKE
+
 ```sql
 -- ❌ CAN'T USE INDEX: Leading wildcard
 SELECT * FROM users WHERE email LIKE '%@gmail.com';
@@ -329,19 +358,21 @@ SELECT * FROM users WHERE email LIKE 'john%';
 -- For leading wildcard, consider full-text search or trigram index
 CREATE EXTENSION pg_trgm;
 CREATE INDEX idx_users_email_trgm ON users USING GIN (email gin_trgm_ops);
-```
+```text
 
 ---
 
 ## 7. Monitoring & Maintenance
 
 ### Find Slow Queries
+
 ```sql
 -- Enable slow query logging (postgresql.conf)
 log_min_duration_statement = 1000  -- Log queries > 1 second
 ```
 
 ### Find Missing Indexes
+
 ```sql
 -- Queries with seq scans on large tables
 SELECT schemaname, tablename, seq_scan, seq_tup_read,
@@ -350,25 +381,28 @@ FROM pg_stat_user_tables
 WHERE seq_scan > 0
   AND seq_tup_read / seq_scan > 10000
 ORDER BY seq_tup_read DESC;
-```
+```text
 
 ### Find Unused Indexes
+
 ```sql
 -- Indexes that are never used (consider dropping)
 SELECT schemaname, tablename, indexname, idx_scan
 FROM pg_stat_user_indexes
 WHERE idx_scan = 0
   AND indexname NOT LIKE '%_pkey';
-```
+```text
 
 ### Index Bloat
+
 ```sql
 -- Rebuild bloated indexes
 REINDEX INDEX idx_name;
 REINDEX TABLE table_name;
-```
+```text
 
 ### Update Statistics
+
 ```sql
 -- Ensure query planner has accurate statistics
 ANALYZE users;
@@ -380,11 +414,13 @@ ANALYZE;  -- All tables
 ## 8. Quick Optimization Checklist
 
 **Before optimizing**:
+
 1. ✅ Run EXPLAIN ANALYZE to understand current plan
 2. ✅ Identify bottlenecks (seq scans, slow joins)
 3. ✅ Check if statistics are up to date (ANALYZE)
 
 **Common optimizations**:
+
 1. ✅ Add indexes on WHERE/JOIN/ORDER BY columns
 2. ✅ Use covering indexes for frequently accessed column sets
 3. ✅ Ensure foreign keys are indexed
@@ -395,6 +431,7 @@ ANALYZE;  -- All tables
 8. ✅ Use LIMIT for pagination
 
 **After optimizing**:
+
 1. ✅ Re-run EXPLAIN ANALYZE to verify improvement
 2. ✅ Compare execution times
 3. ✅ Monitor in production
@@ -411,9 +448,10 @@ SELECT ...;
 
 -- Or use EXPLAIN ANALYZE
 EXPLAIN ANALYZE SELECT ...;
-```
+```text
 
 ### Compare Plans
+
 ```sql
 -- Before optimization
 EXPLAIN ANALYZE SELECT * FROM users WHERE country = 'US';
@@ -429,13 +467,13 @@ EXPLAIN ANALYZE SELECT * FROM users WHERE country = 'US';
 Planning Time: 0.3 ms
 Execution Time: 5.2 ms  ← Fast!
 */
-```
+```text
 
 ---
 
 ## 10. Cost Interpretation
 
-```
+```text
 Seq Scan on users  (cost=0.00..15406.00 rows=1000000 width=100) (actual time=0.100..200.500 rows=1000000 loops=1)
 ```
 
@@ -447,6 +485,7 @@ Seq Scan on users  (cost=0.00..15406.00 rows=1000000 width=100) (actual time=0.1
 - **loops=1**: How many times node executed
 
 **Look for**:
+
 - Large cost values
 - Big difference between estimated and actual rows
 - Seq Scans on large tables

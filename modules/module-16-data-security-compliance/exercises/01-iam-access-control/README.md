@@ -1,6 +1,7 @@
 # Exercise 01: IAM & Access Control
 
 ## Overview
+
 Implement least-privilege IAM policies for data teams, configure cross-account access, set up permission boundaries, and validate policies with IAM Access Analyzer.
 
 **Difficulty**: ⭐⭐⭐ Advanced
@@ -27,7 +28,7 @@ Implement least-privilege IAM policies for data teams, configure cross-account a
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                     AWS ORGANIZATION                        │
 │                                                             │
@@ -50,7 +51,7 @@ Implement least-privilege IAM policies for data teams, configure cross-account a
 │                       │- EMR   ✓   │ │- Redshift✓│       │
 │                       └────────────┘ └───────────┘       │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Task 1: Design IAM Policies for Personas (45 minutes)
 
@@ -190,7 +191,7 @@ Create IAM policies for three data team personas.
     }
   ]
 }
-```
+```text
 
 **File**: `policies/data-scientist-policy.json`
 
@@ -351,7 +352,7 @@ Create IAM policies for three data team personas.
     }
   ]
 }
-```
+```text
 
 ## Task 2: Create IAM Roles (30 minutes)
 
@@ -539,7 +540,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ ALL ROLES CREATED")
     print("="*60)
-```
+```text
 
 ## Task 3: Configure Permission Boundaries (30 minutes)
 
@@ -612,7 +613,7 @@ if __name__ == '__main__':
     }
   ]
 }
-```
+```text
 
 **File**: `apply_permission_boundary.py`
 
@@ -713,7 +714,7 @@ if __name__ == '__main__':
     }
   ]
 }
-```
+```text
 
 **File**: `setup_cross_account.py`
 
@@ -873,7 +874,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ CROSS-ACCOUNT ACCESS CONFIGURED")
     print("="*60)
-```
+```text
 
 ## Task 5: IAM Access Analyzer (30 minutes)
 
@@ -1038,7 +1039,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ ANALYSIS COMPLETE")
     print("="*60)
-```
+```text
 
 ## Task 6: Service Control Policies (30 minutes)
 
@@ -1091,6 +1092,7 @@ if __name__ == '__main__':
 ## Expected Results
 
 **IAM Roles Created**:
+
 - DataEngineerRole (full Glue/EMR access)
 - DataScientistRole (Athena/Redshift/SageMaker)
 - DataAnalystRole (QuickSight/read-only)
@@ -1110,11 +1112,12 @@ import json
 with open('policies/data-engineer-policy.json') as f:
     policy = json.load(f)
     print(json.dumps(policy, indent=2))
-```
+```text
 
 ### Problem: Cannot assume role
 
 Check trust policy and external ID:
+
 ```bash
 aws iam get-role --role-name DataEngineerRole
 
@@ -1123,7 +1126,7 @@ aws sts assume-role \
     --role-arn arn:aws:iam::ACCOUNT:role/DataEngineerRole \
     --role-session-name test \
     --external-id data-engineer-access
-```
+```text
 
 ## Key Learnings
 

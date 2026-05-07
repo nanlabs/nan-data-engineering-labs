@@ -20,6 +20,7 @@
 Los patrones de Infrastructure as Code son **solutions probadas y reutilizables** para problemas comunes en la gestión de infraestructura. Estos patrones emergen de experiencias reales en producción.
 
 **Categorías principales:**
+
 - 🔄 **Deployment Patterns**: Cómo desplegar cambios de forma segura
 - 🏗️ **Organizational Patterns**: Cómo estructurar proyectos y equipos
 - 🔒 **Security Patterns**: Cómo asegurar infraestructura y secretos
@@ -66,9 +67,10 @@ resource "aws_autoscaling_group" "app" {
     create_before_destroy = true
   }
 }
-```
+```text
 
 **Ventajas:**
+
 - ✅ Eliminadrift (divergencia) entre configuration y realidad
 - ✅ Rollbacks más fáciles
 - ✅ Testing más confiable
@@ -85,7 +87,7 @@ resource "aws_instance" "web" {
   instance_type = "t2.micro"
   ami           = "ami-12345678"
 }
-```
+```text
 
 **Imperative (Scripts)**: Describes los steps para llegar ahí.
 
@@ -94,9 +96,10 @@ resource "aws_instance" "web" {
 for i in {1..3}; do
   aws ec2 run-instances --instance-type t2.micro --image-id ami-12345678
 done
-```
+```text
 
 **Terraform es declarativo:**
+
 - Terraform calcula automáticamente qué create/modificar/destruir
 - El state file rastrea la realidad actual
 - Idempotente: execute múltiples veces produce el mismo resultado
@@ -143,7 +146,7 @@ module "data_bucket" {
 
 ### Pipeline Típico
 
-```
+```text
 ┌─────────────┐
 │   Git Push  │
 │  (feature)  │
@@ -188,7 +191,7 @@ module "data_bucket" {
 ┌──────────────────────────────┐
 │  terraform apply (prod)      │
 └──────────────────────────────┘
-```
+```text
 
 ### GitHub Actions - Production Grade
 
@@ -413,7 +416,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply tfplan
         working-directory: terraform/environments/prod
-```
+```text
 
 ### GitLab CI Pipeline
 
@@ -550,7 +553,7 @@ resource "aws_db_instance" "db" {
   # ✅ State file contiene referencia, no el valor
   # ✅ Rotación posible sin tocar Terraform
 }
-```
+```text
 
 #### Sensitive Variables y Outputs
 
@@ -575,7 +578,7 @@ terraform output database_password
 # Para ver el valor (solo cuando necesites):
 terraform output -raw database_password
 # SuperSecret123!
-```
+```text
 
 ### 2. Least Privilege IAM
 
@@ -624,7 +627,7 @@ resource "aws_iam_role_policy" "terraform" {
     ]
   })
 }
-```
+```text
 
 ### 3. State File Security
 
@@ -781,7 +784,7 @@ tfsec .
 # /terraform/main.tf:15-20
 #
 # 2 potential problems detected.
-```
+```text
 
 **Ejecutar Checkov:**
 
@@ -804,7 +807,7 @@ checkov -d terraform/
 # Check: CKV_AWS_21: "Ensure the S3 bucket has versioning enabled"
 #         FAILED for resource: aws_s3_bucket.data
 #         File: /main.tf:15-20
-```
+```text
 
 **Configurar excepciones (cuando sean justificadas):**
 
@@ -820,7 +823,7 @@ resource "aws_s3_bucket" "public_website" {
     index_document = "index.html"
   }
 }
-```
+```text
 
 ---
 
@@ -870,19 +873,21 @@ resource "aws_instance" "app" {
     Environment = local.environment
   }
 }
-```
+```text
 
 **Ventajas:**
+
 - ✅ Mismo código para todos los entornos
 - ✅ Fácil de cambiar entre entornos
 
 **Desventajas:**
+
 - ❌ State files en la misma ubicación (riesgo)
 - ❌ No se puede tener configuraciones radicalmente diferentes
 
 ### Patrón 2: Directorios Separados (Recomendado)
 
-```
+```text
 terraform/
 ├── modules/
 │   └── app/
@@ -905,7 +910,7 @@ terraform/
         ├── main.tf
         ├── terraform.tfvars
         └── backend.hcl
-```
+```text
 
 **environments/dev/main.tf:**
 
@@ -944,9 +949,10 @@ module "app" {
   enable_monitoring   = true
   backup_retention    = 30
 }
-```
+```text
 
 **Ventajas:**
+
 - ✅ State files completamente separados
 - ✅ Configuraciones pueden ser radicalmente diferentes
 - ✅ Mayor seguridad (menos riesgo de apply accidental en prod)
@@ -992,7 +998,7 @@ inputs = {
   environment = "production"
   instance_type = "t2.large"
 }
-```
+```text
 
 ```bash
 # Usage
@@ -1001,7 +1007,7 @@ terragrunt apply
 
 cd ../prod
 terragrunt apply
-```
+```text
 
 ---
 
@@ -1075,7 +1081,7 @@ jobs:
       - name: Verify Backups
         run: |
           aws s3 ls s3://my-project-disaster-recovery/state-backups/latest/
-```
+```text
 
 ### 2. Plan de Recuperación
 
@@ -1125,7 +1131,7 @@ echo ""
 echo "Next steps:"
 echo "1. Run 'terraform plan' to verify"
 echo "2. If needed, run 'terraform apply' to sync infrastructure"
-```
+```text
 
 ### 3. Runbook de DR
 
@@ -1271,7 +1277,7 @@ terraform apply
 - **Equipo de Platform**: platform-team@company.com
 - **On-call**: +1-555-ONCALL
 - **Slack**: #incident-response
-```
+```text
 
 ---
 
@@ -1379,7 +1385,7 @@ deny[msg] {
 
     msg := sprintf("Resource '%s' missing required tags: %v", [resource.name, missing_tags])
 }
-```
+```text
 
 **Ejecutar:**
 
@@ -1402,7 +1408,7 @@ if opa eval --data policy/ --input tfplan.json "data.terraform.analysis.deny" | 
   echo "❌ Policy violations detected. Apply blocked."
   exit 1
 fi
-```
+```text
 
 ---
 
@@ -1424,7 +1430,7 @@ resource "datadog_monitor" "terraform_apply_failed" {
 
   tags = ["terraform", "infrastructure", "critical"]
 }
-```
+```text
 
 ### 2. Drift Detection
 
@@ -1487,7 +1493,7 @@ jobs:
 
       - name: Check for Drift
         run: ./scripts/drift-detection.sh
-```
+```text
 
 ---
 

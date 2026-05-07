@@ -23,7 +23,7 @@ graph TD
 
     style A fill:#f9f,stroke:#333,stroke-width:4px
     style D fill:#ff9,stroke:#333,stroke-width:2px
-```
+```text
 
 ## IAM Hierarchy
 
@@ -62,7 +62,7 @@ graph TB
     style P1 fill:#9f9,stroke:#333
     style P2 fill:#99f,stroke:#333
     style P3 fill:#f99,stroke:#333
-```
+```text
 
 ## S3 Lifecycle Transitions
 
@@ -76,7 +76,7 @@ graph LR
     style B fill:#f96
     style C fill:#69f
     style D fill:#999
-```
+```text
 
 ## Event-Driven Architecture
 
@@ -117,7 +117,7 @@ flowchart TD
     style Start fill:#9f9
     style Done fill:#9f9
     style Test fill:#ff9
-```
+```text
 
 ## CloudFormation Stack Resources
 
@@ -136,7 +136,7 @@ graph TD
     Stack --> Out2[Output: LambdaARN]
 
     style Stack fill:#f9f,stroke:#333,stroke-width:3px
-```
+```text
 
 ## Cost Optimization Strategy
 
@@ -163,7 +163,7 @@ graph TB
 
     style B1 fill:#f66
     style Total fill:#9f9,stroke:#333,stroke-width:3px
-```
+```text
 
 ## Module 01 Learning Path
 
@@ -193,6 +193,7 @@ journey
 These diagrams are rendered automatically in GitHub/GitLab Markdown viewers.
 
 To render locally:
+
 - Use VSCode with Markdown Preview Mermaid Support extension
 - Use [Mermaid Live Editor](https://mermaid.live/)
 - Export as PNG/SVG for documentation

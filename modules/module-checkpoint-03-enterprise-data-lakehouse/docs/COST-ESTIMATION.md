@@ -37,6 +37,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 1. Amazon S3 Storage
 
 **Components**:
+
 - Raw layer (landing zone)
 - Bronze layer (ingested Parquet)
 - Silver layer (cleaned Delta Lake)
@@ -55,17 +56,20 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | 1,100GB | | | **$25.30** |
 
 **With S3 Intelligent-Tiering** (automatic cost optimization):
+
 - 30% of data moves to Infrequent Access after 30 days: -$7
 - 20% moves to Archive Access after 90 days: -$3
 - **Optimized Monthly Cost**: **$15-20**
 
 **Storage Growth**:
+
 - 30% YoY growth = +10GB/month
 - Annual storage cost increase: ~$40/year (manageable)
 
 #### 2. AWS Glue
 
 **Components**:
+
 - ETL Jobs (DPU-hours)
 - Crawlers (DPU-hours)
 - Data Catalog (tables, partitions)
@@ -80,11 +84,13 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$26.40** |
 
 **ETL Job Breakdown**:
+
 - Daily Bronze ETL: 5 DPU × 1 hour × 30 days = 150 DPU-hours → $66/month
 - Daily Silver ETL: 3 DPU × 30 min × 30 days = 45 DPU-hours → $19.80/month
 - Daily Gold ETL: 2 DPU × 15 min × 30 days = 15 DPU-hours → $6.60/month
 
 **Optimization**:
+
 - Use Glue's auto-scaling (G.2X workers dynamically allocate)
 - Run jobs only when data changes (EventBridge triggers vs. fixed schedule)
 - Optimize job code to reduce duration by 30%
@@ -93,6 +99,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 3. Amazon Athena
 
 **Query Volume**:
+
 - 15 analysts × 20 queries/day × 21 workdays = 6,300 queries/month
 - Average data scanned: 200MB per query (with partitioning)
 
@@ -103,10 +110,12 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$3.15** |
 
 **Without Optimization**:
+
 - Average data scanned: 2GB per query (full table scans)
 - Cost: 12.6 TB × $5 = **$63/month**
 
 **Optimization Strategies**:
+
 1. **Partitioning**: Reduce scans by 90% (date partitions)
 2. **Query Result Reuse**: 5-minute cache TTL (50% hit rate)
 3. **Columnar Format**: Parquet/Delta Lake (scan only needed columns)
@@ -117,6 +126,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 4. AWS Lake Formation
 
 **Services**:
+
 - Data access management (no direct charge)
 - CloudTrail logging for audit (charges apply)
 
@@ -129,6 +139,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 5. Amazon EMR Serverless
 
 **Usage**:
+
 - 2-3 ad-hoc jobs per week for advanced analytics
 - 5 DPU × 2 hours × 12 jobs = 120 DPU-hours/month
 
@@ -139,12 +150,14 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$6-8** |
 
 **Alternative: EMR on EC2**:
+
 - 3 × m5.xlarge (24/7): $350/month
 - **Savings with Serverless**: 95% ($344/month saved)
 
 #### 6. AWS KMS (Encryption)
 
 **Keys**:
+
 - 1 Customer-Managed Key (CMK) for all lakehouse encryption
 
 | Component | Usage | Unit Price | Monthly Cost |
@@ -154,6 +167,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$1.30** |
 
 **Multi-Key vs. Single-Key**:
+
 - Alternative: Separate CMK per domain (Finance, HR, Sales, Operations) = $4/month
 - **Savings**: $2.70/month (68% reduction)
 - **Trade-off**: Less isolation but sufficient for dev environment
@@ -161,6 +175,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 7. AWS Secrets Manager
 
 **Secrets**:
+
 - Database credentials: 3 RDS sources
 - API keys: 5 third-party integrations
 - Service account tokens: 2
@@ -172,6 +187,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$4-5** |
 
 **Optimization**:
+
 - Use environment variables for non-sensitive config (reduce secrets count)
 - Cache secrets in Lambda (reduce API calls)
 - **Optimized Monthly Cost**: **$3-4**
@@ -179,6 +195,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 8. AWS CloudWatch
 
 **Metrics & Logs**:
+
 - ETL job logs
 - CloudTrail logs
 - Custom metrics (data quality, pipeline duration)
@@ -194,6 +211,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$32.50** |
 
 **Optimization**:
+
 - Filter logs to reduce ingestion (exclude DEBUG, INFO levels in production)
 - Archive logs to S3 after 30 days ($0.023/GB vs. $0.03/GB)
 - Delete low-value metrics (e.g., per-table row counts, aggregate at domain level)
@@ -204,6 +222,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 9. AWS Step Functions
 
 **Workflow Orchestration**:
+
 - Daily ETL workflow: Bronze → Silver → Gold
 - Triggered 1x/day
 
@@ -213,12 +232,14 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **<$1** |
 
 **Alternative: Apache Airflow on MWAA**:
+
 - Minimum: $300/month (overkill for dev)
 - **Savings with Step Functions**: 99.7% ($299/month saved)
 
 #### 10. AWS DMS (Optional - CDC)
 
 **Usage**:
+
 - Replicate 3 RDS databases to Raw layer
 - 10GB daily change data capture
 
@@ -229,6 +250,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$75** |
 
 **Optimization**:
+
 - Use DMS only for initial migration, then switch to nightly exports
 - **Alternative**: `mysqldump` + S3 upload = $0 (acceptable for dev)
 
@@ -237,6 +259,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 11. Data Transfer & Networking
 
 **Transfers**:
+
 - S3 to Glue/Athena: Free (same region)
 - S3 to EMR: Free (same region)
 - Internet egress: Minimal (only for API calls)
@@ -248,6 +271,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$15** |
 
 **Optimization**:
+
 - Use VPC endpoints to avoid internet egress charges
 - **Optimized Monthly Cost**: **$10-15**
 
@@ -299,12 +323,14 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | 10.5TB | | | **$180** |
 
 **With Optimizations**:
+
 - Compression: Snappy (3:1 ratio) → -$60
 - Lifecycle policies: Auto-archive after 90 days → -$30
 - Delete Raw after 30 days → -$8
 - **Optimized Monthly Cost**: **$120-150**
 
 **Cross-Region Replication (DR)**:
+
 - Replicate 50% of data (active tables only)
 - Replication cost: $0.02/GB for 5TB = $100/month
 - Storage in us-west-2: 5TB × $0.023 = $115/month
@@ -320,18 +346,21 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$13,750** |
 
 **Optimization**:
+
 - Use Glue auto-scaling (provision 200 max DPU, use 80 average) → -$5,280
 - Optimize Spark code (30% faster) → -$4,125
 - Incremental loads only (skip unchanged data) → -$1,000
 - **Optimized Monthly Cost**: **$3,000-4,000**
 
 **Alternative: EMR Serverless**:
+
 - Same workload: 31,200 DPU-hours × $0.052 = **$1,622/month**
 - **Decision**: Use EMR Serverless for production → **$1,600-2,000/month**
 
 #### 3. Amazon Athena (Production)
 
 **Query Volume**:
+
 - 500 users × 20 queries/day × 21 workdays = 210,000 queries/month
 - Average data scanned: 500MB per query (with partitioning)
 
@@ -342,11 +371,13 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Net Cost** | 42TB | $5/TB | **$210** |
 
 **Athena Workgroup Pricing** (Alternative for predictable costs):
+
 - Reserved capacity: $0.30/DPU-hour (vs. $0.50/TB effective on-demand)
 - For heavy users, provision 100 DPUs → $21,900/month
 - **Decision**: Stick with on-demand pricing ($210 < $21,900)
 
 **Optimization**:
+
 - CTAS for top 20 queries (caching pre-aggregates) → -$50
 - BI tool query optimization (reduce scans) → -$30
 - Enforce partition filters in Tableau data sources → -$40
@@ -369,6 +400,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$31** |
 
 **Optimization**:
+
 - Enable KMS request caching in Glue/EMR (reduce API calls by 80%) → -$24
 - **Optimized Monthly Cost**: **$7-10**
 
@@ -392,6 +424,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$165** |
 
 **Optimization**:
+
 - Archive logs to S3 after 7 days → -$40
 - Use metric filters to reduce custom metrics → -$30
 - Consolidate alarms (composite alarms) → -$5
@@ -407,6 +440,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 9. AWS DMS (Production - Optional)
 
 **Usage**:
+
 - CDC for 5 RDS databases
 - 100GB daily changes
 
@@ -417,9 +451,11 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$296** |
 
 **Optimization**:
+
 - Use Reserved Instances (1-year upfront) → 40% savings → **$177/month**
 
 **Alternative**:
+
 - Native RDS exports to S3 (free) + incremental timestamp-based loads
 - **Savings**: $177/month (100%)
 
@@ -428,6 +464,7 @@ This document provides comprehensive cost estimates and optimization strategies 
 #### 10. Amazon QuickSight (BI Tool)
 
 **Users**:
+
 - 50 Authors (analysts creating dashboards): $18/user = $900/month
 - 400 Readers (business users consuming dashboards): $0.30/session, avg 10 sessions/user/month = $1,200/month
 
@@ -439,16 +476,19 @@ This document provides comprehensive cost estimates and optimization strategies 
 | **Subtotal** | | | **$2,138** |
 
 **Alternative: Tableau Server**:
+
 - Licensing: $70/user × 450 = $31,500/month (ouch!)
 - **Savings with QuickSight**: 93% ($29,362/month)
 
 **Alternative: Open-Source (Apache Superset)**:
+
 - Licensing: Free
 - Infrastructure: EC2 t3.large 24/7 = $70/month
 - Maintenance: Engineer time = $5,000/month equivalent
 - **Decision**: QuickSight is cost-effective at scale
 
 **Optimization**:
+
 - Limit Reader sessions (10 → 5 per user/month) → -$600
 - Use dashboard emails instead of live sessions → -$300
 - **Optimized Monthly Cost**: **$1,200-1,500**
@@ -465,6 +505,7 @@ If DataCorp sources are external, no cost here. If internal:
 | **Subtotal** | | | **$929** |
 
 **With Reserved Instances** (1-year, all upfront):
+
 - Savings: 40% → **$557/month**
 
 **Out of Scope**: Assuming source databases are owned by application teams. Not included in lakehouse budget.
@@ -526,6 +567,7 @@ If DataCorp sources are external, no cost here. If internal:
 #### Strategy 1.1: Intelligent-Tiering (Automatic)
 
 **Implementation**:
+
 ```bash
 # Enable Intelligent-Tiering on lakehouse bucket
 aws s3api put-bucket-intelligent-tiering-configuration \
@@ -539,7 +581,7 @@ aws s3api put-bucket-intelligent-tiering-configuration \
       "AccessTier": "ARCHIVE_ACCESS"
     }
   }'
-```
+```text
 
 **Savings**: 40% on infrequently accessed data (automatic transitions)
 
@@ -567,13 +609,14 @@ aws s3api put-bucket-lifecycle-configuration \
       }
     ]
   }'
-```
+```text
 
 **Savings**: $30-50/month by deleting transient data and archiving cold data
 
 #### Strategy 1.3: Compression
 
 **Parquet Compression Benchmarks**:
+
 | Codec | Compression Ratio | Read Performance | Write Performance |
 |-------|------------------|------------------|-------------------|
 | **Snappy** | 3:1 | Fastest (baseline) | Fastest (baseline) |
@@ -582,17 +625,19 @@ aws s3api put-bucket-lifecycle-configuration \
 | **LZ4** | 2.5:1 | 10% faster | 5% faster |
 
 **Recommendation**:
+
 - **Hot data** (last 30 days): Snappy (balance compression + speed)
 - **Warm data** (30-90 days): Zstd (better compression, acceptable speed)
 - **Cold data** (90+ days): Gzip (max compression, rarely accessed)
 
 **Implementation**:
+
 ```python
 # PySpark example
 df.write.mode("overwrite") \
   .option("compression", "snappy") \
   .parquet("s3://lakehouse/bronze/finance/")
-```
+```text
 
 **Savings**: 66% storage reduction (1TB → 330GB) → **$15/month saved per TB**
 
@@ -601,17 +646,20 @@ df.write.mode("overwrite") \
 #### Strategy 2.1: Right-Size Glue/EMR Jobs
 
 **Before Optimization**:
+
 - Job uses 200 DPUs but only needs 80 DPUs
 - Over-provisioned by 150%
 - Cost: $0.44 × 200 DPUs × 4 hours = $352
 
 **After Optimization**:
+
 - Profile job with Spark UI (identify bottlenecks)
 - Reduce parallelism, tune memory settings
 - Use 80 DPUs
 - Cost: $0.44 × 80 DPUs × 4 hours = **$140** → **$212 saved**
 
 **Tools**:
+
 - AWS Glue Metrics (CloudWatch)
 - Spark UI (execution time per stage)
 - AWS Glue Job Insights (auto-generated recommendations)
@@ -619,6 +667,7 @@ df.write.mode("overwrite") \
 #### Strategy 2.2: Spot Instances for EMR
 
 **Implementation**:
+
 ```bash
 # Create EMR Serverless app with spot instance policy
 aws emr-serverless create-application \
@@ -650,11 +699,13 @@ aws emr-serverless create-application \
 ```
 
 **Spot Pricing for EMR on EC2**:
+
 - **m5.4xlarge** on-demand: $0.768/hour
 - **m5.4xlarge** spot (average): $0.230/hour (70% savings)
 - **Risk**: Spot interruptions (mitigate with checkpointing)
 
 **When to Use Spot**:
+
 - ✅ Non-critical batch jobs (can retry)
 - ✅ Jobs with checkpointing (Spark savepoints)
 - ❌ Real-time / SLA-critical workloads
@@ -664,15 +715,18 @@ aws emr-serverless create-application \
 #### Strategy 2.3: Batch Jobs Only When Data Changes
 
 **Before**:
+
 - Daily ETL runs regardless of data changes
 - 30 runs/month, 10 runs process 0 new records → wasted $132
 
 **After**:
+
 - Use S3 EventBridge trigger on new file arrival
 - Run ETL only when raw data lands
 - 20-25 runs/month → **$44-88 saved**
 
 **Implementation**:
+
 ```python
 # Lambda function to check if new data exists
 import boto3
@@ -694,33 +748,36 @@ def lambda_handler(event, context):
         glue.start_job_run(JobName='bronze-finance-etl')
     else:
         print("No new data, skipping ETL")
-```
+```text
 
 ### 3. Query Optimization (Athena)
 
 #### Strategy 3.1: Partition Pruning
 
 **Bad Query** (scans entire table):
+
 ```sql
 SELECT * FROM fact_transactions
 WHERE transaction_date = '2026-03-01';
 -- Scans all 100 partitions (100GB)
 -- Cost: 0.1 TB × $5 = $0.50
-```
+```text
 
 **Good Query** (partition filter):
+
 ```sql
 SELECT * FROM fact_transactions
 WHERE year = 2026 AND month = 3 AND day = 1;
 -- Scans 1 partition (1GB)
 -- Cost: 0.001 TB × $5 = $0.005 → 99% savings
-```
+```text
 
 **Savings**: $0.495 per query × 1,000 queries/month = **$495/month**
 
 #### Strategy 3.2: Columnar Projection
 
 **Bad Query** (SELECT *):
+
 ```sql
 SELECT * FROM dim_customers;
 -- Scans all 50 columns (10GB)
@@ -728,17 +785,19 @@ SELECT * FROM dim_customers;
 ```
 
 **Good Query** (only needed columns):
+
 ```sql
 SELECT customer_id, name, region FROM dim_customers;
 -- Scans 3 columns (600MB)
 -- Cost: 0.0006 TB × $5 = $0.003 → 94% savings
-```
+```text
 
 **Savings**: $0.047 per query × 5,000 queries/month = **$235/month**
 
 #### Strategy 3.3: Query Result Caching
 
 **Athena Workgroup Settings**:
+
 ```bash
 aws athena update-work-group \
   --work-group primary \
@@ -757,9 +816,10 @@ aws athena update-work-group \
       }
     }
   }'
-```
+```text
 
 **Impact**:
+
 - Dashboard refresh queries: 80% hit rate (TTL = 5 minutes)
 - Savings: 80% × $150/month = **$120/month**
 
@@ -768,9 +828,11 @@ aws athena update-work-group \
 **Scenario**: Executive dashboard runs 100x/day, each query scans 50GB
 
 **Before**:
+
 - 100 queries × 0.05 TB × $5 = **$25/day** = **$750/month**
 
 **After** (CTAS pre-aggregation):
+
 ```sql
 -- Run once per day
 CREATE TABLE executive_summary_cache
@@ -787,9 +849,10 @@ GROUP BY year, month, region;
 
 -- Dashboard queries now scan <1GB
 SELECT * FROM executive_summary_cache WHERE year = 2026;
-```
+```text
 
 **New Cost**:
+
 - CTAS: 1x × 0.05 TB × $5 = **$0.25/day**
 - Dashboard queries: 100x × 0.001 TB × $5 = **$0.50/day**
 - **Total**: **$0.75/day** = **$22.50/month** → **$727.50 saved**
@@ -799,14 +862,17 @@ SELECT * FROM executive_summary_cache WHERE year = 2026;
 #### Strategy 4.1: Log Filtering
 
 **Before**:
+
 - Ingest all Glue job logs (DEBUG, INFO, WARN, ERROR)
 - 100GB/month × $0.50 = $50
 
 **After**:
+
 - Filter to ERROR and WARN only in production
 - 10GB/month × $0.50 = **$5** → **$45 saved**
 
 **Implementation** (in Glue job):
+
 ```python
 import logging
 logger = logging.getLogger()
@@ -816,10 +882,12 @@ logger.setLevel(logging.WARN)  # Only WARN and ERROR
 #### Strategy 4.2: Metric Consolidation
 
 **Before**:
+
 - 200 custom metrics (per-table row counts)
 - 200 × $0.30 = **$60/month**
 
 **After**:
+
 - Aggregate to domain-level metrics (4 domains)
 - 20 metrics × $0.30 = **$6/month** → **$54 saved**
 
@@ -828,11 +896,13 @@ logger.setLevel(logging.WARN)  # Only WARN and ERROR
 #### AWS Savings Plans
 
 **Compute Savings Plan** (1-year, no upfront):
+
 - Commit to $100/month spend on Glue/EMR/Lambda/Fargate
 - Savings: 17% → **$17/month saved**
 - **Recommendation**: Only if spend is predictable (prod environment)
 
 **EC2 Instance Savings Plan** (if using EMR on EC2):
+
 - Commit to m5.4xlarge instance family
 - Savings: 40% (1-year upfront) → **$200/month saved** on $500 baseline
 
@@ -849,14 +919,16 @@ logger.setLevel(logging.WARN)  # Only WARN and ERROR
 ### 1. AWS Cost Explorer
 
 **Enable Cost Allocation Tags**:
+
 ```bash
 # Tag all resources
 aws resourcegroupstaggingapi tag-resources \
   --resource-arn-list arn:aws:s3:::datacorp-lakehouse-prod \
   --tags Project=Lakehouse,Environment=Production,CostCenter=IT-Analytics
-```
+```text
 
 **Create Cost Dashboard**:
+
 - Group by: Service, Tag (Domain, Environment)
 - Granularity: Daily
 - Filters: Project=Lakehouse
@@ -864,6 +936,7 @@ aws resourcegroupstaggingapi tag-resources \
 ### 2. AWS Budgets
 
 **Set Budget Alerts**:
+
 ```bash
 # $150/month budget for dev
 aws budgets create-budget \
@@ -892,11 +965,12 @@ aws budgets create-budget \
       ]
     }
   ]'
-```
+```text
 
 ### 3. Cost Anomaly Detection
 
 **Enable AWS Cost Anomaly Detection**:
+
 - Automatic ML-based anomaly detection
 - Alert when spend deviates >20% from baseline
 - Example: Athena cost spikes from $10 to $150 (unoptimized query)
@@ -927,6 +1001,7 @@ aws budgets create-budget \
 ### 3-Year NPV (Net Present Value)
 
 Assumptions:
+
 - Discount rate: 10%
 - Annual savings: $5.2M
 - Annual operational cost: $125K
@@ -944,6 +1019,7 @@ Assumptions:
 ## 🎯 Cost Optimization Roadmap
 
 ### Phase 1: Quick Wins (Month 1)
+
 - ✅ Enable S3 Intelligent-Tiering
 - ✅ Implement lifecycle policies (delete Raw after 30 days)
 - ✅ Configure Athena query result caching
@@ -951,6 +1027,7 @@ Assumptions:
 - **Expected Savings**: $50-80/month
 
 ### Phase 2: Medium Effort (Months 2-3)
+
 - ✅ Optimize Glue job DPU allocation (profiling)
 - ✅ Partition pruning enforcement (query validation)
 - ✅ CTAS for top 20 expensive Athena queries
@@ -958,6 +1035,7 @@ Assumptions:
 - **Expected Savings**: $150-250/month
 
 ### Phase 3: Long-Term (Months 4-6)
+
 - ✅ Reserved Instances for DMS (40% savings)
 - ✅ EMR Spot Instances for non-critical jobs
 - ✅ Compute Savings Plan (17% on Glue/EMR)
@@ -965,6 +1043,7 @@ Assumptions:
 - **Expected Savings**: $300-500/month
 
 ### Phase 4: Continuous Optimization (Ongoing)
+
 - ✅ Weekly cost review meetings
 - ✅ Automated cost anomaly alerts
 - ✅ Quarterly vendor negotiations (QuickSight, tooling)
@@ -975,9 +1054,9 @@ Assumptions:
 
 ## 📞 Cost Support & Resources
 
-- **AWS Cost Optimization Hub**: https://aws.amazon.com/aws-cost-management/
-- **AWS Well-Architected Cost Optimization Pillar**: https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/
-- **FinOps Foundation**: https://www.finops.org/
+- **AWS Cost Optimization Hub**: <https://aws.amazon.com/aws-cost-management/>
+- **AWS Well-Architected Cost Optimization Pillar**: <https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/>
+- **FinOps Foundation**: <https://www.finops.org/>
 
 ---
 

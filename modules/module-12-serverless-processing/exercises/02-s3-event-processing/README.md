@@ -25,6 +25,7 @@ Al completar este exercise, serás capaz de:
 ## 📚 Context
 
 Construirás un pipeline de ingesta de datos que:
+
 - Recibe archivos CSV de diferentes fuentes
 - Los valida y transforma a Parquet
 - Los particiona por fecha y categoría
@@ -33,7 +34,7 @@ Construirás un pipeline de ingesta de datos que:
 
 **Arquitectura**:
 
-```
+```text
 ┌─────────────────┐
 │  Source Systems │
 └────────┬────────┘
@@ -66,7 +67,7 @@ Construirás un pipeline de ingesta de datos que:
 │processed│ │quarant.│  │(Auto catalog)│
 │(Parquet)│ │(errors)│  └──────────────┘
 └─────────┘ └────────┘
-```
+```text
 
 ---
 
@@ -336,7 +337,7 @@ def trigger_glue_crawler():
 class ValidationError(Exception):
     """Custom exception para errores de validation"""
     pass
-```
+```text
 
 **`src/requirements.txt`**:
 
@@ -693,7 +694,7 @@ output "queue_url" {
 output "glue_database" {
   value = aws_glue_catalog_database.data_lake.name
 }
-```
+```text
 
 ---
 
@@ -729,7 +730,7 @@ df = pd.DataFrame(data)
 # Guardar como CSV
 df.to_csv('test_sales_data.csv', index=False)
 print(f"Generated {len(df)} records")
-```
+```text
 
 ### 3.2 Test End-to-End
 
@@ -763,7 +764,7 @@ aws athena start-query-execution \
   --query-string "SELECT category, COUNT(*), SUM(amount) FROM sales_data GROUP BY category" \
   --result-configuration "OutputLocation=s3://$TARGET_BUCKET/athena-results/" \
   --query-execution-context "Database=data_lake_dev"
-```
+```text
 
 ---
 

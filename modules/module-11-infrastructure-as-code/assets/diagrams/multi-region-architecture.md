@@ -89,7 +89,7 @@ flowchart TB
     style S32 fill:#87CEEB
     style RDS1 fill:#4CAF50
     style RDS2 fill:#8BC34A
-```
+```text
 
 ## Estrategia de Disaster Recovery
 
@@ -133,7 +133,7 @@ flowchart TD
     style Secondary fill:#FFD700
     style Alert fill:#FF6347
     style Stable fill:#87CEEB
-```
+```text
 
 ## Terraform Module Structure para Multi-Región
 
@@ -166,7 +166,7 @@ graph TB
     style Root fill:#E1F5FF
     style Global fill:#FFE1E1
     style State fill:#87CEEB
-```
+```text
 
 ## Replicación de Datos
 
@@ -233,7 +233,7 @@ flowchart TD
     style Warm fill:#FFF3E0
     style Hot fill:#FFEBEE
     style Result fill:#90EE90
-```
+```text
 
 ## Network Peering y Conectividad
 
@@ -283,11 +283,12 @@ flowchart TB
     style Region1 fill:#E8F5E9
     style Region2 fill:#FFF3E0
     style Region3 fill:#E1F5FF
-```
+```text
 
 ## Uso
 
 Estos diagramas muestran:
+
 1. Arquitectura completa multi-región con servicios globales y regionales
 2. Estrategia de disaster recovery y failover
 3. Estructura de modules Terraform para gestionar múltiples regiones

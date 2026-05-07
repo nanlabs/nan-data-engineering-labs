@@ -31,7 +31,7 @@ graph TD
     style CrawlerRun1 fill:#FF9900
     style CrawlerRun2 fill:#FF9900
     style CrawlerRun3 fill:#FF9900
-```
+```text
 
 ## 2. Permission Grant Workflow
 
@@ -81,7 +81,7 @@ sequenceDiagram
     Athena->>S3: Read data from s3://lake/sales/
     S3-->>Athena: Data (region='US-WEST' only)
     Athena-->>User: Query results (filtered columns)
-```
+```text
 
 ## 3. Data Quality Validation Flow
 
@@ -130,7 +130,7 @@ stateDiagram-v2
     CreateTicket --> SendAlert: SNS critical alert
     SendAlert --> BlockPromotion: Block from Silver layer
     BlockPromotion --> [*]
-```
+```text
 
 ## 4. Tag-Based Access Control Setup
 
@@ -262,7 +262,7 @@ graph LR
     style CP2 fill:#FF9900
     style CP3 fill:#FF9900
     style Catalog fill:#146EB4
-```
+```text
 
 ## 6. Cross-Account Sharing Workflow
 
@@ -323,7 +323,7 @@ flowchart TD
     style Start fill:#4CAF50
     style Success fill:#4CAF50
     style Debug fill:#F57C00
-```
+```text
 
 ## 7. Metadata Management Lifecycle
 
@@ -370,7 +370,7 @@ stateDiagram-v2
         - Quality checks
         - Access audits
     end note
-```
+```text
 
 ## 8. Governed Table Operations
 
@@ -494,7 +494,7 @@ graph TD
     style QueryData fill:#2196F3
     style UseData fill:#4CAF50
     style Denied fill:#F44336
-```
+```text
 
 ## 10. Cost Optimization Workflow
 
@@ -569,7 +569,7 @@ flowchart TD
     style C1_Fix fill:#2196F3
     style S1_Fix fill:#2196F3
     style Q1_Fix fill:#2196F3
-```
+```text
 
 ## Usage
 

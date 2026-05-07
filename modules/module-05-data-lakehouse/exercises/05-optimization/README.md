@@ -1,6 +1,7 @@
 # Exercise 05: Optimization (Z-Ordering, Compaction, data SkIPping)
 
 ## 🎯 Objective
+
 Optimize performance with advanced optimization techniques.
 
 **Difficulty**: ⭐⭐⭐⭐ Avanzado | **Tiempo**: 45 minutos
@@ -23,7 +24,7 @@ delta_table.vacuum(168)  # horas
 
 # to see estadísticas
 delta_table.detail().select("numFiles", "sizeInBytes").show()
-```
+```text
 
 ## 🎓 Conceptos
 

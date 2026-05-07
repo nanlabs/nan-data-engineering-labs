@@ -5,15 +5,18 @@ This directory contains Mermaid diagrams illustrating data security, encryption,
 ## Diagrams
 
 ### 1. IAM Security Architecture
+
 **File**: [iam-security-architecture.mmd](iam-security-architecture.mmd)
 
 Shows identity and access management:
+
 - **IAM Users, Groups, Roles**: Least-privilege policies
 - **Permission Boundaries**: Maximum permissions
 - **Service Control Policies (SCPs)**: Organization-wide guardrails
 - **Cross-Account Access**: AssumeRole patterns
 
 **Use Cases**:
+
 - Multi-account data access
 - Federated identity (SAML/OIDC)
 - Data scientist personas with limited access
@@ -23,15 +26,18 @@ Shows identity and access management:
 ---
 
 ### 2. Data Encryption Flow
+
 **File**: [data-encryption-flow.mmd](data-encryption-flow.mmd)
 
 Shows encryption architecture:
+
 - **KMS Customer Master Keys (CMKs)**: Key management
 - **Envelope Encryption**: Data key encryption
 - **At-Rest Encryption**: S3, RDS, DynamoDB, Redshift
 - **In-Transit Encryption**: TLS/SSL
 
 **Use Cases**:
+
 - Protect sensitive customer data
 - Meet compliance requirements (HIPAA, PCI-DSS)
 - Client-side encryption for high security
@@ -41,15 +47,18 @@ Shows encryption architecture:
 ---
 
 ### 3. PII Detection & Masking
+
 **File**: [pii-detection-masking.mmd](pii-detection-masking.mmd)
 
 Shows data protection workflow:
+
 - **PII Detection**: Macie, Comprehend Medical
 - **Data Masking**: Dynamic masking in queries
 - **Tokenization**: Replace PII with tokens
 - **Anonymization**: K-anonymity, differential privacy
 
 **Use Cases**:
+
 - GDPR compliance (right to erasure)
 - HIPAA protected health information
 - Credit card number masking
@@ -59,15 +68,18 @@ Shows data protection workflow:
 ---
 
 ### 4. Compliance & Audit Trail
+
 **File**: [compliance-audit-trail.mmd](compliance-audit-trail.mmd)
 
 Shows audit and compliance architecture:
+
 - **CloudTrail**: API call logging (5-year retention)
 - **AWS Config**: Resource configuration compliance
 - **Compliance Frameworks**: GDPR, HIPAA, SOC 2, PCI-DSS
 - **Automated Remediation**: Lambda functions for violations
 
 **Use Cases**:
+
 - Audit who accessed what data and when
 - Prove compliance for certifications
 - Detect unauthorized data access
@@ -77,15 +89,18 @@ Shows audit and compliance architecture:
 ---
 
 ### 5. Lake Formation Access Control
+
 **File**: [lake-formation-access-control.mmd](lake-formation-access-control.mmd)
 
 Shows fine-grained access:
+
 - **Table-Level Permissions**: Grant SELECT on specific tables
 - **Column-Level Security**: Restrict PII columns
 - **Row-Level Security**: Filter based on user attributes
 - **Tag-Based Access**: LF-Tags for scalable permissions
 
 **Use Cases**:
+
 - Data lake with multiple teams
 - Restrict PII access to authorized users
 - Regional data residency enforcement
@@ -95,15 +110,18 @@ Shows fine-grained access:
 ---
 
 ### 6. Threat Detection & Response
+
 **File**: [threat-detection-response.mmd](threat-detection-response.mmd)
 
 Shows security monitoring:
+
 - **GuardDuty**: ML-based threat detection
 - **Security Hub**: Centralized security findings
 - **CloudWatch Alarms**: Anomaly detection
 - **Incident Response**: Automated playbooks
 
 **Use Cases**:
+
 - Detect compromised IAM credentials
 - Alert on unusual data access patterns
 - Automated incident response
@@ -117,12 +135,14 @@ Shows security monitoring:
 ### Rendering Mermaid
 
 **VS Code** (with Mermaid extension):
+
 ```bash
 code --install-extension bierner.markdown-mermaid
 code iam-security-architecture.mmd
-```
+```text
 
 **Online**:
+
 - [Mermaid Live Editor](https://mermaid.live/)
 
 ### Exporting to Image
@@ -130,7 +150,7 @@ code iam-security-architecture.mmd
 ```bash
 npm install -g @mermaid-js/mermaid-cli
 mmdc -i data-encryption-flow.mmd -o data-encryption-flow.png
-```
+```text
 
 ---
 
@@ -149,7 +169,7 @@ mmdc -i data-encryption-flow.mmd -o data-encryption-flow.png
 
 ## Security Pattern Flow
 
-```
+```text
 Identity (IAM Roles, Federated Users)
     ↓
 Authentication (Cognito, SAML, OIDC)
@@ -172,6 +192,7 @@ Incident Response (Lambda, SNS, EventBridge)
 ## Customization
 
 All diagrams use consistent styling:
+
 - **Blue**: IAM/Identity
 - **Green**: Encryption/Security
 - **Orange**: Data stores
@@ -183,18 +204,21 @@ All diagrams use consistent styling:
 ## Resources
 
 ### AWS Documentation
+
 - [IAM Best Practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
 - [KMS Developer Guide](https://docs.aws.amazon.com/kms/)
 - [Lake Formation Security](https://docs.aws.amazon.com/lake-formation/latest/dg/security.html)
 - [GuardDuty User Guide](https://docs.aws.amazon.com/guardduty/)
 
 ### Compliance Frameworks
+
 - **GDPR**: Data protection regulation (EU)
 - **HIPAA**: Healthcare data (US)
 - **SOC 2**: Security controls certification
 - **PCI-DSS**: Payment card industry standards
 
 ### Real-World Examples
+
 - **Netflix**: 100% encrypted data at rest and transit
 - **Capital One**: Column-level encryption in Redshift
 - **Goldman Sachs**: FIPS 140-2 validated KMS keys

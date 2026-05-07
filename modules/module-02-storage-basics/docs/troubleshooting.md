@@ -1,6 +1,7 @@
 # Troubleshooting Guide - Module 02
 
 ## Table of Contents
+
 1. [LocalStack Issues](#localstack-issues)
 2. [Python Dependencies](#python-dependencies)
 3. [File Format Issues](#file-format-issues)
@@ -12,11 +13,13 @@
 ### Issue: LocalStack won't start
 
 **Symptoms**:
+
 ```bash
 ERROR: Cannot connect to the Docker daemon
-```
+```text
 
 **Solution**:
+
 ```bash
 # 1. Check if Docker is running
 sudo systemctl status docker
@@ -30,16 +33,18 @@ newgrp docker
 
 # 4. Try again
 cd infrastructure && ./init.sh
-```
+```text
 
 ### Issue: Port 4566 already in use
 
 **Symptoms**:
-```
+
+```text
 Error starting userland proxy: listen tcp4 0.0.0.0:4566: bind: address already in use
 ```
 
 **Solution**:
+
 ```bash
 # 1. Find process using port 4566
 lsof -i :4566
@@ -50,16 +55,18 @@ kill -9 <PID>
 # 3. Or change LocalStack port in docker-compose.yml
 ports:
   - "4567:4566"  # Use different port
-```
+```text
 
 ### Issue: S3 bucket creation fails
 
 **Symptoms**:
-```
+
+```text
 An error occurred (BucketAlreadyExists) when calling the CreateBucket operation
-```
+```text
 
 **Solution**:
+
 ```bash
 # 1. List existing buckets
 aws --endpoint-url=http://localhost:4566 s3 ls
@@ -74,9 +81,11 @@ aws --endpoint-url=http://localhost:4566 s3 mb s3://my-bucket
 ### Issue: LocalStack data not persisting
 
 **Symptoms**:
+
 - Buckets disappear after restart
 
 **Solution**:
+
 ```bash
 # 1. Check if volume is mounted
 docker inspect localstack-module-02 | grep -A 5 Mounts
@@ -88,18 +97,20 @@ environment:
 
 # 3. Check permissions on localstack-data/
 sudo chown -R $USER:$USER localstack-data/
-```
+```text
 
 ## Python Dependencies
 
 ### Issue: pip install fails for PyArrow
 
 **Symptoms**:
-```
+
+```text
 ERROR: Could not build wheels for pyarrow
-```
+```text
 
 **Solution**:
+
 ```bash
 # Option 1: Install system dependencies (Linux)
 sudo apt-get update
@@ -116,11 +127,13 @@ pip install pyarrow==12.0.0
 ### Issue: fastavro import error
 
 **Symptoms**:
+
 ```python
 ModuleNotFoundError: No module named 'fastavro'
-```
+```text
 
 **Solution**:
+
 ```bash
 # 1. Reinstall from requirements.txt
 pip install -r requirements.txt
@@ -130,16 +143,18 @@ pip install fastavro>=1.7.0
 
 # 3. Verify installation
 python -c "import fastavro; print(fastavro.__version__)"
-```
+```text
 
 ### Issue: pandas read_parquet fails
 
 **Symptoms**:
-```
+
+```text
 ValueError: Unable to find a usable engine
 ```
 
 **Solution**:
+
 ```bash
 # Install PyArrow (required engine for Parquet)
 pip install pyarrow>=12.0.0
@@ -147,19 +162,21 @@ pip install pyarrow>=12.0.0
 # Or use fastparquet
 pip install fastparquet
 df = pd.read_parquet('file.parquet', engine='fastparquet')
-```
+```text
 
 ## File Format Issues
 
 ### Issue: Parquet file is corrupted
 
 **Symptoms**:
-```
+
+```text
 ArrowInvalid: Parquet file size is 0 bytes
 OSError: Couldn't deserialize thrift
-```
+```text
 
 **Solution**:
+
 ```bash
 # 1. Verify file is not empty
 ls -lh file.parquet
@@ -177,11 +194,13 @@ python convert_formats.py source.csv output/
 ### Issue: Schema mismatch when reading Parquet
 
 **Symptoms**:
-```
+
+```text
 ArrowInvalid: Unable to merge: Field amount has incompatible types: double vs int32
-```
+```text
 
 **Solution**:
+
 ```python
 # Option 1: Read without schema validation
 df = pd.read_parquet('file.parquet', use_nullable_dtypes=True)
@@ -195,16 +214,18 @@ import pyarrow.parquet as pq
 table = pq.read_table('file.parquet')
 table = table.cast(new_schema)
 df = table.to_pandas()
-```
+```text
 
 ### Issue: JSON parsing fails
 
 **Symptoms**:
+
 ```
 JSONDecodeError: Extra data: line 2 column 1
-```
+```text
 
 **Solution**:
+
 ```python
 # If JSONL (JSON Lines) format, use lines=True
 df = pd.read_json('file.json', lines=True)
@@ -214,16 +235,18 @@ df = pd.read_json('file.json', orient='records')
 
 # For nested JSON, normalize it
 df = pd.json_normalize(data)
-```
+```text
 
 ### Issue: Avro schema validation error
 
 **Symptoms**:
-```
+
+```text
 fastavro._write_common.SchemaResolutionError
 ```
 
 **Solution**:
+
 ```python
 # 1. Validate schema matches data
 schema = {
@@ -241,18 +264,20 @@ schema = {
 # 3. Convert DataFrame types before writing
 df['id'] = df['id'].astype('int32')
 df['amount'] = df['amount'].astype('float64')
-```
+```text
 
 ## CloudFormation Issues
 
 ### Issue: Stack creation fails - BucketName already exists
 
 **Symptoms**:
-```
+
+```text
 The requested bucket name is not available
-```
+```text
 
 **Solution**:
+
 ```bash
 # Option 1: Use unique bucket names (add timestamp/random suffix)
 aws cloudformation deploy --parameter-overrides \
@@ -268,11 +293,13 @@ aws s3 rb s3://globalmart-bronze-dev --force
 ### Issue: IAM role permissions denied
 
 **Symptoms**:
-```
+
+```text
 User: arn:aws:iam::123456789:user/alice is not authorized to perform: iam:CreateRole
-```
+```text
 
 **Solution**:
+
 ```bash
 # 1. For LocalStack: Use test credentials (no restrictions)
 export AWS_ACCESS_KEY_ID=test
@@ -284,16 +311,18 @@ aws cloudformation deploy \
 
 # 3. Check your IAM permissions
 aws iam get-user
-```
+```text
 
 ### Issue: CloudFormation template validation error
 
 **Symptoms**:
+
 ```
 Template format error: YAML not well-formed
-```
+```text
 
 **Solution**:
+
 ```bash
 # 1. Validate YAML syntax
 python -c "import yaml; yaml.safe_load(open('template.yaml'))"
@@ -305,14 +334,16 @@ aws cloudformation validate-template --template-body file://template.yaml
 #    - Indentation (use 2 spaces, not tabs)
 #    - Missing quotes around !Ref or !Sub
 #    - Invalid resource types
-```
+```text
 
 ### Issue: Lifecycle policy not working
 
 **Symptoms**:
+
 - Objects not transitioning to different storage classes
 
 **Solution**:
+
 ```yaml
 # 1. Ensure Status: Enabled
 LifecycleConfiguration:
@@ -330,16 +361,18 @@ LifecycleConfiguration:
       Transitions:
         - TransitionInDays: 1  # For testing
           StorageClass: STANDARD_IA
-```
+```text
 
 ## Performance Issues
 
 ### Issue: Parquet writes are very slow
 
 **Symptoms**:
+
 - Taking minutes to write 100K rows
 
 **Solution**:
+
 ```python
 # 1. Use row_group_size parameter
 df.to_parquet('file.parquet', row_group_size=100000)
@@ -361,9 +394,11 @@ pq.write_table(table, 'file.parquet', compression='snappy')
 ### Issue: Reading Parquet is slow
 
 **Symptoms**:
+
 - Queries taking seconds on small files
 
 **Solution**:
+
 ```python
 # 1. Read only needed columns
 df = pd.read_parquet('file.parquet', columns=['amount', 'country'])
@@ -379,16 +414,18 @@ table = dataset.to_table(filter=ds.field('year') == 2024)
 
 # 4. Check row group size (should be ~128 MB)
 pq.read_metadata('file.parquet').num_row_groups
-```
+```text
 
 ### Issue: Out of memory when processing large files
 
 **Symptoms**:
-```
+
+```text
 MemoryError: Unable to allocate array
-```
+```text
 
 **Solution**:
+
 ```python
 # Option 1: Process in chunks
 for chunk in pd.read_csv('large.csv', chunksize=10000):
@@ -412,10 +449,12 @@ df = pd.read_parquet('large.parquet',
 ### Issue: Partitioned data has many small files
 
 **Symptoms**:
+
 - Thousands of files per partition
 - Slow query performance
 
 **Solution**:
+
 ```python
 # Problem: Over-partitioning
 df.to_parquet('data/', partition_cols=['year', 'month', 'day', 'hour', 'country'])
@@ -436,11 +475,12 @@ pq.write_to_dataset(table, 'compacted_data/',
                      max_rows_per_file=1000000)
 
 # Rule of thumb: Keep partitions >100 MB
-```
+```text
 
 ## Quick Reference Commands
 
 ### Docker & LocalStack
+
 ```bash
 # Start LocalStack
 docker-compose up -d
@@ -456,9 +496,10 @@ docker-compose down -v && rm -rf localstack-data/
 
 # List S3 buckets
 aws --endpoint-url=http://localhost:4566 s3 ls
-```
+```text
 
 ### Python Environment
+
 ```bash
 # Create virtual environment
 python3 -m venv venv
@@ -470,9 +511,10 @@ pip install -r requirements.txt
 
 # Verify installations
 python -c "import pandas, pyarrow, fastavro; print('OK')"
-```
+```text
 
 ### File Format Tools
+
 ```bash
 # View Parquet schema
 parquet-tools schema file.parquet
@@ -491,6 +533,7 @@ wc -l file.jsonl
 ```
 
 ### AWS CLI (LocalStack)
+
 ```bash
 # Always use endpoint URL
 export AWS_ENDPOINT=http://localhost:4566
@@ -504,17 +547,18 @@ awslocal s3 sync data/ s3://my-bucket/data/
 # Glue operations
 awslocal glue get-databases
 awslocal glue get-tables --database-name mydb
-```
+```text
 
 ## Getting Help
 
 If you're still stuck:
 
 1. **Check logs**:
+
    ```bash
    docker logs localstack-module-02
    python script.py 2>&1 | tee error.log
-   ```
+   ```text
 
 2. **Search for error message**:
    - [Stack Overflow](https://stackoverflow.com/)
@@ -522,6 +566,7 @@ If you're still stuck:
    - [AWS Forums](https://repost.aws/)
 
 3. **Minimal reproducible example**:
+
    ```python
    import pandas as pd
    df = pd.DataFrame({'a': [1, 2, 3]})

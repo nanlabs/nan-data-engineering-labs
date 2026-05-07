@@ -78,7 +78,7 @@ Las databases relacionales organizan datos en **tables** con:
 
 **Ejemplo: database de E-commerce**
 
-```
+```text
 Tabla Users:
 +---------+----------------+------------+-----------+
 | user_id | email          | first_name | last_name |
@@ -94,7 +94,7 @@ Tabla Orders:
 | 101      | 1       | 2024-01-15 | 150.00       |
 | 102      | 2       | 2024-01-16 | 200.00       |
 +----------+---------+------------+--------------+
-```
+```text
 
 ### Relaciones
 
@@ -142,7 +142,7 @@ SELECT
     last_name,
     CONCAT(first_name, ' ', last_name) AS full_name
 FROM users;
-```
+```text
 
 ### Alias de columns
 
@@ -166,7 +166,7 @@ SELECT DISTINCT country FROM users;
 
 -- Unique combinations
 SELECT DISTINCT country, city FROM users;
-```
+```text
 
 **Nota**: `DISTINCT` puede ser costoso en datasets grandes. Considera si realmente lo necesitas.
 
@@ -179,7 +179,7 @@ SELECT
     price * 0.9 AS discounted_price,
     CURRENT_DATE AS today
 FROM products;
-```
+```text
 
 ---
 
@@ -200,7 +200,7 @@ WHERE price > 100 AND category = 'Electronics';
 -- Multiple conditions with OR
 SELECT * FROM products
 WHERE category = 'Electronics' OR category = 'Books';
-```
+```text
 
 ### Comparison Operators
 
@@ -224,7 +224,7 @@ WHERE category IN ('Electronics', 'Books', 'Clothing');
 WHERE category = 'Electronics'
    OR category = 'Books'
    OR category = 'Clothing'
-```
+```text
 
 ### BETWEEN
 
@@ -239,7 +239,7 @@ WHERE price >= 50 AND price <= 100
 -- Dates
 SELECT * FROM orders
 WHERE order_date BETWEEN '2024-01-01' AND '2024-12-31';
-```
+```text
 
 ### LIKE Pattern Matching
 
@@ -252,7 +252,7 @@ SELECT * FROM users WHERE first_name LIKE 'J__n';  -- John, Joan
 
 -- Case-insensitive: ILIKE (PostgreSQL)
 SELECT * FROM users WHERE email ILIKE '%GMAIL.COM';
-```
+```text
 
 ### IS NULL
 
@@ -288,7 +288,7 @@ ORDER BY category ASC, price DESC;
 -- With expressions
 SELECT * FROM products
 ORDER BY (price * 0.9) DESC;
-```
+```text
 
 **Performance**: Sorting large datasets is expensive. Use indexes on frequently sorted columns.
 
@@ -304,7 +304,7 @@ SELECT * FROM products LIMIT 10;
 SELECT * FROM products
 ORDER BY product_id
 LIMIT 10 OFFSET 20;
-```
+```text
 
 **MySQL/SQL Server**: Usa `LIMIT` (MySQL) o `TOP` (SQL Server).
 **Standard SQL**:`FETCH FIRST n ROWS ONLY`
@@ -317,7 +317,7 @@ SELECT * FROM products
 ORDER BY product_id
 OFFSET 20 ROWS
 FETCH FIRST 10 ROWS ONLY;
-```
+```text
 
 ---
 
@@ -349,10 +349,11 @@ SELECT
     o.total_amount
 FROM orders o
 INNER JOIN users u ON o.user_id = u.user_id;
-```
+```text
 
 **Visualization**:
-```
+
+```text
 Users (3 rows)     Orders (5 rows)
 user_id  name      order_id  user_id  amount
 1        John      101       1        100
@@ -366,7 +367,7 @@ John - 101 - 100
 Jane - 102 - 200
 John - 103 - 150
 Jane - 104 - 300
-```
+```text
 
 ### LEFT JOIN (LEFT OUTER JOIN)
 
@@ -385,7 +386,8 @@ LEFT JOIN orders o ON u.user_id = o.user_id;
 **Use case**: Find all users, including those without orders.
 
 **Display**:
-```
+
+```text
 Users         Orders
 1  John       101  1  100
 2  Jane       102  2  200
@@ -395,7 +397,7 @@ Resultado LEFT JOIN:
 1  John  101  100
 2  Jane  102  200
 3  Bob   NULL NULL
-```
+```text
 
 ### RIGHT JOIN
 
@@ -407,7 +409,7 @@ SELECT
     o.order_id
 FROM users u
 RIGHT JOIN orders o ON u.user_id = o.user_id;
-```
+```text
 
 **Caso de uso**: Raramente usado; puedes reescribir como LEFT JOIN intercambiando tables.
 
@@ -436,7 +438,7 @@ SELECT
     sizes.size_name
 FROM colors
 CROSS JOIN sizes;
-```
+```text
 
 **Caso de uso**: Generar todas las combinaciones (ej., variantes de producto).
 
@@ -453,7 +455,7 @@ SELECT
     m.name AS manager
 FROM employees e
 LEFT JOIN employees m ON e.manager_id = m.employee_id;
-```
+```text
 
 ### Multiple JOINs
 
@@ -467,7 +469,7 @@ FROM users u
 JOIN orders o ON u.user_id = o.user_id
 JOIN order_items oi ON o.order_id = oi.order_id
 JOIN products p ON oi.product_id = p.product_id;
-```
+```text
 
 **Order matters** for readability, not performance (optimizer decides).
 
@@ -515,7 +517,7 @@ SELECT AVG(price) FROM products;
 
 -- Min/Max
 SELECT MIN(price), MAX(price) FROM products;
-```
+```text
 
 ### GROUP BY
 
@@ -529,9 +531,10 @@ SELECT
     SUM(total_amount) AS total_spent
 FROM orders
 GROUP BY user_id;
-```
+```text
 
 **Rule**: Every column in SELECT must be:
+
 1. In GROUP BY, OR
 2. Inside an aggregate function
 
@@ -541,7 +544,7 @@ SELECT user_id, email, COUNT(*) FROM orders GROUP BY user_id;
 
 -- CORRECT:
 SELECT user_id, COUNT(*) FROM orders GROUP BY user_id;
-```
+```text
 
 ### Multiple GROUP BY Columns
 
@@ -568,9 +571,10 @@ SELECT
 FROM orders
 GROUP BY user_id
 HAVING COUNT(*) > 5;
-```
+```text
 
 **WHERE vs HAVING**:
+
 - `WHERE` filters rows before grouping
 - `HAVING` filters groups after aggregation
 
@@ -583,7 +587,7 @@ FROM products
 WHERE stock > 0           -- Filter individual products
 GROUP BY category
 HAVING AVG(price) > 100;  -- Filter aggregated results
-```
+```text
 
 ### DISTINCT in Aggregates
 
@@ -597,7 +601,7 @@ SELECT AVG(product_count) FROM (
     FROM order_items
     GROUP BY order_id
 ) subquery;
-```
+```text
 
 ---
 
@@ -618,14 +622,15 @@ FROM orders;
 ```
 
 **Result**:
-```
+
+```text
 user_id  order_id  order_date   order_sequence
 1        101       2024-01-15   1
 1        103       2024-01-20   2
 1        105       2024-01-25   3
 2        102       2024-01-16   1
 2        104       2024-01-21   2
-```
+```text
 
 ### ROW_NUMBER()
 
@@ -637,7 +642,7 @@ SELECT
     order_id,
     ROW_NUMBER() OVER (ORDER BY order_date) AS seq
 FROM orders;
-```
+```text
 
 ### RANK() and DENSE_RANK()
 
@@ -653,13 +658,14 @@ FROM students;
 ```
 
 **Result**:
-```
+
+```text
 name     score  rank  dense_rank
 Alice    95     1     1
 Bob      95     1     1   <- same score
 Charlie  90     3     2   <- RANK skips, DENSE_RANK doesn't
 David    85     4     3
-```
+```text
 
 ### PARTITION BY
 
@@ -673,7 +679,7 @@ SELECT
     price,
     RANK() OVER (PARTITION BY category ORDER BY price DESC) AS price_rank
 FROM products;
-```
+```text
 
 ### LAG() and LEAD()
 
@@ -703,7 +709,7 @@ FROM (
     FROM orders
     GROUP BY order_date
 ) daily;
-```
+```text
 
 ### Window Frames
 
@@ -719,9 +725,10 @@ SELECT
         ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
     ) AS moving_avg_7d
 FROM daily_sales;
-```
+```text
 
 Frame options:
+
 - `ROWS BETWEEN ... AND ...`: Physical row count
 - `RANGE BETWEEN ... AND ...`: Logical value range
 - `UNBOUNDED PRECEDING`: Start of partition
@@ -739,7 +746,7 @@ SELECT
     total_spent,
     NTILE(4) OVER (ORDER BY total_spent) AS quartile
 FROM user_totals;
-```
+```text
 
 ### FIRST_VALUE() and LAST_VALUE()
 
@@ -773,9 +780,10 @@ WITH category_sales AS (
     GROUP BY category
 )
 SELECT * FROM category_sales WHERE total_sales > 10000;
-```
+```text
 
 **Benefits**:
+
 - Improves readability
 - Can be referenced multiple times
 - Breaks complex queries into steps
@@ -799,7 +807,7 @@ SELECT
     u.email
 FROM users u
 JOIN high_spenders hs ON u.user_id = hs.user_id;
-```
+```text
 
 ### Recursive CTEs
 
@@ -813,9 +821,10 @@ WITH RECURSIVE numbers AS (
     SELECT n + 1 FROM numbers WHERE n < 10
 )
 SELECT * FROM numbers;
-```
+```text
 
 **Use cases**:
+
 - Organizational hierarchies
 - Bill of materials
 - Graph traversal
@@ -838,6 +847,7 @@ GROUP BY user_id;
 ```
 
 **When to use CTEs**:
+
 - Multiple references to same subquery
 - Complex logic that benefits from naming
 - Recursive queries
@@ -858,7 +868,7 @@ SELECT
     price,
     price - (SELECT AVG(price) FROM products) AS price_diff
 FROM products;
-```
+```text
 
 ### IN Subqueries
 
@@ -866,7 +876,7 @@ FROM products;
 -- Users who placed orders
 SELECT * FROM users
 WHERE user_id IN (SELECT DISTINCT user_id FROM orders);
-```
+```text
 
 ### EXISTS
 
@@ -878,9 +888,10 @@ SELECT * FROM users u
 WHERE EXISTS (
     SELECT 1 FROM orders o WHERE o.user_id = u.user_id
 );
-```
+```text
 
 **EXISTS vs IN**:
+
 - `EXISTS` stops at first match (faster)
 - `IN` evaluates entire subquery
 - Use `EXISTS` for correlated subqueries
@@ -917,7 +928,7 @@ FROM (
     FROM orders
     GROUP BY order_date
 ) daily_stats;
-```
+```text
 
 ---
 
@@ -938,7 +949,7 @@ NUMERIC(10, 2)  -- Example: 12345678.90
 -- Floating point (approximate)
 REAL            -- 4 bytes
 DOUBLE PRECISION -- 8 bytes
-```
+```text
 
 **Use DECIMAL for money** (avoids floating-point errors).
 
@@ -948,7 +959,7 @@ DOUBLE PRECISION -- 8 bytes
 CHAR(n)         -- Fixed length, padded
 VARCHAR(n)      -- Variable length, up to n
 TEXT            -- Unlimited length
-```
+```text
 
 ### Date and Time
 
@@ -964,21 +975,21 @@ INTERVAL        -- Duration: '2 days', '3 hours'
 
 ```sql
 BOOLEAN         -- TRUE, FALSE, NULL
-```
+```text
 
 ### JSON
 
 ```sql
 JSON            -- Text representation
 JSONB           -- Binary (PostgreSQL, faster, indexable)
-```
+```text
 
 ### Arrays (PostgreSQL)
 
 ```sql
 INTEGER[]       -- Array of integers
 TEXT[]          -- Array of strings
-```
+```text
 
 ### UUID
 
@@ -996,7 +1007,7 @@ SELECT CAST('2024-01-15' AS DATE);
 -- PostgreSQL shorthand
 SELECT '123'::INTEGER;
 SELECT '2024-01-15'::DATE;
-```
+```text
 
 ---
 
@@ -1011,7 +1022,7 @@ SELECT '2024-01-15'::DATE;
 NULL    -- Unknown
 0       -- Zero
 ''      -- Empty string
-```
+```text
 
 ### NULL Comparisons
 
@@ -1022,7 +1033,7 @@ WHERE column IS NOT NULL
 
 -- NEVER use = NULL (always returns NULL, not TRUE)
 WHERE column = NULL  -- WRONG!
-```
+```text
 
 ### NULL in Expressions
 
@@ -1046,7 +1057,7 @@ SELECT CASE
     WHEN email IS NOT NULL THEN email
     ELSE 'No contact'
 END AS contact FROM users;
-```
+```text
 
 ### NULLIF
 
@@ -1057,7 +1068,7 @@ Return NULL if two values are equal:
 SELECT
     total_sales / NULLIF(total_orders, 0) AS avg_order_value
 FROM metrics;
-```
+```text
 
 ### NULL in Aggregates
 
@@ -1068,7 +1079,7 @@ SELECT
     COUNT(phone) AS rows_with_phone,
     AVG(rating) AS avg_rating  -- NULL ratings excluded
 FROM users;
-```
+```text
 
 ---
 
@@ -1092,7 +1103,7 @@ SELECT
     LOWER(name) AS lowercase,
     INITCAP(name) AS title_case
 FROM products;
-```
+```text
 
 ### TRIM
 
@@ -1101,7 +1112,7 @@ SELECT
     TRIM('  hello  ') AS trimmed,        -- 'hello'
     LTRIM('  hello  ') AS left_trimmed,  -- 'hello  '
     RTRIM('  hello  ') AS right_trimmed  -- '  hello'
-```
+```text
 
 ### SUBSTRING
 
@@ -1111,7 +1122,7 @@ SELECT SUBSTRING(email FROM 1 FOR 5) AS email_prefix FROM users;
 
 -- PostgreSQL alternative
 SELECT SUBSTR(email, 1, 5) AS email_prefix FROM users;
-```
+```text
 
 ### LENGTH
 
@@ -1123,14 +1134,14 @@ SELECT LENGTH(description) AS desc_length FROM products;
 
 ```sql
 SELECT REPLACE(phone, '-', '') AS phone_clean FROM users;
-```
+```text
 
 ### SPLIT_PART (PostgreSQL)
 
 ```sql
 -- Split by delimiter, get part
 SELECT SPLIT_PART(email, '@', 2) AS domain FROM users;
-```
+```text
 
 ### Regular Expressions (PostgreSQL)
 
@@ -1140,7 +1151,7 @@ SELECT * FROM users WHERE email ~ '^[a-z]+@gmail\.com$';
 
 -- Extract match
 SELECT (REGEXP_MATCH(email, '([a-z]+)@'))[1] AS username FROM users;
-```
+```text
 
 ---
 
@@ -1165,7 +1176,7 @@ SELECT
     EXTRACT(DAY FROM order_date) AS day,
     EXTRACT(DOW FROM order_date) AS day_of_week  -- 0=Sunday
 FROM orders;
-```
+```text
 
 ### Date Arithmetic
 
@@ -1178,7 +1189,7 @@ SELECT AGE(end_date, start_date) AS duration FROM events;
 
 -- Days between
 SELECT DATE_PART('day', end_date - start_date) AS days_diff FROM events;
-```
+```text
 
 ### Formatting
 
@@ -1189,7 +1200,7 @@ SELECT TO_CHAR(order_date, 'Mon DD, YYYY') AS readable FROM orders;
 
 -- Parse string to date
 SELECT TO_DATE('2024-01-15', 'YYYY-MM-DD') AS parsed;
-```
+```text
 
 ### Truncating
 
@@ -1206,7 +1217,7 @@ FROM orders;
 ```sql
 -- Convert to timezone
 SELECT order_timestamp AT TIME ZONE 'America/New_York' AS ny_time FROM orders;
-```
+```text
 
 ---
 
@@ -1223,7 +1234,7 @@ SELECT
         ELSE 'Other'
     END AS category_group
 FROM products;
-```
+```text
 
 ### Searched CASE
 
@@ -1239,7 +1250,7 @@ SELECT
         ELSE 'Premium'
     END AS price_tier
 FROM products;
-```
+```text
 
 ### CASE in Aggregates
 
@@ -1262,7 +1273,7 @@ SELECT
     SUM(CASE WHEN category = 'Books' THEN amount ELSE 0 END) AS books_sales
 FROM sales
 GROUP BY order_date;
-```
+```text
 
 ---
 
@@ -1276,7 +1287,7 @@ Combine results, removing duplicates:
 SELECT user_id FROM orders_2023
 UNION
 SELECT user_id FROM orders_2024;
-```
+```text
 
 ### UNION ALL
 
@@ -1286,7 +1297,7 @@ Keep duplicates (faster):
 SELECT user_id FROM orders_2023
 UNION ALL
 SELECT user_id FROM orders_2024;
-```
+```text
 
 ### INTERSECT
 
@@ -1308,9 +1319,10 @@ Rows in first query but not second:
 SELECT user_id FROM orders_2023
 EXCEPT
 SELECT user_id FROM orders_2024;
-```
+```text
 
 **Requirements**:
+
 - Same number of columns
 - Compatible data types
 - Column names from first query
@@ -1335,7 +1347,7 @@ VALUES
 -- From SELECT
 INSERT INTO users_archive
 SELECT * FROM users WHERE created_at < '2023-01-01';
-```
+```text
 
 ### UPDATE
 
@@ -1354,7 +1366,7 @@ SET
     last_login = CURRENT_TIMESTAMP,
     login_count = login_count + 1
 WHERE user_id = 123;
-```
+```text
 
 ### DELETE
 
@@ -1382,7 +1394,7 @@ UPDATE products
 SET price = price * 0.9
 WHERE category = 'Books'
 RETURNING product_id, product_name, price;
-```
+```text
 
 ---
 
@@ -1399,7 +1411,7 @@ BEGIN;  -- Start transaction
     UPDATE accounts SET balance = balance + 100 WHERE account_id = 2;
 
 COMMIT;  -- Save changes
-```
+```text
 
 If anything fails:
 
@@ -1409,7 +1421,7 @@ BEGIN;
     -- Error occurs here
     UPDATE accounts SET balance = balance + 100 WHERE account_id = 999;  -- Doesn't exist
 ROLLBACK;  -- Undo all changes
-```
+```text
 
 ### Savepoints
 
@@ -1435,7 +1447,7 @@ Control how transactions see each other's changes:
 SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-```
+```text
 
 ---
 
@@ -1449,7 +1461,7 @@ SELECT * FROM users;
 
 -- DO:
 SELECT user_id, first_name, email FROM users;
-```
+```text
 
 **Why**: Schema changes won't break queries.
 
@@ -1467,7 +1479,7 @@ SELECT u.first_name, o.order_id
 FROM users u
 JOIN (SELECT * FROM orders WHERE order_date > '2024-01-01') o
 ON u.user_id = o.user_id;
-```
+```text
 
 ### 3. Use Appropriate Data Types
 
@@ -1484,7 +1496,7 @@ CREATE TABLE products (price DECIMAL(10, 2));  -- Good
 ```sql
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 CREATE INDEX idx_orders_date ON orders(order_date);
-```
+```text
 
 ### 5. Use CTEs for Readability
 
@@ -1493,7 +1505,7 @@ CREATE INDEX idx_orders_date ON orders(order_date);
 WITH active_users AS (...),
      recent_orders AS (...)
 SELECT ...
-```
+```text
 
 ### 6. Avoid SELECT DISTINCT on Large Tables
 
@@ -1503,7 +1515,7 @@ SELECT DISTINCT country FROM users;  -- 10M rows
 
 -- Better: Use GROUP BY if you need counts
 SELECT country, COUNT(*) FROM users GROUP BY country;
-```
+```text
 
 ### 7. Use LIMIT for Exploration
 
@@ -1519,14 +1531,14 @@ SELECT * FROM huge_table LIMIT 100;
 -- partitioned by product category
 WITH daily_sales AS (...)
 SELECT ...
-```
+```text
 
 ### 9. Test with EXPLAIN
 
 ```sql
 EXPLAIN ANALYZE
 SELECT ... FROM ... WHERE ...;
-```
+```text
 
 ### 10. Use Transactions for Data Integrity
 
@@ -1534,7 +1546,7 @@ SELECT ... FROM ... WHERE ...;
 BEGIN;
     -- Multiple related operations
 COMMIT;
-```
+```text
 
 ---
 
@@ -1566,7 +1578,7 @@ FROM generate_series(
     (SELECT MAX(order_id) FROM orders)
 ) AS expected_id
 WHERE expected_id NOT IN (SELECT order_id FROM orders);
-```
+```text
 
 ### Running Totals by Group
 
@@ -1580,7 +1592,7 @@ SELECT
         ORDER BY order_date
     ) AS cumulative_spend
 FROM orders;
-```
+```text
 
 ### Pivot Table
 
@@ -1592,7 +1604,7 @@ SELECT
     SUM(CASE WHEN month = 3 THEN sales END) AS mar
 FROM monthly_sales
 GROUP BY product_id;
-```
+```text
 
 ### Deduplication
 
@@ -1619,7 +1631,7 @@ FROM generate_series(
     '1 day'::interval
 ) AS date_series(date)
 LEFT JOIN daily_sales sales ON date_series.date = sales.sale_date;
-```
+```text
 
 ---
 

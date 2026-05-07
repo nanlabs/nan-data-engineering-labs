@@ -7,11 +7,13 @@ This directory contains visual diagrams and quick reference cheatsheets to suppl
 Interactive Mermaid diagrams that visualize SQL concepts.
 
 ### [Query Execution Flow](diagrams/query-execution-flow.md)
+
 **What**: Step-by-step visualization of how PostgreSQL processes SQL queries
 **Covers**: Parser → Rewriter → Planner → Cost Estimator → Executor
 **Use When**: Understanding EXPLAIN output, query optimization
 
 **Key Concepts**:
+
 - Parsing and syntax validation
 - Query planning and cost estimation
 - Access methods (Sequential, Index, Bitmap scans)
@@ -20,16 +22,19 @@ Interactive Mermaid diagrams that visualize SQL concepts.
 ---
 
 ### [JOIN Types Visual Guide](diagrams/join-types.md)
+
 **What**: Complete visual breakdown of all JOIN types with examples
 **Covers**: INNER, LEFT, RIGHT, FULL OUTER JOINs
 
 **Includes**:
+
 - Visual representation of matching/non-matching rows
 - Venn diagram comparisons
 - Common patterns (finding unmatched rows, data integrity checks)
 - Performance considerations
 
 **Use When**:
+
 - Choosing the right JOIN type for your query
 - Understanding NULL values in JOIN results
 - Debugging unexpected JOIN results
@@ -37,10 +42,12 @@ Interactive Mermaid diagrams that visualize SQL concepts.
 ---
 
 ### [Window Functions Explained](diagrams/window-functions.md)
+
 **What**: Deep dive into window function mechanics
 **Covers**: ROW_NUMBER, RANK, PARTITION BY, LAG/LEAD, Frame clauses
 
 **Key Visualizations**:
+
 - Difference between GROUP BY and window functions
 - ROW_NUMBER vs RANK vs DENSE_RANK comparison
 - PARTITION BY grouping behavior
@@ -49,6 +56,7 @@ Interactive Mermaid diagrams that visualize SQL concepts.
 - Frame specification examples
 
 **Use When**:
+
 - Implementing ranking within groups
 - Calculating running totals or moving averages
 - Comparing rows with previous/next values
@@ -61,9 +69,11 @@ Interactive Mermaid diagrams that visualize SQL concepts.
 Quick reference guides with syntax, examples, and best practices.
 
 ### [SQL Basics](cheatsheets/sql-basics.md)
+
 **Comprehensive reference** covering fundamental SQL operations.
 
 **Sections**:
+
 1. **SELECT & Projection**: Column selection, aliases, calculated columns
 2. **WHERE - Filtering**: Comparison operators, IN, BETWEEN, LIKE, NULL handling
 3. **ORDER BY - Sorting**: Single/multiple columns, NULL ordering
@@ -81,6 +91,7 @@ Quick reference guides with syntax, examples, and best practices.
 **Execution Order**: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT
 
 **Use When**:
+
 - Writing basic queries
 - Remembering syntax for specific operations
 - Understanding query execution order
@@ -89,9 +100,11 @@ Quick reference guides with syntax, examples, and best practices.
 ---
 
 ### [Window Functions](cheatsheets/window-functions.md)
+
 **Complete guide** to analytical window functions.
 
 **Sections**:
+
 1. **Ranking Functions**: ROW_NUMBER, RANK, DENSE_RANK, NTILE
 2. **Analytical Functions**: LAG, LEAD, FIRST_VALUE, LAST_VALUE
 3. **Aggregate Functions**: SUM, AVG, COUNT as window functions
@@ -107,10 +120,12 @@ Quick reference guides with syntax, examples, and best practices.
 8. **Common Mistakes**: LAST_VALUE frames, WHERE clause limitations
 
 **Comparison Tables**:
+
 - ROW_NUMBER vs RANK vs DENSE_RANK with examples
 - When to use GROUP BY vs Window Functions
 
 **Use When**:
+
 - Implementing analytics queries
 - Calculating running totals or moving averages
 - Ranking within groups
@@ -120,9 +135,11 @@ Quick reference guides with syntax, examples, and best practices.
 ---
 
 ### [Query Optimization](cheatsheets/optimization.md)
+
 **Practical guide** to analyzing and improving query performance.
 
 **Sections**:
+
 1. **EXPLAIN**: Query plan analysis, ANALYZE option, output formats
 2. **Understanding Plans**: Scan methods, join algorithms, cost interpretation
 3. **Indexes**:
@@ -152,6 +169,7 @@ Quick reference guides with syntax, examples, and best practices.
 **Quick Reference Table**: Techniques and when to use them
 
 **Use When**:
+
 - Query is slow in production
 - Deciding which indexes to create
 - Understanding EXPLAIN output
@@ -163,16 +181,19 @@ Quick reference guides with syntax, examples, and best practices.
 ## 🎯 How to Use These Assets
 
 ### During Learning
+
 1. **Start with Cheatsheets**: Use [SQL Basics](cheatsheets/sql-basics.md) while working through exercises
 2. **Visual Reinforcement**: Reference diagrams when concepts feel abstract
 3. **Keep Handy**: Bookmark for quick syntax lookups
 
 ### During Problem Solving
+
 1. **Stuck on JOINs?** → [JOIN Diagrams](diagrams/join-types.md)
 2. **Need Rankings?** → [Window Functions Cheatsheet](cheatsheets/window-functions.md)
 3. **Query Too Slow?** → [Optimization Guide](cheatsheets/optimization.md)
 
 ### During Code Review
+
 1. Check optimization cheatsheet for anti-patterns
 2. Verify JOIN type choice against visual guide
 3. Ensure proper window function usage (frame clauses!)
@@ -181,7 +202,7 @@ Quick reference guides with syntax, examples, and best practices.
 
 ## 📁 File Structure
 
-```
+```text
 assets/
 ├── README.md                           # This file
 ├── diagrams/
@@ -192,18 +213,20 @@ assets/
     ├── sql-basics.md                   # Core SQL reference (12 sections)
     ├── window-functions.md             # Analytical functions guide
     └── optimization.md                 # Performance tuning reference
-```
+```text
 
 ---
 
 ## 🔗 Related Resources
 
 ### Module Content
+
 - **Theory**: [concepts.md](../theory/concepts.md) - Detailed explanations
 - **Exercises**: [exercises/](../exercises/) - Hands-on practice
 - **Infrastructure**: [infrastructure/](../infrastructure/) - Database setup
 
 ### Workflow
+
 1. **Read** theory concepts
 2. **Reference** these assets while learning
 3. **Practice** with exercises
@@ -214,16 +237,19 @@ assets/
 ## 💡 Tips for Effective Use
 
 ### For Beginners
+
 - Start with [SQL Basics Cheatsheet](cheatsheets/sql-basics.md)
 - Use diagrams to understand JOIN behavior before writing complex queries
 - Reference execution order when debugging unexpected results
 
 ### For Intermediate Users
+
 - Keep [Window Functions Cheatsheet](cheatsheets/window-functions.md) handy for analytics work
 - Use [Optimization Guide](cheatsheets/optimization.md) proactively, not just when slow
 - Study EXPLAIN output patterns in [Query Execution Flow](diagrams/query-execution-flow.md)
 
 ### For Advanced Users
+
 - Review optimization checklist before production deployments
 - Use frame specifications guide for complex analytical queries
 - Reference anti-patterns section during code reviews
@@ -233,17 +259,20 @@ assets/
 ## 🎓 Learning Paths
 
 ### Path 1: Fundamentals First
+
 1. [SQL Basics Cheatsheet](cheatsheets/sql-basics.md) - Master foundation
 2. [JOIN Types Diagram](diagrams/join-types.md) - Understand relationships
 3. Practice exercises 01-02 with cheatsheet reference
 
 ### Path 2: Analytics Focus
+
 1. [SQL Basics Cheatsheet](cheatsheets/sql-basics.md) - Quick foundation review
 2. [Window Functions Diagram](diagrams/window-functions.md) - Visual concepts
 3. [Window Functions Cheatsheet](cheatsheets/window-functions.md) - Deep dive
 4. Practice exercises 04-05 with cheatsheet reference
 
 ### Path 3: Performance Optimization
+
 1. [Query Execution Flow](diagrams/query-execution-flow.md) - How queries work
 2. [Optimization Cheatsheet](cheatsheets/optimization.md) - Techniques
 3. Practice exercise 06 with EXPLAIN analysis
@@ -259,11 +288,12 @@ All files are designed to be print-friendly:
 - **Recommended Order**: SQL Basics → Window Functions → Optimization
 
 ### Rendering Mermaid Diagrams
+
 ```bash
 # Using mermaid-cli
 npm install -g @mermaid-js/mermaid-cli
 mmdc -i diagrams/join-types.md -o join-types.pdf
-```
+```text
 
 Or use VS Code extension: "Markdown Preview Mermaid Support"
 
@@ -272,6 +302,7 @@ Or use VS Code extension: "Markdown Preview Mermaid Support"
 ## 🤝 Contributing
 
 Found an error or have a suggestion?
+
 1. Check if concept is covered in appropriate file
 2. Ensure additions maintain quick-reference format
 3. Add visual examples where helpful
@@ -297,17 +328,20 @@ Found an error or have a suggestion?
 ## 🔍 Quick Lookups
 
 **Need syntax for...**
+
 - Basic queries → [SQL Basics](cheatsheets/sql-basics.md) sections 1-5
 - JOINs → [SQL Basics](cheatsheets/sql-basics.md) section 7 or [JOIN Diagram](diagrams/join-types.md)
 - Window functions → [Window Functions Cheatsheet](cheatsheets/window-functions.md)
 - Performance → [Optimization Cheatsheet](cheatsheets/optimization.md)
 
 **Confused about...**
+
 - JOIN results → [JOIN Visual Guide](diagrams/join-types.md)
 - Window function behavior → [Window Functions Diagram](diagrams/window-functions.md)
 - Query slowness → [Query Execution Flow](diagrams/query-execution-flow.md)
 
 **Need examples of...**
+
 - Common patterns → All cheatsheets have extensive examples
 - Anti-patterns → [Optimization Cheatsheet](cheatsheets/optimization.md) section 6
 

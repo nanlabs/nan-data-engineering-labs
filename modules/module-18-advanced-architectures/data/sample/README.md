@@ -5,62 +5,74 @@ This directory contains sample data files for testing exercises.
 ## Files
 
 ### event-store-sample.json
+
 Sample events for CQRS/Event Sourcing (Exercise 04).
 
 **Events**:
+
 - `OrderPlaced`, `PaymentProcessed`, `OrderShipped`, `OrderDelivered`, `OrderCancelled`
 - Immutable event log with timestamps
 - Aggregate IDs for order tracking
 
 **Usage**:
+
 ```bash
 cd exercises/04-event-driven-cqrs
 python event_store.py --mode setup --env localstack
 python command_handler.py --command PlaceOrder --aggregate ORD_001 --data '{"customer_id":"CUST_123","items":[{"product_id":"PROD_456","quantity":2}],"amount":150.00}'
-```
+```text
 
 ---
 
 ### kinesis-stream-events.json
+
 Sample streaming events for Kappa Architecture (Exercise 02).
 
 **Events**:
+
 - Real-time user activity (page views, clicks, purchases)
 - Includes user_id, event_type, timestamp, metadata
 - ~100 events for quick testing
 
 **Usage**:
+
 ```bash
 cd exercises/02-kappa-architecture
 python stream_processor.py --mode produce --events ../data/sample/kinesis-stream-events.json
-```
+```text
 
 ---
 
 ### batch-data-sample.parquet
+
 Historical data for Lambda Architecture batch layer (Exercise 01).
 
 **Schema**:
+
 - transaction_id, user_id, product_id, amount, timestamp, country
 
 **Size**: 10,000 transactions (90 days of data)
 
 **Usage**:
+
 ```bash
 cd exercises/01-lambda-architecture
 python batch_layer.py --mode batch-process --input ../data/sample/batch-data-sample.parquet
-```
+```text
 
 ---
 
 ### domain-products-sample.json
+
 Product catalog for Data Mesh (Exercise 03 - Product Domain).
 
 **Schema**:
+
 - product_id, name, category, price, stock, supplier_id
 - 500 products
 
 **Usage**:
+
 ```bash
 cd exercises/03-data-mesh
 python domain_api.py --mode serve --domain product --data ../data/sample/domain-products-sample.json
@@ -69,27 +81,33 @@ python domain_api.py --mode serve --domain product --data ../data/sample/domain-
 ---
 
 ### domain-sales-sample.json
+
 Sales orders for Data Mesh (Exercise 03 - Sales Domain).
 
 **Schema**:
+
 - order_id, customer_id, product_id, quantity, amount, order_date
 - 1,000 orders
 
 ---
 
 ### domain-customer-sample.json
+
 Customer profiles for Data Mesh (Exercise 03 - Customer Domain).
 
 **Schema**:
+
 - customer_id, name, email, country, lifetime_value, segment
 - 200 customers
 
 ---
 
 ### generate_sample_data.py
+
 Python script to generate all sample data files.
 
 **Usage**:
+
 ```bash
 python data/sample/generate_sample_data.py
 
@@ -101,7 +119,7 @@ python data/sample/generate_sample_data.py --exercise lambda  # batch-data-sampl
 python data/sample/generate_sample_data.py --exercise kappa   # kinesis-stream-events.json only
 python data/sample/generate_sample_data.py --exercise mesh    # domain-*-sample.json only
 python data/sample/generate_sample_data.py --exercise cqrs    # event-store-sample.json only
-```
+```text
 
 ---
 
@@ -127,7 +145,7 @@ python data/sample/generate_sample_data.py --exercise cqrs    # event-store-samp
 ```bash
 cd modules/module-18-advanced-architectures
 python data/sample/generate_sample_data.py
-```
+```text
 
 This creates all sample files needed for exercises.
 
@@ -147,7 +165,7 @@ python data/sample/generate_sample_data.py \
     --products 1000 \
     --customers 500 \
     --orders 2000
-```
+```text
 
 ---
 
@@ -196,7 +214,7 @@ python data/sample/generate_sample_data.py \
     "payment_method": "credit_card"
   }
 }
-```
+```text
 
 ### Batch Transactions (Lambda)
 
@@ -210,7 +228,7 @@ python data/sample/generate_sample_data.py \
   "country": "US",
   "status": "completed"
 }
-```
+```text
 
 ---
 
@@ -236,6 +254,6 @@ python data/sample/generate_sample_data.py \
     --customers 100000 \
     --orders 500000 \
     --output data/production/
-```
+```text
 
 **Warning**: Large datasets take longer to generate and require more storage.

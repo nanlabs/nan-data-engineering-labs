@@ -7,11 +7,13 @@ You work as a **Data Engineer** at **QuickMart**, a fast-growing e-commerce star
 ### The Problem
 
 QuickMart has multiple data sources:
+
 - **Application Logs:** JSON logs from web application (errors, user events)
 - **Transactional Data:** Daily CSV exports from sales database
 - **External APIs:** Data from third-party services (inventory, shipping)
 
 Currently, this data is:
+
 - ❌ On different servers with no structure
 - ❌ Without versioning
 - ❌ Hard to access for the analytics team
@@ -24,7 +26,8 @@ The CTO asked you to create a **centralized storage system** using S3 as the fou
 ### Specific Requirements
 
 1. **Organized Structure**
-   ```
+
+   ```text
    my-data-lake-raw/
    ├── source=app-logs/
    │   └── year=2024/month=01/day=15/
@@ -58,6 +61,7 @@ The CTO asked you to create a **centralized storage system** using S3 as the fou
 The team provided sample data in `test_data/`:
 
 **app-logs-2024-01-15.json**
+
 ```json
 {
   "timestamp": "2024-01-15T10:30:45Z",
@@ -68,14 +72,15 @@ The team provided sample data in `test_data/`:
   "order_id": "ord_67890",
   "amount": 129.99
 }
-```
+```text
 
 **transactions-2024-01-15.csv**
+
 ```csv
 order_id,customer_id,product_id,quantity,amount,timestamp
 ord_67890,cust_123,prod_456,2,129.99,2024-01-15T10:30:45Z
 ord_67891,cust_124,prod_457,1,49.99,2024-01-15T11:15:20Z
-```
+```text
 
 ### Deliverables
 

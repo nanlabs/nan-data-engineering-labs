@@ -11,6 +11,7 @@
 ## 📚 Conceptos
 
 ### Aggregation Functions
+
 ```sql
 SELECT
     COUNT(*) AS total_orders,
@@ -19,9 +20,10 @@ SELECT
     MIN(total_amount) AS min_order,
     MAX(total_amount) AS max_order
 FROM orders;
-```
+```text
 
 ### GROUP BY
+
 ```sql
 -- Ventas por usuario
 SELECT
@@ -31,9 +33,10 @@ SELECT
 FROM orders
 GROUP BY user_id
 ORDER BY total_spent DESC;
-```
+```text
 
 ### HAVING
+
 ```sql
 -- Users with more than 5 orders
 SELECT
@@ -42,7 +45,7 @@ SELECT
 FROM orders
 GROUP BY user_id
 HAVING COUNT(*) > 5;
-```
+```text
 
 ## 🎓 Exercises
 

@@ -35,6 +35,7 @@ Create production-ready Docker Compose setup:
    - Frontend network
 
 **Requirements:**
+
 - CeleryExecutor configuration
 - Health checks for all services
 - Resource limits (CPU, memory)
@@ -48,6 +49,7 @@ Create production-ready Docker Compose setup:
 Implement comprehensive tests:
 
 **Test Suite:**
+
 ```python
 # tests/test_dags.py
 import pytest
@@ -73,9 +75,10 @@ def test_task_count():
     dag_bag = DagBag()
     dag = dag_bag.get_dag('my_dag')
     assert len(dag.tasks) == 5
-```
+```text
 
 **Requirements:**
+
 - pytest configuration
 - Test all DAGs
 - Test individual tasks
@@ -89,6 +92,7 @@ def test_task_count():
 Implement GitHub Actions workflow:
 
 **Workflow (.github/workflows/test.yml):**
+
 ```yaml
 name: Test DAGs
 
@@ -125,9 +129,10 @@ jobs:
         run: |
           pip install flake8
           flake8 dags/ --max-line-length=120
-```
+```text
 
 **Requirements:**
+
 - Automated testing on PR
 - Linting (flake8, black)
 - Code coverage reporting
@@ -140,6 +145,7 @@ jobs:
 Implement secure secrets handling:
 
 1. **Environment Variables:**
+
 ```bash
 # .env (not in git)
 AIRFLOW__CORE__FERNET_KEY=...
@@ -147,9 +153,10 @@ AIRFLOW__CORE__SQL_ALCHEMY_CONN=...
 AIRFLOW__CELERY__BROKER_URL=...
 AWS_ACCESS_KEY_ID=...
 AWS_SECRET_ACCESS_KEY=...
-```
+```text
 
-2. **Airflow Connections:**
+1. **Airflow Connections:**
+
 ```python
 # Via CLI
 airflow connections add 'prod_db' \
@@ -160,13 +167,14 @@ airflow connections add 'prod_db' \
     --conn-password 'secret'
 ```
 
-3. **Secrets Backend (AWS Secrets Manager):**
+1. **Secrets Backend (AWS Secrets Manager):**
+
 ```python
 # airflow.cfg
 [secrets]
 backend = airflow.providers.amazon.aws.secrets.secrets_manager.SecretsManagerBackend
 backend_kwargs = {"connections_prefix": "airflow/connections"}
-```
+```text
 
 ---
 
@@ -175,23 +183,26 @@ backend_kwargs = {"connections_prefix": "airflow/connections"}
 Set up production monitoring:
 
 1. **StatsD + Prometheus:**
+
 ```python
 # airflow.cfg
 [scheduler]
 statsd_on = True
 statsd_host = localhost
 statsd_port = 8125
-```
+```text
 
-2. **Centralized Logging (S3):**
+1. **Centralized Logging (S3):**
+
 ```python
 # airflow.cfg
 [logging]
 remote_logging = True
 remote_base_log_folder = s3://airflow-logs
-```
+```text
 
-3. **Alerting:**
+1. **Alerting:**
+
 - Email on failure
 - Slack for critical alerts
 - PagerDuty for production issues
@@ -201,6 +212,7 @@ remote_base_log_folder = s3://airflow-logs
 ### Task 6: Production Checklist
 
 **Pre-Deployment:**
+
 - [ ] All tests passing
 - [ ] DAGs validated
 - [ ] Secrets configured
@@ -209,6 +221,7 @@ remote_base_log_folder = s3://airflow-logs
 - [ ] Backup strategy defined
 
 **Post-Deployment:**
+
 - [ ] Health checks passing
 - [ ] Scheduler running
 - [ ] Workers available
@@ -222,23 +235,27 @@ remote_base_log_folder = s3://airflow-logs
 ## 🚀 Complete Setup
 
 ### 1. Clone Repository
+
 ```bash
 git clone <your-repo>
 cd airflow-production
 ```
 
 ### 2. Configure Environment
+
 ```bash
 cp .env.example .env
 # Edit .env with your values
-```
+```text
 
 ### 3. Start Services
+
 ```bash
 docker-compose up -d
-```
+```text
 
 ### 4. Verify Deployment
+
 ```bash
 # Check services
 docker-compose ps
@@ -248,9 +265,10 @@ docker-compose logs -f webserver
 
 # Access UI
 open http://localhost:8080
-```
+```text
 
 ### 5. Run Tests
+
 ```bash
 docker-compose exec webserver pytest tests/
 ```
@@ -260,6 +278,7 @@ docker-compose exec webserver pytest tests/
 ## ✅ Validation
 
 ### System Health
+
 ```bash
 # Scheduler health
 curl http://localhost:8080/health
@@ -272,9 +291,10 @@ docker-compose exec redis redis-cli ping
 
 # Flower (Celery)
 open http://localhost:5555
-```
+```text
 
 ### DAG Tests
+
 ```bash
 # Run all tests
 pytest tests/ -v
@@ -285,7 +305,7 @@ airflow dags test my_dag 2024-01-01
 # Validate DAG structure
 airflow dags list
 airflow tasks list my_dag
-```
+```text
 
 ---
 

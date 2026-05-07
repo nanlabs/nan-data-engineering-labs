@@ -5,7 +5,8 @@
 ### Database Naming Conventions
 
 **Recommended Structure:**
-```
+
+```text
 <environment>_<domain>_<layer>_db
 
 Examples:
@@ -14,9 +15,10 @@ Examples:
 - prod_sales_gold_db
 - dev_analytics_bronze_db
 - staging_marketing_silver_db
-```
+```text
 
 **Benefits:**
+
 - Clear environment separation
 - Logical domain grouping
 - Data lake layer identification
@@ -25,7 +27,8 @@ Examples:
 ### Table Naming Conventions
 
 **Recommended Structure:**
-```
+
+```text
 <domain>_<entity>_<version>
 
 Examples:
@@ -35,6 +38,7 @@ Examples:
 ```
 
 **Guidelines:**
+
 - Use lowercase with underscores
 - Be descriptive but concise
 - Include version for schema changes
@@ -58,7 +62,7 @@ TransactionDate     # CamelCase
 amt                 # Unclear
 active              # Not obviously boolean
 creation            # Inconsistent with updated_at
-```
+```text
 
 ## 2. Crawler Configuration Best Practices
 
@@ -67,17 +71,20 @@ creation            # Inconsistent with updated_at
 **Recommended Patterns:**
 
 1. **Time-Based Scheduling**
+
    ```json
    {
      "Schedule": "cron(0 2 * * ? *)",
      "Description": "Daily at 2 AM UTC"
    }
-   ```
+   ```text
+
    - Run during off-peak hours
    - After ETL jobs complete
    - Consider time zones
 
 2. **Event-Driven Crawling**
+
    ```json
    {
      "EventBridgeRule": {
@@ -92,6 +99,7 @@ creation            # Inconsistent with updated_at
      }
    }
    ```
+
    - Immediate metadata updates
    - Efficient for real-time needs
    - Reduces unnecessary crawls
@@ -104,6 +112,7 @@ creation            # Inconsistent with updated_at
 ### Performance Optimization
 
 **Partition Detection:**
+
 ```json
 {
   "Configuration": {
@@ -118,9 +127,10 @@ creation            # Inconsistent with updated_at
     }
   }
 }
-```
+```text
 
 **Exclusion Patterns:**
+
 ```json
 {
   "Exclusions": [
@@ -132,15 +142,17 @@ creation            # Inconsistent with updated_at
     "*/_temporary/*"
   ]
 }
-```
+```text
 
 **Sampling Configuration:**
+
 ```json
 {
   "SampleSize": 100,
   "SamplePercentage": 5
 }
 ```
+
 - For large datasets, limit sampling
 - Trade-off: Speed vs. accuracy
 - 5-10% is typically sufficient
@@ -154,13 +166,15 @@ creation            # Inconsistent with updated_at
     "DeleteBehavior": "DEPRECATE_IN_DATABASE"
   }
 }
-```
+```text
 
 **UpdateBehavior Options:**
+
 - `UPDATE_IN_DATABASE`: Automatically update schema (recommended for bronze layer)
 - `LOG`: Only log changes, don't update (recommended for gold layer)
 
 **DeleteBehavior Options:**
+
 - `DEPRECATE_IN_DATABASE`: Mark as deprecated (recommended)
 - `DELETE_FROM_DATABASE`: Remove completely (use with caution)
 - `LOG`: Only log deletion
@@ -171,7 +185,7 @@ creation            # Inconsistent with updated_at
 
 **Principle:** Grant least privilege required
 
-```
+```text
 Level 1: Data Location (Required)
     ↓
 Level 2: Database (Organizational)
@@ -181,13 +195,14 @@ Level 3: Table (Workload-specific)
 Level 4: Column (Sensitive data)
     ↓
 Level 5: Row Filter (Multi-tenancy)
-```
+```text
 
 ### Role-Based Access Pattern
 
 **Data Roles:**
 
 1. **Data Engineers**
+
    ```json
    {
      "Principal": "arn:aws:iam::123456789012:role/DataEngineerRole",
@@ -200,6 +215,7 @@ Level 5: Row Filter (Multi-tenancy)
    ```
 
 2. **Data Analysts**
+
    ```json
    {
      "Principal": "arn:aws:iam::123456789012:role/DataAnalystRole",
@@ -210,9 +226,10 @@ Level 5: Row Filter (Multi-tenancy)
      },
      "ExcludedColumns": ["ssn", "credit_card", "email"]
    }
-   ```
+   ```text
 
 3. **Data Scientists**
+
    ```json
    {
      "Principal": "arn:aws:iam::123456789012:role/DataScienceRole",
@@ -224,6 +241,7 @@ Level 5: Row Filter (Multi-tenancy)
    ```
 
 4. **External Partners**
+
    ```json
    {
      "Principal": "arn:aws:iam::234567890123:root",
@@ -233,11 +251,12 @@ Level 5: Row Filter (Multi-tenancy)
        "RowFilter": "partner_id = '${aws:PrincipalTag/PartnerId}'"
      }
    }
-   ```
+   ```text
 
 ### Tag-Based Access Control (TBAC)
 
 **Define LF-Tags:**
+
 ```bash
 # Create tags
 aws lakeformation create-lf-tag \
@@ -254,6 +273,7 @@ aws lakeformation create-lf-tag \
 ```
 
 **Assign Tags to Resources:**
+
 ```bash
 # Tag a database
 aws lakeformation add-lf-tags-to-resource \
@@ -265,17 +285,19 @@ aws lakeformation add-lf-tags-to-resource \
 aws lakeformation add-lf-tags-to-resource \
   --resource '{"Table":{"DatabaseName":"sales_db","Name":"transactions"}}' \
   --lf-tags '[{"TagKey":"DataSensitivity","TagValues":["Restricted"]}]'
-```
+```text
 
 **Grant Permissions by Tags:**
+
 ```bash
 aws lakeformation grant-permissions \
   --principal DataLakeAdministrator:arn:aws:iam::123456789012:role/AnalystRole \
   --resource '{"LFTag":{"TagKey":"DataSensitivity","TagValues":["Public","Internal"]}}' \
   --permissions SELECT DESCRIBE
-```
+```text
 
 **Benefits:**
+
 - Automatic permission inheritance
 - Simplified permission management
 - Scalable for large catalogs
@@ -286,15 +308,17 @@ aws lakeformation grant-permissions \
 ### Quality Validation Rules
 
 **Completeness Checks:**
+
 ```python
 COMPLETENESS_RULES = [
     "ColumnValues 'customer_id' must be present",
     "ColumnValues 'email' completeness > 0.95",
     "RowCount > 0",
 ]
-```
+```text
 
 **Uniqueness Checks:**
+
 ```python
 UNIQUENESS_RULES = [
     "ColumnValues 'transaction_id' uniqueness = 1.0",
@@ -303,6 +327,7 @@ UNIQUENESS_RULES = [
 ```
 
 **Validity Checks:**
+
 ```python
 VALIDITY_RULES = [
     "ColumnValues 'email' matches '^[\\w.-]+@[\\w.-]+\\.\\w+$'",
@@ -310,28 +335,31 @@ VALIDITY_RULES = [
     "ColumnValues 'amount' > 0",
     "ColumnValues 'created_at' <= current_timestamp",
 ]
-```
+```text
 
 **Consistency Checks:**
+
 ```python
 CONSISTENCY_RULES = [
     "ColumnValues 'total_amount' = sum('line_item_amount')",
     "ColumnValues 'end_date' >= 'start_date'",
     "ColumnValues 'customer_id' exists in 'customers.customer_id'",
 ]
-```
+```text
 
 **Timeliness Checks:**
+
 ```python
 TIMELINESS_RULES = [
     "ColumnValues 'updated_at' >= (current_timestamp - interval '24' hour)",
     "DataFreshness < 86400",  # Less than 24 hours old
 ]
-```
+```text
 
 ### Quality Thresholds
 
 **Define acceptable ranges:**
+
 ```python
 QUALITY_THRESHOLDS = {
     "bronze": {
@@ -358,6 +386,7 @@ QUALITY_THRESHOLDS = {
 ### Automated Remediation
 
 **Quality failure handling:**
+
 ```python
 def handle_quality_failure(result, threshold):
     """Handle data quality failures based on layer and severity."""
@@ -379,13 +408,14 @@ def handle_quality_failure(result, threshold):
         create_incident_ticket(result.failed_rules)
         send_notification("quality_failure", result.failed_rules)
         update_catalog(status="quality_failed")
-```
+```text
 
 ## 5. Metadata Management
 
 ### Technical Metadata
 
 **Always include:**
+
 ```json
 {
   "table_metadata": {
@@ -402,11 +432,12 @@ def handle_quality_failure(result, threshold):
     "retention_period_days": 2555
   }
 }
-```
+```text
 
 ### Business Metadata
 
 **Document business context:**
+
 ```json
 {
   "business_metadata": {
@@ -428,11 +459,12 @@ def handle_quality_failure(result, threshold):
     "compliance": ["GDPR", "CCPA"]
   }
 }
-```
+```text
 
 ### Operational Metadata
 
 **Track operational details:**
+
 ```json
 {
   "operational_metadata": {
@@ -460,6 +492,7 @@ def handle_quality_failure(result, threshold):
 ### Capture Lineage Automatically
 
 **In Glue ETL Jobs:**
+
 ```python
 from awsglue.transforms import *
 from awsglue.context import GlueContext
@@ -484,11 +517,12 @@ glueContext.write_dynamic_frame.from_catalog(
     table_name="clean_sales",
     transformation_ctx="write_clean_sales"
 )
-```
+```text
 
 ### Document Transformations
 
 **Add comments and descriptions:**
+
 ```python
 # Document complex transformations
 def calculate_customer_lifetime_value(df):
@@ -507,11 +541,12 @@ def calculate_customer_lifetime_value(df):
         count("order_id").alias("order_count"),
         datediff(max("order_date"), min("order_date")).alias("customer_age_days")
     )
-```
+```text
 
 ### Version Control Lineage
 
 **Track schema versions:**
+
 ```json
 {
   "lineage": {
@@ -529,7 +564,7 @@ def calculate_customer_lifetime_value(df):
     ]
   }
 }
-```
+```text
 
 ## 7. Partition Strategy
 
@@ -538,6 +573,7 @@ def calculate_customer_lifetime_value(df):
 **Choose based on query patterns:**
 
 1. **Time-Based Partitioning** (Most Common)
+
    ```
    s3://data-lake/bronze/sales/year=2024/month=03/day=08/
 
@@ -549,9 +585,10 @@ def calculate_customer_lifetime_value(df):
    Cons:
    - Can create too many small partitions
    - Inefficient for non-time queries
-   ```
+   ```text
 
 2. **Category-Based Partitioning**
+
    ```
    s3://data-lake/bronze/sales/region=us-west/product_category=electronics/
 
@@ -562,9 +599,10 @@ def calculate_customer_lifetime_value(df):
    Cons:
    - Requires knowing categories upfront
    - Can have skewed partition sizes
-   ```
+   ```text
 
 3. **Hybrid Partitioning**
+
    ```
    s3://data-lake/bronze/sales/date=2024-03-08/region=us-west/
 
@@ -575,7 +613,7 @@ def calculate_customer_lifetime_value(df):
    Cons:
    - More complex management
    - Deeper directory structure
-   ```
+   ```text
 
 ### Partition Size Guidelines
 
@@ -589,10 +627,11 @@ Number of partitions:
 - Minimum: At least 1 partition
 - Maximum: < 10,000 partitions per table
 - Target: 100-1,000 partitions for most tables
-```
+```text
 
 **Anti-Patterns:**
-```
+
+```text
 # Too many partitions (avoid)
 year=2024/month=03/day=08/hour=14/minute=30/second=15/
 
@@ -601,13 +640,14 @@ year=2024/
 
 # Just right
 year=2024/month=03/day=08/
-```
+```text
 
 ## 8. Security Best Practices
 
 ### Encryption
 
 **At Rest:**
+
 ```json
 {
   "Encryption": {
@@ -626,6 +666,7 @@ year=2024/month=03/day=08/
 ```
 
 **In Transit:**
+
 ```json
 {
   "SecurityConfiguration": {
@@ -643,11 +684,12 @@ year=2024/month=03/day=08/
     }
   }
 }
-```
+```text
 
 ### Access Logging
 
 **Enable logging everywhere:**
+
 ```json
 {
   "Logging": {
@@ -672,11 +714,12 @@ year=2024/month=03/day=08/
     }
   }
 }
-```
+```text
 
 ### PII Handling
 
 **Detection and masking:**
+
 ```python
 from awsglue.transforms import Map
 
@@ -705,13 +748,14 @@ masked_df = Map.apply(
     f=mask_pii,
     transformation_ctx="mask_pii_fields"
 )
-```
+```text
 
 ## 9. Cost Optimization
 
 ### Crawler Optimization
 
 **Reduce crawler costs:**
+
 ```
 1. Use exclusion patterns to skip unnecessary paths
 2. Schedule crawlers during off-peak hours
@@ -719,23 +763,25 @@ masked_df = Map.apply(
 4. Group similar tables with CombineCompatibleSchemas
 5. Limit sample size for large datasets
 6. Disable crawlers for static datasets
-```
+```text
 
 ### Storage Optimization
 
 **Table storage:**
-```
+
+```text
 1. Use Parquet or ORC instead of JSON/CSV (5-10x compression)
 2. Enable compression (Snappy, GZIP, Zstandard)
 3. Partition data appropriately (avoid over-partitioning)
 4. Use Glue governed tables for automatic compaction
 5. Implement lifecycle policies (S3 Intelligent-Tiering)
 6. Delete outdated partitions regularly
-```
+```text
 
 ### Query Optimization
 
 **Reduce query costs:**
+
 ```sql
 -- Use partition filters (reduces data scanned)
 SELECT * FROM sales
@@ -758,16 +804,18 @@ GROUP BY date;
 ### Key Metrics to Track
 
 **Catalog Health:**
-```
+
+```text
 - Table count and growth rate
 - Tables without recent updates (stale data)
 - Crawler success/failure rate
 - Crawler duration trends
 - Schema change frequency
-```
+```text
 
 **Data Quality:**
-```
+
+```text
 - Overall quality score by database/table
 - Failed rules by category (completeness, validity, etc.)
 - Data freshness (time since last update)
@@ -776,16 +824,18 @@ GROUP BY date;
 ```
 
 **Access Patterns:**
-```
+
+```text
 - Most/least accessed tables
 - Permission denial rate
 - Cross-account access frequency
 - Query performance (duration, scanned bytes)
 - Concurrent query count
-```
+```text
 
 **Cost Metrics:**
-```
+
+```text
 - Crawler execution costs
 - Storage costs by database
 - Query costs (Athena, Redshift Spectrum)
@@ -813,7 +863,7 @@ ALERT_THRESHOLDS = {
         "critical": 500    # 500 denials per day
     }
 }
-```
+```text
 
 ## Key Takeaways
 

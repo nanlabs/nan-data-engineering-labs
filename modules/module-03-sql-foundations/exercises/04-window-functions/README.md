@@ -11,6 +11,7 @@
 ## 📚 Conceptos Clave
 
 ### ROW_NUMBER
+
 ```sql
 -- Ranking de productos por precio
 SELECT
@@ -18,9 +19,10 @@ SELECT
     price,
     ROW_NUMBER() OVER (ORDER BY price DESC) AS rank
 FROM products;
-```
+```text
 
 ### PARTITION BY
+
 ```sql
 -- Top 3 products by category
 SELECT *
@@ -33,9 +35,10 @@ FROM (
     FROM products
 ) ranked
 WHERE rank_in_category <= 3;
-```
+```text
 
 ### LAG y LEAD
+
 ```sql
 -- Comparar con orden anterior
 SELECT
@@ -45,7 +48,7 @@ SELECT
     LAG(total_amount) OVER (ORDER BY order_date) AS previous_order,
     total_amount - LAG(total_amount) OVER (ORDER BY order_date) AS difference
 FROM orders;
-```
+```text
 
 ## 🎓 Exercises
 

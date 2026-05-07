@@ -26,6 +26,7 @@ Dominar IAM (Identity and Access Management) creando users, groups, roles y poli
 Lee `starter/scenario.md`:
 
 > **QuickMart** ahora tiene un data team de 5 personas:
+>
 > - 2 Data Engineers (full access a S3, Glue, Lambda)
 > - 2 Data Analysts (read-only S3, Athena)
 > - 1 Data Science Lead (ML services + production data)
@@ -34,7 +35,7 @@ Necesitas configurar IAM para que cada rol tenga **solo** los permisos necesario
 
 ### Step 2: Review Starter Files (10 min)
 
-```
+```text
 starter/
 ├── iam_setup.py          # Script Python (boto3) - 40% completo
 ├── policies/
@@ -43,7 +44,7 @@ starter/
 │   └── ml_scientist.json     # TODO: Policy para DS
 ├── bucket_policy.json    # TODO: S3 bucket policy
 └── requirements.txt      # boto3
-```
+```text
 
 ### Step 3: Implement Solution (40 min)
 
@@ -75,7 +76,7 @@ python ../../validation/integration/test_iam_permissions.py
 
 # Validation completa
 ../../scripts/validate-module.sh 01
-```
+```text
 
 ### Step 5: Test Real (10 min)
 
@@ -97,12 +98,14 @@ AWS_PROFILE=engineer aws s3 rm s3://my-data-lake/file.txt  # ✅ Funciona
 ### IAM Policies Requeridas
 
 **Data Engineer Policy:**
+
 - ✅ Full access: S3, Glue, Lambda, Athena, EMR
 - ✅ EC2 read-only (para debugging)
 - ❌ NO puede modificar IAM
 - ❌ NO puede acceder a billing
 
 **Data Analyst Policy:**
+
 - ✅ S3 GetObject, ListBucket (read-only)
 - ✅ Athena query execution
 - ✅ Glue Data Catalog read
@@ -110,6 +113,7 @@ AWS_PROFILE=engineer aws s3 rm s3://my-data-lake/file.txt  # ✅ Funciona
 - ❌ NO puede crear/modificar Glue jobs
 
 **ML Scientist Policy:**
+
 - ✅ SageMaker full access
 - ✅ S3 access solo a `ml-models/` y `training-data/` buckets
 - ✅ Lambda read-only (para inference endpoints)
@@ -118,6 +122,7 @@ AWS_PROFILE=engineer aws s3 rm s3://my-data-lake/file.txt  # ✅ Funciona
 ### S3 Bucket Policy
 
 Debe implementar:
+
 - ✅ Deny DeleteObject para todos excepto admins
 - ✅ Require encryption en uploads (server-side)
 - ✅ Allow cross-account read para cuenta partner (simulado)
@@ -128,7 +133,7 @@ Debe implementar:
 
 ### Identity-Based vs Resource-Based Policies
 
-```
+```text
 Identity-Based Policy (IAM Policy):
 ├── Se attacha a: User, Group o Role
 ├── Define: Qué puede hacer esta identidad
@@ -138,11 +143,11 @@ Resource-Based Policy (S3 Bucket Policy):
 ├── Se attacha a: Recurso (S3 bucket, Lambda, etc.)
 ├── Define: Quién puede acceder este recurso
 └── Ejemplo: "Bucket data-lake permite read a account 123456"
-```
+```text
 
 ### Policy Evaluation Logic
 
-```
+```text
 1. Explicit DENY → Siempre gana
 2. Explicit ALLOW → Permite acción
 3. Implicit DENY → Default (si no hay ALLOW)
@@ -155,7 +160,7 @@ Ejemplo:
 
 ### Least Privilege Principle
 
-```
+```text
 ❌ MAL:
 {
   "Effect": "Allow",
@@ -177,7 +182,7 @@ Ejemplo:
     }
   }
 }
-```
+```text
 
 ---
 
@@ -200,7 +205,7 @@ aws iam simulate-principal-policy \
   --policy-source-arn arn:aws:iam::123456789012:user/john.doe \
   --action-names s3:PutObject \
   --resource-arns arn:aws:s3:::my-bucket/file.txt
-```
+```text
 
 ### Problem: Policy JSON mal formado
 
@@ -217,6 +222,7 @@ aws iam validate-policy-document --policy-document file://policies/data_engineer
 ### Problem: LocalStack no soporta feature X de IAM
 
 LocalStack Community tiene limitaciones:
+
 - ✅ Soporta: Users, groups, roles, policies básicas
 - ❌ NO soporta: Policy conditions complejas, federation, MFA
 - Solution: Documenta qué harías en AWS real
@@ -237,7 +243,7 @@ LocalStack Community tiene limitaciones:
 
 ## 📊 Expected Output
 
-```
+```text
 🔐 IAM Setup for QuickMart Data Team
 =====================================
 
@@ -286,7 +292,7 @@ Summary:
 🪣 Buckets secured: 1
 
 ✨ IAM setup completed successfully!
-```
+```text
 
 ---
 
@@ -308,7 +314,7 @@ Summary:
 ## 📚 Referencias
 
 - IAM Policies Reference: `aws iam help`
-- Policy Examples: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_examples.html
-- boto3 IAM: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/iam.html
+- Policy Examples: <https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_examples.html>
+- boto3 IAM: <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/iam.html>
 
 **Remember:** En producción NUNCA des más permisos de los necesarios. Es más fácil expandir permisos después que revocar acceso indebido.

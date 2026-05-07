@@ -33,16 +33,17 @@ CREATE SCHEMA staging.sales;
 -- Production
 CREATE CATALOG prod;
 CREATE SCHEMA prod.sales;
-```
+```text
 
 **Benefits:**
+
 - Clear isolation between environments
 - Easy promotion: dev → staging → prod
 - Prevent accidental production writes
 
 ### 2. Notebook Naming Conventions
 
-```
+```text
 01-bronze-ingestion.py       # Numbering shows execution order
 02-silver-transformation.py
 03-gold-aggregation.py
@@ -50,9 +51,10 @@ CREATE SCHEMA prod.sales;
 utils/
 ├── data_quality.py          # Shared utility functions
 └── schema_definitions.py
-```
+```text
 
 **Notebook structure:**
+
 ```python
 # Databricks notebook source
 # MAGIC %md
@@ -95,10 +97,11 @@ print(f"✅ Successfully ingested {row_count:,} rows")
 # Workspace → Repos → Add Repo
 URL: https://github.com/your-org/databricks-pipelines
 Branch: main
-```
+```text
 
 **Folder structure:**
-```
+
+```text
 /Repos/your-email/databricks-pipelines/
 ├── notebooks/
 │   ├── ingestion/
@@ -107,9 +110,10 @@ Branch: main
 ├── tests/
 ├── config/
 └── README.md
-```
+```text
 
 **Commit workflow:**
+
 1. Develop in notebook
 2. Run tests
 3. Commit via Repos UI or CLI
@@ -137,6 +141,7 @@ print(f"Processing: {table_name} in {mode} mode")
 ```
 
 **Run with parameters:**
+
 ```python
 # Programmatically
 dbutils.notebook.run(
@@ -144,7 +149,7 @@ dbutils.notebook.run(
     timeout_seconds=3600,
     arguments={"catalog": "prod", "mode": "incremental"}
 )
-```
+```text
 
 ---
 
@@ -163,12 +168,14 @@ dbutils.notebook.run(
 ### 2. Right-Sizing Clusters
 
 **Data size guidelines:**
+
 - <10GB: Single-node or 2 workers
 - 10-100GB: 2-8 workers
 - 100GB-1TB: 8-20 workers
 - >1TB: 20+ workers with auto-scaling
 
 **Monitor utilization:**
+
 ```python
 # Check cluster metrics
 %sql
@@ -179,9 +186,10 @@ SELECT
 FROM system.compute.cluster_metrics
 WHERE timestamp > current_timestamp() - INTERVAL 1 HOUR
 GROUP BY cluster_id;
-```
+```text
 
 **Right-size if:**
+
 - CPU < 30% consistently → downsize instance type
 - Memory < 40% consistently → downsize memory
 - CPU > 85% consistently → add workers or upsize
@@ -199,7 +207,7 @@ GROUP BY cluster_id;
     "spark.databricks.delta.autoOptimize.autoCompact": "true"
   }
 }
-```
+```text
 
 ### 4. Cluster Pools (Cost Optimization)
 
@@ -223,6 +231,7 @@ GROUP BY cluster_id;
 ```
 
 **Benefits:**
+
 - 80% faster cluster start (30 sec vs 5 min)
 - Cost-neutral (pay same VM rates)
 - Ideal for frequent interactive work
@@ -256,9 +265,10 @@ def add_audit_columns(df: DataFrame) -> DataFrame:
     return df \
         .withColumn("_ingested_at", F.current_timestamp()) \
         .withColumn("_ingested_by", F.current_user())
-```
+```text
 
 **Use in notebooks:**
+
 ```python
 %run ./utils/data_quality
 
@@ -266,7 +276,7 @@ def add_audit_columns(df: DataFrame) -> DataFrame:
 df = validate_schema(df, ["id", "name", "email"])
 df = remove_duplicates(df, ["id"])
 df = add_audit_columns(df)
-```
+```text
 
 ### 2. Configuration Management
 
@@ -301,9 +311,10 @@ TABLES = {
         partition_by=["order_date"]
     )
 }
-```
+```text
 
 **Use in notebooks:**
+
 ```python
 from config.table_config import TABLES
 
@@ -336,7 +347,7 @@ def test_remove_duplicates(spark):
     df = spark.createDataFrame([(1, "A"), (1, "A"), (2, "B")], ["id", "name"])
     result = remove_duplicates(df, ["id"])
     assert result.count() == 2
-```
+```text
 
 **Integration tests in notebook:**
 
@@ -353,7 +364,7 @@ assert df_silver.where("email IS NULL").count() == 0, "Found NULL emails"
 assert df_silver.where("id < 0").count() == 0, "Found invalid IDs"
 
 print("✅ All tests passed")
-```
+```text
 
 ---
 
@@ -362,6 +373,7 @@ print("✅ All tests passed")
 ### 1. Delta Lake Optimization
 
 **OPTIMIZE (file compaction):**
+
 ```sql
 -- Compact small files into larger ones (target: 1GB)
 OPTIMIZE customers;
@@ -373,9 +385,10 @@ OPTIMIZE customers ZORDER BY (country, signup_date);
 -- Databricks can auto-optimize with liquid clustering (DBR 13.2+)
 ALTER TABLE customers
 SET TBLPROPERTIES ('delta.autoOptimize.optimizeWrite' = 'true');
-```
+```text
 
 **VACUUM (delete old versions):**
+
 ```sql
 -- Delete files older than 7 days (save storage)
 VACUUM customers RETAIN 168 HOURS;
@@ -389,11 +402,13 @@ VACUUM customers RETAIN 168 HOURS DRY RUN;
 ### 2. Caching Strategies
 
 **Delta Cache (automatic):**
+
 - Enabled by default on all-purpose clusters
 - Caches Parquet files on local SSD
 - 2-10x speedup on repeated queries
 
 **DataFrame caching (explicit):**
+
 ```python
 # Cache frequently-used DataFrame
 df.cache()  # Lazy (triggered on first action)
@@ -407,14 +422,16 @@ df.is_cached  # True
 
 # Unpersist when done
 df.unpersist()
-```
+```text
 
 **When to cache:**
+
 - DataFrame used multiple times in notebook
 - Interactive exploration with filters
 - Small reference tables (<1GB)
 
 **When NOT to cache:**
+
 - Large DataFrames (>50% of cluster memory)
 - DataFrames used only once
 - ETL pipelines (single-pass processing)
@@ -422,6 +439,7 @@ df.unpersist()
 ### 3. Partition Pruning
 
 **Leverage Hive partitioning:**
+
 ```python
 # Write with partitions
 df.write.format("delta") \
@@ -432,9 +450,10 @@ df.write.format("delta") \
 df_filtered = spark.read.format("delta") \
     .load("/mnt/events") \
     .where("year = 2024 AND month = 3")  # Only scans March 2024 partition
-```
+```text
 
 **Partition best practices:**
+
 - Partition by commonly-filtered columns (date, region, category)
 - Target partition size: 500MB - 2GB
 - Avoid over-partitioning (<100MB partitions are slow)
@@ -443,6 +462,7 @@ df_filtered = spark.read.format("delta") \
 ### 4. Broadcast Joins
 
 **For small dimension tables (<100MB):**
+
 ```python
 from pyspark.sql import functions as F
 
@@ -454,13 +474,14 @@ df_large.join(
 
 # Auto-broadcast threshold (default: 10MB)
 spark.conf.set("spark.sql.autoBroadcastJoinThreshold", 104857600)  # 100MB
-```
+```text
 
 **Benefits:** 10-100x faster than shuffle joins
 
 ### 5. Adaptive Query Execution (AQE)
 
 **Enable** (on by default in DBR 8.0+):
+
 ```python
 spark.conf.set("spark.sql.adaptive.enabled", "true")
 spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")
@@ -468,6 +489,7 @@ spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
 ```
 
 **AQE optimizations:**
+
 - Dynamically coalesces shuffle partitions (reduce small files)
 - Converts sort-merge join to broadcast join (if small)
 - Handles skewed data (split large partitions)
@@ -479,6 +501,7 @@ spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
 ### 1. DBU Cost Reduction
 
 **Use Jobs Compute (60% cheaper than All-Purpose):**
+
 ```python
 # Databricks Workflow job
 {
@@ -497,11 +520,12 @@ spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
 }
 
 # Cost: $0.15/DBU (Jobs) vs $0.40/DBU (All-Purpose)
-```
+```text
 
 ### 2. Spot Instances (70% discount)
 
 **For fault-tolerant workloads:**
+
 ```python
 {
   "aws_attributes": {
@@ -513,14 +537,16 @@ spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
     "ebs_volume_size": 100
   }
 }
-```
+```text
 
 **Use for:**
+
 - ETL jobs (can retry if interrupted)
 - ML training (checkpoint frequently)
 - Ad-hoc analysis
 
 **Avoid for:**
+
 - Production streaming workloads
 - SLA-critical jobs
 - Jobs without checkpointing
@@ -530,7 +556,8 @@ spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
 **Use Workflows instead of separate clusters:**
 
 **Before (expensive):**
-```
+
+```text
 Job 1: Start cluster → Run → Terminate
 Job 2: Start cluster → Run → Terminate
 Job 3: Start cluster → Run → Terminate
@@ -538,35 +565,40 @@ Cost: 3× cluster startup overhead
 ```
 
 **After (efficient):**
-```
+
+```text
 Workflow:
   Task 1 → Task 2 → Task 3 (same cluster)
 Cost: 1× cluster startup
-```
+```text
 
 ### 4. SQL Warehouse Right-Sizing
 
 **Start small, scale up:**
-```
+
+```text
 Development: 2X-Small ($0.22/DBU)
 Production: Small ($0.44/DBU) or Medium ($0.88/DBU)
 ```
 
 **Enable auto-stop (save when idle):**
+
 - Auto-stop after: 20 minutes
 - Auto-resume: ON (start when query received)
 
 ### 5. Storage Optimization
 
 **VACUUM old versions (storage cost):**
+
 ```sql
 -- Keep only 7 days of history
 VACUUM customers RETAIN 168 HOURS;
 
 -- For large tables (1TB+), saves $20-50/month
-```
+```text
 
 **Compress data:**
+
 ```python
 # Use Parquet with Snappy (default)
 df.write.format("delta") \
@@ -577,7 +609,7 @@ df.write.format("delta") \
 df.write.format("delta") \
     .option("compression", "zstd") \
     .save("/path")
-```
+```text
 
 ---
 
@@ -586,6 +618,7 @@ df.write.format("delta") \
 ### 1. Unity Catalog Access Control
 
 **Grant permissions at catalog level:**
+
 ```sql
 -- Read-only analyst
 GRANT USE CATALOG ON CATALOG prod TO `analysts`;
@@ -595,9 +628,10 @@ GRANT SELECT ON TABLE prod.sales.customers TO `analysts`;
 -- Data engineer (read/write)
 GRANT USE CATALOG, CREATE SCHEMA ON CATALOG prod TO `data-engineers`;
 GRANT ALL PRIVILEGES ON SCHEMA prod.sales TO `data-engineers`;
-```
+```text
 
 **Row-level security:**
+
 ```sql
 -- Users can only see their region's data
 CREATE FUNCTION prod.sales.region_filter()
@@ -611,6 +645,7 @@ SET ROW FILTER prod.sales.region_filter ON (region);
 ### 2. Secrets Management
 
 **Store credentials securely:**
+
 ```python
 # Create secret scope (one-time setup)
 # databricks secrets create-scope --scope prod-secrets
@@ -629,23 +664,25 @@ df = spark.read.format("jdbc") \
     .option("user", "etl_user") \
     .option("password", db_password) \
     .load()
-```
+```text
 
 **Never hardcode secrets** in notebooks!
 
 ### 3. Data Lineage
 
 **View lineage in Unity Catalog:**
+
 1. Data Explorer → Select table
 2. Lineage tab → See upstream/downstream dependencies
 
 **Programmatic lineage:**
+
 ```python
 # Add lineage metadata
 df.write.format("delta") \
     .option("userMetadata", "source=salesforce,pipeline=daily_sync") \
     .save("/mnt/gold/customers")
-```
+```text
 
 ---
 
@@ -654,6 +691,7 @@ df.write.format("delta") \
 ### 1. CI/CD Pipeline
 
 **Example GitHub Actions workflow:**
+
 ```yaml
 name: Deploy Databricks Pipeline
 
@@ -685,16 +723,18 @@ jobs:
 
       - name: Update job
         run: databricks jobs reset --job-id 123 --json-file job-config.json
-```
+```text
 
 ### 2. Promotion Strategy
 
 **Environment promotion:**
+
 ```
 Dev → Test → Staging → Production
-```
+```text
 
 **Automated promotion script:**
+
 ```python
 # promote.py
 def promote_table(source_catalog, target_catalog, schema, table):
@@ -708,11 +748,12 @@ def promote_table(source_catalog, target_catalog, schema, table):
 
 # Usage
 promote_table("staging", "prod", "sales", "customers")
-```
+```text
 
 ### 3. Monitoring
 
 **Set up alerts:**
+
 ```python
 # In Databricks SQL
 -- Create alert: "Daily ETL failures"
@@ -727,9 +768,10 @@ HAVING failed_runs > 0;
 
 -- Alert condition: failed_runs > 0
 -- Notification: Send email to data-eng-alerts@example.com
-```
+```text
 
 **Track data quality:**
+
 ```python
 # Add data quality checks
 from pyspark.sql import functions as F
@@ -763,15 +805,18 @@ def check_data_quality(df, table_name):
 ### 1. Spark UI
 
 **Access:**
+
 - Cluster → Spark UI tab
 - View: Jobs, Stages, Storage, Executors
 
 **Key metrics:**
+
 - Job duration (target: consistent times)
 - Shuffle size (minimize for performance)
 - Task skew (some tasks much slower than others
 
 )
+
 - GC time (>10% of task time is bad)
 
 ### 2. Query Profiling
@@ -791,19 +836,22 @@ df.explain(mode="extended")
 # - Partition pruning applied
 # - Data skipping stats
 # - Join strategy (broadcast vs shuffle)
-```
+```text
 
 ### 3. Common Issues
 
 **Issue: Slow joins**
+
 - **Cause:** Large shuffle
 - **Fix:** Broadcast small table, partition by join key
 
 **Issue: Out of memory**
+
 - **Cause:** Too much data cached, skewed partitions
 - **Fix:** Unpersist unused DataFrames, repartition skewed data
 
 **Issue: Skewed data**
+
 - **Cause:** Some keys have way more data than others
 - **Fix:** Salt keys, use AQE skew join optimization
 
@@ -812,6 +860,7 @@ df.explain(mode="extended")
 ## Summary Checklist
 
 ### Development
+
 - [ ] Use three-level namespace (dev/staging/prod)
 - [ ] Parameterize notebooks with widgets
 - [ ] Version control with Git Repos
@@ -819,6 +868,7 @@ df.explain(mode="extended")
 - [ ] Unit and integration tests
 
 ### Performance
+
 - [ ] OPTIMIZE tables weekly
 - [ ] VACUUM old versions monthly
 - [ ] Partition by commonly-filtered columns
@@ -826,6 +876,7 @@ df.explain(mode="extended")
 - [ ] Enable Adaptive Query Execution
 
 ### Cost
+
 - [ ] Auto-terminate clusters (30 min)
 - [ ] Use Jobs Compute for ETL
 - [ ] Use Spot instances for fault-tolerant workloads
@@ -833,6 +884,7 @@ df.explain(mode="extended")
 - [ ] SQL Warehouse auto-stop enabled
 
 ### Security
+
 - [ ] Unity Catalog permissions configured
 - [ ] Secrets stored in secret scopes
 - [ ] Row/column-level security applied
@@ -840,6 +892,7 @@ df.explain(mode="extended")
 - [ ] Audit logs reviewed monthly
 
 ### Production
+
 - [ ] CI/CD pipeline configured
 - [ ] Automated tests pass
 - [ ] Monitoring and alerts set up

@@ -3,10 +3,13 @@
 ⏱️ **Estimated Time:** 60 minutes
 
 ## Objective
+
 Convert data between CSV, JSON, Parquet, and Avro formats while benchmarking performance, compression ratios, and query speed.
 
 ## Scenario
+
 GlobalMart has 100,000 transaction records in CSV (500MB). Convert to JSON, Parquet, and Avro, comparing:
+
 - File size (compression ratio)
 - Write time
 - Read time (full scan)
@@ -14,14 +17,17 @@ GlobalMart has 100,000 transaction records in CSV (500MB). Convert to JSON, Parq
 - Memory usage
 
 ## Requirements
+
 Create a Python script that:
+
 1. Reads CSV transactions
 2. Converts to JSON, Parquet (Snappy), Parquet (Gzip), Avro
 3. Benchmarks each format
 4. Generates comparison report
 
 ## Structure
-```
+
+```text
 02-file-formats/
 ├── README.md
 ├── starter/
@@ -30,9 +36,10 @@ Create a Python script that:
 └── solution/
     ├── format_converter.py  # Complete with benchmarking
     └── benchmark_results.md # Sample output
-```
+```text
 
 ## Success Criteria
+
 - ✅ CSV → JSON, Parquet, Avro conversion working
 - ✅ Benchmark metrics collected
 - ✅ Parquet shows 60-80% compression vs CSV
@@ -40,6 +47,7 @@ Create a Python script that:
 - ✅ Report generated with recommendations
 
 ## Key Learnings
+
 - Parquet excels for analytics (columnr, compression, predicate pushdown)
 - Avro better for streaming (row-based, schema evolution)
 - CSV/JSON for interchange only

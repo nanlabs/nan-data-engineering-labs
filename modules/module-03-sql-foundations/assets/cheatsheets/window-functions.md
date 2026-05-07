@@ -10,13 +10,14 @@
     [ORDER BY <columns>]
     [<frame_clause>]
 )
-```
+```text
 
 ---
 
 ## 1. Ranking Functions
 
 ### ROW_NUMBER()
+
 Assigns a unique sequential integer to each row (no ties).
 
 ```sql
@@ -34,13 +35,14 @@ SELECT
     price,
     ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) AS rank_in_category
 FROM products;
-```
+```text
 
 **Use Case**: Pagination, unique numbering even with ties
 
 ---
 
 ### RANK()
+
 Assigns rank with gaps after ties (1, 2, 2, 4...).
 
 ```sql
@@ -49,13 +51,14 @@ SELECT
     price,
     RANK() OVER (ORDER BY price DESC) AS rank
 FROM products;
-```
+```text
 
 **Use Case**: Olympic-style ranking (gold, silver, silver, bronze skips to 4th)
 
 ---
 
 ### DENSE_RANK()
+
 Assigns rank without gaps (1, 2, 2, 3...).
 
 ```sql
@@ -82,6 +85,7 @@ FROM products;
 ---
 
 ### NTILE(n)
+
 Divides rows into n groups.
 
 ```sql
@@ -93,7 +97,7 @@ SELECT
 FROM products;
 
 -- Result: Quartile 1 = cheapest 25%, Quartile 4 = most expensive 25%
-```
+```text
 
 **Use Case**: Percentiles, A/B testing groups, stratification
 
@@ -102,11 +106,12 @@ FROM products;
 ## 2. Analytical Functions
 
 ### LAG() - Previous Row Value
+
 Access value from previous row.
 
 ```sql
 LAG(<column>, <offset>, <default>) OVER ([PARTITION BY ...] ORDER BY ...)
-```
+```text
 
 ```sql
 -- Compare each order with previous one
@@ -130,13 +135,14 @@ SELECT
     total_amount,
     LAG(total_amount, 1, 0) OVER (ORDER BY order_date) AS prev_order
 FROM orders;
-```
+```text
 
 **Use Case**: Month-over-month growth, compare with previous period
 
 ---
 
 ### LEAD() - Next Row Value
+
 Access value from next row.
 
 ```sql
@@ -153,6 +159,7 @@ FROM orders;
 ---
 
 ### FIRST_VALUE() - First Row in Window
+
 Get first value in window.
 
 ```sql
@@ -165,13 +172,14 @@ SELECT
         ORDER BY price DESC
     ) AS most_expensive_in_category
 FROM products;
-```
+```text
 
 **Use Case**: Compare to leader, benchmark against best
 
 ---
 
 ### LAST_VALUE() - Last Row in Window
+
 Get last value in window.
 
 ```sql
@@ -186,7 +194,7 @@ SELECT
         ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
     ) AS cheapest_in_category
 FROM products;
-```
+```text
 
 **Use Case**: Compare to minimum, baseline comparison
 
@@ -197,15 +205,17 @@ FROM products;
 Any aggregate (SUM, AVG, COUNT, MIN, MAX) can be used as window function.
 
 ### Running Total
+
 ```sql
 SELECT
     order_date,
     total_amount,
     SUM(total_amount) OVER (ORDER BY order_date) AS running_total
 FROM orders;
-```
+```text
 
 ### Average per Group
+
 ```sql
 SELECT
     product_name,
@@ -217,6 +227,7 @@ FROM products;
 ```
 
 ### Percentage of Total
+
 ```sql
 SELECT
     product_name,
@@ -226,16 +237,17 @@ SELECT
         2
     ) AS pct_of_total
 FROM products;
-```
+```text
 
 ### Count
+
 ```sql
 SELECT
     product_name,
     category,
     COUNT(*) OVER (PARTITION BY category) AS products_in_category
 FROM products;
-```
+```text
 
 ---
 
@@ -259,7 +271,7 @@ SELECT
     price,
     RANK() OVER (PARTITION BY category ORDER BY price DESC) AS category_rank
 FROM products;
-```
+```text
 
 **Think of it as**: GROUP BY but keeping all rows
 
@@ -272,14 +284,16 @@ Define which rows are included in the window for each calculation.
 ### Frame Types
 
 **ROWS**: Physical row offset
+
 ```sql
 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
 ```
 
 **RANGE**: Logical range based on value
+
 ```sql
 RANGE BETWEEN INTERVAL '7 days' PRECEDING AND CURRENT ROW
-```
+```text
 
 ### Frame Boundaries
 
@@ -317,13 +331,14 @@ SUM(amount) OVER (
     PARTITION BY category
     ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
 )
-```
+```text
 
 ---
 
 ## 6. Common Patterns
 
 ### Top N per Group
+
 ```sql
 -- Top 3 products per category by price
 SELECT *
@@ -336,9 +351,10 @@ FROM (
     FROM products
 ) ranked
 WHERE rn <= 3;
-```
+```text
 
 ### Moving Average (7-day)
+
 ```sql
 SELECT
     date,
@@ -351,6 +367,7 @@ FROM daily_sales;
 ```
 
 ### Year-over-Year Comparison
+
 ```sql
 SELECT
     order_date,
@@ -359,9 +376,10 @@ SELECT
     SUM(total_amount) - LAG(SUM(total_amount), 365) OVER (ORDER BY order_date) AS yoy_change
 FROM orders
 GROUP BY order_date;
-```
+```text
 
 ### Cumulative Percentage
+
 ```sql
 SELECT
     product_name,
@@ -372,9 +390,10 @@ SELECT
         2
     ) AS cumulative_pct
 FROM product_sales;
-```
+```text
 
 ### Gap and Island Problem (Find Consecutive Sequences)
+
 ```sql
 -- Find sequences of consecutive dates
 SELECT
@@ -382,9 +401,10 @@ SELECT
     order_date - INTERVAL '1 day' * ROW_NUMBER() OVER (ORDER BY order_date) AS group_id
 FROM orders
 GROUP BY order_date;
-```
+```text
 
 ### Ranking with Filtering
+
 ```sql
 -- Best seller per category, but only categories with >10 products
 SELECT *
@@ -406,6 +426,7 @@ WHERE rank = 1
 ## 7. Performance Tips
 
 ### Reuse Window Definitions
+
 ```sql
 -- Instead of repeating OVER clause:
 SELECT
@@ -423,9 +444,10 @@ SELECT
     MIN(price) OVER w AS min
 FROM products
 WINDOW w AS (PARTITION BY category ORDER BY price);
-```
+```text
 
 ### Index for ORDER BY
+
 Create index on columns used in ORDER BY within OVER clause.
 
 ```sql
@@ -434,13 +456,14 @@ SELECT ... OVER (PARTITION BY category ORDER BY price DESC)
 
 -- Create index:
 CREATE INDEX idx_products_category_price ON products(category, price DESC);
-```
+```text
 
 ---
 
 ## 8. Common Mistakes
 
 ### ❌ LAST_VALUE without proper frame
+
 ```sql
 -- WRONG: Gets current row, not actual last
 SELECT LAST_VALUE(price) OVER (ORDER BY price);
@@ -450,9 +473,10 @@ SELECT LAST_VALUE(price) OVER (
     ORDER BY price
     ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
 );
-```
+```text
 
 ### ❌ Using window function in WHERE
+
 ```sql
 -- WRONG: Can't use window function in WHERE
 SELECT *
@@ -469,13 +493,14 @@ WHERE rn <= 10;
 ```
 
 ### ❌ Forgetting ORDER BY in ranking functions
+
 ```sql
 -- WRONG: Order is undefined
 SELECT ROW_NUMBER() OVER () FROM products;
 
 -- CORRECT: Specify order
 SELECT ROW_NUMBER() OVER (ORDER BY price DESC) FROM products;
-```
+```text
 
 ---
 
@@ -509,4 +534,4 @@ GROUP BY category;
 SELECT product_name, category, price,
        AVG(price) OVER (PARTITION BY category)
 FROM products;
-```
+```text

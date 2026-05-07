@@ -9,6 +9,7 @@ This document provides curated resources for deepening your cloud cost optimizat
 ### FinOps Foundation Certifications
 
 **1. FinOps Certified Practitioner (FOCP)**
+
 - **Provider**: FinOps Foundation (Linux Foundation)
 - **Level**: Foundational
 - **Duration**: Self-paced, ~10-15 hours study
@@ -22,15 +23,17 @@ This document provides curated resources for deepening your cloud cost optimizat
 - **Format**: 50 multiple choice questions, 60 minutes, passing score 70%
 - **Validity**: 2 years
 - **Value**: Industry-recognized FinOps credential
-- **Link**: https://learn.finops.org/
+- **Link**: <https://learn.finops.org/>
 
 **2. FinOps Certified Professional (Advanced)**
+
 - **Level**: Advanced (requires FOCP + 2 years experience)
 - **Focus**: Enterprise FinOps implementation, multi-cloud strategies
 
 ### AWS Certifications
 
 **3. AWS Certified Solutions Architect - Associate**
+
 - **Cost Optimization Domain**: ~15% of exam
 - **Topics**:
   - Select cost-effective compute resources
@@ -39,9 +42,10 @@ This document provides curated resources for deepening your cloud cost optimizat
   - Reserved capacity and Savings Plans
 - **Cost**: $150 USD
 - **Study Time**: 40-60 hours
-- **Link**: https://aws.amazon.com/certification/certified-solutions-architect-associate/
+- **Link**: <https://aws.amazon.com/certification/certified-solutions-architect-associate/>
 
 **4. AWS Certified Solutions Architect - Professional**
+
 - **Cost Optimization**: ~20% of exam (more depth)
 - **Topics**:
   - Multi-account cost allocation strategies
@@ -52,6 +56,7 @@ This document provides curated resources for deepening your cloud cost optimizat
 - **Prerequisites**: Recommended 2+ years AWS experience
 
 **5. AWS Certified Cloud Practitioner**
+
 - **Level**: Entry-level
 - **Cost Optimization**: Basic pricing models
 - **Cost**: $100 USD
@@ -60,22 +65,25 @@ This document provides curated resources for deepening your cloud cost optimizat
 ### Cloud Provider Training
 
 **6. AWS Cloud Financial Management for Builders**
+
 - **Provider**: AWS Training
 - **Duration**: 3 hours (free digital training)
 - **Topics**: Cost Explorer, Budgets, Trusted Advisor, Cost optimization strategies
-- **Link**: https://aws.amazon.com/training/
+- **Link**: <https://aws.amazon.com/training/>
 
 **7. AWS Cost Optimization Workshop**
+
 - **Format**: Self-paced labs
 - **Duration**: 8-12 hours
 - **Free**: Yes
-- **Link**: https://wellarchitectedlabs.com/cost/
+- **Link**: <https://wellarchitectedlabs.com/cost/>
 
 ## Online Courses
 
 ### 1. Cloud Academy
 
 **Course: AWS Cost Control and Optimization**
+
 - **Duration**: 6 hours
 - **Level**: Intermediate
 - **Content**:
@@ -87,6 +95,7 @@ This document provides curated resources for deepening your cloud cost optimizat
 - **Cost**: $39/month subscription
 
 **Course: FinOps for Cloud Cost Management**
+
 - **Duration**: 4 hours
 - **Multi-cloud**: AWS, Azure, GCP
 - **Focus**: FinOps culture and practices
@@ -94,26 +103,30 @@ This document provides curated resources for deepening your cloud cost optimizat
 ### 2. A Cloud Guru / Pluralsight
 
 **Course: AWS Cost Management**
+
 - **Duration**: 8 hours
 - **Instructor**: Led by AWS experts
 - **Hands-on**: 15+ labs
 - **Cost**: $29/month subscription
 
 **Course: FinOps on AWS**
+
 - **Duration**: 5 hours
 - **Focus**: Real-world FinOps implementation
 
 ### 3. Linux Foundation
 
 **Course: Introduction to FinOps**
+
 - **Duration**: 12 hours
 - **Cost**: Free (with paid FOCP exam prep option)
 - **Content**: FinOps Foundation curriculum
-- **Link**: https://training.linuxfoundation.org/training/introduction-to-finops/
+- **Link**: <https://training.linuxfoundation.org/training/introduction-to-finops/>
 
 ### 4. Udemy
 
 **Course: AWS Cost Optimization Masterclass**
+
 - **Duration**: 10 hours video
 - **Rating**: 4.5+ stars
 - **Cost**: $10-20 (frequent sales)
@@ -122,6 +135,7 @@ This document provides curated resources for deepening your cloud cost optimizat
 ## Books
 
 ### 1. Cloud FinOps (O'Reilly)
+
 - **Authors**: J.R. Storment, Mike Fuller (CloudHealth co-founders)
 - **Published**: 2019 (2nd edition expected 2024)
 - **Pages**: 320
@@ -132,9 +146,10 @@ This document provides curated resources for deepening your cloud cost optimizat
   - Multi-cloud cost management
   - Real-world case studies from Spotify, Nike, Autodesk
 - **Best For**: FinOps practitioners, engineering leaders
-- **Link**: https://www.oreilly.com/library/view/cloud-finops/9781492054610/
+- **Link**: <https://www.oreilly.com/library/view/cloud-finops/9781492054610/>
 
 ### 2. AWS Cost Optimization Guide (AWS Whitepapers)
+
 - **Publisher**: AWS
 - **Cost**: Free
 - **Pages**: 40-50 per whitepaper
@@ -143,15 +158,17 @@ This document provides curated resources for deepening your cloud cost optimizat
   - Tagging Best Practices
   - Reserved Instance and Savings Plans Guide
   - Cost and Usage Report User Guide
-- **Link**: https://docs.aws.amazon.com/whitepapers/
+- **Link**: <https://docs.aws.amazon.com/whitepapers/>
 
 ### 3. The FinOps Journey (FinOps Foundation)
+
 - **Publisher**: FinOps Foundation
 - **Cost**: Free (online resource)
 - **Content**: Step-by-step FinOps implementation guide
-- **Link**: https://www.finops.org/framework/
+- **Link**: <https://www.finops.org/framework/>
 
 ### 4. Cloud Economics (MIT Sloan Report)
+
 - **Publisher**: MIT Sloan School of Management
 - **Focus**: Business value of cloud, not just cost
 - **Use Case**: C-level business case for cloud investment
@@ -161,6 +178,7 @@ This document provides curated resources for deepening your cloud cost optimizat
 ### AWS Native Tools (Free/Included)
 
 **1. AWS Cost Explorer**
+
 - **Cost**: $0 (basic), $0.01 per API request
 - **Features**:
   - 12 months historical data
@@ -170,24 +188,28 @@ This document provides curated resources for deepening your cloud cost optimizat
 - **Best For**: Quick cost visualization
 
 **2. AWS Cost and Usage Report (CUR)**
+
 - **Cost**: Free (only pay S3 storage)
 - **Details**: Line-item billing, hourly granularity
 - **Format**: Parquet (Athena-queryable)
 - **Best For**: Detailed cost analysis, custom reports
 
 **3. AWS Budgets**
+
 - **Cost**: First 2 budgets free, $0.02 per budget-day after
 - **Features**: Cost, usage, RI/SP budgets with alerts
 - **Actions**: Stop instances, apply IAM policies
 - **Best For**: Proactive cost control
 
 **4. AWS Compute Optimizer**
+
 - **Cost**: Free
 - **Powered By**: ML analysis of CloudWatch metrics
 - **Recommendations**: EC2, Auto Scaling, EBS, Lambda
 - **Best For**: Right-sizing guidance
 
 **5. AWS Trusted Advisor**
+
 - **Cost**: 7 core checks free, full access with Business/Enterprise Support ($100+/month)
 - **Cost Optimization Checks**:
   - Low utilization EC2 instances
@@ -200,6 +222,7 @@ This document provides curated resources for deepening your cloud cost optimizat
 - **Best For**: Quick wins and anomaly detection
 
 **6. AWS Cost Anomaly Detection**
+
 - **Cost**: Free
 - **Features**: ML-powered anomaly detection
 - **Alerts**: SNS, email
@@ -208,6 +231,7 @@ This document provides curated resources for deepening your cloud cost optimizat
 ### Third-Party Cost Management Platforms
 
 **7. CloudHealth by VMware**
+
 - **Cost**: ~$500-2,000/month (based on spend)
 - **Features**:
   - Multi-cloud (AWS, Azure, GCP)
@@ -217,9 +241,10 @@ This document provides curated resources for deepening your cloud cost optimizat
   - Anomaly detection
   - Slack/PagerDuty integration
 - **Best For**: Enterprises with >$500K annual cloud spend
-- **Link**: https://www.cloudhealthtech.com/
+- **Link**: <https://www.cloudhealthtech.com/>
 
 **8. Cloudability by Apptio**
+
 - **Cost**: ~$600-3,000/month
 - **Features**:
   - Cost allocation and chargeback
@@ -227,9 +252,10 @@ This document provides curated resources for deepening your cloud cost optimizat
   - Container cost visibility (Kubernetes)
   - TBM integration (Technology Business Management)
 - **Best For**: Large enterprises with financial integration needs
-- **Link**: https://www.cloudability.com/
+- **Link**: <https://www.cloudability.com/>
 
 **9. Vantage**
+
 - **Cost**: Free tier, $30/month per user for Pro
 - **Features**:
   - Multi-cloud cost reports
@@ -238,9 +264,10 @@ This document provides curated resources for deepening your cloud cost optimizat
   - Per-resource cost visibility
   - Terraform cost estimation
 - **Best For**: Startups and mid-sized companies
-- **Link**: https://www.vantage.sh/
+- **Link**: <https://www.vantage.sh/>
 
 **10. Spot.io (formerly Spot by NetApp)**
+
 - **Cost**: Performance-based (% of savings)
 - **Features**:
   - Automated Spot instance management
@@ -248,9 +275,10 @@ This document provides curated resources for deepening your cloud cost optimizat
   - Reserved Instance optimization
   - Kubernetes cost optimization
 - **Best For**: Companies using Spot instances at scale
-- **Link**: https://spot.io/
+- **Link**: <https://spot.io/>
 
 **11. Kubecost**
+
 - **Cost**: Free (open-source), $20+ per cluster for Enterprise
 - **Focus**: Kubernetes cost visibility
 - **Features**:
@@ -259,9 +287,10 @@ This document provides curated resources for deepening your cloud cost optimizat
   - Right-sizing recommendations
   - Multi-cluster support
 - **Best For**: Kubernetes users
-- **Link**: https://www.kubecost.com/
+- **Link**: <https://www.kubecost.com/>
 
 **12. Infracost**
+
 - **Cost**: Free (open-source), Enterprise features $50/month
 - **Focus**: Terraform cost estimation
 - **Features**:
@@ -270,11 +299,12 @@ This document provides curated resources for deepening your cloud cost optimizat
   - GitHub/GitLab integration
   - CI/CD integration
 - **Best For**: Infrastructure as Code workflows
-- **Link**: https://www.infracost.io/
+- **Link**: <https://www.infracost.io/>
 
 ### Open-Source Tools
 
 **13. AWS Cost Explorer CLI**
+
 ```bash
 # Install
 pip install awscli-ce
@@ -285,9 +315,10 @@ aws ce get-cost-and-usage \
   --granularity MONTHLY \
   --metrics UnblendedCost \
   --group-by Type=DIMENSION,Key=SERVICE
-```
+```text
 
 **14. Cloud Custodian**
+
 - **Cost**: Free (open-source)
 - **Purpose**: Policy-driven cloud governance and cost control
 - **Features**:
@@ -296,6 +327,7 @@ aws ce get-cost-and-usage \
   - Resize underutilized resources
   - Schedule-based actions
 - **Example**:
+
 ```yaml
 # policy.yml
 policies:
@@ -310,18 +342,21 @@ policies:
       - tag:Environment: dev
     actions:
       - stop
-```
-- **Link**: https://cloudcustodian.io/
+```text
+
+- **Link**: <https://cloudcustodian.io/>
 
 **15. AWS Nuke**
+
 - **Cost**: Free
 - **Purpose**: Delete all resources in an account (for testing cleanup)
 - **Warning**: Destructive! Use carefully
-- **Link**: https://github.com/rebuy-de/aws-nuke
+- **Link**: <https://github.com/rebuy-de/aws-nuke>
 
 ## Communities and Forums
 
 ### 1. FinOps Foundation Slack
+
 - **Members**: 15,000+ FinOps practitioners
 - **Channels**:
   - #general: FinOps discussions
@@ -329,92 +364,106 @@ policies:
   - #tools: Tool recommendations and comparisons
   - #ask-anything: Q&A
 - **Value**: Peer support, job postings, vendor demos
-- **Join**: https://finops.org/community/
+- **Join**: <https://finops.org/community/>
 
 ### 2. AWS re:Post (Cost Optimization)
+
 - **Type**: Q&A forum (like Stack Overflow for AWS)
 - **Cost**: Free
 - **Topics**: Billing, Cost Explorer, RIs, cost optimization strategies
-- **Link**: https://repost.aws/topics/cost-optimization
+- **Link**: <https://repost.aws/topics/cost-optimization>
 
 ### 3. Reddit Communities
 
 **r/aws** (500K+ members)
+
 - General AWS discussions
 - Cost optimization threads
 
 **r/devops** (300K+ members)
+
 - Infrastructure cost optimization
 - IaC and automation
 
 **r/finops** (5K+ members)
+
 - Dedicated FinOps community
 - Case studies and best practices
 
 ### 4. AWS User Groups
+
 - Local meetups in major cities
 - Virtual events and webinars
 - Networking with practitioners
-- **Find**: https://aws.amazon.com/developer/community/usergroups/
+- **Find**: <https://aws.amazon.com/developer/community/usergroups/>
 
 ### 5. FinOps Foundation Working Groups
+
 - **Containers**: Kubernetes cost optimization
 - **FOCUS**: Standard cost and usage specification
 - **Reporting**: Best practices for cost reporting
-- **Link**: https://www.finops.org/projects/
+- **Link**: <https://www.finops.org/projects/>
 
 ## Newsletters and Blogs
 
 ### 1. Last Week in AWS (Corey Quinn)
+
 - **Frequency**: Weekly
 - **Focus**: AWS news with cost skepticism
 - **Tone**: Humorous and critical
 - **Topics**: AWS pricing changes, cost gotchas, bill analysis
-- **Subscribe**: https://www.lastweekinaws.com/
+- **Subscribe**: <https://www.lastweekinaws.com/>
 
 ### 2. FinOps Foundation Newsletter
+
 - **Frequency**: Monthly
 - **Content**: FinOps case studies, tool updates, event announcements
-- **Subscribe**: https://www.finops.org/newsletter/
+- **Subscribe**: <https://www.finops.org/newsletter/>
 
 ### 3. AWS Cloud Economics Blog
+
 - **Frequency**: Weekly
 - **Official**: AWS content
 - **Topics**: Cost optimization case studies, new pricing models, migration economics
-- **Link**: https://aws.amazon.com/blogs/aws-cloud-financial-management/
+- **Link**: <https://aws.amazon.com/blogs/aws-cloud-financial-management/>
 
 ### 4. Vantage Blog
+
 - **Frequency**: Weekly
 - **Focus**: Multi-cloud cost optimization
 - **Practical**: Actionable tips and tool comparisons
-- **Link**: https://www.vantage.sh/blog
+- **Link**: <https://www.vantage.sh/blog>
 
 ### 5. The Duckbill Group Blog
+
 - **Author**: Corey Quinn and team
 - **Focus**: AWS cost optimization with humor
 - **Case Studies**: Real bill audits and optimizations
-- **Link**: https://www.duckbillgroup.com/blog/
+- **Link**: <https://www.duckbillgroup.com/blog/>
 
 ## Podcasts
 
 ### 1. Screaming in the Cloud
+
 - **Host**: Corey Quinn (The Duckbill Group)
 - **Format**: Interviews with cloud leaders
 - **Topics**: AWS cost horror stories, optimization strategies
 - **Frequency**: Weekly
 - **Length**: 30-45 minutes
-- **Link**: https://www.lastweekinaws.com/podcast/
+- **Link**: <https://www.lastweekinaws.com/podcast/>
 
 ### 2. FinOps Podcast
+
 - **Host**: FinOps Foundation
 - **Guests**: Practitioners from Netflix, Spotify, Atlassian
 - **Topics**: Real-world FinOps journeys
 - **Frequency**: Bi-weekly
-- **Link**: https://www.finops.org/resources/podcasts/
+- **Link**: <https://www.finops.org/resources/podcasts/>
 
 ## Conference and Events
 
 ### 1. FinOps X (Annual Conference)
+
 - **When**: June (typically)
 - **Where**: Austin, TX + Virtual
 - **Cost**: $600-1,200 (early bird discounts)
@@ -424,9 +473,10 @@ policies:
   - 50+ breakout sessions
   - FinOps tool expo
   - Certification exam on-site
-- **Link**: https://x.finops.org/
+- **Link**: <https://x.finops.org/>
 
 ### 2. AWS re:Invent (Cost Optimization Track)
+
 - **When**: November/December
 - **Where**: Las Vegas, NV
 - **Sessions**: 20-30 cost optimization sessions
@@ -435,43 +485,49 @@ policies:
 - **Cost**: $1,799 (full conference)
 
 ### 3. AWS Summit (Regional)
+
 - **When**: Throughout the year
 - **Where**: Major cities worldwide
 - **Cost**: Free
 - **Content**: 1-2 cost optimization sessions per summit
-- **Link**: https://aws.amazon.com/events/summits/
+- **Link**: <https://aws.amazon.com/events/summits/>
 
 ### 4. FinOps Foundation Meetups
+
 - **Frequency**: Monthly (virtual)
 - **Cost**: Free
 - **Format**: 1-hour presentations + Q&A
 - **Topics**: Tool demos, case studies, best practices
-- **Link**: https://www.meetup.com/pro/finops-foundation/
+- **Link**: <https://www.meetup.com/pro/finops-foundation/>
 
 ## Videos and Webinars
 
 ### 1. AWS re:Invent Sessions (YouTube)
+
 - **Cost Optimization Playlist**: 100+ videos
 - **Notable Sessions**:
   - "How to save 90% on your AWS bill" (2022)
   - "Cost optimization best practices" (2023)
   - "RI and Savings Plans deep dive" (2023)
-- **Link**: https://www.youtube.com/@AWSEventsChannel
+- **Link**: <https://www.youtube.com/@AWSEventsChannel>
 
 ### 2. FinOps Foundation YouTube Channel
+
 - **Content**: FinOps X sessions, webinar recordings
 - **Playlists**: By cloud provider, by topic (containers, FinOps culture)
-- **Link**: https://www.youtube.com/@FinOpsFoundation
+- **Link**: <https://www.youtube.com/@FinOpsFoundation>
 
 ### 3. AWS Cost Optimization Webinar Series
+
 - **Frequency**: Monthly
 - **Registration**: Free
 - **Topics**: Rotating (compute, storage, serverless, etc.)
-- **Link**: https://aws.amazon.com/events/
+- **Link**: <https://aws.amazon.com/events/>
 
 ## Hands-On Labs and Workshops
 
 ### 1. AWS Well-Architected Labs (Cost Optimization)
+
 - **Cost**: Free
 - **Level**: 100 (basics) to 400 (expert)
 - **Labs**:
@@ -482,15 +538,17 @@ policies:
   - S3 Data Access Patterns (300)
   - Multi-Account Cost Reporting (400)
 - **Format**: Step-by-step with CloudFormation templates
-- **Link**: https://wellarchitectedlabs.com/cost/
+- **Link**: <https://wellarchitectedlabs.com/cost/>
 
 ### 2. AWS Cost Optimization Immersion Day
+
 - **Format**: Partner-led full-day workshop
 - **Cost**: Free (requires AWS account)
 - **Includes**: Architecture review, cost analysis, optimization recommendations
 - **Request**: Through AWS account manager
 
 ### 3. Qwiklabs / Google Cloud Skills Boost
+
 - **Cost**: $29/month for credits
 - **Labs**: Hands-on AWS cost optimization scenarios
 - **Duration**: 1-3 hours per lab
@@ -501,7 +559,8 @@ policies:
 ### AWS Documentation
 
 **1. AWS Cost Management User Guide**
-- **Link**: https://docs.aws.amazon.com/cost-management/
+
+- **Link**: <https://docs.aws.amazon.com/cost-management/>
 - **Sections**:
   - Cost Explorer
   - Budgets
@@ -511,21 +570,24 @@ policies:
 - **Best For**: Reference and API documentation
 
 **2. AWS Pricing Calculator**
-- **Link**: https://calculator.aws/
+
+- **Link**: <https://calculator.aws/>
 - **Use**: Estimate monthly costs before deploying
 - **Features**: Save and share estimates, export to CSV
 
 **3. AWS Service Pricing Pages**
+
 - Each service has detailed pricing page
 - Examples:
-  - https://aws.amazon.com/ec2/pricing/
-  - https://aws.amazon.com/s3/pricing/
-  - https://aws.amazon.com/lambda/pricing/
+  - <https://aws.amazon.com/ec2/pricing/>
+  - <https://aws.amazon.com/s3/pricing/>
+  - <https://aws.amazon.com/lambda/pricing/>
 
 ### FinOps Foundation Resources
 
 **4. FinOps Framework**
-- **Link**: https://www.finops.org/framework/
+
+- **Link**: <https://www.finops.org/framework/>
 - **Content**:
   - Personas (Practitioner, Engineering, Finance, Exec)
   - Capabilities (22 capabilities across 6 domains)
@@ -534,7 +596,8 @@ policies:
 - **Best For**: Understanding FinOps holistically
 
 **5. FinOps Landscape**
-- **Link**: https://landscape.finops.org/
+
+- **Link**: <https://landscape.finops.org/>
 - **Content**: Directory of 100+ FinOps tools
 - **Categories**: Cost visibility, optimization, governance, FOCUS
 - **Best For**: Tool selection
@@ -542,7 +605,8 @@ policies:
 ## Sample Projects and Code
 
 ### 1. AWS Samples GitHub
-- **Repo**: https://github.com/aws-samples/
+
+- **Repo**: <https://github.com/aws-samples/>
 - **Cost-Related**:
   - aws-cost-optimization-dashboard
   - aws-cost-explorer-report
@@ -551,6 +615,7 @@ policies:
 - **License**: MIT (free to use)
 
 ### 2. Cost Optimization Scripts
+
 ```python
 # Example from aws-samples
 # https://github.com/aws-samples/aws-cost-explorer-report
@@ -593,9 +658,10 @@ def generate_cost_report():
     print(f"\n  {'Total':<30} ${total:>10,.2f}")
 
     return costs
-```
+```text
 
 ### 3. Terraform Cost Estimation
+
 ```bash
 # Using Infracost (free)
 brew install infracost
@@ -613,17 +679,20 @@ infracost diff --path . --compare-to main
 ### AWS Support Plans
 
 **Developer Support** ($29/month or 3% of spend):
+
 - Business hours email support
 - No Trusted Advisor cost checks
 - **Not recommended** for production cost optimization
 
 **Business Support** ($100/month or 10% of spend, min $100):
+
 - 24/7 phone/chat support
 - Full Trusted Advisor (cost optimization checks)
 - Infrastructure Event Management
 - **Recommended** for companies spending >$10K/month
 
 **Enterprise Support** ($15,000/month or 10% of spend):
+
 - Technical Account Manager (TAM)
 - Cost optimization reviews (quarterly)
 - AWS Well-Architected reviews
@@ -632,11 +701,13 @@ infracost diff --path . --compare-to main
 ### AWS Account Management
 
 **1. AWS Cost Optimization Specialists**
+
 - Available through TAM (Enterprise Support)
 - Quarterly cost reviews
 - Custom optimization recommendations
 
 **2. AWS Managed Services (AMS)**
+
 - Cost: 10% of AWS spend
 - Includes: Ongoing cost optimization, tagging enforcement
 - Best For: Enterprises wanting AWS to manage infrastructure
@@ -644,18 +715,21 @@ infracost diff --path . --compare-to main
 ## Case Studies
 
 ### 1. Spotify: FinOps Journey
+
 - **Scale**: $200M+ annual cloud spend
 - **Approach**: Built FinOps team, 100% tagging, chargeback model
 - **Results**: 15% YoY cost reduction while scaling 2x
 - **Link**: Search "Spotify FinOps" on FinOps Foundation
 
 ### 2. Netflix: Spot Instance Strategy
+
 - **Scale**: Massive compute (tens of thousands of instances)
 - **Approach**: Custom Spot management, 80%+ Spot coverage
 - **Results**: $100M+ annual savings
 - **Link**: Netflix Tech Blog
 
 ### 3. Pinterest: Cost-Aware Culture
+
 - **Approach**: Cost dashboards per team, engineer incentives
 - **Results**: 30% cost reduction in year 1
 - **Link**: Pinterest Engineering Blog
@@ -663,6 +737,7 @@ infracost diff --path . --compare-to main
 ## Cost Optimization Playbooks
 
 ### 1. AWS Cost Optimization Playbook
+
 ```markdown
 # 30-Day Cost Optimization Sprint
 
@@ -694,9 +769,10 @@ infracost diff --path . --compare-to main
 - [ ] Expected Savings: 20-30%
 
 ## Total Expected Savings: 35-45% (compounding)
-```
+```text
 
 ### 2. Monthly FinOps Checklist
+
 ```python
 MONTHLY_FINOPS_CHECKLIST = {
     'week_1': [
@@ -724,25 +800,28 @@ MONTHLY_FINOPS_CHECKLIST = {
         'Set next month optimization goals'
     ]
 }
-```
+```text
 
 ## Training Plans
 
 ### For FinOps Practitioners
 
 **Month 1-2: Foundations**
+
 - Read "Cloud FinOps" book (O'Reilly)
 - Complete "Introduction to FinOps" course (Linux Foundation)
 - Join FinOps Foundation Slack
 - Set up Cost Explorer and practice queries
 
 **Month 3-4: Certification Prep**
+
 - FinOps Certified Practitioner study guide
 - Practice exams
 - Hands-on with AWS cost tools
 - Take FOCP exam
 
 **Month 5-6: Advanced**
+
 - AWS Well-Architected Labs (cost optimization)
 - Implement FinOps in your organization
 - Contribute to FinOps Foundation working groups
@@ -750,17 +829,20 @@ MONTHLY_FINOPS_CHECKLIST = {
 ### For Engineers
 
 **Week 1: Awareness**
+
 - AWS Pricing models (understand On-Demand, RI, SP, Spot)
 - Tagging importance and mandatory tags
 - View team cost dashboard
 
 **Week 2-3: Skills**
+
 - Right-sizing based on CloudWatch metrics
 - Auto Scaling configuration
 - S3 lifecycle policies
 - Lambda memory optimization
 
 **Week 4: Application**
+
 - Cost review of your services (identify waste)
 - Implement one optimization (10%+ savings)
 - Add cost estimates to PRs (Infracost)
@@ -768,16 +850,19 @@ MONTHLY_FINOPS_CHECKLIST = {
 ### For Finance Teams
 
 **Month 1: Cloud Literacy**
+
 - AWS Cloud Practitioner certification
 - Understand cloud pricing models vs on-premises
 - Learn Cost Explorer and CUR
 
 **Month 2: Cost Allocation**
+
 - Tagging strategy for chargeback
 - Set up budget policies
 - Define showback vs chargeback approach
 
 **Month 3: Business Value**
+
 - Unit economics and KPIs
 - Cost forecasting models
 - ROI analysis for commitments
@@ -787,6 +872,7 @@ MONTHLY_FINOPS_CHECKLIST = {
 ### AWS Cost Explorer API
 
 **Python Examples**:
+
 ```python
 import boto3
 from datetime import datetime, timedelta
@@ -819,28 +905,32 @@ sp_recs = ce.get_savings_plans_purchase_recommendation(
     PaymentOption='NO_UPFRONT',
     SavingsPlansType='COMPUTE_SP'
 )
-```
+```text
 
 **Boto3 Documentation**:
-- Cost Explorer: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ce.html
-- Compute Optimizer: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/compute-optimizer.html
+
+- Cost Explorer: <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ce.html>
+- Compute Optimizer: <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/compute-optimizer.html>
 
 ## Benchmarking Data
 
 ### Industry Benchmarks
 
 **SaaS Companies**:
+
 - Infrastructure: 15-30% of revenue (target <20%)
 - Gross Margin: >70% (requires cost control)
 - Cost per customer: Decreasing YoY (economies of scale)
 
 **By Company Stage**:
+
 - Startup (<$1M ARR): 30-50% revenue (building infrastructure)
 - Growth ($1M-$10M ARR): 20-30% revenue (optimizing)
 - Scale ($10M-$100M ARR): 15-20% revenue (efficient)
 - Enterprise (>$100M ARR): 10-15% revenue (optimized)
 
 **By Cloud Spend**:
+
 - <$100K/year: 30-40% waste (no dedicated FinOps)
 - $100K-$1M/year: 20-30% waste (part-time FinOps)
 - $1M-$10M/year: 10-20% waste (dedicated FinOps team)
@@ -849,6 +939,7 @@ sp_recs = ce.get_savings_plans_purchase_recommendation(
 ### Public Cloud Spend Trends
 
 **2024 Trends** (Flexera State of the Cloud Report):
+
 - Average cloud waste: 28% of spend
 - Companies optimizing cloud: 61% (up from 53% in 2023)
 - Multi-cloud adoption: 87% of enterprises
@@ -872,7 +963,8 @@ sp_recs = ce.get_savings_plans_purchase_recommendation(
 ## AWS Pricing Resources
 
 ### 1. AWS Pricing Calculator
-- **Link**: https://calculator.aws/
+
+- **Link**: <https://calculator.aws/>
 - **Use Cases**:
   - Estimate before deployment
   - Compare architectures (serverless vs EC2)
@@ -880,11 +972,13 @@ sp_recs = ce.get_savings_plans_purchase_recommendation(
 - **Export**: CSV, PDF, shareable link
 
 ### 2. EC2 Spot Price History
-- **Link**: https://aws.amazon.com/ec2/spot/pricing/
+
+- **Link**: <https://aws.amazon.com/ec2/spot/pricing/>
 - **Use**: Identify stable Spot pricing for capacity-optimized strategy
 - **API**: `ec2.describe_spot_price_history()`
 
 ### 3. S3 Pricing Calculator
+
 ```python
 # Estimate S3 costs with various scenarios
 S3_PRICING = {
@@ -931,6 +1025,7 @@ def estimate_s3_cost(storage_gb, put_requests, get_requests, storage_class='stan
 ## Additional Learning Paths
 
 ### Path 1: From Zero to FinOps Practitioner (6 months)
+
 1. **Month 1**: AWS Cloud Practitioner cert (basics)
 2. **Month 2**: FinOps Foundation intro course (free)
 3. **Month 3**: AWS Well-Architected Labs (hands-on)
@@ -939,11 +1034,13 @@ def estimate_s3_cost(storage_gb, put_requests, get_requests, storage_class='stan
 6. **Month 6**: Production FinOps implementation
 
 ### Path 2: Engineer → Cost-Aware Engineer (3 months)
+
 1. **Month 1**: Learn AWS pricing models, practice with Pricing Calculator
 2. **Month 2**: Implement cost optimization in one project (10%+ savings)
 3. **Month 3**: Add cost monitoring to all services you own
 
 ### Path 3: Finance → Cloud FinOps (4 months)
+
 1. **Month 1**: AWS Cloud Practitioner cert (understand services)
 2. **Month 2**: Cost Explorer and CUR hands-on
 3. **Month 3**: Cost allocation and chargeback design
@@ -952,6 +1049,7 @@ def estimate_s3_cost(storage_gb, put_requests, get_requests, storage_class='stan
 ## Useful Dashboards and Templates
 
 ### CloudWatch Dashboard Template
+
 ```json
 {
   "widgets": [
@@ -969,9 +1067,10 @@ def estimate_s3_cost(storage_gb, put_requests, get_requests, storage_class='stan
     }
   ]
 }
-```
+```text
 
 ### Grafana + CloudWatch
+
 - Import AWS billing metrics
 - Create team-specific dashboards
 - Alert on threshold breaches
@@ -979,12 +1078,14 @@ def estimate_s3_cost(storage_gb, put_requests, get_requests, storage_class='stan
 ## Enterprise Agreements and Discounts
 
 ### AWS Enterprise Discount Program (EDP)
+
 - **Eligibility**: $1M+ annual commit
 - **Discount**: 5-15% on top of RIs/SPs
 - **Benefits**: Dedicated support, cost optimization reviews
 - **Negotiation**: Reviewed annually
 
 ### AWS Private Pricing Agreements (PPA)
+
 - **For**: Specific services (e.g., S3 at high volume)
 - **Negotiation**: Through account manager
 - **Volume**: Typically >$100K/month per service
@@ -994,45 +1095,54 @@ def estimate_s3_cost(storage_gb, put_requests, get_requests, storage_class='stan
 This resource guide covered:
 
 **Certifications** (6):
+
 - FinOps Certified Practitioner (recommended)
 - AWS Solutions Architect (Associate/Professional)
 - Cloud Practitioner (for finance teams)
 
 **Training** (15+ courses):
+
 - Cloud Academy, A Cloud Guru, Linux Foundation
 - AWS Well-Architected Labs (hands-on, free)
 
 **Books** (4):
+
 - "Cloud FinOps" by O'Reilly (essential reading)
 - AWS Whitepapers (free, comprehensive)
 
 **Tools** (12):
+
 - AWS native (Cost Explorer, Compute Optimizer, Trusted Advisor)
 - Third-party platforms (CloudHealth, Cloudability, Vantage)
 - Open-source (Cloud Custodian, Kubecost, Infracost)
 
 **Communities** (5):
+
 - FinOps Foundation Slack (15K+ members)
 - AWS re:Post, Reddit r/aws
 - Local AWS user groups
 
 **Content**:
+
 - Newsletters (Last Week in AWS, FinOps Foundation)
 - Podcasts (Screaming in the Cloud)
 - Conferences (FinOps X, re:Invent)
 
 **Code Samples**:
+
 - AWS Samples GitHub
 - Cost Explorer API examples
 - Terraform cost estimation
 
 **Next Steps**:
+
 1. Join FinOps Foundation Slack (free, immediate value)
 2. Complete AWS Well-Architected Cost Optimization Labs (1-2 days)
 3. Start FinOps Certified Practitioner study (2-3 months)
 4. Implement 30-day optimization sprint (see playbook)
 
 **ROI of Training**:
+
 - FOCP certification: $299, can identify $10K+ savings in first month
 - AWS Business Support: $100/month, full Trusted Advisor checks (identify $5K+ savings/month)
 - FinOps X conference: $1,200, learn from peers (avoid $50K+ mistakes)

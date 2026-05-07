@@ -1,6 +1,7 @@
 # Exercise 02: Zero-Copy Dev Environments
 
 ## Overview
+
 Use zero-copy cloning to create instant dev/test environments without duplicating storage, enabling isolated testing at minimal cost.
 
 **Estimated Time**: 2 hours
@@ -10,7 +11,9 @@ Use zero-copy cloning to create instant dev/test environments without duplicatin
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Clone databases, schemas, and tables using zero-copy cloning
 - Create instant dev/test environments from production data
 - Track storage divergence and costs over time
@@ -21,7 +24,9 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 Your production database is 10TB and growing. Your team needs:
+
 - **Developers**: Isolated environments to test new features
 - **QA Team**: Fresh production data for testing without affecting prod
 - **Data Scientists**: Safe sandbox to explore and transform data
@@ -35,9 +40,11 @@ Traditional approach: Copy 10TB per environment = 40TB+ storage costs.
 ## Requirements
 
 ### Task 1: Production Setup (15 min)
+
 Create a production database with realistic data.
 
 **Database Structure**:
+
 ```sql
 -- Create production database
 CREATE DATABASE PROD_ECOMMERCE;
@@ -47,9 +54,10 @@ USE DATABASE PROD_ECOMMERCE;
 CREATE SCHEMA sales;
 CREATE SCHEMA inventory;
 CREATE SCHEMA analytics;
-```
+```text
 
 **Load Sample Data**:
+
 1. **CUSTOMERS** table (10,000 rows):
    - customer_id, name, email, country, signup_date, lifetime_value
 
@@ -60,6 +68,7 @@ CREATE SCHEMA analytics;
    - product_id, name, category, price, stock_quantity
 
 **Data Generation**:
+
 ```sql
 -- Use table generator for realistic volume
 CREATE TABLE sales.customers AS
@@ -69,9 +78,10 @@ SELECT
     concat('user', seq4(), '@email.com') as email,
     -- ... more columns
 FROM table(generator(rowcount => 10000));
-```
+```text
 
 **Success Criteria**:
+
 - ✅ PROD_ECOMMERCE database created with 3 schemas
 - ✅ 10,000 customers, 50,000 orders, 5,000 products loaded
 - ✅ Verified row counts with `SELECT COUNT(*)`
@@ -80,10 +90,13 @@ FROM table(generator(rowcount => 10000));
 ---
 
 ### Task 2: Clone Database (15 min)
+
 Create instant copy of entire production database.
 
 **Clone Operations**:
+
 1. **Full Database Clone**:
+
    ```sql
    CREATE DATABASE DEV_ECOMMERCE CLONE PROD_ECOMMERCE;
    ```
@@ -99,11 +112,13 @@ Create instant copy of entire production database.
    - Observe: Clone uses **zero additional storage initially**
 
 **Test Isolation**:
+
 - Modify data in DEV_ECOMMERCE
 - Verify PROD_ECOMMERCE unchanged
 - Confirm databases are truly isolated
 
 **Success Criteria**:
+
 - ✅ Database cloned in < 5 seconds (instant regardless of size)
 - ✅ All schemas and tables present in clone
 - ✅ Row counts match production (10K, 50K, 5K)
@@ -113,37 +128,44 @@ Create instant copy of entire production database.
 ---
 
 ### Task 3: Clone Tables (20 min)
+
 Create granular clones at schema and table level.
 
 **Cloning Scenarios**:
 
 1. **Clone Single Table**:
+
    ```sql
    CREATE TABLE sales.dev_customers CLONE sales.customers;
-   ```
+   ```text
 
 2. **Clone Entire Schema**:
+
    ```sql
    CREATE SCHEMA dev_sales CLONE sales;
    ```
 
 3. **Clone to Different Database**:
+
    ```sql
    CREATE TABLE test_db.sandbox.customers
    CLONE prod_ecommerce.sales.customers;
-   ```
+   ```text
 
 **Modification Testing**:
+
 1. Update 1,000 rows in `dev_customers`
 2. Insert 500 new rows in `dev_customers`
 3. Delete 100 rows in `dev_customers`
 
 **Verification**:
+
 - Original `customers` table unchanged
 - Clone has modifications
 - Observe storage divergence beginning
 
 **Cross-Database Access**:
+
 ```sql
 -- Query differences between prod and dev
 SELECT 'PROD' as source, COUNT(*) as row_count
@@ -151,9 +173,10 @@ FROM prod_ecommerce.sales.customers
 UNION ALL
 SELECT 'DEV' as source, COUNT(*) as row_count
 FROM dev_ecommerce.sales.dev_customers;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Created table-level and schema-level clones
 - ✅ Modified clone without affecting original
 - ✅ Verified isolation between clones
@@ -162,6 +185,7 @@ FROM dev_ecommerce.sales.dev_customers;
 ---
 
 ### Task 4: Historical Cloning (25 min)
+
 Clone from past timestamps for debugging and recovery.
 
 **Scenario**: Production data was correct 2 hours ago, but recent changes introduced issues.
@@ -169,6 +193,7 @@ Clone from past timestamps for debugging and recovery.
 **Historical Clone Operations**:
 
 1. **Clone from Time Offset**:
+
    ```sql
    -- Clone from 1 hour ago
    CREATE DATABASE PROD_1H_AGO
@@ -182,14 +207,16 @@ Clone from past timestamps for debugging and recovery.
    ```
 
 2. **Clone from Specific Timestamp**:
+
    ```sql
    -- Clone from exact timestamp
    CREATE DATABASE PROD_MORNING
    CLONE PROD_ECOMMERCE
    AT(TIMESTAMP => '2026-03-09 08:00:00'::TIMESTAMP);
-   ```
+   ```text
 
 3. **Clone Before Specific Statement**:
+
    ```sql
    -- Find problematic query ID
    SELECT query_id, query_text, start_time
@@ -205,6 +232,7 @@ Clone from past timestamps for debugging and recovery.
    ```
 
 **Comparison Analysis**:
+
 ```sql
 -- Compare data between timestamps
 WITH current_data AS (
@@ -225,9 +253,10 @@ JOIN historical_data h ON c.customer_id = h.customer_id
 WHERE c.lifetime_value != h.lifetime_value
 ORDER BY ABS(change) DESC
 LIMIT 100;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Created clones from 1 hour ago, 3 hours ago, specific timestamp
 - ✅ Used BEFORE(STATEMENT) to clone before specific query
 - ✅ Compared differences between current and historical data
@@ -236,11 +265,13 @@ LIMIT 100;
 ---
 
 ### Task 5: Track Storage Costs (25 min)
+
 Monitor storage divergence as clones are modified.
 
 **Storage Tracking Queries**:
 
 1. **Table Storage Metrics**:
+
    ```sql
    SELECT
        table_catalog,
@@ -257,6 +288,7 @@ Monitor storage divergence as clones are modified.
    ```
 
 2. **Clone-Specific Storage**:
+
    ```sql
    -- After modifying clones, track divergence
    SELECT
@@ -270,9 +302,10 @@ Monitor storage divergence as clones are modified.
    FROM snowflake.account_usage.table_storage_metrics
    WHERE table_catalog = 'DEV_ECOMMERCE'
    ORDER BY active_bytes DESC;
-   ```
+   ```text
 
 3. **Calculate Divergence Percentage**:
+
    ```sql
    -- Compare original vs clone storage
    WITH storage_summary AS (
@@ -296,6 +329,7 @@ Monitor storage divergence as clones are modified.
    ```
 
 4. **Monthly Cost Estimate**:
+
    ```sql
    -- Calculate monthly storage cost
    -- Snowflake on-demand: $40 per TB per month
@@ -307,9 +341,10 @@ Monitor storage divergence as clones are modified.
    WHERE table_catalog LIKE '%ECOMMERCE'
    GROUP BY table_catalog
    ORDER BY monthly_cost_usd DESC;
-   ```
+   ```text
 
 **Success Criteria**:
+
 - ✅ Queried TABLE_STORAGE_METRICS successfully
 - ✅ Calculated storage divergence percentage (< 10% expected for fresh clones)
 - ✅ Estimated monthly storage cost for prod + clones
@@ -318,9 +353,11 @@ Monitor storage divergence as clones are modified.
 ---
 
 ### Task 6: Dev/Test Strategy (20 min)
+
 Implement 3 clone-based scenarios for different use cases.
 
 **Scenario 1: Feature Testing**:
+
 ```sql
 -- Developer needs to test risky schema change
 CREATE DATABASE FEATURE_BRANCH_123 CLONE PROD_ECOMMERCE;
@@ -332,9 +369,10 @@ ADD COLUMN loyalty_points INT DEFAULT 0;
 -- Run tests, verify feature works
 -- If successful: Apply to prod
 -- If failed: DROP DATABASE, no cleanup needed
-```
+```text
 
 **Scenario 2: Data Migration Testing**:
+
 ```sql
 -- QA needs to test ETL pipeline changes
 CREATE DATABASE QA_MIGRATION_TEST CLONE PROD_ECOMMERCE;
@@ -350,6 +388,7 @@ CREATE DATABASE QA_MIGRATION_TEST CLONE PROD_ECOMMERCE;
 ```
 
 **Scenario 3: Training Environment**:
+
 ```sql
 -- Create training environment for new hires
 CREATE DATABASE TRAINING_ENV CLONE PROD_ECOMMERCE;
@@ -361,9 +400,10 @@ SET email = concat('user', customer_id, '@training.local'),
 
 -- Trainees can experiment freely
 -- Refresh weekly or as needed
-```
+```text
 
 **Automation Script**:
+
 ```sql
 -- Create procedure to refresh dev environments nightly
 CREATE OR REPLACE PROCEDURE refresh_dev_environments()
@@ -391,10 +431,11 @@ CREATE OR REPLACE TASK refresh_dev_daily
     SCHEDULE = 'USING CRON 0 2 * * * America/Los_Angeles'  -- 2 AM daily
 AS
     CALL refresh_dev_environments();
-```
+```text
 
 **Cost-Benefit Analysis**:
-```
+
+```text
 Traditional Approach:
 - 10TB prod + 10TB dev + 10TB QA + 10TB training = 40TB
 - Cost: 40TB × $40 = $1,600/month
@@ -406,6 +447,7 @@ Zero-Copy Approach:
 ```
 
 **Success Criteria**:
+
 - ✅ Implemented 3 clone-based scenarios with working SQL
 - ✅ Created automated refresh procedure
 - ✅ Documented cost-benefit analysis (70%+ savings)
@@ -439,7 +481,8 @@ AT(OFFSET => -3600);  -- 1 hour ago
 -- Clone before specific statement
 CREATE TABLE backup_table CLONE original_table
 BEFORE(STATEMENT => 'query_id_here');
-```
+```text
+
 </details>
 
 <details>
@@ -459,7 +502,8 @@ SELECT
 FROM snowflake.account_usage.tables
 WHERE table_name = 'CUSTOMERS'
 ORDER BY created DESC;
-```
+```text
+
 </details>
 
 <details>
@@ -485,7 +529,8 @@ FROM snowflake.account_usage.database_storage_usage_history
 WHERE database_name LIKE '%ECOMMERCE'
     AND usage_date >= DATEADD(day, -7, CURRENT_DATE())
 ORDER BY usage_date DESC, database_name;
-```
+```text
+
 </details>
 
 <details>
@@ -510,20 +555,23 @@ WHERE database_name LIKE '%ECOMMERCE'
 GROUP BY database_name
 ORDER BY storage_gb DESC;
 ```
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
 cd exercises/exercise-02-zero-copy-dev
 bash validate.sh
-```
+```text
 
 **Expected Output**:
-```
+
+```text
 ✅ Task 1: Production database created (10K + 50K + 5K rows)
 ✅ Task 2: Database cloned in < 5 seconds (zero initial storage)
 ✅ Task 3: Table and schema clones working (isolation verified)
@@ -532,12 +580,14 @@ bash validate.sh
 ✅ Task 6: 3 dev/test scenarios implemented (71% cost savings)
 
 🎉 Exercise 02 Complete! Estimated Storage Savings: $1,140/month
-```
+```text
 
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.sql` - All clone creation and verification commands
 2. `storage-analysis.md` - Storage tracking results and cost calculations
 3. `dev-test-strategy.md` - Document with 3 scenarios and automation plan
@@ -546,6 +596,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - Snowflake Documentation: [Cloning Objects](https://docs.snowflake.com/en/user-guide/object-clone)
 - Snowflake Documentation: [Understanding Storage Costs](https://docs.snowflake.com/en/user-guide/tables-storage)
 - Notebook: `notebooks/02-zero-copy-cloning.sql`
@@ -555,7 +606,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Exercise 03: Time Travel Recovery (disaster recovery patterns)
 - ✅ Exercise 04: Data Sharing (share data without copying)
 - Review Module 17: Cost Optimization for storage best practices

@@ -3,6 +3,7 @@
 ## Company Background
 
 **GlobalMart** is a fast-growing e-commerce platform with:
+
 - 2M active customers across 15 countries
 - 50K products across 20 categories
 - $500M annual revenue
@@ -12,14 +13,15 @@
 ## Current State (The Problem)
 
 ### Existing Architecture
-```
+
+```text
 s3://globalmart-data/
 ├── transactions.csv (500GB, mixed dates)
 ├── users.json (50GB, duplicates)
 ├── events/ (2TB, unorganized)
 ├── products/ (10GB, outdated)
 └── logs/ (1TB, never accessed)
-```
+```text
 
 ### Pain Points
 
@@ -57,7 +59,7 @@ s3://globalmart-data/
 
 ### Medallion Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    GLOBALMART DATA LAKE                      │
 ├─────────────────────────────────────────────────────────────┤
@@ -92,7 +94,8 @@ s3://globalmart-data/
 **Purpose:** Store raw data exactly as received from sources
 
 **Structure:**
-```
+
+```text
 s3://globalmart-bronze-dev/
 ├── transactions/
 │   └── year=2024/month=02/day=02/
@@ -108,9 +111,10 @@ s3://globalmart-bronze-dev/
 └── users/
     └── year=2024/month=02/day=02/
         └── users_delta_20240202.csv
-```
+```text
 
 **Configuration:**
+
 - **Versioning:** Enabled (protect against accidental deletes)
 - **Encryption:** SSE-S3 (AES-256)
 - **Lifecycle:**
@@ -126,6 +130,7 @@ s3://globalmart-bronze-dev/
   - DataClassification: raw
 
 **Partitioning:**
+
 - Date-based (Hive-style): `year=YYYY/month=MM/day=DD/`
 - For streaming data: add `hour=HH/`
 
@@ -138,7 +143,8 @@ s3://globalmart-bronze-dev/
 **Purpose:** Store validated, cleaned, deduplicated data
 
 **Structure:**
-```
+
+```text
 s3://globalmart-silver-dev/
 ├── transactions/
 │   └── year=2024/month=02/day=02/
@@ -155,6 +161,7 @@ s3://globalmart-silver-dev/
 ```
 
 **Transformations Applied:**
+
 - ✅ Schema validation
 - ✅ Deduplication
 - ✅ Data type enforcement
@@ -163,6 +170,7 @@ s3://globalmart-silver-dev/
 - ✅ Compression (Snappy)
 
 **Configuration:**
+
 - **Versioning:** Enabled
 - **Encryption:** SSE-S3
 - **Lifecycle:**
@@ -179,6 +187,7 @@ s3://globalmart-silver-dev/
 **Format:** Parquet with Snappy compression
 
 **Partitioning:**
+
 - Transactions: `year/month/day`
 - Users: `country/state` (for GDPR)
 - Products: `category`
@@ -193,7 +202,8 @@ s3://globalmart-silver-dev/
 **Purpose:** Pre-aggregated, business-ready datasets
 
 **Structure:**
-```
+
+```text
 s3://globalmart-gold-dev/
 ├── analytics/
 │   ├── daily_sales_summary/
@@ -212,9 +222,10 @@ s3://globalmart-gold-dev/
 └── reports/
     ├── executive_dashboard/
     └── operational_metrics/
-```
+```text
 
 **Business Logic Applied:**
+
 - Daily/weekly/monthly aggregations
 - Customer 360 views
 - Product performance metrics
@@ -222,6 +233,7 @@ s3://globalmart-gold-dev/
 - Denormalization for BI tools
 
 **Configuration:**
+
 - **Versioning:** Enabled
 - **Encryption:** SSE-S3
 - **Lifecycle:**
@@ -237,6 +249,7 @@ s3://globalmart-gold-dev/
 **Format:** Parquet with Snappy compression
 
 **Optimization:**
+
 - Small file sizes (compacted)
 - Pre-aggregated
 - Z-ordering on filter columns (bonus)
@@ -246,6 +259,7 @@ s3://globalmart-gold-dev/
 ### 4. Access Control Requirements
 
 **Data Engineers:**
+
 ```yaml
 Permissions:
   - Read/Write: Bronze (all)
@@ -256,9 +270,10 @@ Actions:
   - s3:GetObject
   - s3:ListBucket
   - s3:DeleteObject (Bronze only)
-```
+```text
 
 **Data Scientists:**
+
 ```yaml
 Permissions:
   - Read only: Silver, Gold
@@ -269,6 +284,7 @@ Actions:
 ```
 
 **BI Analysts:**
+
 ```yaml
 Permissions:
   - Read only: Gold
@@ -276,12 +292,13 @@ Actions:
   - s3:GetObject
   - s3:ListBucket
   - athena:StartQueryExecution
-```
+```text
 
 ### 5. Cost Optimization
 
 **Storage Classes:**
-```
+
+```text
 Bronze:
   0-30 days:  S3 Standard ($0.023/GB)
   31-90 days: S3 Standard-IA ($0.0125/GB)
@@ -293,7 +310,7 @@ Silver:
 
 Gold:
   All data:   S3 Standard (frequent access)
-```
+```text
 
 **Expected Cost Breakdown:**
 
@@ -309,16 +326,18 @@ Gold:
 ### 6. Naming Conventions
 
 **Buckets:**
+
 ```
 {company}-{layer}-{environment}
 Examples:
   - globalmart-bronze-dev
   - globalmart-silver-prod
   - globalmart-gold-dev
-```
+```text
 
 **Objects (Files):**
-```
+
+```text
 Bronze: {entity}_{date}_{time}_{batch}.{format}
   Example: transactions_20240202_100530_001.csv
 
@@ -327,15 +346,16 @@ Silver: {entity}.parquet
 
 Gold: {metric}_{aggregation}.parquet
   Example: daily_sales_summary_2024-02-02.parquet
-```
+```text
 
 **Partitions:**
+
 ```
 Hive-style: key=value/
   year=2024/month=02/day=02/
   country=US/state=CA/
   event_type=purchase/
-```
+```text
 
 ## Deliverables
 
@@ -370,27 +390,31 @@ Your CloudFormation template should create:
 ## Testing Your Solution
 
 1. **Deploy the stack:**
+
    ```bash
    aws cloudformation create-stack \
      --stack-name globalmart-data-lake \
      --template-body file://solution/data-lake-stack.yaml \
      --parameters ParameterKey=Environment,ParameterValue=dev \
      --capabilities CAPABILITY_IAM
-   ```
+   ```text
 
 2. **Upload test data:**
+
    ```bash
    aws s3 cp test-data.csv s3://globalmart-bronze-dev/transactions/year=2024/month=02/day=02/
    ```
 
 3. **Verify structure:**
+
    ```bash
    aws s3 ls s3://globalmart-bronze-dev/ --recursive
    aws s3 ls s3://globalmart-silver-dev/ --recursive
    aws s3 ls s3://globalmart-gold-dev/ --recursive
-   ```
+   ```text
 
 4. **Check configuration:**
+
    ```bash
    aws s3api get-bucket-versioning --bucket globalmart-bronze-dev
    aws s3api get-bucket-encryption --bucket globalmart-bronze-dev
@@ -398,14 +422,16 @@ Your CloudFormation template should create:
    ```
 
 5. **Run validation tests:**
+
    ```bash
    cd ../../validation
    pytest test_exercise_01.py -v
-   ```
+   ```text
 
 ## Success Metrics
 
 After implementation:
+
 - ✅ 66% storage reduction (3.5TB → 1.2TB)
 - ✅ 40% cost reduction ($80 → $48/month)
 - ✅ 97% faster queries (15min → 30sec)

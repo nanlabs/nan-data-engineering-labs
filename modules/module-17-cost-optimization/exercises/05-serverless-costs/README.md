@@ -23,7 +23,7 @@
 
 ## Architecture
 
-```
+```text
 ┌────────────────────────────────────────────────────────────┐
 │            Serverless vs Traditional TCO                   │
 │                                                            │
@@ -45,7 +45,7 @@
 │  └──────────────────┘         └──────────────────┘        │
 │      Cheaper for > 8 hours/day runtime                    │
 └────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Tasks
 
@@ -198,7 +198,7 @@ break_even_invocations = comparison['ec2']['base_cost'] / comparison['lambda']['
 print(f"  {break_even_invocations:,.0f} invocations/month")
 print(f"  Below this → Lambda cheaper")
 print(f"  Above this → EC2 cheaper")
-```
+```text
 
 ### Task 2: Optimize Lambda Memory Allocation
 
@@ -288,7 +288,7 @@ def benchmark_lambda_memory(function_name, memory_configs):
 # results = benchmark_lambda_memory('data-processing-function', memory_configs)
 ```
 
-2. **Lambda cost optimization guidelines**:
+1. **Lambda cost optimization guidelines**:
 
 ```python
 # Common Lambda optimization patterns
@@ -328,7 +328,7 @@ def recommend_lambda_memory(workload_type, current_memory, current_duration_ms):
 
 # Example
 recommend_lambda_memory('cpu_bound', 512, 5000)
-```
+```text
 
 ### Task 2: Fargate vs ECS on EC2 Cost Analysis
 
@@ -455,7 +455,7 @@ print(f"\n💡 General Rule:")
 print(f"   • < 5 tasks OR sporadic → Fargate (no management)")
 print(f"   • > 20 tasks 24/7 → ECS on EC2 with Savings Plan (better bin packing)")
 print(f"   • Variable workload → Fargate + Auto Scaling")
-```
+```text
 
 ### Task 3: Athena vs EMR Query Cost Analysis
 
@@ -576,7 +576,7 @@ print(f"\n💡 Decision Framework:")
 print(f"  • < 1 TB scanned/day → Athena (serverless, no overhead)")
 print(f"  • > 5 TB scanned/day → EMR with Spot (better for large volumes)")
 print(f"  • Parquet/ORC format → Athena (10x less data scanned)")
-```
+```text
 
 ### Task 3: Build Comprehensive TCO Calculator
 
@@ -757,7 +757,7 @@ print(f"\n💡 Optimization:")
 print(f"  • Minimize state transitions (combine Lambda calls)")
 print(f"  • Use Express for < 5 min workflows")
 print(f"  • Use Standard for long-running (hours/days)")
-```
+```text
 
 ## Validation Checklist
 
@@ -772,17 +772,20 @@ print(f"  • Use Standard for long-running (hours/days)")
 ## Troubleshooting
 
 **Issue**: Lambda cost higher than expected
+
 - **Solution**: Check memory allocation (over-provisioned?)
 - Reduce timeout (avoid paying for idle time)
 - Optimize code (reduce duration)
 - Consider Provisioned Concurrency cost if enabled
 
 **Issue**: Fargate more expensive than EC2
+
 - **Solution**: Normal for high-density workloads (>10 tasks)
 - Consider ECS on EC2 with Savings Plan
 - Use Fargate Spot (70% discount, for fault-tolerant)
 
 **Issue**: Athena queries scanning too much data
+
 - **Solution**: Partition data by date
 - Convert to Parquet/ORC (10x reduction)
 - Use LIMIT and WHERE clauses
@@ -816,6 +819,7 @@ print(f"  • Use Standard for long-running (hours/days)")
 ## Real-World TCO Examples
 
 ### Example 1: Image Processing API
+
 - **Workload**: 50M API calls/month, 300ms avg duration, 512MB memory
 - **Lambda + API Gateway**: $123/month
 - **EC2 + ALB** (m5.large 24/7): $95/month
@@ -824,6 +828,7 @@ print(f"  • Use Standard for long-running (hours/days)")
 - **Decision**: Lambda (ops cost > $28/month savings)
 
 ### Example 2: Batch ETL (2 hours/day)
+
 - **Workload**: Daily Spark ETL, 500GB data
 - **Glue** (10 DPU, 2h/day): $264/month
 - **EMR On-Demand** (3x m5.xlarge, 2h/day): $43/month
@@ -832,6 +837,7 @@ print(f"  • Use Standard for long-running (hours/days)")
 - **Decision**: EMR Spot (huge savings, acceptable complexity)
 
 ### Example 3: SQL Analytics
+
 - **Workload**: 1000 queries/month, 50GB scanned per query
 - **Athena**: $244/month ($5/TB * 50TB total)
 - **Redshift** (dc2.large, 1 node 24/7): $180/month
@@ -841,27 +847,31 @@ print(f"  • Use Standard for long-running (hours/days)")
 
 ## Serverless Cost Optimization Checklist
 
-### Lambda:
+### Lambda
+
 - [ ] Right-size memory (test 128MB to 3008MB)
 - [ ] Reduce cold starts (Provisioned Concurrency only if needed)
 - [ ] Optimize code (reduce duration)
 - [ ] Use ARM architecture (Graviton2, 20% cheaper)
 - [ ] Set appropriate timeout (don't pay for hangs)
 
-### Fargate:
+### Fargate
+
 - [ ] Use Fargate Spot (70% discount if fault-tolerant)
 - [ ] Right-size task definitions (don't over-provision CPU/memory)
 - [ ] Consider ECS on EC2 for high-density (>10 tasks 24/7)
 - [ ] Use Savings Plans for predictable workloads
 
-### Athena:
+### Athena
+
 - [ ] Partition data by date/category
 - [ ] Convert to Parquet/ORC (columnar + compression)
 - [ ] Use LIMIT in exploratory queries
 - [ ] Compress with Snappy (good balance)
 - [ ] Filter early in WHERE clause
 
-### Step Functions:
+### Step Functions
+
 - [ ] Use Express workflows for < 5 min executions
 - [ ] Minimize state transitions (combine steps)
 - [ ] Use Map state for parallel processing (single transition)

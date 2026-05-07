@@ -7,7 +7,7 @@ Create your first Apache Airflow DAG with basic tasks, understand scheduling, an
 ## 📚 Prerequisites
 
 - Apache Airflow instance running
-- Access to Airflow UI (http://localhost:8080)
+- Access to Airflow UI (<http://localhost:8080>)
 - Basic Python knowledge
 - Understanding of [01-airflow-fundamentals.md](../../theory/01-airflow-fundamentals.md)
 
@@ -16,18 +16,21 @@ Create your first Apache Airflow DAG with basic tasks, understand scheduling, an
 ### Task 1: Simple Hello World DAG
 
 Create a DAG that:
+
 - Prints "Hello from Airflow!"
 - Has a unique DAG ID
 - Runs daily
 - Has proper default arguments
 
 **Requirements:**
+
 - Use `PythonOperator`
 - Set start date to yesterday
 - Disable catchup
 - Add owner and tags
 
 **Expected Output:**
+
 - DAG visible in UI
 - Task executes successfully
 - Log shows "Hello from Airflow!"
@@ -37,43 +40,49 @@ Create a DAG that:
 ### Task 2: Multi-Task Pipeline
 
 Create a DAG with 3 sequential tasks:
+
 1. **extract**: Print "Extracting data..." and return a list
 2. **transform**: Receive list, transform it (multiply by 2), return result
 3. **load**: Receive transformed data and "load" it (print)
 
 **Requirements:**
+
 - Use **PythonOperator** for all tasks
 - Use **XCom** to pass data between tasks
 - Set proper task dependencies
 - Add logging statements
 
 **Expected Output:**
-```
+
+```text
 [INFO] Extracting data...
 [INFO] Extracted: [1, 2, 3, 4, 5]
 [INFO] Transforming data...
 [INFO] Transformed: [2, 4, 6, 8, 10]
 [INFO] Loading data...
 [INFO] Loaded 5 records
-```
+```text
 
 ---
 
 ### Task 3: Mixed Operators
 
 Create a DAG combining Python and Bash operators:
+
 1. **start**: BashOperator - Print current date
 2. **python_task**: PythonOperator - Calculate sum of numbers
 3. **check_file**: BashOperator - Check if /tmp exists
 4. **end**: PythonOperator - Print completion message
 
 **Requirements:**
+
 - Mix `PythonOperator` and `BashOperator`
 - Use templating in `BashOperator` ({{ ds }}, {{ run_id }})
 - Set dependencies: start → [python_task, check_file] → end
 
 **Expected Flow:**
-```
+
+```text
        start
       /     \
 python_task  check_file
@@ -86,36 +95,41 @@ python_task  check_file
 ### Task 4: Scheduling & Context
 
 Create a DAG that:
+
 - Runs **every 6 hours**
 - Uses context variables (execution_date, dag_run, etc.)
 - Logs detailed execution information
 - Uses retry logic (2 retries, 5 min delay)
 
 **Requirements:**
+
 - Schedule: `schedule=timedelta(hours=6)`
 - Access context via `**context`
 - Print execution_date, run_id, task_id, dag_id
 - Configure retries and retry_delay
 
 **Expected Output:**
-```
+
+```text
 [INFO] Execution Date: 2024-01-15 00:00:00
 [INFO] Run ID: scheduled__2024-01-15T00:00:00+00:00
 [INFO] Task ID: log_context
 [INFO] DAG ID: context_dag
 [INFO] Try Number: 1
-```
+```text
 
 ---
 
 ### Task 5: DAG with Email Notification
 
 Create a DAG that:
+
 - Sends email on task failure
 - Uses `EmailOperator` for success notification
 - Has proper error handling
 
 **Requirements:**
+
 - Configure email in default_args
 - Add `EmailOperator` task at end
 - Test failure scenario (divide by zero)
@@ -128,18 +142,21 @@ Create a DAG that:
 ### Task 6: Dynamic Task Generation
 
 Create a DAG that generates 5 tasks dynamically:
+
 - Each task processes a different dataset
 - Use for-loop to create tasks
 - Set dependencies: start → [task1, task2, task3, task4, task5] → end
 
 **Requirements:**
+
 - Generate tasks in loop
 - Each task has unique task_id
 - Parallel execution (all tasks independent)
 - Use `op_kwargs` to pass different parameters
 
 **Expected Structure:**
-```
+
+```text
          start
         / | | | \
        t1 t2 t3 t4 t5
@@ -156,7 +173,7 @@ Create a DAG that generates 5 tasks dynamically:
 ```bash
 cd /opt/airflow/dags
 touch ex01_hello_world.dag
-```
+```text
 
 ### 2. Write Your First DAG
 
@@ -190,7 +207,7 @@ task = PythonOperator(
     python_callable=print_hello,
     dag=dag,
 )
-```
+```text
 
 ### 3. Test DAG Locally
 
@@ -203,11 +220,11 @@ airflow dags list
 
 # Test specific task
 airflow tasks test ex01_hello_world hello_task 2024-01-01
-```
+```text
 
 ### 4. Trigger DAG in UI
 
-1. Open http://localhost:8080
+1. Open <http://localhost:8080>
 2. Find "ex01_hello_world" DAG
 3. Toggle to "On" (unpause)
 4. Click "Trigger DAG" button
@@ -334,7 +351,7 @@ load_task = PythonOperator(
 
 # Set dependencies
 extract_task >> transform_task >> load_task
-```
+```text
 
 </details>
 
@@ -403,7 +420,7 @@ with DAG(
 
     # Dependencies: Fan-out and Fan-in
     start >> [python_task, check_file] >> end
-```
+```text
 
 </details>
 
@@ -422,7 +439,7 @@ airflow dags list | grep ex01
 
 # No cycles
 airflow dags test ex01_hello_world 2024-01-01
-```
+```text
 
 ### Verify in UI
 
@@ -461,16 +478,19 @@ After completing this exercise, you should understand:
 ## 🆘 Troubleshooting
 
 **Issue**: DAG not appearing in UI
+
 - Check for syntax errors: `python dags/your_dag.py`
 - Check scheduler is running: `airflow scheduler`
 - Wait for scheduler to parse (default: 5 minutes)
 
 **Issue**: Task failing
+
 - Check logs in UI (click task → Log)
 - Test locally: `airflow tasks test <dag_id> <task_id> <date>`
 - Check Python dependencies installed
 
 **Issue**: XCom not working
+
 - Ensure task returns value
 - Use correct task_id in xcom_pull
 - Check XComs in UI (Admin → XComs)

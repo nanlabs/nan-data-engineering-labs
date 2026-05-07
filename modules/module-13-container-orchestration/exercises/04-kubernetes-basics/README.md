@@ -24,7 +24,7 @@
 
 Construirás una **aplicación de data engineering completa en Kubernetes**:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                    EKS Cluster                          │
 │                                                         │
@@ -52,7 +52,7 @@ Construirás una **aplicación de data engineering completa en Kubernetes**:
 │                                                         │
 │  Monitoring: CloudWatch Container Insights              │
 └─────────────────────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -195,7 +195,7 @@ output "cluster_endpoint" {
 output "cluster_name" {
   value = aws_eks_cluster.main.name
 }
-```
+```text
 
 ### Step 1.2: Deploy Cluster
 
@@ -291,7 +291,7 @@ def list_data():
             for r in results
         ]
     }
-```
+```text
 
 Dockerfile:
 
@@ -306,11 +306,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY main.py .
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0", "--port", "8000"]
-```
+```text
 
 requirements.txt:
 
-```
+```text
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 psycopg2-binary==2.9.9
@@ -323,7 +323,7 @@ Build and push:
 docker build -t data-api:latest app/
 docker tag data-api:latest $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $(terraform output -raw ecr_url))
 docker push $(terraform output -raw ecr_url)/data-api:latest
-```
+```text
 
 ### Step 2.2: Kubernetes Manifests
 
@@ -336,7 +336,7 @@ metadata:
   name: data-pipeline
   labels:
     name: data-pipeline
-```
+```text
 
 Create `k8s/configmap.yaml`:
 
@@ -350,7 +350,7 @@ data:
   DB_HOST: "postgres-service"
   DB_PORT: "5432"
   DB_NAME: "dataeng"
-```
+```text
 
 Create `k8s/secret.yaml` (usando External Secrets o manual):
 
@@ -437,7 +437,7 @@ spec:
             port: 8000
           initialDelaySeconds: 10
           periodSeconds: 5
-```
+```text
 
 Create `k8s/service.yaml`:
 
@@ -455,7 +455,7 @@ spec:
     port: 80
     targetPort: 8000
   type: ClusterIP
-```
+```text
 
 ---
 
@@ -478,7 +478,7 @@ parameters:
   encrypted: "true"
 volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
-```
+```text
 
 ### Step 3.2: PostgreSQL StatefulSet
 
@@ -599,7 +599,7 @@ spec:
               key: DB_PASSWORD
       restartPolicy: Never
   backoffLimit: 5
-```
+```text
 
 ---
 
@@ -640,7 +640,7 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 
 # Verify installation
 kubectl get deployment -n kube-system aws-load-balancer-controller
-```
+```text
 
 ### Step 4.2: Create Ingress
 
@@ -672,7 +672,7 @@ spec:
             name: data-api-service
             port:
               number: 80
-```
+```text
 
 ---
 
@@ -738,14 +738,14 @@ kubectl create namespace amazon-cloudwatch
 curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | \
   sed "s/{{cluster_name}}/data-engineering-cluster/;s/{{region_name}}/us-east-1/" | \
   kubectl apply -f -
-```
+```text
 
 ### Step 6.2: View Metrics
 
 ```bash
 # Get CloudWatch console URL
 echo "https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#container-insights:performance/EKS:Cluster?~(query~(controls~(CW*3a*3aEKS*2eCluster~(~'data-engineering-cluster))))"
-```
+```text
 
 ---
 
@@ -776,7 +776,7 @@ kubectl apply -f k8s/etl-cronjob.yaml
 
 # Get Ingress URL
 kubectl get ingress data-api-ingress -n data-pipeline -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
-```
+```text
 
 ---
 
@@ -804,14 +804,14 @@ curl -X POST http://$INGRESS_URL/data \
 
 # List data
 curl http://$INGRESS_URL/data
-```
+```text
 
 ### 3. Check Persistent Volume
 
 ```bash
 kubectl get pvc -n data-pipeline
 # Should see postgres-storage-postgres-0 bound to EBS volume
-```
+```text
 
 ### 4. Test Database Persistence
 
@@ -824,7 +824,7 @@ kubectl wait --for=condition=ready pod/postgres-0 -n data-pipeline --timeout=60s
 
 # Data should still be there
 curl http://$INGRESS_URL/data
-```
+```text
 
 ---
 

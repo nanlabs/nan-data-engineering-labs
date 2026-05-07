@@ -48,9 +48,10 @@ create_bucket() {
 }
 
 # TODO: Implement other functions...
-```
+```text
 
 **Files in starter/:**
+
 - `s3_operations.sh` - Main script (50% complete, you have TODOs)
 - `test_data/` - Example data to upload
 - `.env.example` - Required environment variables
@@ -61,7 +62,7 @@ create_bucket() {
 # From the exercise directory
 cp -r starter/* my_solution/
 cd my_solution/
-```
+```text
 
 **⚠️ IMPORTANT:** Work ONLY in `my_solution/`. Do not modify `starter/` or `solution/`.
 
@@ -70,6 +71,7 @@ cd my_solution/
 **Camino recomendado:**
 
 1. **Configura environment (5 min)**
+
    ```bash
    cp .env.example .env
    # Edita .env con tu configuration LocalStack
@@ -83,10 +85,11 @@ cd my_solution/
    - **Test cada función antes de continuar a la next**
 
 3. **Ejecuta script completo (5 min)**
+
    ```bash
    chmod +x s3_operations.sh
    ./s3_operations.sh
-   ```
+   ```text
 
 ### Step 5: Validate (5 min)
 
@@ -94,16 +97,17 @@ cd my_solution/
 # Desde el directorio del módulo
 cd ../..  # Vuelve a module-01-cloud-fundamentals/
 ../../scripts/validate-module.sh 01
-```
+```text
 
 **Output esperado:**
+
 ```
 ✅ All tests passed!
 ✅ Bucket creation works
 ✅ File upload successful
 ✅ Object listing runct
 ...
-```
+```text
 
 ### Step 6: Si Te Atascas (10-15 min)
 
@@ -119,6 +123,7 @@ cd ../..  # Vuelve a module-01-cloud-fundamentals/
 Tu implementación debe cumplir:
 
 ### Funcional
+
 - ✅ Create bucket `my-data-lake-raw`
 - ✅ Subir 3 archivos a paths con particiones: `source=app-logs/year=2024/month=01/`
 - ✅ Listar objetos con prefix `source=app-logs`
@@ -127,6 +132,7 @@ Tu implementación debe cumplir:
 - ✅ Verify metadata (content-type, storage class)
 
 ### Calidad de Código
+
 - ✅ Script debe manejar errores (exit code != 0 si falla)
 - ✅ Output legible con echo de cada operación
 - ✅ Variables para nombres de buckets (no hardcodear)
@@ -151,13 +157,13 @@ export AWS_DEFAULT_REGION=us-east-1
 
 # Ahora todos los comandos aws van a LocalStack
 aws s3 ls  # Lista buckets en LocalStack, no AWS
-```
+```text
 
 ### 2. S3 Path Structure
 
 S3 NO tiene carpetas reales, usa "prefixes" que simulan estructura:
 
-```
+```text
 Bucket: my-data-lake-raw
 
 Object Key (path completo):
@@ -172,13 +178,14 @@ En realidad S3 solo ve:
 ```
 
 **Por qué es importante:**
+
 - Listar con prefixes es MÁS RÁPIDO que listar todo
 - Particionamiento permite queries eficientes en Athena/Glue
 - Borrar con prefix = borrar "carpeta" entera
 
 ### 3. Storage Classes
 
-```
+```text
 Standard (default):
 - Access frecuente
 - $0.023/GB/mes
@@ -192,21 +199,23 @@ Standard-IA (Infrequent Access):
 Cuándo cambiar:
 - Datos raw → Standard (se procesan pronto)
 - Datos procesados old → Standard-IA (solo auditoría)
-```
+```text
 
 ---
 
 ## 🔍 Debugging Tips
 
 ### Problem: "aws: command not found"
+
 ```bash
 # Solution
 pip install awscli
 # o
 brew install awscli  # macOS
-```
+```text
 
 ### Problem: "Unable to locate credentials"
+
 ```bash
 # Configura credenciales dummy
 aws configure
@@ -216,6 +225,7 @@ aws configure
 ```
 
 ### Problem: "Unable to connect to endpoint"
+
 ```bash
 # Verifica LocalStack esté corriendo
 docker ps | grep localstack
@@ -223,16 +233,17 @@ docker ps | grep localstack
 # Si no está corriendo
 cd ../../..  # Vuelve a raíz del proyecto
 make up
-```
+```text
 
 ### Problem: "Bucket already exists"
+
 ```bash
 # Lista buckets existentes
 aws --endpoint-url=http://localhost:4566 s3 ls
 
 # Elimina bucket viejo
 aws --endpoint-url=http://localhost:4566 s3 rb s3://my-data-lake-raw --force
-```
+```text
 
 ---
 
@@ -253,7 +264,7 @@ Antes de considerar el exercise completo:
 
 Cuando ejecutes `./s3_operations.sh` runctamente, deberías ver:
 
-```
+```text
 🚀 Starting S3 Operations Demo...
 
 📦 Step 1: Creating buckets...
@@ -314,8 +325,8 @@ Después de complete este exercise:
 ## 📚 Referencias
 
 - AWS CLI S3 Commands: `aws s3 help`
-- S3 API Reference: https://docs.aws.amazon.com/cli/latest/reference/s3/
-- LocalStack S3 Docs: https://docs.localstack.cloud/user-guide/aws/s3/
+- S3 API Reference: <https://docs.aws.amazon.com/cli/latest/reference/s3/>
+- LocalStack S3 Docs: <https://docs.localstack.cloud/user-guide/aws/s3/>
 
 **¡Success con el exercise!** 🎉
 

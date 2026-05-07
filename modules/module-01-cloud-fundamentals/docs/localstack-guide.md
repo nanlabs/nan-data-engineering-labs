@@ -5,6 +5,7 @@
 LocalStack is a fully functional local AWS cloud stack that allows you to develop and test AWS applications offline without connecting to a remote cloud provider.
 
 **Benefits:**
+
 - ✅ **Free** - Community edition supports 80+ AWS services
 - ✅ **Fast** - No network latency, instant deployments
 - ✅ **Safe** - No accidental AWS charges
@@ -30,7 +31,7 @@ docker-compose up -d
 
 # Verify
 docker ps | grep localstack
-```
+```text
 
 ### Option 2: LocalStack CLI
 
@@ -43,7 +44,7 @@ localstack start -d
 
 # Check status
 localstack status
-```
+```text
 
 ## ⚙️ Configuration
 
@@ -67,7 +68,7 @@ services:
     volumes:
       - ./localstack-data:/tmp/localstack
       - /var/run/docker.sock:/var/run/docker.sock
-```
+```text
 
 ### AWS CLI Configuration
 
@@ -107,53 +108,61 @@ s3 = session.client(
     aws_secret_access_key='test',
     region_name='us-east-1'
 )
-```
+```text
 
 ## 🎯 Supported Services (Community Edition)
 
 ### Storage
+
 - ✅ S3 (buckets, objects, versioning, lifecycle)
 - ✅ S3 Select
 - ⚠️ Glacier (limited, no retrieval delays)
 - ⚠️ EFS (basic support)
 
 ### Compute
+
 - ✅ Lambda (Python, Node.js, Java, Go)
 - ✅ EC2 (basic support, no actual VMs)
 - ✅ ECS (containerized tasks)
 - ⚠️ Fargate (limited)
 
 ### Database
+
 - ✅ DynamoDB
 - ✅ RDS (basic support)
 - ✅ Redshift (basic support)
 - ⚠️ Aurora (limited)
 
 ### Analytics
+
 - ✅ Athena
 - ✅ Glue (catalog, crawlers)
 - ✅ Kinesis (streams, firehose)
 - ⚠️ EMR (limited)
 
 ### Integration
+
 - ✅ SQS
 - ✅ SNS
 - ✅ EventBridge
 - ✅ Step Functions
 
 ### Management
+
 - ✅ CloudFormation
 - ✅ CloudWatch (logs, metrics)
 - ✅ Systems Manager (Parameter Store)
 - ⚠️ CloudTrail (limited)
 
 ### Security
+
 - ✅ IAM (users, groups, roles, policies)
 - ✅ Secrets Manager
 - ✅ KMS (encryption keys)
 - ⚠️ Cognito (limited)
 
 Legend:
+
 - ✅ Full support
 - ⚠️ Partial support or limited functionality
 - ❌ Not supported in Community Edition
@@ -173,7 +182,7 @@ lambda_function = lambda_client.create_function(
     MemorySize=10240  # 10GB - would be expensive in AWS
 )
 # ✓ Works in LocalStack (no memory validation)
-```
+```text
 
 **Impact:** Can't test resource limits or quotas
 
@@ -183,7 +192,7 @@ lambda_function = lambda_client.create_function(
 # IAM policies are validated but not fully enforced
 s3.put_object(Bucket='protected-bucket', Key='file.txt', Body=b'data')
 # ✓ Works even if IAM policy denies access
-```
+```text
 
 **Impact:** Security testing requires real AWS or mocking
 
@@ -203,7 +212,7 @@ s3.put_object(Bucket='source-us-east-1', Key='file.txt', Body=b'data')
 # No cold start delays
 lambda_client.invoke(FunctionName='my-function')
 # ✓ Instant response (no initialization time)
-```
+```text
 
 **Impact:** Performance testing requires real AWS
 
@@ -213,7 +222,7 @@ lambda_client.invoke(FunctionName='my-function')
 # All operations are free
 s3.put_object(Bucket='my-bucket', Key='huge-file.bin', Body=b'0' * 10**9)
 # No storage costs, no request costs
-```
+```text
 
 **Impact:** Can't test cost optimization strategies with real feedback
 
@@ -223,7 +232,7 @@ s3.put_object(Bucket='my-bucket', Key='huge-file.bin', Body=b'0' * 10**9)
 # Metrics are stored but not aggregated
 cloudwatch.put_metric_data(...)
 # ✓ Stored, but no automatic alarms or dashboards
-```
+```text
 
 **Impact:** Limited monitoring/alerting testing
 
@@ -256,7 +265,7 @@ s3 = boto3.client('s3',
     endpoint_url='http://localhost:4566',
     config=boto3.session.Config(s3={'addressing_style': 'path'})
 )
-```
+```text
 
 ### Issue 3: Lambda Deployment Fails
 
@@ -270,7 +279,7 @@ aws iam create-role \
   --role-name lambda-role \
   --assume-role-policy-document file://trust-policy.json \
   --endpoint-url=http://localhost:4566
-```
+```text
 
 ### Issue 4: Slow Performance
 
@@ -286,7 +295,7 @@ docker-compose restart
 services:
   localstack:
     mem_limit: 4g
-```
+```text
 
 ### Issue 5: Data Persistence
 
@@ -326,7 +335,7 @@ aws --endpoint-url=http://localhost:4566 lambda list-functions
 
 # Test IAM
 aws --endpoint-url=http://localhost:4566 iam list-users
-```
+```text
 
 ## 🌟 Best Practices
 
@@ -341,7 +350,7 @@ AWS_DEFAULT_REGION=us-east-1
 
 # Load in scripts
 export $(cat .env | xargs)
-```
+```text
 
 ### 2. Wrapper Functions
 
@@ -357,7 +366,7 @@ def get_s3_client():
 # Use everywhere
 from utils.aws import get_s3_client
 s3 = get_s3_client()
-```
+```text
 
 ### 3. Separate Test Data
 
@@ -377,7 +386,7 @@ BUCKET_NAME="my-bucket-${ENV:-local}"
 docker-compose down -v
 docker-compose up -d
 sleep 10  # Wait for startup
-```
+```text
 
 ## 📚 Resources
 

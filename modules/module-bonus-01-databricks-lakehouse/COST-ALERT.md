@@ -13,14 +13,18 @@
 ## ✅ Recommended Approach for This Module
 
 ### For Learning (Budget: $0)
+
 **Use Community Edition**
+
 - ✅ Sufficient for Exercises 01, 02, 04, 05, 06
 - ✅ No credit card required
 - ✅ Unlimited time
 - ❌ Cannot complete Exercise 03 (Unity Catalog)
 
 ### For Complete Experience (Budget: $0-25)
+
 **Use 14-Day Trial**
+
 - ✅ All exercises including Unity Catalog
 - ✅ Workflows, SQL Analytics, full ML features
 - ✅ Auto-cancels after trial (no charges)
@@ -33,6 +37,7 @@
 Databricks charges in **DBU** (Databricks Units) + **Cloud Provider costs** (EC2/Azure VMs).
 
 **1 DBU ≈ $0.07 - 0.75** depending on:
+
 - Workload type (All-Purpose, Jobs, SQL, ML)
 - Instance size
 - Cloud provider (AWS, Azure, GCP)
@@ -47,22 +52,25 @@ Databricks charges in **DBU** (Databricks Units) + **Cloud Provider costs** (EC2
 | **ML Compute** (m5.xlarge) | $0.40/DBU | $0.192/hour | ~$0.67/hour | Model training |
 
 **DBU Consumption Rate:**
+
 - 1 DBU consumed per hour per node
 - Multi-node cluster: DBUs multiply by node count
 
 ### Real-World Cost Examples
 
 #### Example 1: Learning This Module (Community Edition)
-```
+
+```text
 Cost: $0/month
 Cluster: Single-node (built-in)
 Hours: Unlimited
 Features: Basic notebooks, Delta Lake, Spark SQL
 Limitation: No Unity Catalog, no multi-node
-```
+```text
 
 #### Example 2: Complete This Module (14-Day Trial)
-```
+
+```text
 Trial Credits: ~$400 (typical)
 Expected Usage: $20-50 for entire module
 Hours: ~15 hours of interactive work
@@ -78,7 +86,8 @@ Breakdown:
 ```
 
 #### Example 3: Production Workload (Monthly)
-```
+
+```text
 Use Case: Medium-sized data platform
 ETL Jobs: 50 hours/month × $0.22/hour = $11
 Interactive Dev: 100 hours/month × $0.67/hour = $67
@@ -92,7 +101,7 @@ With optimization:
 - Auto-terminate clusters after 30 min idle
 - Use Spot instances (70% discount on EC2)
 Optimized: ~$75/month
-```
+```text
 
 ## 🛡️ How to Avoid Unexpected Charges
 
@@ -121,6 +130,7 @@ Optimized: ~$75/month
 ### ✅ Cost Optimization Strategies
 
 #### 1. Enable Auto-Termination
+
 ```python
 # In cluster configuration
 {
@@ -129,9 +139,10 @@ Optimized: ~$75/month
     "spark.databricks.delta.preview.enabled": "true"
   }
 }
-```
+```text
 
 #### 2. Use Spot Instances (70% discount)
+
 ```python
 # AWS Spot instances for Jobs Compute
 {
@@ -143,21 +154,24 @@ Optimized: ~$75/month
 ```
 
 #### 3. Right-Size Clusters
-```
+
+```text
 Small data (<10GB): Single-node or 2 workers
 Medium data (10-100GB): 2-5 workers
 Large data (>100GB): 5-20 workers
 
 Don't over-provision!
-```
+```text
 
 #### 4. Use Jobs Compute for Pipelines
-```
+
+```text
 All-Purpose: Interactive development only
 Jobs Compute: Scheduled ETL, batch processing (60% cheaper)
 ```
 
 #### 5. Monitor Spend
+
 ```python
 # Check cluster usage
 %sql
@@ -169,7 +183,7 @@ FROM system.compute.clusters
 WHERE start_time >= current_date() - INTERVAL 7 DAYS
 GROUP BY cluster_name
 ORDER BY estimated_cost_usd DESC;
-```
+```text
 
 ## 📊 Cost Comparison: Databricks vs AWS Native
 
@@ -183,12 +197,14 @@ ORDER BY estimated_cost_usd DESC;
 | **Lambda + Athena** | $50-100 | ⭐⭐ High | ⭐⭐ Moderate |
 
 **Databricks Value:**
+
 - 10-50x faster (Photon engine)
 - Unified platform (no service stitching)
 - Better developer experience
 - Built-in ML and governance
 
 **Break-Even:**
+
 - If team spends >20 hours/month on Spark management → Databricks cheaper (TCO)
 - If <20 hours → AWS Glue/EMR cheaper (sticker price)
 
@@ -196,13 +212,13 @@ ORDER BY estimated_cost_usd DESC;
 
 ### No-Cost Ways to Learn Databricks
 
-1. **Databricks Academy** (https://academy.databricks.com)
+1. **Databricks Academy** (<https://academy.databricks.com>)
    - Free courses with lab environments
    - Hands-on exercises (4-hour sessions)
    - No credit card required
 
 2. **Community Edition**
-   - Sign up: https://community.cloud.databricks.com
+   - Sign up: <https://community.cloud.databricks.com>
    - Full Spark capabilities
    - Single-node (sufficient for learning)
 
@@ -217,19 +233,22 @@ ORDER BY estimated_cost_usd DESC;
 
 ## 📋 Cost Checklist for This Module
 
-### Before Starting:
+### Before Starting
+
 - [ ] Decide: Community Edition (free, basic) or Trial (free, full features)?
 - [ ] Set calendar reminder to cancel trial (day 13)
 - [ ] Enable auto-termination (30 minutes)
 - [ ] Review cluster sizing guide
 
-### During Module:
+### During Module
+
 - [ ] Terminate clusters after each session (don't rely on auto-termination alone)
 - [ ] Use single-node for exercises (sufficient for sample data)
 - [ ] Monitor DBU usage in Account Console
 - [ ] Keep cluster runtime < 2-3 hours per session
 
-### After Completing:
+### After Completing
+
 - [ ] Delete all clusters
 - [ ] Delete scratch data in DBFS
 - [ ] Cancel trial if not continuing (to be safe)
@@ -240,28 +259,33 @@ ORDER BY estimated_cost_usd DESC;
 If you see unexpected costs:
 
 1. **Terminate All Clusters**
-   ```
+
+   ```text
    Compute → Select All → Terminate
    ```
 
 2. **Stop SQL Endpoints**
-   ```
+
+   ```text
    SQL → SQL Warehouses → Stop All
    ```
 
 3. **Delete Unused Data**
-   ```
+
+   ```text
    Data → DBFS → Delete scratch files
    ```
 
 4. **Contact Support**
-   ```
+
+   ```text
    Help → Contact Support (within 24 hours of charge)
    Often refund accidental overruns
    ```
 
 5. **Cancel Subscription** (if needed)
-   ```
+
+   ```text
    Account Settings → Billing → Cancel Subscription
    ```
 
@@ -287,7 +311,7 @@ A: Sticker price: Yes (2-3x). Total Cost of Ownership (TCO): Often lower (faster
 
 ## 📞 Getting Help
 
-- **Billing Questions:** help@databricks.com
+- **Billing Questions:** <help@databricks.com>
 - **Technical Issues:** Community Forums (community.databricks.com)
 - **Module Questions:** See instructor or course discussion board
 

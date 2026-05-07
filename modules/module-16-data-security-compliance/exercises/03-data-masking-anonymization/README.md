@@ -1,6 +1,7 @@
 # Exercise 03: Data Masking & Anonymization
 
 ## Overview
+
 Implement PII detection, data masking, tokenization, and anonymization techniques using Amazon Macie, Comprehend, Presidio, and custom algorithms including k-anonymity and differential privacy.
 
 **Difficulty**: ⭐⭐⭐⭐ Expert
@@ -29,7 +30,7 @@ Implement PII detection, data masking, tokenization, and anonymization technique
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │              DATA MASKING ARCHITECTURE                       │
 │                                                              │
@@ -84,7 +85,7 @@ Implement PII detection, data masking, tokenization, and anonymization technique
 │   │  └──────────────┘  └─────────────┘│                 │
 │   └────────────────────────────────────┘                 │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Task 1: Automated PII Detection with Macie (30 minutes)
 
@@ -328,7 +329,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ MACIE SCAN INITIATED")
     print("="*60)
-```
+```text
 
 ## Task 2: PII Detection with Presidio (45 minutes)
 
@@ -755,7 +756,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ TOKENIZATION COMPLETE")
     print("="*60)
-```
+```text
 
 ## Task 4: K-Anonymity Implementation (30 minutes)
 
@@ -944,7 +945,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ K-ANONYMITY COMPLETE")
     print("="*60)
-```
+```text
 
 ## Validation Checklist
 
@@ -960,16 +961,19 @@ if __name__ == '__main__':
 ## Expected Results
 
 **Macie Findings**:
+
 - SSN detected (HIGH severity)
 - Credit cards detected (HIGH severity)
 - Email addresses detected (MEDIUM severity)
 - Phone numbers detected (MEDIUM severity)
 
 **Tokenization**:
+
 - Reversible tokens stored in encrypted DynamoDB
 - Same values get same tokens (deterministic)
 
 **K-Anonymity**:
+
 - Each group has at least k=2 records
 - No individual uniquely identifiable
 
@@ -988,7 +992,7 @@ with open('test-data.json') as f:
 # Check Macie job status
 response = macie.describe_classification_job(jobId='job-id')
 print(response['jobStatus'])
-```
+```text
 
 ### Problem: Presidio not detecting entity
 

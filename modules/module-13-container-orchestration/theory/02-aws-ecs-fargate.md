@@ -19,7 +19,7 @@
 
 ### Arquitectura ECS
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │                    AWS ECS Architecture                   │
 ├──────────────────────────────────────────────────────────┤
@@ -53,7 +53,7 @@
 │  │  • IAM Roles                             │            │
 │  └──────────────────────────────────────────┘            │
 └──────────────────────────────────────────────────────────┘
-```
+```text
 
 ### Componentes Principales
 
@@ -81,18 +81,21 @@
 ### Cuándo Usar Cada Uno
 
 **Fargate** ✅:
+
 - ETL pipelines serverless (corridas esporádicas)
 - Microservices con carga variable
 - CI/CD agents
 - No quieres gestionar servers
 
 **ECS EC2** ✅:
+
 - GPU workloads (ML training, Spark GPU)
 - Costo predecible 24/7
 - Necesitas control fino de instancias
 - Daemon tasks (monitoring agents)
 
 **EKS (Kubernetes)** ✅:
+
 - Multi-cloud portability
 - Ecosistema K8s (Helm, Operators)
 - Complex stateful applications
@@ -167,16 +170,18 @@ Una **Task Definition** es un template JSON/YAML que define cómo correr contain
     }
   ]
 }
-```
+```text
 
 ### IAM Roles
 
 **Execution Role** (usado por ECS agent):
+
 - Pull images de ECR
 - Enviar logs a CloudWatch
 - Leer secrets de Secrets Manager
 
 **Task Role** (usado por tu application):
+
 - Acceso a S3, RDS, DynamoDB
 - Principio de least privilege
 
@@ -244,7 +249,7 @@ Una **Task Definition** es un template JSON/YAML que define cómo correr contain
     }
   ]
 }
-```
+```text
 
 ### Register Task Definition
 
@@ -260,7 +265,7 @@ aws ecs list-task-definitions \
 # Describe specific revision
 aws ecs describe-task-definition \
   --task-definition data-etl-pipeline:5
-```
+```text
 
 ---
 
@@ -338,25 +343,27 @@ resource "aws_appautoscaling_policy" "cpu" {
     scale_out_cooldown = 60
   }
 }
-```
+```text
 
 ### Deployment Strategies
 
 **Rolling Update** (default):
+
 ```
 Old tasks:  ████████ → ████░░░░ → ░░░░░░░░
 New tasks:  ░░░░░░░░ → ░░░░████ → ████████
-```
+```text
 
 **Blue/Green Deployment** (con CodeDeploy):
-```
+
+```text
 Blue (old):  ████████ (100% traffic)
                 ⬇️
 Green (new): ████████ (canary 10%)
                 ⬇️
 Green (new): ████████ (100% traffic)
 Blue (old):  ░░░░░░░░ (terminated)
-```
+```text
 
 ---
 
@@ -382,9 +389,10 @@ Cada task obtiene su propio **ENI** (Elastic Network Interface):
 │         └─────────┴─────────┘          │
 │         Security Group Rules           │
 └────────────────────────────────────────┘
-```
+```text
 
 **Ventajas**:
+
 - True network isolation
 - Security groups por task
 - Flow logs granulares
@@ -423,7 +431,7 @@ resource "aws_ecs_service" "etl" {
     registry_arn = aws_service_discovery_service.etl.arn
   }
 }
-```
+```text
 
 Ahora puedes conectar desde otra task:
 
@@ -432,7 +440,7 @@ import requests
 
 # Service discovery DNS
 response = requests.get("http://etl-service.data.local:8080/status")
-```
+```text
 
 ---
 
@@ -505,7 +513,7 @@ resource "aws_ecs_task_definition" "etl" {
     }
   }
 }
-```
+```text
 
 **Structured Logging**:
 
@@ -537,7 +545,7 @@ logger.setLevel(logging.INFO)
 
 # Usage
 logger.info("ETL pipeline started", extra={"pipeline": "sales_etl"})
-```
+```text
 
 **CloudWatch Insights Query**:
 
@@ -546,7 +554,7 @@ fields @timestamp, message, task_id
 | filter level = "ERROR"
 | stats count() by task_id
 | sort count desc
-```
+```text
 
 ---
 
@@ -649,7 +657,7 @@ Para workflows complejos:
     }
   }
 }
-```
+```text
 
 ---
 
@@ -666,9 +674,10 @@ resource "aws_ecs_cluster" "main" {
     value = "enabled"
   }
 }
-```
+```text
 
 **Métricas disponibles**:
+
 - CPU Utilization
 - Memory Utilization
 - Network bytes in/out
@@ -707,7 +716,7 @@ resource "aws_cloudwatch_dashboard" "ecs" {
     ]
   })
 }
-```
+```text
 
 ### Troubleshooting Common Issues
 
@@ -735,7 +744,7 @@ aws logs filter-log-events \
   --filter-pattern "oom-killer"
 
 # Solution: Increase memory in task definition
-```
+```text
 
 **Slow task startup**:
 
@@ -751,13 +760,14 @@ aws ecs describe-tasks \
 # - Image pull time (optimize layers)
 # - ENI attachment time (VPC capacity)
 # - Health check delays
-```
+```text
 
 ---
 
 ## 🎯 Checklist de Production-Ready ECS
 
 ### Security
+
 - [ ] Task execution role con least privilege
 - [ ] Task role específico por workload
 - [ ] Secrets en Secrets Manager (no environment variables)
@@ -766,6 +776,7 @@ aws ecs describe-tasks \
 - [ ] Images escaneadas (ECR scan on push)
 
 ### Reliability
+
 - [ ] Health checks configurados
 - [ ] Restart policy apropiado
 - [ ] Auto scaling configurado
@@ -773,12 +784,14 @@ aws ecs describe-tasks \
 - [ ] Circuit breakers habilitados
 
 ### Performance
+
 - [ ] CPU y memory tuned (no over/under provisioned)
 - [ ] Task placement strategies
 - [ ] Network mode awsvpc
 - [ ] EFS Throughput Mode adecuado
 
 ### Observability
+
 - [ ] Container Insights enabled
 - [ ] CloudWatch Logs con retention policy
 - [ ] Structured logging (JSON)
@@ -786,6 +799,7 @@ aws ecs describe-tasks \
 - [ ] Alarmas para métricas clave
 
 ### Cost Optimization
+
 - [ ] Fargate Spot para workloads fault-tolerant
 - [ ] Right-sizing de tasks
 - [ ] Logs retention policy (no infinity)

@@ -1,6 +1,7 @@
 # Exercise 06: ML with MLflow
 
 ## Overview
+
 Build an end-to-end machine learning pipeline with MLflow for experiment tracking, hyperparameter tuning, model registry, deployment, and monitoring for a customer churn prediction system.
 
 **Estimated Time**: 2.5 hours
@@ -10,7 +11,9 @@ Build an end-to-end machine learning pipeline with MLflow for experiment trackin
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Prepare ML datasets with feature engineering on Delta tables
 - Track experiments with MLflow (params, metrics, artifacts)
 - Perform hyperparameter tuning with grid search
@@ -22,7 +25,9 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 You're building a customer churn prediction system for a subscription service. The business needs:
+
 1. Predict which customers will churn in next 30 days
 2. Track multiple ML experiments to find best model
 3. Deploy the best model to production
@@ -37,15 +42,18 @@ You're building a customer churn prediction system for a subscription service. T
 ## Requirements
 
 ### Task 1: Data Preparation & Feature Engineering (20 min)
+
 Create ML-ready dataset with engineered features.
 
 **Requirements**:
+
 - Generate `customers` table with 5,000 records
 - Create `customer_features` with engineered features
 - Split into train (70%), validation (15%), test (15%)
 
 **Raw Customer Schema**:
-```
+
+```text
 customer_id: STRING
 signup_date: DATE
 age: INT (18-75)
@@ -59,35 +67,39 @@ avg_session_minutes: DOUBLE (0-180)
 days_since_last_login: INT (0-60)
 total_purchases: INT (0-50)
 churned: BOOLEAN (target variable, 15% churn rate)
-```
+```text
 
 **Feature Engineering**:
 Create these derived features:
 
 1. **Engagement Score** (0-100):
+
    ```
    (num_logins_30d * 2 + total_purchases * 5) /
    (days_since_last_login + 1)
-   ```
+   ```text
 
 2. **Payment Risk** (0-1):
+
    ```
    num_failed_payments / (total_purchases + 1)
-   ```
+   ```text
 
 3. **Activity Level** (categorical):
+
    ```
    CASE
      WHEN num_logins_30d > 20 THEN 'High'
      WHEN num_logins_30d > 10 THEN 'Medium'
      ELSE 'Low'
    END
-   ```
+   ```text
 
 4. **Tenure Months**:
+
    ```
    DATEDIFF(MONTH, signup_date, current_date())
-   ```
+   ```text
 
 5. **One-Hot Encoding**:
    - `subscription_type` → 3 binary columns
@@ -95,6 +107,7 @@ Create these derived features:
    - `activity_level` → 3 binary columns
 
 **Train/Val/Test Split**:
+
 ```python
 from sklearn.model_selection import train_test_split
 
@@ -105,9 +118,10 @@ val_df, test_df = train_test_split(temp_df, test_size=0.50, random_state=42)
 train_df.write.format("delta").mode("overwrite").saveAsTable("customer_features_train")
 val_df.write.format("delta").mode("overwrite").saveAsTable("customer_features_val")
 test_df.write.format("delta").mode("overwrite").saveAsTable("customer_features_test")
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Customer table has 5,000 records (750 churned, 15% rate)
 - ✅ All engineered features populated
 - ✅ No missing values in features
@@ -117,14 +131,17 @@ test_df.write.format("delta").mode("overwrite").saveAsTable("customer_features_t
 ---
 
 ### Task 2: Experiment Tracking with MLflow (30 min)
+
 Track multiple ML experiments to compare models.
 
 **Requirements**:
+
 - Train 3+ different models (Logistic Regression, Random Forest, XGBoost)
 - Log parameters, metrics, and artifacts for each experiment
 - Compare models using MLflow UI
 
 **Experiment Setup**:
+
 ```python
 import mlflow
 import mlflow.sklearn
@@ -144,6 +161,7 @@ y_val = val_df.select("churned").toPandas().values.ravel()
 ```
 
 **Experiment 1: Logistic Regression**
+
 ```python
 with mlflow.start_run(run_name="logistic_regression_baseline"):
     # Log parameters
@@ -182,9 +200,10 @@ with mlflow.start_run(run_name="logistic_regression_baseline"):
     plt.xlabel('Predicted')
     plt.savefig("confusion_matrix.png")
     mlflow.log_artifact("confusion_matrix.png")
-```
+```text
 
 **Experiment 2: Random Forest**
+
 ```python
 with mlflow.start_run(run_name="random_forest"):
     mlflow.log_param("model_type", "RandomForest")
@@ -201,9 +220,10 @@ with mlflow.start_run(run_name="random_forest"):
     model.fit(X_train, y_train)
 
     # Same prediction and logging logic...
-```
+```text
 
 **Experiment 3: XGBoost**
+
 ```python
 with mlflow.start_run(run_name="xgboost"):
     params = {
@@ -219,9 +239,10 @@ with mlflow.start_run(run_name="xgboost"):
     model.fit(X_train, y_train)
 
     # Same prediction and logging logic...
-```
+```text
 
 **Model Comparison**:
+
 ```python
 # Get all runs from experiment
 experiment = mlflow.get_experiment_by_name("/Users/yourname/churn-prediction")
@@ -233,6 +254,7 @@ print(runs[["run_id", "params.model_type", "metrics.f1_score",
 ```
 
 **Success Criteria**:
+
 - ✅ At least 3 experiments logged
 - ✅ All experiments have params, metrics, and model artifacts
 - ✅ Can view experiments in MLflow UI
@@ -242,15 +264,18 @@ print(runs[["run_id", "params.model_type", "metrics.f1_score",
 ---
 
 ### Task 3: Hyperparameter Tuning (30 min)
+
 Find optimal hyperparameters using grid search.
 
 **Requirements**:
+
 - Define parameter grid for best-performing model
 - Train 27+ combinations (complete grid search)
 - Track each combination as separate MLflow run
 - Select best model based on validation F1 score
 
 **Grid Search for Random Forest** (example):
+
 ```python
 from sklearn.model_selection import ParameterGrid
 
@@ -301,9 +326,10 @@ with mlflow.start_run(run_name="random_forest_grid_search") as parent_run:
 
     print(f"Best F1: {best_f1:.4f}")
     print(f"Best params: {best_params}")
-```
+```text
 
 **Visualization**:
+
 ```python
 # Create parameter importance plot
 import pandas as pd
@@ -323,9 +349,10 @@ for param in ['n_estimators', 'max_depth', 'min_samples_split']:
     plt.ylabel('Average F1 Score')
     plt.savefig(f"{param}_impact.png")
     mlflow.log_artifact(f"{param}_impact.png")
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Grid search completes (27 runs logged)
 - ✅ Each run tracked as nested MLflow run
 - ✅ Best model identified (F1 improvement over baseline)
@@ -335,15 +362,18 @@ for param in ['n_estimators', 'max_depth', 'min_samples_split']:
 ---
 
 ### Task 4: Model Registry (25 min)
+
 Register best model and manage lifecycle stages.
 
 **Requirements**:
+
 - Register best model in MLflow Model Registry
 - Add model description and metadata
 - Transition through stages: None → Staging → Production
 - Test model loading from registry
 
 **Register Model**:
+
 ```python
 # Get best run from grid search
 best_run = mlflow.search_runs(
@@ -364,9 +394,10 @@ model_version = mlflow.register_model(
 )
 
 print(f"Model registered as {model_name} version {model_version.version}")
-```
+```text
 
 **Add Model Metadata**:
+
 ```python
 from mlflow.tracking import MlflowClient
 
@@ -396,6 +427,7 @@ client.set_model_version_tag(
 ```
 
 **Transition to Staging**:
+
 ```python
 client.transition_model_version_stage(
     name=model_name,
@@ -404,9 +436,10 @@ client.transition_model_version_stage(
 )
 
 print(f"Model version {model_version.version} transitioned to Staging")
-```
+```text
 
 **Test Model in Staging**:
+
 ```python
 # Load model from staging
 staging_model_uri = f"models:/{model_name}/Staging"
@@ -419,9 +452,10 @@ probabilities = staging_model.predict_proba(test_sample)[:, 1]
 
 print("Test predictions:", predictions)
 print("Churn probabilities:", probabilities)
-```
+```text
 
 **Transition to Production** (after validation):
+
 ```python
 client.transition_model_version_stage(
     name=model_name,
@@ -430,9 +464,10 @@ client.transition_model_version_stage(
 )
 
 print(f"Model version {model_version.version} promoted to Production")
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Model registered with name and version
 - ✅ Model description and tags added
 - ✅ Model in Production stage
@@ -442,6 +477,7 @@ print(f"Model version {model_version.version} promoted to Production")
 ---
 
 ### Task 5: Model Deployment (30 min)
+
 Deploy model for batch and real-time inference.
 
 **5A: Batch Inference (Score Daily)**
@@ -486,7 +522,7 @@ os.system(f"mlflow models serve -m models:/{model_name}/Production -p 5000")
 #   --data '{"columns":["age","monthly_fee","num_logins_30d",...],
 #            "data":[[35,50.0,15,...]]}' \
 #   http://localhost:5000/invocations
-```
+```text
 
 ```python
 # Option 2: Python function for real-time scoring
@@ -522,7 +558,7 @@ result = predict_churn(test_customer)
 print(result)
 # Output: {'customer_id': 'CUST_12345', 'churn_prediction': True,
 #          'churn_probability': 0.78, 'risk_level': 'High'}
-```
+```text
 
 **5C: Integration with Delta Live Tables (Batch Pipeline)**
 
@@ -544,9 +580,10 @@ def churn_predictions():
     predictions = score_batch(customers_df, model)
 
     return predictions
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Batch inference pipeline scores 100+ customers
 - ✅ Results saved to `churn_predictions` Delta table
 - ✅ Real-time API endpoint works (test with curl or Python)
@@ -556,9 +593,11 @@ def churn_predictions():
 ---
 
 ### Task 6: Model Monitoring & Drift Detection (25 min)
+
 Monitor model performance and detect data/concept drift.
 
 **Requirements**:
+
 - Track predictions over time (last 30 days)
 - Calculate performance metrics on labeled data
 - Detect feature drift (input distribution changes)
@@ -566,6 +605,7 @@ Monitor model performance and detect data/concept drift.
 - Alert when drift exceeds threshold (5%)
 
 **Performance Monitoring**:
+
 ```python
 # Simulate 30 days of predictions with ground truth
 import numpy as np
@@ -610,6 +650,7 @@ monitoring_df.write.format("delta").mode("overwrite").saveAsTable("model_perform
 ```
 
 **Feature Drift Detection**:
+
 ```python
 from scipy.stats import ks_2samp
 
@@ -651,9 +692,10 @@ drift_report = detect_feature_drift(
 
 print("Features with drift detected:")
 print(drift_report[drift_report['drift_detected']])
-```
+```text
 
 **Prediction Drift Monitoring**:
+
 ```python
 # Compare prediction distribution over time
 def monitor_prediction_drift():
@@ -674,9 +716,10 @@ def monitor_prediction_drift():
         print(f"✅ No significant prediction drift ({drift_pct:+.1f}%)")
 
 monitor_prediction_drift()
-```
+```text
 
 **Drift Dashboard**:
+
 ```python
 # Visualize performance over time
 import matplotlib.pyplot as plt
@@ -701,9 +744,10 @@ monitoring_df.plot(x='date', y='num_predictions', ax=axes[1, 1],
 plt.tight_layout()
 plt.savefig("drift_monitoring_dashboard.png")
 mlflow.log_artifact("drift_monitoring_dashboard.png")
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Performance tracked over 30 days
 - ✅ Feature drift detection implemented (KS test)
 - ✅ Prediction drift monitoring active
@@ -751,6 +795,7 @@ def engineer_features(df):
 
     return features_df
 ```
+
 </details>
 
 <details>
@@ -783,7 +828,8 @@ with mlflow.start_run(run_name="experiment_1"):
     # Log artifacts (plots, files)
     plt.savefig("feature_importance.png")
     mlflow.log_artifact("feature_importance.png")
-```
+```text
+
 </details>
 
 <details>
@@ -817,7 +863,8 @@ client.transition_model_version_stage(
 
 # Load for inference
 model = mlflow.sklearn.load_model("models:/churn_model/Production")
-```
+```text
+
 </details>
 
 <details>
@@ -854,12 +901,14 @@ def check_drift(baseline_data, current_data, features, threshold=0.05):
 # Run drift check
 drift_report = check_drift(X_train, X_production, X_train.columns)
 print(drift_report[drift_report['drift_detected']])
-```
+```text
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
@@ -868,7 +917,8 @@ python validate.py
 ```
 
 **Expected Output**:
-```
+
+```text
 ✅ Task 1: Data prepared (5,000 customers, 15.2% churn rate)
    - Train: 3,500 samples
    - Val: 750 samples
@@ -894,12 +944,14 @@ python validate.py
 
 🎉 Exercise 06 Complete! Total Score: 100/100
 💡 Recommendation: Retrain model due to feature drift in 2 features
-```
+```text
 
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.py` - Complete ML pipeline with all tasks
 2. MLflow experiment comparison (screenshot or exported CSV)
 3. Model card (description, metrics, deployment info)
@@ -908,6 +960,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - [MLflow Documentation](https://mlflow.org/docs/latest/index.html)
 - [MLflow Model Registry](https://mlflow.org/docs/latest/model-registry.html)
 - [Databricks MLflow Guide](https://docs.databricks.com/mlflow/index.html)
@@ -918,7 +971,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Complete all 6 exercises! 🎉
 - Review Module 04: Python for Data (advanced ML techniques)
 - Explore Databricks AutoML for automated model training

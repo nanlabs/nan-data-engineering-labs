@@ -5,9 +5,11 @@ This directory contains comprehensive Mermaid diagrams illustrating key architec
 ## 📊 Available Diagrams
 
 ### 1. Snowflake Architecture (`snowflake-architecture.mmd`)
+
 **Description**: Complete overview of Snowflake's three-layer architecture showing the separation of storage, compute, and cloud services layers.
 
 **Learning Objectives**:
+
 - Understand how micro-partitions organize data in the storage layer
 - Learn about virtual warehouse compute isolation
 - Explore cloud services components (optimizer, security, metadata)
@@ -18,9 +20,11 @@ This directory contains comprehensive Mermaid diagrams illustrating key architec
 ---
 
 ### 2. Virtual Warehouse Scaling (`virtual-warehouse-scaling.mmd`)
+
 **Description**: Interactive decision tree and comparison showing when to scale up (larger warehouse) vs. scale out (multi-cluster).
 
 **Learning Objectives**:
+
 - Differentiate between vertical and horizontal scaling
 - Understand credit consumption patterns
 - Learn auto-scaling modes (Economy, Standard, Maximized)
@@ -31,9 +35,11 @@ This directory contains comprehensive Mermaid diagrams illustrating key architec
 ---
 
 ### 3. Zero-Copy Cloning (`zero-copy-cloning.mmd`)
+
 **Description**: Visual explanation of how Snowflake's instant cloning works using metadata pointers and copy-on-write.
 
 **Learning Objectives**:
+
 - Understand micro-partition metadata management
 - Learn storage cost implications over time
 - Apply cloning for dev/test/backup scenarios
@@ -44,9 +50,11 @@ This directory contains comprehensive Mermaid diagrams illustrating key architec
 ---
 
 ### 4. Time Travel & Fail-Safe (`time-travel-failsafe.mmd`)
+
 **Description**: Timeline diagram showing Standard vs. Enterprise retention periods, query windows, and disaster recovery mechanisms.
 
 **Learning Objectives**:
+
 - Navigate time travel query syntax (AT, BEFORE)
 - Configure retention periods per table
 - Understand fail-safe vs. time travel differences
@@ -57,9 +65,11 @@ This directory contains comprehensive Mermaid diagrams illustrating key architec
 ---
 
 ### 5. Streams & Tasks Pipeline (`streams-tasks-pipeline.mmd`)
+
 **Description**: End-to-end CDC (Change Data Capture) pipeline using streams for incremental processing and tasks for orchestration.
 
 **Learning Objectives**:
+
 - Design incremental data pipelines with streams
 - Schedule and chain tasks using DAG dependencies
 - Monitor stream offsets and task execution
@@ -70,9 +80,11 @@ This directory contains comprehensive Mermaid diagrams illustrating key architec
 ---
 
 ### 6. Data Sharing Model (`data-sharing-model.mmd`)
+
 **Description**: Provider-consumer architecture showing secure data sharing without data movement or duplication.
 
 **Learning Objectives**:
+
 - Create and manage shares with granular permissions
 - Implement row-level security with secure views
 - Understand cost allocation (provider storage, consumer compute)
@@ -85,26 +97,32 @@ This directory contains comprehensive Mermaid diagrams illustrating key architec
 ## 🖥️ Viewing Instructions
 
 ### Option 1: VS Code with Mermaid Extension (Recommended)
+
 1. Install the Mermaid extension:
+
    ```bash
    code --install-extension bierner.markdown-mermaid
-   ```
+   ```text
+
 2. Open any `.mmd` file
 3. Right-click → "Open Preview"
 4. View interactive, navigable diagram
 
 ### Option 2: Mermaid Live Editor
-1. Visit https://mermaid.live/
+
+1. Visit <https://mermaid.live/>
 2. Copy the contents of any `.mmd` file
 3. Paste into the editor
 4. Export as PNG/SVG if needed
 
 ### Option 3: GitHub Auto-Render
+
 - Push files to GitHub
 - View `.mmd` files directly in the browser
 - GitHub automatically renders Mermaid diagrams
 
 ### Option 4: Command-Line Rendering (Advanced)
+
 ```bash
 # Install Mermaid CLI
 npm install -g @mermaid-js/mermaid-cli
@@ -114,7 +132,7 @@ mmdc -i snowflake-architecture.mmd -o snowflake-architecture.png -t dark -b tran
 
 # Render to SVG
 mmdc -i virtual-warehouse-scaling.mmd -o virtual-warehouse-scaling.svg
-```
+```text
 
 ---
 
@@ -135,6 +153,7 @@ mmdc -i virtual-warehouse-scaling.mmd -o virtual-warehouse-scaling.svg
 ## 📝 Mermaid Syntax Reference
 
 ### Basic Flowchart Example
+
 ```mermaid
 graph TD
     A[Start] --> B{Decision?}
@@ -145,6 +164,7 @@ graph TD
 ```
 
 ### Sequence Diagram Example
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -154,9 +174,10 @@ sequenceDiagram
     Warehouse->>Storage: Read Micro-partitions
     Storage-->>Warehouse: Return Data
     Warehouse-->>User: Query Results
-```
+```text
 
 ### Class Diagram Example
+
 ```mermaid
 classDiagram
     class VirtualWarehouse {
@@ -172,9 +193,10 @@ classDiagram
         +share()
     }
     VirtualWarehouse --> Database : queries
-```
+```text
 
 ### Common Mermaid Shapes
+
 - `[Rectangle]` - Default node
 - `(Rounded)` - Rounded rectangle
 - `{Diamond}` - Decision point
@@ -187,6 +209,7 @@ classDiagram
 ## 🎨 Customization Guide
 
 ### Editing Diagrams
+
 All `.mmd` files are plain text and can be edited with any text editor:
 
 ```bash
@@ -195,10 +218,12 @@ code snowflake-architecture.mmd
 
 # Or use vim/nano
 vim virtual-warehouse-scaling.mmd
-```
+```text
 
 ### Color Schemes
+
 Diagrams use consistent color coding:
+
 - **Blue (#4A90E2)**: Storage layer, data objects
 - **Orange (#F5A623)**: Compute layer, processing
 - **Green (#7ED321)**: Cloud services, metadata
@@ -206,6 +231,7 @@ Diagrams use consistent color coding:
 - **Yellow (#F8E71C)**: Warnings, costs
 
 ### Adding Custom Sections
+
 You can extend any diagram by adding new sections:
 
 ```mermaid
@@ -218,6 +244,7 @@ graph TB
 ```
 
 ### Regenerating with mmdc CLI
+
 For automated rendering in CI/CD:
 
 ```bash
@@ -229,7 +256,7 @@ for diagram in *.mmd; do
     mmdc -i "$diagram" -o "${basename}.png" -t dark -b transparent
     mmdc -i "$diagram" -o "${basename}.svg"
 done
-```
+```text
 
 ---
 
@@ -249,6 +276,7 @@ Use this checklist to track your understanding of each diagram:
 ## 🔗 Additional Resources
 
 ### Official Snowflake Documentation
+
 - [Architecture Overview](https://docs.snowflake.com/en/user-guide/intro-key-concepts.html)
 - [Virtual Warehouse Guide](https://docs.snowflake.com/en/user-guide/warehouses.html)
 - [Time Travel & Fail-Safe](https://docs.snowflake.com/en/user-guide/data-time-travel.html)
@@ -256,12 +284,14 @@ Use this checklist to track your understanding of each diagram:
 - [Secure Data Sharing](https://docs.snowflake.com/en/user-guide/data-sharing-intro.html)
 
 ### Mermaid Documentation
+
 - [Official Mermaid Docs](https://mermaid.js.org/)
 - [Flowchart Syntax](https://mermaid.js.org/syntax/flowchart.html)
 - [Sequence Diagrams](https://mermaid.js.org/syntax/sequenceDiagram.html)
 - [Class Diagrams](https://mermaid.js.org/syntax/classDiagram.html)
 
 ### Learning Paths
+
 - Review the main [module README](../../README.md) for context
 - Work through exercises in order, referring to diagrams as needed
 - Use diagrams during team discussions and presentations
@@ -276,11 +306,14 @@ Use this checklist to track your understanding of each diagram:
 **Maintainer**: Training Cloud Data Team
 
 ### Version History
+
 - **v1.0** (March 2026): Initial diagram set created
 - Future updates will track Snowflake feature releases
 
 ### Contributing
+
 To suggest improvements:
+
 1. Fork the repository
 2. Edit `.mmd` files with proposed changes
 3. Test rendering in Mermaid Live Editor

@@ -1,6 +1,7 @@
 # Exercise 03: Unity Catalog Governance
 
 ## Overview
+
 Implement comprehensive data governance using Unity Catalog with three-level namespaces, fine-grained access control, row and column-level security, lineage tracking, and audit logging.
 
 **Estimated Time**: 2 hours
@@ -12,7 +13,9 @@ Implement comprehensive data governance using Unity Catalog with three-level nam
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Create and manage Unity Catalog's three-level namespace (catalog.schema.table)
 - Implement fine-grained access control at multiple levels
 - Configure row-level security with filter functions
@@ -24,7 +27,9 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 You're implementing governance for a healthcare analytics platform with sensitive patient data. Requirements:
+
 1. Separate dev, staging, and production environments
 2. Data scientists can read all data, but analysts see only their region
 3. PII fields (SSN, email) must be masked for analysts
@@ -39,10 +44,12 @@ You're implementing governance for a healthcare analytics platform with sensitiv
 ## Requirements
 
 ### Task 1: Three-Level Namespace (20 min)
+
 Set up Unity Catalog's three-level namespace structure.
 
 **Catalog Structure**:
-```
+
+```text
 dev_catalog
 ├── bronze_schema
 │   └── patients_raw (table)
@@ -60,9 +67,10 @@ prod_catalog
 ├── bronze_schema
 ├── silver_schema
 └── gold_schema
-```
+```text
 
 **Requirements**:
+
 - Create 3 catalogs: `dev_catalog`, `staging_catalog`, `prod_catalog`
 - In each catalog, create 3 schemas: `bronze_schema`, `silver_schema`, `gold_schema`
 - Create tables in dev_catalog:
@@ -71,7 +79,8 @@ prod_catalog
   - `gold_schema.patient_analytics` (aggregations by region)
 
 **Patient Schema**:
-```
+
+```text
 patient_id: STRING
 name: STRING
 email: STRING (PII)
@@ -84,6 +93,7 @@ admission_date: DATE
 ```
 
 **Success Criteria**:
+
 - ✅ All 3 catalogs exist and are queryable
 - ✅ Each catalog has 3 schemas (9 schemas total)
 - ✅ Dev catalog has all 3 tables with data
@@ -92,9 +102,11 @@ admission_date: DATE
 ---
 
 ### Task 2: Access Control (25 min)
+
 Implement fine-grained permissions at catalog, schema, table, and column levels.
 
 **User Roles** (simulate with groups):
+
 1. **data_engineers**: Full access to all catalogs
 2. **data_scientists**: Read access to all data
 3. **analysts**: Read access only to silver and gold layers
@@ -103,34 +115,39 @@ Implement fine-grained permissions at catalog, schema, table, and column levels.
 **Permissions to Grant**:
 
 **Data Engineers**:
+
 ```sql
 GRANT ALL PRIVILEGES ON CATALOG dev_catalog TO data_engineers;
 GRANT ALL PRIVILEGES ON CATALOG staging_catalog TO data_engineers;
 GRANT SELECT ON CATALOG prod_catalog TO data_engineers;
-```
+```text
 
 **Data Scientists**:
+
 ```sql
 GRANT USAGE ON CATALOG dev_catalog TO data_scientists;
 GRANT SELECT ON SCHEMA dev_catalog.silver_schema TO data_scientists;
 GRANT SELECT ON SCHEMA dev_catalog.gold_schema TO data_scientists;
-```
+```text
 
 **Analysts** (limited to specific columns):
+
 ```sql
 GRANT USAGE ON CATALOG dev_catalog TO analysts;
 GRANT SELECT (patient_id, region, age, diagnosis_code)
   ON TABLE dev_catalog.silver_schema.patients_clean TO analysts;
 -- Note: email and ssn excluded
-```
+```text
 
 **Requirements**:
+
 - Create 4 groups with appropriate permissions
 - Test access by impersonating each role
 - Verify analysts CANNOT access PII columns directly
 - Verify analysts CANNOT access bronze layer
 
 **Success Criteria**:
+
 - ✅ All 4 groups created with correct permissions
 - ✅ Data scientists can read silver and gold (not bronze)
 - ✅ Analysts denied access to email and ssn columns
@@ -140,15 +157,18 @@ GRANT SELECT (patient_id, region, age, diagnosis_code)
 ---
 
 ### Task 3: Row-Level Security (25 min)
+
 Implement row-level security so analysts only see data from their region.
 
 **Requirements**:
+
 - Create a filter function that restricts by region
 - Apply row filter to `patients_clean` table
 - Analysts in US_EAST see only US_EAST patients
 - Data scientists see all regions (bypass filter)
 
 **Filter Function**:
+
 ```sql
 CREATE FUNCTION dev_catalog.silver_schema.region_filter()
   RETURNS STRING
@@ -164,18 +184,21 @@ CREATE FUNCTION dev_catalog.silver_schema.region_filter()
 ```
 
 **Apply Row Filter**:
+
 ```sql
 ALTER TABLE dev_catalog.silver_schema.patients_clean
 SET ROW FILTER dev_catalog.silver_schema.region_filter ON (region);
-```
+```text
 
 **Testing**:
+
 1. As `data_scientist`: Query should return all 5,000 patients
 2. As `analyst_us_east`: Query should return ~1,000 patients (US_EAST only)
 3. As `analyst_eu`: Query should return ~1,000 patients (EU only)
 4. Verify filter is transparent (users don't see filter logic)
 
 **Success Criteria**:
+
 - ✅ Filter function created and tested
 - ✅ Row filter applied to table
 - ✅ Analysts see only their region
@@ -185,15 +208,18 @@ SET ROW FILTER dev_catalog.silver_schema.region_filter ON (region);
 ---
 
 ### Task 4: Column-Level Security (25 min)
+
 Implement dynamic column masking for PII fields.
 
 **Requirements**:
+
 - Create masking view for analysts
 - Mask `email` → `***@***.com`
 - Mask `ssn` → `***-**-1234` (last 4 digits visible)
 - Original values visible to data engineers and data scientists
 
 **Masking Views**:
+
 ```sql
 CREATE VIEW dev_catalog.silver_schema.patients_masked AS
 SELECT
@@ -215,13 +241,15 @@ SELECT
   treatment_cost,
   admission_date
 FROM dev_catalog.silver_schema.patients_clean;
-```
+```text
 
 **Advanced Masking**:
+
 - Implement NULL-ing strategy (return NULL instead of masked value)
 - Implement hashing strategy (return SHA256 hash for joins without revealing PII)
 
 **Column-Level Grants**:
+
 ```sql
 -- Grant select on specific non-PII columns
 GRANT SELECT (patient_id, region, age, treatment_cost, admission_date)
@@ -230,9 +258,10 @@ GRANT SELECT (patient_id, region, age, treatment_cost, admission_date)
 -- Deny access to PII columns explicitly
 DENY SELECT (email, ssn)
   ON dev_catalog.silver_schema.patients_clean TO analysts;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Masking view created with dynamic logic
 - ✅ Analysts see masked PII
 - ✅ Data scientists see unmasked PII
@@ -242,19 +271,23 @@ DENY SELECT (email, ssn)
 ---
 
 ### Task 5: Data Lineage (15 min)
+
 Track data lineage from raw sources to final reports.
 
 **Lineage Flow**:
+
 ```
 External Source → bronze.patients_raw → silver.patients_clean → gold.patient_analytics
-```
+```text
 
 **Requirements**:
+
 - Use Unity Catalog system tables to query lineage
 - Programmatically fetch lineage via API
 - Create lineage visualization query
 
 **Lineage Queries**:
+
 ```sql
 -- View table lineage
 SELECT * FROM system.access.table_lineage
@@ -264,9 +297,10 @@ WHERE target_table_full_name = 'dev_catalog.gold_schema.patient_analytics';
 SELECT * FROM system.access.column_lineage
 WHERE target_table_full_name = 'dev_catalog.gold_schema.patient_analytics'
   AND target_column_name = 'avg_treatment_cost';
-```
+```text
 
 **Programmatic Lineage**:
+
 ```python
 # Get upstream dependencies
 lineage = spark.sql("""
@@ -281,9 +315,10 @@ lineage = spark.sql("""
 """)
 
 lineage.show(truncate=False)
-```
+```text
 
 **Lineage Diagram**:
+
 - Generate ASCII diagram showing:
   - Source systems
   - Bronze/Silver/Gold tables
@@ -291,6 +326,7 @@ lineage.show(truncate=False)
   - Data consumers (dashboards, ML models)
 
 **Success Criteria**:
+
 - ✅ Table lineage query returns 2+ upstream sources
 - ✅ Column lineage traces specific metrics
 - ✅ Programmatic API call successful
@@ -300,9 +336,11 @@ lineage.show(truncate=False)
 ---
 
 ### Task 6: Audit Logging (20 min)
+
 Query Unity Catalog audit logs for compliance reporting.
 
 **Requirements**:
+
 - Query `system.access.audit` table
 - Generate compliance reports:
   1. All PII access in last 30 days
@@ -313,6 +351,7 @@ Query Unity Catalog audit logs for compliance reporting.
 **Audit Queries**:
 
 **1. PII Access Report**:
+
 ```sql
 SELECT
   user_identity.email as user,
@@ -330,6 +369,7 @@ ORDER BY access_count DESC;
 ```
 
 **2. Failed Access Attempts**:
+
 ```sql
 SELECT
   user_identity.email,
@@ -344,9 +384,10 @@ WHERE
   AND response.status_code != '200'
   AND action_name IN ('getTable', 'readTable', 'createTable')
 ORDER BY event_date DESC;
-```
+```text
 
 **3. Permission Changes**:
+
 ```sql
 SELECT
   user_identity.email as changed_by,
@@ -360,9 +401,10 @@ WHERE
   event_date >= current_date() - 30
   AND action_name IN ('grantPrivileges', 'revokePrivileges')
 ORDER BY event_date DESC;
-```
+```text
 
 **4. Data Export Tracking**:
+
 ```sql
 SELECT
   user_identity.email,
@@ -375,9 +417,10 @@ WHERE
   event_date >= current_date() - 30
   AND action_name IN ('createExternalTable', 'exportData')
 ORDER BY event_date DESC;
-```
+```text
 
 **Compliance Dashboard**:
+
 - Create automated report (scheduled notebook)
 - Email summary to compliance team
 - Alert on suspicious patterns:
@@ -386,6 +429,7 @@ ORDER BY event_date DESC;
   - Repeated failed access attempts
 
 **Success Criteria**:
+
 - ✅ All 4 audit queries working
 - ✅ PII access report generated (30-day history)
 - ✅ Failed access attempts identified
@@ -422,6 +466,7 @@ SHOW CATALOGS;
 SHOW SCHEMAS IN dev_catalog;
 SHOW TABLES IN dev_catalog.bronze_schema;
 ```
+
 </details>
 
 <details>
@@ -444,7 +489,8 @@ GRANT SELECT (patient_id, region, age)
 -- View current permissions
 SHOW GRANTS ON CATALOG dev_catalog;
 SHOW GRANTS ON TABLE dev_catalog.silver_schema.patients_clean;
-```
+```text
+
 </details>
 
 <details>
@@ -475,7 +521,8 @@ SET ROW FILTER dev_catalog.silver_schema.region_filter ON (region)
 spark.conf.set("spark.databricks.session.user", "analyst@company.com")
 result = spark.sql("SELECT COUNT(*) FROM dev_catalog.silver_schema.patients_clean")
 print(f"Rows visible: {result.first()[0]}")
-```
+```text
+
 </details>
 
 <details>
@@ -505,12 +552,14 @@ pii_access.display()
 
 # Export to CSV for compliance report
 pii_access.coalesce(1).write.csv("/tmp/pii_access_report.csv", header=True)
-```
+```text
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
@@ -519,7 +568,8 @@ python validate.py
 ```
 
 **Expected Output**:
-```
+
+```text
 ✅ Task 1: Namespace created (3 catalogs, 9 schemas, 3 tables with data)
    - dev_catalog: 5,000 patients across 5 regions
    - staging_catalog: Empty (schemas only)
@@ -544,12 +594,14 @@ python validate.py
 
 🎉 Exercise 03 Complete! Total Score: 100/100
 📢 Note: Audit data may vary based on your usage patterns
-```
+```text
 
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.sql` - All SQL commands for setup and queries
 2. Governance documentation (catalogs, schemas, permissions matrix)
 3. Audit compliance report (30-day PII access summary)
@@ -558,6 +610,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - [Unity Catalog Documentation](https://docs.databricks.com/data-governance/unity-catalog/index.html)
 - [Row and Column Security](https://docs.databricks.com/security/privacy/row-column-access-control.html)
 - [Audit Logging](https://docs.databricks.com/administration-guide/account-settings/audit-logs.html)
@@ -567,7 +620,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Exercise 04: Real-Time Streaming
 - ✅ Exercise 05: SQL Analytics & Dashboards
 - Review Module 16: Data Security & Compliance

@@ -1,6 +1,7 @@
 # Exercise 02: Benchmark Results Analysis
 
 ## Test Environment
+
 - **Date**: February 2, 2026
 - **Dataset**: GlobalMart transactions (100,000 rows)
 - **Original CSV Size**: 15.8 MB
@@ -69,6 +70,7 @@
 #### When to Use Each Format
 
 **CSV**
+
 - ✅ Human-readable, universal compatibility
 - ✅ Simple data exchange
 - ❌ Largest file size
@@ -77,6 +79,7 @@
 - **Use for**: Data exchange with external systems, human review
 
 **JSON**
+
 - ✅ Semi-structured data support
 - ✅ Nested objects
 - ❌ Even larger than CSV (117% of CSV size)
@@ -84,6 +87,7 @@
 - **Use for**: API responses, configuration files, event logs
 
 **Parquet (Snappy)** ⭐ RECOMMENDED
+
 - ✅ Excellent compression (79.7% savings)
 - ✅ Fastest read performance (6x faster than CSV)
 - ✅ Fast writes
@@ -93,17 +97,20 @@
 - **Use for**: Data lakes (Silver/Gold layers), analytics workloads, BI tools
 
 **Parquet (Gzip)**
+
 - ✅ Best compression (86.7% savings)
 - ❌ Slower writes (2.7x slower than Snappy)
 - ❌ Slower reads (40% slower than Snappy)
 - **Use for**: Archival storage, cold data, infrequently accessed data
 
 **Parquet (LZ4)**
+
 - ✅ Fastest writes
 - ❌ Slightly larger files than Snappy
 - **Use for**: Real-time data ingestion, streaming pipelines
 
 **Avro**
+
 - ✅ Good for row-based access
 - ✅ Strong schema evolution support
 - ✅ Splittable for MapReduce
@@ -114,6 +121,7 @@
 ## Real-World Impact
 
 ### Cost Savings Example
+
 **Scenario**: 10 TB dataset stored in S3
 
 | Format | Storage Size | S3 Cost/Month (Standard) | Annual Savings vs CSV |
@@ -123,6 +131,7 @@
 | Parquet (Gzip) | 1.33 TB | $31 | **$2,388/year** |
 
 ### Query Performance Impact
+
 **Scenario**: Daily analytical queries on 1 TB dataset
 
 | Format | Query Time | Daily Time Saved | Engineer Hours Saved/Year |
@@ -135,16 +144,19 @@
 ## Medallion Architecture Recommendations
 
 ### Bronze Layer (Raw Data)
+
 - **Format**: CSV or JSON (preserve original format)
 - **Why**: Maintain data lineage, human-readable
 - **Compression**: Gzip (if storage cost is concern)
 
 ### Silver Layer (Cleaned Data)
+
 - **Format**: Parquet with Snappy compression ⭐
 - **Why**: Balance of compression and read speed
 - **Partitioning**: By date (year/month/day)
 
 ### Gold Layer (Curated Data)
+
 - **Format**: Parquet with Snappy compression ⭐
 - **Why**: Optimized for fast analytics
 - **Optimization**: Pre-aggregated, Z-ordering for common queries
@@ -165,7 +177,7 @@ cat output/benchmark_results.json | jq .
 
 # Compare file sizes
 ls -lh output/
-```
+```text
 
 ## Conclusions
 

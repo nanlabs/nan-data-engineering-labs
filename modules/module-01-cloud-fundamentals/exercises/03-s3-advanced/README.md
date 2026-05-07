@@ -37,9 +37,10 @@ echo "v3" > file.txt && aws s3 cp file.txt s3://my-bucket/
 
 # List all versions
 aws s3api list-object-versions --bucket my-bucket
-```
+```text
 
 **Casos de uso:**
+
 - Protección contra borrado accidental
 - Auditoría de cambios
 - Rollback a versiones anteriores
@@ -67,9 +68,10 @@ Automatizan la transición entre storage classes:
     "Expiration": {"Days": 365}
   }]
 }
-```
+```text
 
 **Storage Classes:**
+
 - `STANDARD`: Access frecuente (<$0.023/GB)
 - `INTELLIGENT_TIERING`: Auto-optimización
 - `STANDARD_IA`: Access infrecuente (<$0.0125/GB)
@@ -92,9 +94,10 @@ Copia automática entre buckets:
     }
   }]
 }
-```
+```text
 
 **Tipos:**
+
 - **CRR (Cross-Region):** Disaster recovery, compliance
 - **SRR (Same-Region):** Agregación de logs, replicación test/prod
 
@@ -133,7 +136,7 @@ Lee [starter/scenario.md](starter/scenario.md) para understand el context:
 cd exercises/03-s3-advanced
 cp -r starter/ my_solution/
 cd my_solution
-```
+```text
 
 ### Step 3: Implement Lifecycle Configuration
 
@@ -147,9 +150,10 @@ def enable_versioning(bucket_name: str) -> bool:
 def create_lifecycle_policy(bucket_name: str, policy: Dict) -> bool:
     # TODO: Apply lifecycle configuration
     pass
-```
+```text
 
 **Debes implementar:**
+
 - ✅ Habilitar versionado en bucket principal
 - ✅ Create lifecycle rule: 30 días → STANDARD_IA
 - ✅ Create lifecycle rule: 90 días → GLACIER
@@ -168,9 +172,10 @@ def create_backup_bucket(bucket_name: str) -> bool:
 def setup_replication(source_bucket: str, dest_bucket: str, role_arn: str) -> bool:
     # TODO: Configure replication
     pass
-```
+```text
 
 **Debes implementar:**
+
 - ✅ Create bucket de backup (destination)
 - ✅ Create IAM role para replicación
 - ✅ Configure replication rule
@@ -191,6 +196,7 @@ def configure_bucket_notification(bucket_name: str, queue_arn: str) -> bool:
 ```
 
 **Debes implementar:**
+
 - ✅ Create SQS queue para recibir notificaciones
 - ✅ Configure queue policy (permitir S3 enviar mensajes)
 - ✅ Configure bucket notification para `s3:ObjectCreated:*`
@@ -202,9 +208,10 @@ Ejecuta el script de testing:
 
 ```bash
 python3 test_s3_advanced.py
-```
+```text
 
 **El test debe verificar:**
+
 - ✅ Versioning está habilitado
 - ✅ Lifecycle policy existe y está activa
 - ✅ Replicación funciona (upload → verifica en backup bucket)
@@ -239,11 +246,11 @@ aws --endpoint-url=http://localhost:4566 s3 ls s3://my-data-lake-backup/
 # 4. Test Events
 aws --endpoint-url=http://localhost:4566 sqs receive-message \
   --queue-url http://localhost:4566/000000000000/s3-events | jq .
-```
+```text
 
 ### Expected Output
 
-```
+```text
 ✓ Versioning enabled on my-data-lake
 ✓ Lifecycle policy applied (3 rules)
 ✓ Backup bucket created: my-data-lake-backup
@@ -268,7 +275,7 @@ response = s3.list_object_versions(Bucket='my-bucket')
 for version in response.get('Versions', []):
     print(f"Key: {version['Key']}, VersionId: {version['VersionId']}, "
           f"IsLatest: {version['IsLatest']}, Size: {version['Size']}")
-```
+```text
 
 ### Lifecycle Policy Gotchas
 
@@ -301,24 +308,27 @@ notification_config = {
         }
     }]
 }
-```
+```text
 
 ## 🐛 Troubleshooting
 
 **Error: "VersioningNotEnabled"**
+
 ```bash
 # Enable on source and destination
 aws s3api put-bucket-versioning --bucket BUCKET \
   --versioning-configuration Status=Enabled
-```
+```text
 
 **Error: "InvalidArgument: lifecycle Days must be >= 30"**
+
 ```json
 // Use 30+ days for STANDARD_IA
 {"Days": 30, "StorageClass": "STANDARD_IA"}
 ```
 
 **Error: "SQS queue policy denies SendMessage"**
+
 ```python
 # Add S3 to SQS policy
 policy = {
@@ -330,7 +340,7 @@ policy = {
     }]
 }
 sqs.set_queue_attributes(QueueUrl=queue_url, Attributes={'Policy': json.dumps(policy)})
-```
+```text
 
 ## 📚 Deliverables
 

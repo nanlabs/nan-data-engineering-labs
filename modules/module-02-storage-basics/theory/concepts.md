@@ -21,6 +21,7 @@ In the world of Data Engineering, choosing the correct storage format is one of 
 ### Why Storage Matters
 
 **Impact Areas:**
+
 - **Query Performance:** 10-100x difference between optimized vs non-optimized formats
 - **Storage Costs:** Compression can reduce costs 60-90%
 - **Processing Speed:** 5-10x faster column formats for analytics
@@ -28,6 +29,7 @@ In the world of Data Engineering, choosing the correct storage format is one of 
 
 **Real-World Example:**
 A company migrated 50TB of CSV data to Parquet with Snappy compression:
+
 - Storage: 50TB → 12TB (76% reduction)
 - Query time: 45 minutes → 3 minutes (93% improvement)
 - Monthly cost: $1,150 → $276 (76% savings)
@@ -39,6 +41,7 @@ A company migrated 50TB of CSV data to Parquet with Snappy compression:
 A **data lake** is a centralized repository that stores structured, semi-structured, and unstructured data at any scale. Unlike data warehouses, it accepts data in raw format.
 
 **Features:**
+
 - **Schema-on-read:** You apply structure when reading, not when writing
 - **Multi-format:** CSV, JSON, Parquet, Avro, ORC, binary files
 - **Cost-effective:** Storage on S3 starts at $0.023/GB/month
@@ -48,7 +51,7 @@ A **data lake** is a centralized repository that stores structured, semi-structu
 
 The **Medallion** architecture organizes data lakes in layers (Bronze → Silver → Gold) to progressively improve quality.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    MEDALLION ARCHITECTURE                     │
 ├─────────────────────────────────────────────────────────────┤
@@ -64,13 +67,14 @@ The **Medallion** architecture organizes data lakes in layers (Bronze → Silver
 │  • Append-only      • Type-safe      • Performance-optimized│
 │                                                               │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 #### Bronze Layer (Raw Zone)
 
 **Purpose:** Store data exactly as it arrives from source systems.
 
 **Characteristics:**
+
 - Original format (CSV, JSON, logs)
 - No transformations
 - Append-only (immutable)
@@ -78,7 +82,8 @@ The **Medallion** architecture organizes data lakes in layers (Bronze → Silver
 - Lifecycle → Glacier after 90 days
 
 **Example Structure:**
-```
+
+```text
 s3://datalake-bronze/
 ├── transactions/
 │   └── dt=2024-02-02/
@@ -97,6 +102,7 @@ s3://datalake-bronze/
 ```
 
 **Use Cases:**
+
 - Data lineage and audit
 - Reprocessing when downstream logic changes
 - Compliance requirements (retain raw data)
@@ -106,6 +112,7 @@ s3://datalake-bronze/
 **Purpose:** Validated, deduplicated, and normalized data.
 
 **Transformations:**
+
 - ✅ Schema validation
 - ✅ Data type enforcement
 - ✅ Deduplication
@@ -114,7 +121,8 @@ s3://datalake-bronze/
 - ❌ Business logic (not yet)
 
 **Example Structure:**
-```
+
+```text
 s3://datalake-silver/
 ├── transactions/
 │   └── year=2024/month=02/day=02/
@@ -125,9 +133,10 @@ s3://datalake-silver/
 └── users/
     └── country=US/state=CA/
         └── data.parquet
-```
+```text
 
 **Format Changes:**
+
 - Bronze: CSV, JSON → Silver: Parquet, Avro
 - Compression: Gzip → Snappy (better for analytics)
 - Partitioning: Date-based Hive partitions
@@ -137,6 +146,7 @@ s3://datalake-silver/
 **Purpose:** Data ready for consumption by BI, ML, and applications.
 
 **Transformations:**
+
 - ✅ Aggregations (daily, weekly, monthly)
 - ✅ Business logic applied
 - ✅ Joins between datasets
@@ -144,7 +154,8 @@ s3://datalake-silver/
 - ✅ Denormalization for performance
 
 **Example Structure:**
-```
+
+```text
 s3://datalake-gold/
 ├── analytics/
 │   ├── daily_sales_summary/
@@ -164,6 +175,7 @@ s3://datalake-gold/
 ```
 
 **Optimization:**
+
 - Pre-aggregated (fast queries)
 - Heavily compressed
 - Small file sizes (coalesced)
@@ -188,12 +200,14 @@ Choosing the correct format is critical for performance and costs. Let's analyze
 ### CSV (Comma-Separated Values)
 
 **Pros:**
+
 - ✅ Universal compatibility
 - ✅ Human-readable
 - ✅ Simple to generate
 - ✅ Every tool supports it
 
 **Cons:**
+
 - ❌ No schema enforcement
 - ❌ No compression built-in
 - ❌ Poor query performance
@@ -201,19 +215,22 @@ Choosing the correct format is critical for performance and costs. Let's analyze
 - ❌Large file sizes
 
 **Best Use Cases:**
+
 - Data exchange between systems
 - Bronze layer (raw ingestion)
 - Small datasets (<10MB)
 - Human inspection needed
 
 **Example:**
+
 ```csv
 transaction_id,user_id,amount,currency,timestamp
 TXN001,USR123,99.99,USD,2024-02-02T10:30:00Z
 TXN002,USR456,149.50,EUR,2024-02-02T10:31:15Z
-```
+```text
 
 **Performance Characteristics:**
+
 - Read speed: **Slow** (sequential scan)
 - Compression ratio: 60-70% with gzip
 - Query pushdown: None
@@ -222,12 +239,14 @@ TXN002,USR456,149.50,EUR,2024-02-02T10:31:15Z
 ### JSON (JavaScript Object Notation)
 
 **Pros:**
+
 - ✅ Self-describing (schema included)
 - ✅ Nested structures
 - ✅ Human-readable
 - ✅ Standard Web APIs
 
 **Cons:**
+
 - ❌ Verbose (key names repeated)
 - ❌ Slow to parse
 - ❌Large file sizes
@@ -235,12 +254,14 @@ TXN002,USR456,149.50,EUR,2024-02-02T10:31:15Z
 - ❌Poor compression
 
 **Best Use Cases:**
+
 - API responses
 - Event logs
 - Semi-structured data
 - Configuration files
 
 **Example:**
+
 ```json
 {
   "transaction_id": "TXN001",
@@ -253,9 +274,10 @@ TXN002,USR456,149.50,EUR,2024-02-02T10:31:15Z
     "user_agent": "Mozilla/5.0"
   }
 }
-```
+```text
 
 **Performance Characteristics:**
+
 - Read speed: **Very slow** (parse overhead)
 - Compression ratio: 70-80% with gzip
 - Query pushdown: Limited
@@ -263,14 +285,16 @@ TXN002,USR456,149.50,EUR,2024-02-02T10:31:15Z
 
 **JSON Lines (JSONL):**
 Best for big data - each line is a complete JSON:
+
 ```jsonl
 {"id": 1, "name": "Alice", "age": 30}
 {"id": 2, "name": "Bob", "age": 25}
-```
+```text
 
 ### Parquet (Apache Parquet)
 
 **Pros:**
+
 - ✅ Columnar format (fast analytics)
 - ✅ Excellent compression (60-90%)
 - ✅ Predicate pushdown
@@ -279,18 +303,21 @@ Best for big data - each line is a complete JSON:
 - ✅ Industry standard
 
 **Cons:**
+
 - ❌Not human-readable
 - ❌ Write latency higher
 - ❌ Requires compatible tools
 - ❌ Small files create overhead
 
 **Best Use Cases:**
+
 - **Analytics workloads** (main use case)
 - Data warehouses
 - OLAP queries
 - Data lakes (Silver/Gold layers)
 
 **Internal Structure:**
+
 ```
 ┌─────────────────────────────────────────┐
 │         Parquet File Structure          │
@@ -316,24 +343,27 @@ Best for big data - each line is a complete JSON:
 │                                          │
 │  Magic Number: PAR1                     │
 └─────────────────────────────────────────┘
-```
+```text
 
 **Key Features:**
 
 1. **Columnar Storage:** Reads only the required columns
+
 ```python
 # Query: SELECT amount, timestamp FROM transactions WHERE amount > 100
 # Parquet: Reads only 2 columns (amount, timestamp)
 # CSV: Reads all columns
-```
+```text
 
-2. **Predicate Pushdown:** Filters at the storage layer
+1. **Predicate Pushdown:** Filters at the storage layer
+
 ```python
 # WHERE amount > 100
 # Parquet reads footer statistics and skips entire row groups
-```
+```text
 
-3. **Compression:** Per column
+1. **Compression:** Per column
+
 ```python
 # user_id: Dictionary encoding (many duplicates)
 # amount: Delta encoding (close values)
@@ -341,12 +371,14 @@ Best for big data - each line is a complete JSON:
 ```
 
 **Performance Characteristics:**
+
 - Read speed: **Very fast** for analytics
 - Compression ratio: 80-95% (excellent)
 - Query pushdown: Full support
 - Schema evolution: Supported (add columns)
 
 **Example Usage:**
+
 ```python
 import pyarrow.parquet as pq
 import pandas as pd
@@ -363,11 +395,12 @@ table = pq.read_table('data.parquet', columns=['value'])
 
 # Read with predicate pushdown
 table = pq.read_table('data.parquet', filters=[('value', '>', 150)])
-```
+```text
 
 ### Avro (Apache Avro)
 
 **Pros:**
+
 - ✅ Row-based (good for writes)
 - ✅ Schema evolution (backward/forward)
 - ✅ Compact binary format
@@ -375,18 +408,21 @@ table = pq.read_table('data.parquet', filters=[('value', '>', 150)])
 - ✅ Schema registry integration
 
 **Cons:**
+
 - ❌ Not good for analytics
 - ❌ No column pruning
 - ❌ Requires schema files
 - ❌ Less tooling support
 
 **Best Use Cases:**
+
 - **Streaming data** (Kafka)
 - Write-heavy workloads
 - Schema evolution requirements
 - Data serialization
 
 **Schema Definition:**
+
 ```json
 {
   "type": "record",
@@ -397,21 +433,24 @@ table = pq.read_table('data.parquet', filters=[('value', '>', 150)])
     {"name": "timestamp", "type": "long", "logicalType": "timestamp-millis"}
   ]
 }
-```
+```text
 
 **Performance Characteristics:**
+
 - Read speed: **Fast** for full rows
 - Compression ratio: 70-85%
 - Query pushdown: None
 - Schema evolution: Excellent
 
 **When to Use Avro vs Parquet:**
+
 - **Avro:** Streaming, Kafka, write-heavy, need full rows
 - **Parquet:** Analytics, batch processing, read-heavy, need columns
 
 ### ORC (Optimized Row Columnar)
 
 **Pros:**
+
 - ✅ Columnar (like Parquet)
 - ✅ ACID transactions support
 - ✅ Bloom filters
@@ -419,16 +458,19 @@ table = pq.read_table('data.parquet', filters=[('value', '>', 150)])
 - ✅ Native Hive support
 
 **Cons:**
+
 - ❌ Less ecosystem support
 - ❌ Primarily Hadoop/Hive
 - ❌ Limited Python tooling
 
 **Best Use Cases:**
+
 - Hive tables
 - Hadoop ecosystem
 - ACID requirements
 
 **ORC vs Parquet:**
+
 - **ORC:** Better for Hive, slightly better compression
 - **Parquet:** Better ecosystem (Spark, Athena, etc.), more tooling
 
@@ -445,18 +487,21 @@ table = pq.read_table('data.parquet', filters=[('value', '>', 150)])
 ### File Format Selection Matrix
 
 **Choose CSV when:**
+
 - Human readability required
 - Universal compatibility needed
 - Data exchange between unknown systems
 - Temporary/exploratory work
 
 **Choose JSON when:**
+
 - Semi-structured data (nested)
 - API integration
 - Event logging
 - Schema flexibility paramount
 
 **Choose Parquet when:**
+
 - **Analytics queries** (most common)
 - Read-heavy workloads
 - Large datasets (>1GB)
@@ -464,12 +509,14 @@ table = pq.read_table('data.parquet', filters=[('value', '>', 150)])
 - Cost optimization needed
 
 **Choose Avro when:**
+
 - Streaming pipelines (Kafka)
 - Write-heavy workloads
 - Schema evolution critical
 - Row-based access pattern
 
 **Choose ORC when:**
+
 - Hive-based architecture
 - ACID transactions needed
 - Hadoop-centric ecosystem
@@ -481,25 +528,28 @@ Partitioning divides data into logical subdirectories to improve query performan
 ### Why Partition?
 
 **Benefits:**
+
 - ✅ **Query Performance:** Skip irrelevant data (10-100x faster)
 - ✅ **Cost Reduction:** Athena charges per data scanned
 - ✅ **Parallel Processing:** Process partitions concurrently
 - ✅ **Data Management:** Delete old partitions easily
 
 **Example Impact:**
+
 ```sql
 -- Without partitioning: Scan 1TB, cost $5, time 5 minutes
 SELECT * FROM transactions WHERE date = '2024-02-02';
 
 -- With partitioning: Scan 3GB, cost $0.015, time 2 seconds
 SELECT * FROM transactions WHERE date = '2024-02-02';
-```
+```text
 
 ### Hive-Style Partitioning
 
 Standard de facto en data lakes. Formato: `key=value/`
 
 **Example:**
+
 ```
 s3://bucket/table_name/
 ├── year=2024/
@@ -517,17 +567,19 @@ s3://bucket/table_name/
     └── month=12/
         └── day=31/
             └── data.parquet
-```
+```text
 
 **Registering in Glue/Athena:**
+
 ```sql
 MSCK REPAIR TABLE transactions;
 -- Auto-discovers all partitions
-```
+```text
 
 ### Partition Key Selection
 
 **Criteria:**
+
 1. **Query patterns:** Partition on frequently filtered columns
 2. **Cardinality:** Avoid too many or too few partitions
 3. **Data distribution:** Aim for balanced partition sizes
@@ -535,69 +587,83 @@ MSCK REPAIR TABLE transactions;
 **Common Patterns:**
 
 #### 1. Date-Based (Most Common)
-```
+
+```text
 year=YYYY/month=MM/day=DD/
 year=YYYY/month=MM/
 year=YYYY/week=WW/
 ```
 
 **Use when:**
+
 - Time-series data
 - Recent data queried more frequently
 - Natural retention policies
 
 #### 2. Geography-Based
-```
+
+```text
 country=US/state=CA/city=SF/
 region=north-america/country=US/
-```
+```text
 
 **Use when:**
+
 - Multi-region applications
 - Data sovereignty requirements
 - Regional analytics
 
 #### 3. Category-Based
-```
+
+```text
 event_type=purchase/
 product_category=electronics/
 customer_segment=enterprise/
 ```
 
 **Use when:**
+
 - Distinct business domains
 - Different retention per category
 - Isolated processing
 
 #### 4. Hybrid (Multiple Levels)
-```
+
+```text
 event_type=purchase/year=2024/month=02/day=02/
 country=US/year=2024/month=02/
-```
+```text
 
 **Use when:**
+
 - Complex query patterns
 - Need flexibility
 
 ### Partition Anti-Patterns
 
 ❌ **Too Many Partitions:**
-```
+
+```text
 user_id=123456/  # Millions of users = millions of partitions
 ```
+
 **Problem:** Metadata overhead, slow queries
 
 ❌ **Too Few Partitions:**
-```
+
+```text
 year=2024/  # Single partition per year
-```
+```text
+
 **Problem:** Can't skip data, no benefit
 
 ❌ **Unbalanced Partitions:**
-```
+
+```text
 country=US/       # 80% of data
 country=Vatican/  # 0.001% of data
 ```
+
 **Problem:** Skewed processing
 
 ### Partitioning Best Practices
@@ -613,6 +679,7 @@ country=Vatican/  # 0.001% of data
    - Avoid: 1000s of small files (<10MB)
 
 4. **Schema:**
+
 ```python
 # Good: Partition columns separate from data
 data/
@@ -623,7 +690,7 @@ data/
 data/
 └── dt=2024-02-02/
     └── data.parquet  # Contains: id, name, amount, dt
-```
+```text
 
 ## Compression Techniques
 
@@ -634,39 +701,45 @@ Compression reduce storage costs y puede mejorar query performance (menos I/O).
 #### 1. Gzip
 
 **Characteristics:**
+
 - Compression ratio: **High** (70-80%)
 - Compression speed: Slow
 - Decompression speed: Medium
 - Splittable: No (except with Hadoop codec)
 
 **Best for:**
+
 - Archival storage (Bronze layer)
 - Infrequently accessed data
 - Maximum compression needed
 
 **Example:**
+
 ```bash
 # Compress
 gzip input.csv  # Creates input.csv.gz
 
 # Compression: 1GB → 250MB (75% reduction)
 # Time: 45 seconds
-```
+```text
 
 #### 2. Snappy
 
 **Characteristics:**
+
 - Compression ratio: **Medium** (50-60%)
 - Compression speed: **Very Fast**
 - Decompression speed: **Very Fast**
 - Splittable: Yes (with container formats)
 
 **Best for:**
+
 - **Parquet files** (default)
 - Real-time processing
 - Analytics workloads
 
 **Example:**
+
 ```python
 import pyarrow.parquet as pq
 
@@ -675,17 +748,19 @@ df.to_parquet('data.parquet', compression='snappy')
 
 # Compression: 1GB → 400MB (60% reduction)
 # Time: 5 seconds
-```
+```text
 
 #### 3. LZ4
 
 **Characteristics:**
+
 - Compression ratio: **Low** (40-50%)
 - Compression speed: **Extremely Fast**
 - Decompression speed: **Extremely Fast**
 - Splittable: Yes
 
 **Best for:**
+
 - Streaming data
 - Low-latency requirements
 - High-throughput systems
@@ -693,6 +768,7 @@ df.to_parquet('data.parquet', compression='snappy')
 #### 4. Zstd (Zstandard)
 
 **Characteristics:**
+
 - Compression ratio: **High** (65-75%)
 - Compression speed: Fast
 - Decompression speed: Fast
@@ -700,11 +776,13 @@ df.to_parquet('data.parquet', compression='snappy')
 - Tunable levels (1-22)
 
 **Best for:**
+
 - Modern systems (newer algorithm)
 - Balance compression + speed
 - Flexible requirements
 
 **Example:**
+
 ```python
 # Zstd with compression level
 df.to_parquet('data.parquet', compression='zstd', compression_level=3)
@@ -727,24 +805,28 @@ df.to_parquet('data.parquet', compression='zstd', compression_level=3)
 ### Compression Selection Matrix
 
 **Choose Gzip when:**
+
 - Archival storage (long-term retention)
 - Infrequent access
 - Bandwidth-limited transfers
 - Maximum compression priority
 
 **Choose Snappy when:**
+
 - **Parquet files** (✅ recommended)
 - Frequent analytics queries
 - Athena/Presto/Spark workloads
 - Balance of compression + performance
 
 **Choose LZ4 when:**
+
 - Real-time streaming
 - Low latency critical
 - High throughput needed
 - CPU constrained
 
 **Choose Zstd when:**
+
 - Modern infrastructure
 - Flexible tuning needed
 - Better than Gzip, faster than Gzip
@@ -763,6 +845,7 @@ df.to_parquet('data.parquet', compression='zstd', compression_level=3)
    - **CSV/JSON:** Gzip or Zstd
 
 3. **Trade-offs:**
+
 ```python
 # Scenario: 1TB CSV → Parquet conversion
 
@@ -783,7 +866,7 @@ Size: 90GB
 Write time: 25 min
 Query time: 4 min
 Monthly cost: $2.07
-```
+```text
 
 **Winner:** Snappy (best balance)
 
@@ -796,6 +879,7 @@ Schema evolution allows changing data structure without breaking existing applic
 #### 1. Backward Compatible (Safe)
 
 **Add Optional Column:**
+
 ```python
 # Old schema
 schema_v1 = {
@@ -811,12 +895,14 @@ schema_v2 = {
     'amount': float,
     'category': str  # New optional field
 }
-```
+```text
+
 ✅ Old readers can still read new data (ignore new columns)
 
 #### 2. Forward Compatible (Safe)
 
 **Delete Column:**
+
 ```python
 # Old readers can read new data (column removed)
 schema_v2 = {
@@ -824,7 +910,8 @@ schema_v2 = {
     'name': str
     # 'amount' removed
 }
-```
+```text
+
 ✅ New data readable by old readers (missing columns = null)
 
 #### 3. Full Compatible
@@ -834,25 +921,29 @@ Both backward and forward compatible.
 #### 4. Breaking Changes (Unsafe)
 
 ❌ **Rename Column:**
+
 ```python
 # 'name' → 'full_name'
 # Old readers look for 'name', get error
 ```
 
 ❌ **Change Type:**
+
 ```python
 # 'amount': float → int
 # Precision loss
-```
+```text
 
 ❌ **Remove Required Column:**
+
 ```python
 # Old readers expect 'amount', get error
-```
+```text
 
 ### Schema Evolution in Parquet
 
 **Add Column (Supported):**
+
 ```python
 # Write v1
 df_v1 = pd.DataFrame({'id': [1, 2], 'name': ['A', 'B']})
@@ -873,9 +964,10 @@ df = pd.read_parquet(['data_v1.parquet', 'data_v2.parquet'])
 # 1   2    B   NaN
 # 2   3    C  30.0
 # 3   4    D  25.0
-```
+```text
 
 **Change Type (Not Recommended):**
+
 ```python
 # v1: amount as float
 # v2: amount as decimal
@@ -888,24 +980,27 @@ df['amount_decimal'] = df['amount'].apply(Decimal)
 ### Schema Evolution Best Practices
 
 1. **Version Your Schemas:**
+
 ```python
 schemas = {
     'v1': {'id': int, 'name': str},
     'v2': {'id': int, 'name': str, 'email': str},
     'v3': {'id': int, 'name': str, 'email': str, 'phone': str}
 }
-```
+```text
 
-2. **Use Schema Registry:** (Kafka, Glue Schema Registry)
+1. **Use Schema Registry:** (Kafka, Glue Schema Registry)
+
 ```python
 # Avro with schema registry
 from confluent_kafka import avro
 
 schema_registry = SchemaRegistryClient({'url': 'http://registry:8081'})
 avro_producer = AvroProducer({...}, schema_registry=schema_registry)
-```
+```text
 
-3. **Document Changes:**
+1. **Document Changes:**
+
 ```markdown
 ## Schema Changelog
 
@@ -915,9 +1010,10 @@ avro_producer = AvroProducer({...}, schema_registry=schema_registry)
 
 ### v1.1.0 (2024-01-15)
 - Added `purchase_channel` (string, optional)
-```
+```text
 
-4. **Test Compatibility:**
+1. **Test Compatibility:**
+
 ```python
 def test_schema_compatibility():
     # Write with old schema
@@ -939,12 +1035,14 @@ Metadata es "data about data" - critical para discovery, governance, and optimiz
 Central metadata repository para AWS.
 
 **Components:**
+
 - **Databases:** Logical grouping of tables
 - **Tables:** Schema + location + format
 - **Partitions:** Partition metadata
 - **Crawlers:** Auto-discover schemas
 
 **Example:**
+
 ```python
 import boto3
 
@@ -987,13 +1085,14 @@ response = athena.start_query_execution(
     QueryString='SELECT * FROM ecommerce.transactions WHERE year=2024',
     ResultConfiguration={'OutputLocation': 's3://results/'}
 )
-```
+```text
 
 ### Glue Crawlers
 
 Auto-discover schemas and partitions.
 
 **Configuration:**
+
 ```python
 glue.create_crawler(
     Name='transactions-crawler',
@@ -1013,18 +1112,20 @@ glue.create_crawler(
 
 # Run crawler
 glue.start_crawler(Name='transactions-crawler')
-```
+```text
 
 ## Storage Optimization
 
 ### Small Files Problem
 
 **Problem:**
+
 - 1000s of small files (<10MB) create overhead
 - Slow queries (high latency per file)
 - High S3 API costs (LIST, GET operations)
 
 **Solution: Compaction**
+
 ```python
 import pyarrow.parquet as pq
 
@@ -1035,11 +1136,12 @@ table = pq.read_table('s3://bucket/small_files/')
 pq.write_table(table, 's3://bucket/compacted.parquet')
 
 # Result: 1000 files @ 1MB → 1 file @ 1GB
-```
+```text
 
 ### Cost Optimization
 
 **Storage Tiers:**
+
 ```python
 # Lifecycle policy
 lifecycle_policy = {
@@ -1068,6 +1170,7 @@ s3.put_bucket_lifecycle_configuration(
 ```
 
 **Cost Comparison:**
+
 | Tier | Cost/GB/Month | Use Case |
 |------|---------------|----------|
 | S3 Standard | $0.023 | Hot data (< 30 days) |
@@ -1079,17 +1182,17 @@ s3.put_bucket_lifecycle_configuration(
 
 ### 1. File Naming Conventions
 
-```
+```text
 {environment}_{layer}_{domain}_{entity}_{version}_{timestamp}.{format}
 
 Examples:
 prod_silver_ecommerce_transactions_v2_20240202.parquet
 dev_bronze_events_clickstream_v1_20240202.json.gz
-```
+```text
 
 ### 2. Directory Structure
 
-```
+```text
 s3://{bucket}/
 ├── {layer}/              # bronze, silver, gold
 │   └── {domain}/         # ecommerce, marketing, ops
@@ -1118,11 +1221,12 @@ def validate_parquet_file(path):
     assert 10 < file_size_mb < 1000, f"File size {file_size_mb}MB out of range"
 
     return True
-```
+```text
 
 ### 4. Documentation
 
 Every dataset should have:
+
 - **README.md:** Description, schema, examples
 - **CHANGELOG.md:** Schema version history
 - **schema.json:** Formal schema definition
@@ -1146,7 +1250,7 @@ cloudwatch.put_metric_data(
         }
     ]
 )
-```
+```text
 
 ## Summary
 

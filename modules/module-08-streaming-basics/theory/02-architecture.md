@@ -1,6 +1,7 @@
 # Streaming Architectures & Technologies
 
 ## index
+
 1. [Apache Kafka Architecture](#apache-kafka-architecture)
 2. [AWS Kinesis](#aws-kinesis)
 3. [Apache Flink](#apache-flink)
@@ -16,7 +17,7 @@
 
 ### Cluster Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                     Kafka Cluster                        │
 │                                                          │
@@ -44,7 +45,7 @@
     ┌────┴────┐                           ┌────▼────┐
     │Producer │                           │Consumer │
     └─────────┘                           └─────────┘
-```
+```text
 
 ### Components Deep Dive
 
@@ -62,7 +63,7 @@ broker_config = {
     'log.retention.hours': 168,  # 7 days
     'log.segment.bytes': 1073741824  # 1GB
 }
-```
+```text
 
 **2. Topic & Partitions**: Logical organization
 
@@ -87,6 +88,7 @@ admin.create_topics([topic])
 ```
 
 **Partition Strategy**:
+
 ```python
 # Partitioning por key (garantiza orden por key)
 producer.send('user-events', key=b'user_123', value=event)
@@ -96,11 +98,11 @@ producer.send('user-events', key=b'user_123', value=event)
 
 # Round-robin (sin key, para load balancing)
 producer.send('user-events', value=event)
-```
+```text
 
 **3. Replication**: Alta availability
 
-```
+```text
 Topic: user-events, Partition 0
 ┌────────────────────────────────────────┐
 │  Broker 1 (Leader)                     │
@@ -117,7 +119,7 @@ Topic: user-events, Partition 0
    │Broker 2 │ │Broker 3 │ │Broker 4 │
    │(Replica)│ │(Replica)│ │(Replica)│
    └─────────┘ └─────────┘ └─────────┘
-```
+```text
 
 ```python
 # ISR: In-Sync Replicas
@@ -155,9 +157,10 @@ for message in consumer:
     except Exception as e:
         logger.error(f"Processing failed: {e}")
         # No commit, retry en próximo poll
-```
+```text
 
 **Consumer Rebalancing**:
+
 ```python
 # Cuando agregamos/removemos consumers, Kafka rebalancea partitions
 
@@ -187,7 +190,7 @@ def on_assign(assigned_partitions):
 consumer.subscribe(['user-events'],
                    on_revoke=on_revoke,
                    on_assign=on_assign)
-```
+```text
 
 ### Log Compaction
 
@@ -217,7 +220,7 @@ To keep only the last value per key (useful for entity state):
     (key='user_789', value={'name': 'Bob', 'email': 'bob@email.com'})
     # user_123 eliminado (tombstone)
 ]
-```
+```text
 
 ---
 
@@ -231,12 +234,13 @@ AWS Kinesis
 ├── Kinesis Firehose        (ETL managed, auto-scaling)
 ├── Kinesis Analytics       (SQL sobre streams)
 └── Kinesis Video Streams   (video/audio streaming)
-```
+```text
 
 ### Kinesis Data Streams
 
 **Architecture**:
-```
+
+```text
 ┌──────────────────────────────────────────────────┐
 │           Kinesis Data Stream                     │
 │  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐        │
@@ -251,9 +255,10 @@ AWS Kinesis
        └─────────┴─────────┴─────────┘
                   │
             Consumers (KCL)
-```
+```text
 
 **Shards**: Unidad de throughput (similar a partitions)
+
 - **Write**: 1 MB/s or 1000 records/s per shard
 - **Read**: 2 MB/s per shard
 
@@ -291,6 +296,7 @@ kinesis.put_records(
 ```
 
 **Consumer (Kinesis Client Library)**:
+
 ```python
 from amazon_kinesis_client import KinesisClientLibConfiguration, Worker
 from amazon_kinesis_client.processor import RecordProcessorBase
@@ -314,7 +320,7 @@ config = KinesisClientLibConfiguration(
 
 worker = Worker(MyRecordProcessor, config)
 worker.run()
-```
+```text
 
 ### Kinesis Firehose
 
@@ -352,7 +358,7 @@ firehose.put_record(
 # - Particiona por fecha
 # - Entrega a S3
 # → Sin gestión de shards ni consumers
-```
+```text
 
 ### Kafka vs Kinesis
 
@@ -371,6 +377,7 @@ firehose.put_record(
 **When to use each**:
 
 **Kafka**:
+
 - ✅ On-premise o multi-cloud
 - ✅ Necesitas < 10ms latency
 - ✅ Muy alto throughput (GB/s)
@@ -378,6 +385,7 @@ firehose.put_record(
 - ✅ Full control
 
 **Kinesis**:
+
 - ✅ AWS-native (integration with Lambda, S3, etc.)
 - ✅ No quieres gestionar infraestructura
 - ✅ throughput moderado (< 100 MB/s)
@@ -390,6 +398,7 @@ firehose.put_record(
 ### What is Flink?
 
 Framework de procesamiento distribuido para streams y batch con:
+
 - ✅ Exactly-once semantics
 - ✅ Stateful processing
 - ✅ Event time processing
@@ -397,7 +406,7 @@ Framework de procesamiento distribuido para streams y batch con:
 
 ### Architecture
 
-```
+```text
 ┌───────────────────────────────────────────────────┐
 │                Flink Cluster                       │
 │                                                    │
@@ -470,7 +479,7 @@ windowed.map(lambda x: json.dumps(x)).add_sink(kafka_producer)
 
 # Execute
 env.execute('User Event Aggregation')
-```
+```text
 
 ### Stateful Processing
 
@@ -505,7 +514,7 @@ stateful_stream = keyed_stream.map(CountMapper())
 # - Checkpointed (fault tolerance)
 # - Distribuido por key
 # - Puede ser RocksDB (grandes estados)
-```
+```text
 
 ### Event Time vs Processing Time
 
@@ -531,7 +540,7 @@ stream = stream.assign_timestamps_and_watermarks(
 # Event 2: timestamp=10:00:02 → Llega a las 10:00:10 (más tarde!)
 
 # Watermark permite esperar eventos atrasados hasta 10 segundos
-```
+```text
 
 ### Checkpointing & Fault Tolerance
 
@@ -567,7 +576,7 @@ def filter_pattern(stream):
         event['amount'] > 100 and
         event['country'] == 'US'
     )
-```
+```text
 
 ### 2. Enrichment (Stateless con side input)
 
@@ -595,7 +604,7 @@ def enrich_with_profile(event, broadcast_state):
     }
 
 enriched = stream.connect(broadcast_state).process(enrich_with_profile)
-```
+```text
 
 ### 3. Aggregation (Stateful)
 
@@ -623,7 +632,7 @@ windowed_aggregates = stream \
             }
         )
     )
-```
+```text
 
 ### 4. Joining Streams
 
@@ -664,7 +673,7 @@ sessionized = stream \
         'start_time': min(session.get('start_time', event['ts']), event['ts']),
         'end_time': max(session.get('end_time', event['ts']), event['ts'])
     })
-```
+```text
 
 ### 6. Anomaly Detection
 
@@ -699,7 +708,7 @@ class AnomalyDetector(KeyedProcessFunction):
 anomalies = stream \
     .key_by(lambda x: x['user_id']) \
     .process(AnomalyDetector(threshold_multiplier=3.0))
-```
+```text
 
 ---
 
@@ -709,7 +718,7 @@ anomalies = stream \
 
 Combina batch y streaming para balance entre latency y accuracy:
 
-```
+```text
                   ┌─────────────┐
                   │ Data Source │
                   └──────┬──────┘
@@ -734,6 +743,7 @@ Combina batch y streaming para balance entre latency y accuracy:
 ```
 
 **features**:
+
 - **Batch Layer**: Procesa TODO el history (slow, accurate)
 - **Speed ​​Layer**: Processes latest events (fast, approximate)
 - **Serving Layer**: Merge de ambas vistas
@@ -777,13 +787,15 @@ def get_user_stats(user_id):
         'total_events': batch_stats['total_events'] + speed_stats['total_events'],
         'total_amount': batch_stats['total_amount'] + speed_stats['total_amount']
     }
-```
+```text
 
 **Ventajas**:
+
 - ✅ Best of both worlds (accuracy + latency)
 - ✅ Batch puede corregir errores en speed layer
 
 **Desventajas**:
+
 - ❌ Complejidad (dos codebases)
 - ❌ Duplicate logic
 - ❌ Merge layer complex
@@ -792,7 +804,7 @@ def get_user_stats(user_id):
 
 Solo streaming (simplificado):
 
-```
+```text
            ┌─────────────┐
            │ Data Source │
            └──────┬──────┘
@@ -812,9 +824,10 @@ Solo streaming (simplificado):
            │   Serving   │
            │    Layer    │
            └─────────────┘
-```
+```text
 
 **features**:
+
 - Todo es streaming
 - Re-procesar history = replay desde Kafka
 - Una sola codebase
@@ -835,22 +848,26 @@ def kappa_processing(stream):
 ```
 
 **Ventajas**:
+
 - ✅ Simplicidad (una codebase)
 - ✅ Menos infraestructura
 - ✅ Easier to maintain
 
 **Desventaj as**:
+
 - ❌ Re-processing puede tomar tiempo
 - ❌ Todo debe ser stream-friendly
 
 ### When to Use Each
 
 **Lambda**:
+
 - You need maximum accuracy (e.g. billing)
 - Batch puede hacer joins/agregaciones pesadas
 - Tienes equipo grande para mantener dos sistemas
 
 **Kappa**:
+
 - Prioridad es simplicidad
 - Data can be re-processed reasonably quickly
 - Streaming framework suficientemente powerful (Flink)
@@ -863,7 +880,7 @@ def kappa_processing(stream):
 
 ### Event-Driven Microservices
 
-```
+```text
 ┌──────────────┐        ┌──────────────┐        ┌──────────────┐
 │   Orders     │        │  Inventory   │        │  Shipping    │
 │   Service    │        │   Service    │        │   Service    │
@@ -877,9 +894,10 @@ def kappa_processing(stream):
                  │ • order-shipped             │
                  │ • inventory-updated         │
                  └─────────────────────────────┘
-```
+```text
 
 **Benefits**:
+
 - 🔄 **Decoupling**: Services no se llaman directamente
 - 📈 **Scalability**: Cada consumer escala independientemente
 - 🎯 **Event Sourcing**: History completo de cambios
@@ -947,7 +965,7 @@ class ShippingService:
                     'order_id': event['order_id'],
                     'shipment_id': shipment.id
                 })
-```
+```text
 
 ### Saga Pattern (Distributed Transactions)
 
@@ -1003,6 +1021,7 @@ def handle_saga_command(command):
 ### Kafka Performance Tuning
 
 **1. Producer Performance**:
+
 ```python
 producer = KafkaProducer(
     # Batching (más latencia, mejor throughput)
@@ -1023,9 +1042,10 @@ producer = KafkaProducer(
     # Buffer
     buffer_memory=33554432  # 32MB buffer
 )
-```
+```text
 
 **2. Partitioning Strategy**:
+
 ```python
 # Buena distribución = mejor paralelism
 def custom_partitioner(key, all_partitions, available_partitions):
@@ -1037,9 +1057,10 @@ def custom_partitioner(key, all_partitions, available_partitions):
         return random.choice(available_partitions)
 
 producer = KafkaProducer(partitioner=custom_partitioner)
-```
+```text
 
 **3. Consumer Performance**:
+
 ```python
 consumer = KafkaConsumer(
     # Fetch más data en cada poll
@@ -1064,11 +1085,12 @@ def consume_in_batches():
             # Process batch (más eficiente que uno por uno)
             process_batch(batch)
             batch.clear()
-```
+```text
 
 ### Flink Performance
 
 **1. Parallelism**:
+
 ```python
 env = StreamExecutionEnvironment.get_execution_environment()
 
@@ -1080,6 +1102,7 @@ stream.map(func).set_parallelism(4)  # Override global
 ```
 
 **2. State Backend**:
+
 ```python
 from pyflink.datastream import FsStateBackend, RocksDBStateBackend
 
@@ -1091,15 +1114,16 @@ env.set_state_backend(FsStateBackend("s3://my-bucket/checkpoints"))
 
 # RocksDBStateBackend: Para estados grandes (GB+)
 env.set_state_backend(RocksDBStateBackend("s3://my-bucket/checkpoints"))
-```
+```text
 
 **3. Network Buffers**:
+
 ```python
 # taskmanager.network.memory.fraction
 # taskmanager.network.memory.min/max
 
 # Más buffers = más throughput (pero más latency)
-```
+```text
 
 ---
 
@@ -1108,6 +1132,7 @@ env.set_state_backend(RocksDBStateBackend("s3://my-bucket/checkpoints"))
 ### Metrics to Track
 
 **Kafka**:
+
 ```python
 # Producer metrics
 - messages-sent-rate: Mensajes/segundo
@@ -1124,9 +1149,10 @@ env.set_state_backend(RocksDBStateBackend("s3://my-bucket/checkpoints"))
 - under-replicated-partitions: Partitions sin todas sus replicas
 - leader-election-rate: Frecuencia de elections (↑ = problema)
 - request-queue-size: Queue de requests pendientes
-```
+```text
 
 **Monitoring con Prometheus**:
+
 ```python
 from prometheus_client import Counter, Histogram, Gauge, start_http_server
 
@@ -1174,7 +1200,7 @@ groups:
         for: 2m
         annotations:
           summary: "Error rate exceeds 1%"
-```
+```text
 
 ---
 

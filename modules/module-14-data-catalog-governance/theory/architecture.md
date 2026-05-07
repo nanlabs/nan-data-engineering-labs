@@ -4,7 +4,7 @@
 
 ### Complete Data Governance Platform
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                          Data Producers                                  │
 ├─────────────────────────────────────────────────────────────────────────┤
@@ -59,13 +59,13 @@
                             │  • Business Users     │
                             │  • APIs & Apps        │
                             └───────────────────────┘
-```
+```text
 
 ## 2. AWS Glue Data Catalog Architecture
 
 ### Catalog Organization
 
-```
+```text
 Data Catalog
 │
 ├── Database: analytics_db
@@ -96,7 +96,7 @@ Data Catalog
 
 ### Crawler Architecture
 
-```
+```text
                     ┌─────────────────────────────┐
                     │   Scheduled Trigger         │
                     │   • Cron: 0 2 * * ? *       │
@@ -157,13 +157,13 @@ Data Catalog
                     │   • SNS Topic               │
                     │   • Lambda Trigger          │
                     └─────────────────────────────┘
-```
+```text
 
 ## 3. Lake Formation Permission Model
 
 ### Multi-Layer Security
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    Layer 1: IAM Policies                             │
 │  • Basic AWS service access                                         │
@@ -235,7 +235,7 @@ Data Catalog
 
 ### Permission Resolution Flow
 
-```
+```text
 User Access Request (Athena query on sales_db.transactions)
     │
     ├─ Check IAM Policy ──────────────────→ Deny? → Access Denied
@@ -260,13 +260,13 @@ User Access Request (Athena query on sales_db.transactions)
     │  (Tag-based access)                   Allow? ↓
     │
     └─→ Access Granted (with filtered data)
-```
+```text
 
 ## 4. Data Lineage Architecture
 
 ### Lineage Capture Points
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────────────┐
 │                         Source Systems                                 │
 │  • S3 Data Lake    • RDS Databases    • DynamoDB    • API Sources     │
@@ -332,7 +332,7 @@ User Access Request (Athena query on sales_db.transactions)
 
 ### Lineage Data Model
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────┐
 │                      Lineage Graph                             │
 └───────────────────────────────────────────────────────────────┘
@@ -373,13 +373,13 @@ Intermediate Table: silver_sales_data
            │
            ▼
            ML Model Endpoint: /predict-churn
-```
+```text
 
 ## 5. Cross-Account Data Sharing
 
 ### Architecture Pattern
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Producer Account (111111111111)               │
 │                                                                   │
@@ -449,7 +449,7 @@ Intermediate Table: silver_sales_data
 
 ### Quality Pipeline
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────────┐
 │                      Data Ingestion                                │
 │  S3 Landing Zone: s3://data-lake/landing/sales-data/               │
@@ -522,13 +522,13 @@ Intermediate Table: silver_sales_data
 │  • Data freshness monitoring           │
 │  • Compliance reporting                │
 └────────────────────────────────────────┘
-```
+```text
 
 ## 7. Governed Tables Architecture
 
 ### Apache Iceberg Integration
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────────┐
 │               Lake Formation Governed Tables                       │
 │                    (Apache Iceberg Format)                         │
@@ -624,7 +624,7 @@ Features:
 
 ### Comprehensive Monitoring
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────────┐
 │                         CloudWatch Metrics                         │
 ├───────────────────────────────────────────────────────────────────┤
@@ -675,7 +675,7 @@ Features:
 │  WHERE eventsource = 'glue.amazonaws.com'                          │
 │  GROUP BY useridentity, eventname                                  │
 └───────────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Key Architecture Principles
 

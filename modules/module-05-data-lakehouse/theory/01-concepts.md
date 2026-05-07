@@ -26,13 +26,14 @@ Over the past decade, organizations faced to dilemma:
 
 This dilemma led to complex architectures where data moved between multIPle systems:
 
-```
+```text
 Sources → data Lake → ETL → data Warehouse → BI Tools
                    ↓
                   ML/AI Tools
-```
+```text
 
 **Problems of this arquitectura**:
+
 - 🔴 Duplicate data on multIPle systems
 - 🔴 synchronization compleja and costosa
 - 🔴 Inconsistencys entre sistopics
@@ -41,7 +42,7 @@ Sources → data Lake → ETL → data Warehouse → BI Tools
 
 El **data Lakehouse** elimina this complejidad:
 
-```
+```text
 Sources → data Lakehouse → BI Tools + ML/AI Tools
           (Single Source of Truth)
 ```
@@ -52,7 +53,7 @@ Sources → data Lakehouse → BI Tools + ML/AI Tools
 
 ### 📊 Evolution Timeline
 
-```
+```text
 1990s: data Warehouses
    ↓   (Teradata, Oracle, SQL Server)
    ↓   ✅ ACID, performance
@@ -72,7 +73,7 @@ Sources → data Lakehouse → BI Tools + ML/AI Tools
        (Delta Lake, Iceberg, Hudi)
        ✅ ACID + flexibilidad + bajo costo
        ✅ Unified batch + streaming
-```
+```text
 
 ### 🎯 Factores que Impulsaron el Change
 
@@ -92,7 +93,7 @@ to **data Lake** is to centralized repository that stores **all of an organizati
 
 ### Typical Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │              data Lake (S3/HDFS)            │
 │  ┌────────┐  ┌────────┐  ┌─────────┐      │
@@ -118,13 +119,15 @@ to **data Lake** is to centralized repository that stores **all of an organizati
 ### ❌ Desventajas
 
 1. **not ACID**: not atomic transactions
+
    ```python
    # Problem: Readings inconsistentes
    # Process 1 is escribiendo 100 archivos
    # Process 2 lee mientras se escribe → datas parciales ❌
-   ```
+   ```text
 
 2. **without Time Travel**: not you can to return to versiones anteriores
+
    ```bash
    # if sobreescribes datas, se pierden for siempre
    $ aws s3 cp new_data.parquet s3://bucket/path/data.parquet
@@ -132,6 +135,7 @@ to **data Lake** is to centralized repository that stores **all of an organizati
    ```
 
 3. **without Schema Enforcement**: you can escribir basura
+
    ```python
    # Día 1: Schema correcto
    df1 = pd.DataFrame({"id": [1, 2], "amount": [100.0, 200.0]})
@@ -139,9 +143,10 @@ to **data Lake** is to centralized repository that stores **all of an organizati
    # Día 2: someone cambia el schema (without to want)
    df2 = pd.DataFrame({"id": ["to", "b"], "amount": ["100", "200"]})
    # ❌ Ahora you have types inconsistentes
-   ```
+   ```text
 
 4. **Metadata Pesada**: Leer 10,000 archivos is lento
+
    ```python
    # Spark necesita list todos los archivos
    spark.read.parquet("s3://bucket/partitioned-table/*/*/*/")
@@ -169,7 +174,7 @@ to **data Warehouse** is an analytics-optimized database with pre-defined schema
 
 ### Typical Architecture
 
-```
+```text
 ┌────────────────────────────────────────────┐
 │       data Warehouse (Networkshift/Snowflake)  │
 │                                            │
@@ -187,11 +192,12 @@ to **data Warehouse** is an analytics-optimized database with pre-defined schema
 │  • Query Optimizer                         │
 │  • Compression                             │
 └────────────────────────────────────────────┘
-```
+```text
 
 ### ✅ Ventajas
 
 1. **Full ACID**: Transactional guarantees
+
    ```sql
    BEGIN TRANSACTION;
    UPDATE accounts SET balance = balance - 100 WHERE id = 1;
@@ -201,6 +207,7 @@ to **data Warehouse** is an analytics-optimized database with pre-defined schema
    ```
 
 2. **Performance BI**: Optimizado for queries complejas
+
    ```sql
    -- Queries with múltIPles joins are rápidos
    SELECT
@@ -212,9 +219,10 @@ to **data Warehouse** is an analytics-optimized database with pre-defined schema
    JOIN dim_product p ON f.product_id = p.id
    GROUP BY 1, 2, 3;
    -- ⚡ Segundos, not minutos
-   ```
+   ```text
 
 3. **Schema Enforcement**: Automatic validation
+
    ```sql
    -- El warehouse valida tIPos and constraints
    INSERT INTO users (id, email, age)
@@ -231,19 +239,22 @@ to **data Warehouse** is an analytics-optimized database with pre-defined schema
 ### ❌ Desventajas
 
 1. **High Cost**: $3,000-$10,000+/TB/year
-   ```
+
+   ```text
    Networkshift: $0.25/hora × 24 × 365 = $2,190/año (mínimo)
    Snowflake: ~$40/TB/mes storage + $2-$4/cnetworkit compute
    ```
 
 2. **Rigid Schema**: Difficult to change schema
+
    ```sql
    -- Agregar column he/she can tomar horas in tables grandes
    ALTER TABLE events ADD COLUMN user_segment VARCHAR(50);
    -- ⏱️ 4 horas in table of 10B rows
-   ```
+   ```text
 
 3. **Structunetwork data only**: Does not support nested JSON, XML, images
+
    ```sql
    -- ❌ not you can to make esto eficientemente:
    SELECT json_extract(event_data, '$.user.preferences.notifications')
@@ -251,11 +262,12 @@ to **data Warehouse** is an analytics-optimized database with pre-defined schema
    ```
 
 4. **Not ML-Friendly**: Difficult to access for Python/Spark
+
    ```python
    # Necesitas exportar datas primero
    # Networkshift → S3 → Spark → Train model
    # ⏱️ Latency and costos of transferencia
-   ```
+   ```text
 
 5. **Vendor Lock-in**: Formato propietario
    - You can't easily move between Snowflake ↔ Networkshift
@@ -277,7 +289,7 @@ Un **data Lakehouse** is una arquitectura que implementa structures and features
 
 ### Arquitectura of the Lakehouse
 
-```
+```text
 ┌───────────────────────────────────────────────────────┐
 │                   data LAKEHOUSE                       │
 │                                                        │
@@ -331,9 +343,10 @@ deltaTable.update(
     condition="status = 'pending'",
     set={"status": "'processed'", "updated_at": "current_timestamp()"}
 )
-```
+```text
 
 **How ​​it works**:
+
 - Transaction log (`_delta_log/`) rastrea todas las operaciones
 - Atomic commit: either the entire batch is written, or nothing
 - Isolation: lectores they see snapshot consistente
@@ -355,9 +368,10 @@ df = spark.read.format("delta") \
 
 # to see historial completo
 deltaTable.history().show()
-```
+```text
 
 **Casos of uso**:
+
 - Audit and compliance
 - Rolelback after errors
 - Reproducibilidad in ML (entrenar with mismos datas)
@@ -375,7 +389,7 @@ df_with_new_col.write.format("delta") \
 
 # El schema anterior sigue siendo válido
 # Nuevas columns aparecen como NULL in records anteriores
-```
+```text
 
 #### 4. Unified Batch + Streaming
 
@@ -411,7 +425,7 @@ df = spark.read.format("delta").load("s3://bucket/table")
 from deltalake import DeltaTable
 dt = DeltaTable("s3://bucket/table")
 df = dt.to_pandas()
-```
+```text
 
 ### ✅ Ventajas of the Lakehouse
 
@@ -449,22 +463,26 @@ Existen tres formatos princIPales of table open-source:
 ### 1. Delta Lake (Databricks)
 
 **features**:
+
 - Transaction log in JSON (`_delta_log/`)
 - Optimistic concurrency controle
 - ACID via single log
 - Better integration with Spark
 
 **Strengths**:
+
 - ✅ Madurez and estabilidad
 - ✅ Performance in Spark
 - ✅ Documentation and community
 - ✅ Upserts eficientes (MERGE)
 
 **Weaknesses**:
+
 - ⚠️ Optimizado for Spark (otros engines with limitaciones)
 - ⚠️ Log he/she can crecer in tables with muchas actualizaciones
 
 **When to use**:
+
 - PIPelines batch pesados in Spark
 - Necesitas MERGE/UPSERT frecuente
 - Ecosistopic Databricks
@@ -472,22 +490,26 @@ Existen tres formatos princIPales of table open-source:
 ### 2. Apache Iceberg (Netflix → Apache)
 
 **features**:
+
 - Metadata in Avro/Parquet
 - Hidden partitioning (particiones transparentes)
 - Partition evolution (cambiar estrategia without reescribir)
 - Multi-engine by design
 
 **Strengths**:
+
 - ✅ Multi-engine (Spark, Flink, Presto, Trino)
 - ✅ Partition evolution
 - ✅ Hidden partitioning (easier for users)
 - ✅ Snapshots eficientes
 
 **Weaknesses**:
+
 - ⚠️ less maduro que Delta
 - ⚠️ Metadata complexity in tables grandes
 
 **When to use**:
+
 - MultIPle query engines
 - Streaming with Flink
 - Necesitas partition evolution
@@ -495,20 +517,24 @@ Existen tres formatos princIPales of table open-source:
 ### 3. Apache Hudi (Uber → Apache)
 
 **features**:
+
 - Copy-on-Write and Merge-on-Read
 - Incremental processing
 - Record-level updates
 
 **Strengths**:
+
 - ✅ Updates incrementales eficientes
 - ✅ CDC (Change data Capture) NATivo
 - ✅ Easily configurable data retention
 
 **Weaknesses**:
+
 - ⚠️ Complejidad in tuning
 - ⚠️ less adoption que Delta/Iceberg
 
 **When to use**:
+
 - CDC pIPelines
 - Updates frecuentes row-level
 - Ecosistopic AWS (EMR he/she has support NATivo)
@@ -551,13 +577,13 @@ for file in files:
     s3.put_object(Bucket='mybucket', Key=file, Body=data)
     # if falla in the file 50 of 100, ¿what pasa?
     # you have datas parciales ❌
-```
+```text
 
 ### How Delta Lake Implements ACID
 
 Delta Lake usa un **transaction log** for coordinar escrituras:
 
-```
+```text
 s3://bucket/table/
 ├── _delta_log/
 │   ├── 00000000000000000000.json  # Version 0
@@ -588,7 +614,7 @@ Cada commit genera un archivo JSON in `_delta_log/`:
     "stats": "{\"numRecords\": 500000, \"minValues\": {...}, \"maxValues\": {...}}"
   }
 }
-```
+```text
 
 #### Atomicidad
 
@@ -602,7 +628,7 @@ Cada commit genera un archivo JSON in `_delta_log/`:
 # Delta Lake garantiza atomicidad
 df.write.format("delta").mode("append").save("/path/to/table")
 # or todos los records se escriben, or ninguno ✅
-```
+```text
 
 #### Isolation
 
@@ -615,7 +641,7 @@ df.write.format("delta").mode("append").save("/path/to/table")
 # Writer 1 and Writer 2 escriben in paralelo
 # Delta Lake detecta conflicto and he/she makes retry automático
 # Ambos commits are serializables ✅
-```
+```text
 
 #### Consistency & Durability
 
@@ -629,12 +655,14 @@ df.write.format("delta").mode("append").save("/path/to/table")
 ### data Lake
 
 **Usa when**:
+
 - Archiving of historical data (logs, events)
 - Ad-hoc exploration without defined schema
 - Presupuesto limitado
 - not necesitas ACID
 
 **Examples**:
+
 - Application logs (30 day retention)
 - Archivos raw of IoT devices
 - data science exploration
@@ -642,12 +670,14 @@ df.write.format("delta").mode("append").save("/path/to/table")
 ### data Warehouse
 
 **Usa when**:
+
 - Critical BI with strict SLAs (<1s)
 - High concurrency (100+ users)
 - Queries extremadamente complejas
 - Budget is not to limitation
 
 **Examples**:
+
 - Dashboards ejecutivos
 - Financial reporting
 - Sales analytics with miles of users
@@ -655,12 +685,14 @@ df.write.format("delta").mode("append").save("/path/to/table")
 ### data Lakehouse
 
 **Usa when**:
+
 - you want unificar BI + ML in una plataforma
 - Necesitas ACID + bajo costo
 - you have workloads batch + streaming
 - you want evitar silos of datas
 
 **Examples**:
+
 - Plataforma of analytics moderna
 - ML feature stores
 - Real-time + historical analytics

@@ -1,6 +1,7 @@
 # Streaming Basics - Conceptos Fundamentales
 
 ## index
+
 1. [What is Stream Processing?](#what-is-stream-processing)
 2. [Streaming vs Batch Processing](#streaming-vs-batch-processing)
 3. [Event-Driven Architecture](#event-driven-architecture)
@@ -21,6 +22,7 @@
 **Stream Processing** is the continuous processing of data in motion in real time or near-real-time, as events arrive at the system.
 
 Unlike batch processing that processes static data at rest, streaming processes:
+
 - 📊 **Continuous events**: Data that constantly flows
 - ⏱️ **Baja latency**: Procesamiento en segundos o milisegundos
 - 🔄 **Endless data**: Infinite streams with no time limit
@@ -62,7 +64,7 @@ log_entry = {
     "message": "Database connection failed"
 }
 # → Alertar al on-call engineer
-```
+```text
 
 ### Aplicaciones Reales
 
@@ -94,6 +96,7 @@ log_entry = {
 ### Ejemplo Comparativo: E-commerce Analytics
 
 **Batch Processing (cada hora)**:
+
 ```python
 # Corre cada hora en un cron job
 def hourly_analytics():
@@ -112,9 +115,10 @@ def hourly_analytics():
         'orders': orders,
         'aov': avg_order_value
     })
-```
+```text
 
 **Stream Processing (continuo)**:
+
 ```python
 # Corre 24/7, procesa cada evento
 def process_transaction(transaction):
@@ -134,11 +138,12 @@ def process_transaction(transaction):
 
     # Actualizar recomendaciones personalizadas
     update_recommendations(event['user_id'])
-```
+```text
 
 ### When to Use Each
 
 **Use Batch When**:
+
 - ✅ latency of hours is acceptable
 - ✅ Procesas datasets completos (full scans)
 - ✅ Operaciones complejas (joins, aggregations pesadas)
@@ -146,6 +151,7 @@ def process_transaction(transaction):
 - ✅ Historical data (backfills)
 
 **Use Streaming When**:
+
 - ✅ Necesitas baja latency (< 1 minuto)
 - ✅ Eventos deben procesarse inmediatamente
 - ✅ Real-time anomaly detection
@@ -153,6 +159,7 @@ def process_transaction(transaction):
 - ✅ Critical alerts
 
 **Lambda Architecture** (combinando ambos):
+
 ```
 ┌─────────────────┐
 │  Data Source    │
@@ -170,7 +177,7 @@ def process_transaction(transaction):
          │   Serving   │
          │    Layer    │
          └─────────────┘
-```
+```text
 
 ---
 
@@ -179,6 +186,7 @@ def process_transaction(transaction):
 ### Conceptos Core
 
 **Event**: Something that happened at a point in time
+
 ```python
 event = {
     "event_id": "evt_123",
@@ -190,21 +198,24 @@ event = {
         "amount": 99.99
     }
 }
-```
+```text
 
 ### Event Types
 
 1. **Domain Events**: Cambios en el model de negocio
+
    ```python
    # OrderPlaced, UserRegistered, PaymentProcessed
    ```
 
 2. **System Events**: Technical events
+
    ```python
    # ServerStarted, CacheInvalidated, JobCompleted
-   ```
+   ```text
 
 3. **Integration Events**: Comunican entre bounded contexts
+
    ```python
    # CustomerUpdated, InventoryChanged
    ```
@@ -248,9 +259,10 @@ def replay_events(events):
         elif event['type'] == 'UserDeactivated':
             user['status'] = 'inactive'
     return user
-```
+```text
 
 **Ventajas**:
+
 - 📜 Full audit (immutable history)
 - 🔄 Replay para debugging
 - 📊 Temporal analysis (state at any point)
@@ -264,16 +276,17 @@ def replay_events(events):
 
 Apache Kafka es una plataforma de streaming distribuida que funciona como un **event bus** o **message broker** altamente scalable.
 
-```
+```text
 ┌──────────┐                  ┌─────────┐                  ┌──────────┐
 │ Producer │──── publish ────▶│  Kafka  │──── consume ────▶│ Consumer │
 │ (App 1)  │                  │ Cluster │                  │ (App 2)  │
 └──────────┘                  └─────────┘                  └──────────┘
-```
+```text
 
 ### Conceptos Clave
 
 **1. Topic**: Logical channel where events are published
+
 ```python
 # Topics son como tablas en una base de datos
 topics = [
@@ -285,14 +298,16 @@ topics = [
 ```
 
 **2. Partition**: Physical division of a topic for parallelism
-```
+
+```text
 Topic: "transactions"
 ├── Partition 0: [event1, event4, event7, ...]
 ├── Partition 1: [event2, event5, event8, ...]
 └── Partition 2: [event3, event6, event9, ...]
-```
+```text
 
 **3. Producer**: Application that publishes events
+
 ```python
 from kafka import KafkaProducer
 import json
@@ -306,9 +321,10 @@ producer = KafkaProducer(
 event = {"user_id": "user_123", "action": "purchase", "amount": 99.99}
 producer.send('transactions', event)
 producer.flush()
-```
+```text
 
 **4. Consumer**: Application that reads events
+
 ```python
 from kafka import KafkaConsumer
 import json
@@ -327,7 +343,8 @@ for message in consumer:
 ```
 
 **5. Consumer Group**: Grupo de consumers que procesan en paralelo
-```
+
+```text
 Topic "transactions" (3 partitions)
 ├── Partition 0  →  Consumer A  ┐
 ├── Partition 1  →  Consumer B  ├─ Consumer Group "analytics"
@@ -337,7 +354,7 @@ Topic "transactions" (3 partitions)
 ├── Partition 0  →  Consumer X  ┐
 ├── Partition 1  →  Consumer Y  ├─ Consumer Group "fraud-detection"
 └── Partition 2  →  Consumer Z  ┘
-```
+```text
 
 ### features de Kafka
 
@@ -373,7 +390,7 @@ message = {
         "source": "mobile_app"
     }
 }
-```
+```text
 
 ---
 
@@ -430,7 +447,7 @@ def running_average(event):
         'user_id': user_id,
         'avg_amount': state[user_id][0] / state[user_id][1]
     }
-```
+```text
 
 ### Stream Transformations
 
@@ -480,7 +497,7 @@ def apply_aggregate(stream, window_size=60):
                 'avg': sum(window[minute]) / len(window[minute])
             }
             del window[minute]
-```
+```text
 
 ---
 
@@ -489,15 +506,17 @@ def apply_aggregate(stream, window_size=60):
 ### Three Guarantees
 
 **1. At-Most-Once** (puede perderse):
+
 ```python
 # Read mensaje → Procesa → Commit offset
 # Si falla antes de commit, se pierde el mensaje
 consumer.poll()
 process_message(msg)
 consumer.commit()  # ← Si falla aquí, mensaje perdido
-```
+```text
 
 **2. At-Least-Once** (puede duplicarse):
+
 ```python
 # Read mensaje → Commit offset → Procesa
 # Si falla después de commit pero antes de procesar, se duplic
@@ -506,6 +525,7 @@ process_message(msg)  # ← Si falla aquí, mensaje ya committed
 ```
 
 **3. Exactly-Once** (una sola vez):
+
 ```python
 # Usa transacciones de Kafka
 producer.init_transactions()
@@ -516,7 +536,7 @@ try:
     producer.commit_transaction()
 except Exception:
     producer.abort_transaction()
-```
+```text
 
 ### Comparison
 
@@ -546,7 +566,7 @@ def process_with_dedup(event):
 
     # Marcar como procesado
     processed_ids.add(event_id)
-```
+```text
 
 ---
 
@@ -564,16 +584,17 @@ events = [evt1, evt2, evt3, evt4, evt5, ...]  # ∞
 window_1 = [evt1, evt2, evt3]  # 10:00 - 10:01
 window_2 = [evt4, evt5]        # 10:01 - 10:02
 window_3 = [...]               # 10:02 - 10:03
-```
+```text
 
 ### Tipos de Windows
 
 **1. Tumbling Window** (no se sobreponen):
+
 ```
 Time: ────────────────────────────▶
       [Window 1][Window 2][Window 3]
 Size: 1 minute  1 minute  1 minute
-```
+```text
 
 ```python
 # Ejemplo: Contar eventos cada minuto
@@ -592,10 +613,11 @@ def tumbling_count(stream, window_size=60):
                 'window_end': (window_key + 1) * window_size,
                 'count': windows[window_key]
             }
-```
+```text
 
 **2. Sliding Window** (se sobreponen):
-```
+
+```text
 Time: ────────────────────────────▶
       [──── Window 1 ────]
           [──── Window 2 ────]
@@ -617,15 +639,16 @@ def sliding_average(stream, window_size=300, slide=60):
                 'timestamp': event['timestamp'],
                 'avg_last_5min': sum(window) / len(window)
             }
-```
+```text
 
 **3. Session Window** (basado en inactividad):
-```
+
+```text
 Time: ─────────────────────────────────────▶
       [Session 1]     [Session 2] [Session 3]
 Events: ███─────────────███████────█────────
 Gap:       ^ 10 min      ^ 10 min   ^ 10 min
-```
+```text
 
 ```python
 # Ejemplo: Sesiones de usuario (gap de 10 minutes)
@@ -669,7 +692,7 @@ def stateful_process(event):
     key = event['key']
     state[key] = state.get(key, 0) + 1
     return state[key]
-```
+```text
 
 ### Distributed State Store
 
@@ -686,7 +709,7 @@ table = builder.table('user-counts')  # State store
 # - Persistido a disco
 # - Replicado a otros nodos
 # - Recuperado en failover
-```
+```text
 
 ### Checkpointing
 
@@ -717,7 +740,7 @@ try:
         state = pickle.load(f)
 except FileNotFoundError:
     state = {}
-```
+```text
 
 ---
 
@@ -767,7 +790,7 @@ event = {
 
 writer.write(event, encoder)
 raw_bytes = bytes_writer.getvalue()
-```
+```text
 
 ### Schema Registry
 
@@ -785,7 +808,7 @@ producer = AvroProducer({
 
 # Schema automáticamente registrado y versionado
 producer.produce(topic='purchases', value=event)
-```
+```text
 
 ### Schema Evolution
 
@@ -813,9 +836,10 @@ Cambiar schema sin romper compatibilidad:
 
 # Consumers v1 pueden leer messages v2 (ignoran phone)
 # Consumers v2 pueden leer messages v1 (usan default null)
-```
+```text
 
 **Compatibility Modes**:
+
 - **BACKWARD**: Consumers nuevos leen data antigua
 - **FORWARD**: Consumers antiguos leen data nueva
 - **FULL**: Ambos (backward + forward)
@@ -863,6 +887,7 @@ def process_event(event):
 ```
 
 **Critical Metrics**:
+
 - 📊 **throughput**: Eventos/segundo
 - ⏱️ **Latency**: Tiempo end-to-end
 - 🔄 **Lag**: Diferencia entre producido y consumido
@@ -890,7 +915,7 @@ def process_with_dlq(event):
             # Send to DLQ después de max retries
             send_to_dlq(event, error=str(e))
             logger.error("event_sent_to_dlq", event_id=event['id'])
-```
+```text
 
 ### 3. Backpressure
 
@@ -920,7 +945,7 @@ def consume_with_backpressure():
 
             # Resumir consumer
             consumer.resume()
-```
+```text
 
 ### 4. Testing Streaming Applications
 
@@ -952,7 +977,7 @@ def test_windowing():
 
     assert len(windows) == 10
     assert windows[0]['start'] == "2024-03-07T10:00:00Z"
-```
+```text
 
 ### 5. Performance Optimization
 

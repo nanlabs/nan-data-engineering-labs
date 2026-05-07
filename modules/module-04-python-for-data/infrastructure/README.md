@@ -4,14 +4,14 @@ This folder contains the Docker configuration for running Jupyter Lab and suppor
 
 ## Contenido
 
-```
+```text
 infrastructure/
 ├── Dockerfile              # Imagen personalizada de Jupyter Lab
 ├── docker-compose.yml      # Service orchestration
 ├── .env.example           # Template de variables de environment
 ├── jupyter_config.py      # Configuration de Jupyter Lab
 └── README.md              # Este file
-```
+```text
 
 ## services Disponibles
 
@@ -20,6 +20,7 @@ infrastructure/
 **Imagen**: Basada en `jupyter/scipy-notebook:python-3.11`
 
 **features**:
+
 - Python 3.11 con bibliotecas de data engineering
 - pandas, NumPy, Polars, PyArrow
 - SQLAlchemy, psycopg2 para databases
@@ -28,7 +29,8 @@ infrastructure/
 - Mounted volumes for persistence
 
 **Acceso**:
-- URL: http://localhost:8888
+
+- URL: <http://localhost:8888>
 - Token: Ver en `.env` (default: `python-data-2026`)
 
 ### 2. PostgreSQL (Opcional)
@@ -38,6 +40,7 @@ infrastructure/
 **Uso**: For exercises that require connecting Python to databases
 
 **Acceso**:
+
 - Host: `localhost`(from machine) or`postgres` (desde Jupyter)
 - Port: 5433 (so as not to conflict with local installation)
 - Credenciales: Ver `.env`
@@ -49,8 +52,9 @@ infrastructure/
 **Use**: S3 simulation for exercises with storage cloud
 
 **Acceso**:
-- API: http://localhost:9000
-- Console: http://localhost:9001
+
+- API: <http://localhost:9000>
+- Console: <http://localhost:9001>
 - Credenciales: Ver `.env`
 
 ---
@@ -65,7 +69,7 @@ cp .env.example .env
 
 # Editar valores si es necesario
 nano .env
-```
+```text
 
 ### 2. Iniciar services
 
@@ -85,7 +89,7 @@ docker-compose logs jupyter
 
 # O abrir directamente
 open http://localhost:8888
-```
+```text
 
 **Token por defecto**: `python-data-2026`
 
@@ -113,7 +117,7 @@ docker-compose restart jupyter
 
 # Ver estado de servicios
 docker-compose ps
-```
+```text
 
 ### Build y Debugging
 
@@ -129,7 +133,7 @@ docker stats python-data-jupyter
 
 # Inspeccionar container
 docker inspect python-data-jupyter
-```
+```text
 
 ### Mantenimiento
 
@@ -204,7 +208,7 @@ File with custom configuration:
 # 1. Acceder a http://localhost:8888
 # 2. Click en "Python 3" bajo Notebook
 # 3. Guardar en: work/notebooks/mi_notebook.ipynb
-```
+```text
 
 ### Automatic Imports
 
@@ -215,7 +219,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-```
+```text
 
 ### Connect to PostgreSQL (if enabled)
 
@@ -230,7 +234,7 @@ engine = create_engine(DATABASE_URL)
 
 # Leer query
 df = pd.read_sql("SELECT * FROM mi_tabla", engine)
-```
+```text
 
 ### Leer/Escribir Files
 
@@ -270,7 +274,7 @@ htop
 
 # Probar conectividad PostgreSQL
 pg_isready -h postgres -p 5432
-```
+```text
 
 ---
 
@@ -285,7 +289,7 @@ pg_isready -h postgres -p 5432
 
 ```bash
 docker-compose up -d postgres
-```
+```text
 
 ### Habilitar MinIO (S3 local)
 
@@ -296,10 +300,11 @@ docker-compose up -d postgres
 
 ```bash
 docker-compose up -d minio
-```
+```text
 
 **Acceder a MinIO Console**:
-- URL: http://localhost:9001
+
+- URL: <http://localhost:9001>
 - Usuario: `minio_admin` (ver `.env`)
 - Password: `minio_pass123` (ver `.env`)
 
@@ -327,7 +332,7 @@ echo "nueva-libreria>=1.0.0" >> requirements.txt
 
 # 2. Reconstruir
 docker-compose up -d --build
-```
+```text
 
 **Method 2: Modify Dockerfile**
 
@@ -339,7 +344,7 @@ RUN pip install --no-cache-dir nueva-libreria==1.0.0
 # Reconstruir
 docker-compose build --no-cache
 docker-compose up -d
-```
+```text
 
 ---
 
@@ -362,7 +367,7 @@ docker-compose config
 docker-compose down -v
 docker-compose build --no-cache
 docker-compose up -d
-```
+```text
 
 ### Problema: Puerto 8888 ocupado
 
@@ -394,7 +399,7 @@ chmod -R 777 infrastructure/notebooks/
 
 # Reiniciar container
 docker-compose restart jupyter
-```
+```text
 
 ### Problema: Out of Memory
 
@@ -413,7 +418,7 @@ deploy:
 # Reiniciar
 docker-compose down
 docker-compose up -d
-```
+```text
 
 ### Problem: Code changes are not reflected
 
@@ -427,7 +432,7 @@ docker-compose up -d
 %autoreload 2
 
 # O reiniciar kernel: Kernel -> Restart Kernel
-```
+```text
 
 ### Problema: No puedo conectar a PostgreSQL
 
@@ -464,7 +469,7 @@ deploy:
     limits:
       cpus: '4.0'    # Aumentar CPUs
       memory: 8G     # Aumentar RAM
-```
+```text
 
 ### 2. Use delegated volumes (Mac)
 
@@ -473,7 +478,7 @@ Para mejor performance en macOS:
 ```yaml
 volumes:
   - ./notebooks:/home/jovyan/work/notebooks:delegated
-```
+```text
 
 ### 3. Desactivar extensiones no usadas
 
@@ -483,7 +488,7 @@ En `jupyter_config.py`, comentar extensiones:
 # c.ServerApp.jpserver_extensions = {
 #     'jupyterlab_git': True,  # Comentar si no usas Git
 # }
-```
+```text
 
 ### 4. Limpiar outputs de notebooks
 
@@ -501,7 +506,7 @@ jupyter nbconvert --clear-output --inplace notebooks/*.ipynb
 ```bash
 # En .env, generar token seguro
 JUPYTER_TOKEN=$(openssl rand -hex 32)
-```
+```text
 
 ### 2. No exponer puertos innecesarios
 
@@ -511,7 +516,7 @@ Si no necesitas acceso externo, omite el mapeo de puertos:
 # En docker-compose.yml, comentar:
 # ports:
 #   - "8888:8888"
-```
+```text
 
 ### 3. Usar secrets para passwords
 
@@ -521,7 +526,7 @@ For production, use Docker secrets:
 secrets:
   postgres_password:
     file: ./secrets/postgres_password.txt
-```
+```text
 
 ### 4. Run container como usuario no-root
 
@@ -550,7 +555,7 @@ docker-compose exec postgres pg_dump -U python_user python_data > backup.sql
 
 # Restaurar
 docker-compose exec -T postgres psql -U python_user python_data < backup.sql
-```
+```text
 
 ---
 
@@ -558,9 +563,9 @@ docker-compose exec -T postgres psql -U python_user python_data < backup.sql
 
 ### Official Documentation
 
-- **Jupyter Docker Stacks**: https://jupyter-docker-stacks.readthedocs.io/
-- **Jupyter Lab**: https://jupyterlab.readthedocs.io/
-- **Docker Compose**: https://docs.docker.com/compose/
+- **Jupyter Docker Stacks**: <https://jupyter-docker-stacks.readthedocs.io/>
+- **Jupyter Lab**: <https://jupyterlab.readthedocs.io/>
+- **Docker Compose**: <https://docs.docker.com/compose/>
 
 ### Base Images Available
 
@@ -575,15 +580,17 @@ docker-compose exec -T postgres psql -U python_user python_data < backup.sql
 Si prefieres no usar Docker:
 
 1. **Local venv**:
+
    ```bash
    python -m venv venv
    source venv/bin/activate
    pip install jupyterlab
    pip install -r requirements.txt
    jupyter lab
-   ```
+   ```text
 
 2. **Conda**:
+
    ```bash
    conda create -n python-data python=3.11
    conda activate python-data

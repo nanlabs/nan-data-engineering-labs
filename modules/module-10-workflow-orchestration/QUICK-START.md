@@ -11,16 +11,17 @@ cd modules/module-10-workflow-orchestration
 ./scripts/setup.sh
 
 # Esperar ~2 minutes mientras se inicializan los servicios
-```
+```text
 
 ### 2. Acceder a la UI
 
 Abre tu navegador en:
-- **Airflow Web UI**: http://localhost:8080
+
+- **Airflow Web UI**: <http://localhost:8080>
   - Usuario: `airflow`
   - Contraseña: `airflow`
 
-- **Flower (Monitoreo Celery)**: http://localhost:5555
+- **Flower (Monitoreo Celery)**: <http://localhost:5555>
 
 ### 3. Verificar instalación
 
@@ -33,17 +34,19 @@ Abre tu navegador en:
 # ✅ Servicios saludables
 # ✅ DAGs listados
 # ✅ Tests pasando
-```
+```text
 
 ## 📚 Orden de Aprendizaje
 
 ### Semana 1: Fundamentos (6-8 hours)
 
 **Día 1-2: Theory**
+
 1. Leer [theory/01-airflow-fundamentals.md](theory/01-airflow-fundamentals.md)
 2. Leer [theory/02-dags-and-operators.md](theory/02-dags-and-operators.md)
 
 **Día 3-4: Exercises Básicos**
+
 1. [exercises/01-first-dag/](exercises/01-first-dag/) → 6 tasks (~2-3 hours)
 2. [exercises/02-operators-sensors/](exercises/02-operators-sensors/) → 6 tasks (~3-4 hours)
 
@@ -52,9 +55,11 @@ Abre tu navegador en:
 ### Semana 2: Intermedio (8-10 hours)
 
 **Día 1-2: Dependencias Complejas**
+
 1. [exercises/03-task-dependencies/](exercises/03-task-dependencies/) → 6 tasks (~3-4 hours)
 
 **Día 3-5: Pipelines Reales**
+
 1. [exercises/04-data-pipelines/](exercises/04-data-pipelines/) → 6 tasks (~4-5 hours)
 
 **DAGs a revisar**: `ex03_branching.py`, `ex04_api_pipeline.py`
@@ -62,9 +67,11 @@ Abre tu navegador en:
 ### Semana 3: Producción (6-8 hours)
 
 **Día 1-2: Monitoreo**
+
 1. [exercises/05-monitoring-alerts/](exercises/05-monitoring-alerts/) → 5 tasks (~2-3 hours)
 
 **Día 3-5: Deployment**
+
 1. Leer [theory/03-production-patterns.md](theory/03-production-patterns.md)
 2. [exercises/06-production-deployment/](exercises/06-production-deployment/) → 6 tasks (~4-5 hours)
 
@@ -89,7 +96,7 @@ docker-compose down
 
 # Detener y limpiar volúmenes
 docker-compose down -v
-```
+```text
 
 ### Comandos Airflow
 
@@ -124,11 +131,12 @@ pytest -m unit
 
 # Con cobertura
 pytest --cov=../exercises --cov-report=html
-```
+```text
 
 ## 🎓 Checklist de Progreso
 
 ### Fundamentos
+
 - [ ] Entiendo qué es un DAG
 - [ ] Puedo create un DAG básico con PythonOperator
 - [ ] Entiendo las dependencias con `>>`
@@ -136,6 +144,7 @@ pytest --cov=../exercises --cov-report=html
 - [ ] Conozco schedule_interval y start_date
 
 ### Intermedio
+
 - [ ] Uso múltiples operadores (Python, Bash, Email)
 - [ ] Implemento branching con BranchPythonOperator
 - [ ] Entiendo los 7 trigger rules
@@ -143,6 +152,7 @@ pytest --cov=../exercises --cov-report=html
 - [ ] Manejo errores con retries y callbacks
 
 ### Avanzado
+
 - [ ] Configuro SLAs y monitoreo
 - [ ] Implemento callbacks personalizados
 - [ ] Integro con Slack/email para alertas
@@ -153,6 +163,7 @@ pytest --cov=../exercises --cov-report=html
 ## 🐛 Troubleshooting Rápido
 
 ### DAG no aparece
+
 ```bash
 # Verificar errores de sintaxis
 python dags/tu_dag.py
@@ -162,9 +173,10 @@ python dags/tu_dag.py
 
 # Refrescar DAG list
 docker-compose exec webserver airflow dags list-import-errors
-```
+```text
 
 ### Task falla
+
 ```bash
 # Ver logs detallados
 docker-compose exec webserver airflow tasks logs DAG_ID TASK_ID DATE
@@ -174,9 +186,10 @@ docker-compose exec webserver airflow tasks run DAG_ID TASK_ID DATE
 
 # Limpiar estado
 docker-compose exec webserver airflow dags delete DAG_ID
-```
+```text
 
 ### Servicios no inician
+
 ```bash
 # Ver logs
 docker-compose logs -f
@@ -194,6 +207,7 @@ docker-compose down -v
 ```
 
 ### Base de datos locked
+
 ```bash
 # Reiniciar solo scheduler
 docker-compose restart scheduler
@@ -202,11 +216,11 @@ docker-compose restart scheduler
 docker-compose down -v
 docker-compose up airflow-init
 docker-compose up -d
-```
+```text
 
 ## 📁 Estructura de Archivos Importante
 
-```
+```text
 module-10-workflow-orchestration/
 ├── dags/                     # 👈 TUS DAGs VAN AQUÍ
 │   ├── ex01_hello_world.py  # Ejemplos listo para usar
@@ -228,7 +242,7 @@ module-10-workflow-orchestration/
     ├── 01-first-dag/
     ├── 02-operators-sensors/
     └── ...
-```
+```text
 
 ## 💡 Tips Pro
 

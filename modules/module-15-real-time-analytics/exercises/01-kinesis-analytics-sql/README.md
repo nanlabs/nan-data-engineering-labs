@@ -1,6 +1,7 @@
 # Exercise 01: Kinesis Analytics SQL
 
 ## Overview
+
 Build your first Kinesis Data Analytics application using Flink SQL to analyze streaming clickstream data with tumbling windows.
 
 **Difficulty**: ⭐⭐ Intermediate
@@ -10,6 +11,7 @@ Build your first Kinesis Data Analytics application using Flink SQL to analyze s
 ## Learning Objectives
 
 By completing this exercise, you will:
+
 - Create Kinesis Data Streams for input and output
 - Define source and sink tables in Flink SQL
 - Implement tumbling window aggregations
@@ -25,7 +27,7 @@ By completing this exercise, you will:
 
 ## Architecture
 
-```
+```text
 ┌─────────────┐      ┌──────────────────────┐      ┌─────────────┐
 │   Events    │      │  Kinesis Analytics   │      │ Aggregated  │
 │   Stream    │─────>│   (Flink SQL)        │─────>│   Stream    │
@@ -39,7 +41,7 @@ By completing this exercise, you will:
                                                     │  DynamoDB    │
                                                     │  (Results)   │
                                                     └──────────────┘
-```
+```text
 
 ## Setup
 
@@ -54,7 +56,7 @@ awslocal kinesis list-streams --region us-east-1
 
 # Check Flink is accessible
 curl http://localhost:8081/overview
-```
+```text
 
 ### Create Required Streams
 
@@ -109,9 +111,10 @@ CREATE TABLE clickstream_events (
     'format' = 'json',
     'json.timestamp-format.standard' = 'ISO-8601'
 );
-```
+```text
 
 **Key Points**:
+
 - `WATERMARK`: Defines event time semantics (5-second tolerance for late events)
 - `TIMESTAMP(3)`: Millisecond precision timestamps
 - `connector = 'kinesis'`: Uses Kinesis connector
@@ -154,7 +157,7 @@ CREATE TABLE realtime_dashboard (
     'aws.region' = 'us-east-1',
     'aws.endpoint' = 'http://localstack:4566'
 );
-```
+```text
 
 ## Task 3: Implement Tumbling Window Aggregation (30 minutes)
 
@@ -180,9 +183,10 @@ WHERE event_type = 'page_view'
 GROUP BY
     TUMBLE(event_timestamp, INTERVAL '1' MINUTE),
     page_url;
-```
+```text
 
 **Breakdown**:
+
 - `TUMBLE_START/END`: Get window boundaries
 - `TUMBLE(event_timestamp, INTERVAL '1' MINUTE)`: Define 1-minute non-overlapping windows
 - `COUNT(DISTINCT user_id)`: Count unique users within each window
@@ -242,11 +246,11 @@ SOURCE '/opt/flink/jobs/aggregation_query.sql';
 
 -- 3. Verify job is running
 SHOW JOBS;
-```
+```text
 
 ### Option B: Deploy via Flink Web UI
 
-1. Open Flink UI: http://localhost:8081
+1. Open Flink UI: <http://localhost:8081>
 2. Click "Submit New Job"
 3. Upload SQL file: `combined_application.sql`
 4. Set Entry Class: `org.apache.flink.table.client.SqlClient`
@@ -358,7 +362,7 @@ def create_kinesis_analytics_app():
 
 if __name__ == '__main__':
     create_kinesis_analytics_app()
-```
+```text
 
 ## Task 5: Generate Test Data (15 minutes)
 
@@ -467,7 +471,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     send_events(args.count, args.rate)
-```
+```text
 
 **Run the generator**:
 
@@ -492,7 +496,7 @@ curl http://localhost:8081/jobs
 
 # Via Flink CLI
 docker exec module15-flink-jobmanager ./bin/flink list
-```
+```text
 
 ### Read Output Stream
 
@@ -510,7 +514,7 @@ SHARD_ITERATOR=$(awslocal kinesis get-shard-iterator \
 awslocal kinesis get-records \
     --shard-iterator "$SHARD_ITERATOR" \
     --region us-east-1 | jq '.Records[].Data' | base64 -d | jq .
-```
+```text
 
 ### Query DynamoDB Results
 
@@ -526,11 +530,11 @@ awslocal dynamodb query \
     --key-condition-expression "metric_name = :name" \
     --expression-attribute-values '{":name":{"S":"revenue_per_minute"}}' \
     --region us-east-1
-```
+```text
 
 ### Monitor in Flink UI
 
-1. Open http://localhost:8081
+1. Open <http://localhost:8081>
 2. Click on your running job
 3. View:
    - **Overview**: Job status, uptime, parallelism
@@ -571,6 +575,7 @@ After running for 5 minutes with 10 events/sec:
 ### Problem: Job fails to start
 
 **Solution**:
+
 ```bash
 # Check Flink logs
 docker logs module15-flink-jobmanager
@@ -578,11 +583,12 @@ docker logs module15-flink-jobmanager
 # Check for syntax errors in SQL
 # Verify connector JARs are available
 docker exec module15-flink-jobmanager ls /opt/flink/lib/ | grep kinesis
-```
+```text
 
 ### Problem: No results in output stream
 
 **Checklist**:
+
 - [ ] Input stream has data (check with get-records)
 - [ ] Watermarks are progressing (check Flink metrics)
 - [ ] Window duration has passed (wait at least 1 minute)
@@ -591,10 +597,11 @@ docker exec module15-flink-jobmanager ls /opt/flink/lib/ | grep kinesis
 ### Problem: Late data not included
 
 **Solution**: Increase allowed lateness:
+
 ```sql
 -- Allow 30 seconds of lateness
 WATERMARK FOR event_timestamp AS event_timestamp - INTERVAL '30' SECOND
-```
+```text
 
 ## Key Learnings
 

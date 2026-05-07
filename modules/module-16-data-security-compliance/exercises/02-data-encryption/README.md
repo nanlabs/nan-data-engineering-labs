@@ -1,6 +1,7 @@
 # Exercise 02: Data Encryption
 
 ## Overview
+
 Implement comprehensive encryption for data at rest and in transit using AWS KMS, envelope encryption, and TLS/SSL certificates.
 
 **Difficulty**: ⭐⭐⭐ Advanced
@@ -29,7 +30,7 @@ Implement comprehensive encryption for data at rest and in transit using AWS KMS
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    ENCRYPTION ARCHITECTURE                   │
 │                                                              │
@@ -67,7 +68,7 @@ Implement comprehensive encryption for data at rest and in transit using AWS KMS
 │  │         TLS 1.2+       TLS 1.2+          │             │
 │  └──────────────────────────────────────────┘             │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Task 1: Create KMS Customer-Managed Keys (30 minutes)
 
@@ -357,7 +358,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ ALL KEYS CREATED")
     print("="*60)
-```
+```text
 
 ## Task 2: S3 Bucket Encryption (30 minutes)
 
@@ -747,7 +748,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ ENVELOPE ENCRYPTION COMPLETE")
     print("="*60)
-```
+```text
 
 ## Task 4: RDS/Redshift Encryption (30 minutes)
 
@@ -812,7 +813,7 @@ echo "   (This may take 10-15 minutes)"
 echo -e "\n====================================="
 echo "✓ DATABASE ENCRYPTION ENABLED"
 echo "====================================="
-```
+```text
 
 ## Task 5: TLS/SSL Configuration (30 minutes)
 
@@ -966,7 +967,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ TLS CONFIGURATION INITIATED")
     print("="*60)
-```
+```text
 
 ## Validation Checklist
 
@@ -984,6 +985,7 @@ if __name__ == '__main__':
 ## Expected Results
 
 **KMS Keys**:
+
 - Data Lake encryption key (with rotation)
 - Database encryption key (with rotation)
 - Application encryption key (with rotation)
@@ -1010,7 +1012,7 @@ aws kms put-key-policy --key-id <KEY_ID> --policy-name default --policy file://p
 # Verify bucket encryption
 response = s3.get_bucket_encryption(Bucket='bucket-name')
 print(response['ServerSideEncryptionConfiguration'])
-```
+```text
 
 ## Key Learnings
 

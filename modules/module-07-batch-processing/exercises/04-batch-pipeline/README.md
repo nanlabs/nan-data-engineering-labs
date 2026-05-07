@@ -3,6 +3,7 @@
 ## 🎯 Objectives
 
 Construir un batch ETL pipeline completo con:
+
 - Extract from multiple sources
 - Transform with business logic
 - Load to partitioned output
@@ -14,7 +15,7 @@ Construir un batch ETL pipeline completo con:
 
 ### Batch ETL pipeline
 
-```
+```text
 ┌─────────────┐
 │   Extract   │  Read from sources
 └──────┬──────┘
@@ -26,7 +27,7 @@ Construir un batch ETL pipeline completo con:
 ┌──────▼──────┐
 │    Load     │  Write to destination
 └─────────────┘
-```
+```text
 
 ### Idempotence
 
@@ -38,7 +39,7 @@ df.write.mode("overwrite").partitionBy("date").parquet(path)
 
 # ❌ No idempotent (append mode sin dedup)
 df.write.mode("append").parquet(path)  # Creates duplicates!
-```
+```text
 
 ## 🏋️ Exercises
 
@@ -139,7 +140,7 @@ class BusinessTransformations:
         - Standardize country codes
         """
         pass
-```
+```text
 
 ### Parte 3: Error Handling
 
@@ -172,7 +173,7 @@ class PipelineErrorHandler:
     def write_error_log(self, output_dir: str):
         """Write error log to file."""
         pass
-```
+```text
 
 ### Parte 4: Metrics & Monitoring
 
@@ -202,7 +203,7 @@ class PipelineMetrics:
     def write_metrics(self, output_path: str):
         """Write metrics to JSON file."""
         pass
-```
+```text
 
 ### Parte 5: Configuration
 
@@ -262,7 +263,7 @@ cd ../../data/scripts
 python generate_transactions.py --total-records 10000000
 python generate_users.py
 python generate_products.py
-```
+```text
 
 ## ✅ Validation
 
@@ -272,7 +273,7 @@ python solution/etl_pipeline.py --date 2024-03-07 --config config/pipeline_confi
 
 # Verify output
 pytest test_batch_pipeline.py -v
-```
+```text
 
 ## 💡 Hints
 
@@ -287,7 +288,8 @@ with open('config.yaml') as f:
 
 # Access config
 transactions_path = config['sources']['transactions']['path']
-```
+```text
+
 </details>
 
 <details>
@@ -307,6 +309,7 @@ df.write \
   .partitionBy("year", "month") \
   .parquet(output_path)
 ```
+
 </details>
 
 <details>
@@ -333,7 +336,8 @@ metrics = {
 # Write metrics
 with open('metrics.json', 'w') as f:
     json.dump(metrics, f, indent=2)
-```
+```text
+
 </details>
 
 <details>
@@ -355,7 +359,8 @@ def validate_dataframe(df, required_columns, max_amount):
     assert invalid_amounts == 0, f"Found {invalid_amounts} invalid amounts"
 
     return True
-```
+```text
+
 </details>
 
 ## 🎓 Learning Outcomes

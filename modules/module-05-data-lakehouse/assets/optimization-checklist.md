@@ -7,13 +7,15 @@
 - [ ] **Problem**: Too many small files (<128MB)
   - **Yesntoma**: Queries lentos, alto overhead
   - **Solution**:`OPTIMIZE` for compactar
+
   ```python
   delta_table.optimize().executeCompaction()
-  ```
+  ```text
 
 - [ ] **Problem**: Archivos muy grandes (>1GB)
   - **Yesntoma**: Lentitud in operaciones paralelas
   - **Solution**: Repartition before writing
+
   ```python
   df.repartition(100).write.format("delta").save(path)
   ```
@@ -25,24 +27,26 @@
   - ❌ Malo: user_id (millones), is_active (2 valores)
 
 - [ ] **Partition Pruning**: Ensure that queries filter by partition
+
   ```python
   # ✅ Bueno: Usa partición
   df.filter("date = '2024-01-15' AND country = 'USA'")
   
   # ❌ Malo: not usa partición
   df.filter("amount > 1000")
-  ```
+  ```text
 
 - [ ] **Evitar**: > 10,000 particiones by table
 
 ### 3. Z-Ordering (data SkIPping)
 
 - [ ] **Aplicar to**: columns of filters frecuentes (not particiones)
+
   ```python
   delta_table.optimize().executeZOrderBy("user_id", "product_id")
   ```
 
-- [ ] **not aplicar to**: 
+- [ ] **not aplicar to**:
   - columns of alta cardinalidad (>100M valores)
   - columns que nunca se filtran
 
@@ -52,13 +56,15 @@
 
 - [ ] **Habilitar**: Statistics collection (habilitado by default)
 - [ ] **Verificar**: Stats in _delta_log
+
   ```python
   delta_table.detail().select("numFiles", "sizeInBytes", "numRecords").show()
-  ```
+  ```text
 
 ### 5. Vacuum
 
 - [ ] **Antes of VACUUM**: Confirmar retention apropiado
+
   ```python
   # Retener 7 días (168 horas)
   delta_table.vacuum(168)
@@ -70,12 +76,14 @@
 ### 6. Caching
 
 - [ ] **For small tables**: In-memory cache
+
   ```python
   df.cache()
   df.count()  # Materialize cache
-  ```
+  ```text
 
 - [ ] **Clear cache**: After use
+
   ```python
   df.unpersist()
   ```
@@ -93,18 +101,20 @@
 
 - [ ] **Batch size**: 10,000-100,000 records by write ideal
 - [ ] **Auto Optimize** (Databricks):
+
   ```sql
   ALTER TABLE events SET TBLPROPERTIES (
     delta.autoOptimize.optimizeWrite = true,
     delta.autoOptimize.autoCompact = true
   )
-  ```
+  ```text
 
 ### 9. Query Optimization
 
 - [ ] **Pushdown filters**: Filtrar antes of joins
 - [ ] **Select specific columns**: Evitar `SELECT *`
 - [ ] **Broadcast small tables**: for joins
+
   ```python
   from pyspark.sql.functions import broadcast
   large_df.join(broadcast(small_df), "id")
@@ -129,7 +139,7 @@
   
   # to see historial of optimization
   delta_table.history().filter("operation = 'OPTIMIZE'").show()
-  ```
+  ```text
 
 ## 🎯 Performance Targets
 
@@ -145,18 +155,21 @@
 ## 🔍 Troubleshooting
 
 ### Query lento?
+
 1. Check if usa partition pruning
 2. Check number of files (ejecutar OPTIMIZE?)
 3. Check if Z-ORDER would help
 4. Check execution plan with `.explain()`
 
 ### Writes lentos?
+
 1. Check batch size (too small?)
 2. Check number of write partitions
 3. Check if automatic Z-ORDER is active
 4. Consider disabling merge schema if not necesario
 
 ### Storage growing fast?
+
 1. Ejecutar VACUUM
 2. Check retention policy
 3. Check if there is duplicate data

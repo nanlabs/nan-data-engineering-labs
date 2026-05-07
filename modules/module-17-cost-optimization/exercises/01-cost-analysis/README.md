@@ -14,7 +14,7 @@
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                      AWS Accounts                           │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐                 │
@@ -61,7 +61,7 @@
 │  │  Dashboard   │  │   Reports    │  │   Alerts     │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Tasks
 
@@ -120,9 +120,9 @@ top_services = df.groupby('Service')['Cost'].sum().sort_values(ascending=False).
 print("\n🔝 Top 10 Services by Cost (Last 6 Months):")
 for service, cost in top_services.items():
     print(f"  {service}: ${cost:,.2f}")
-```
+```text
 
-2. **Get daily costs to identify trends**:
+1. **Get daily costs to identify trends**:
 
 ```python
 # Get last 30 days with daily granularity
@@ -158,7 +158,7 @@ print(f"  Max: ${df_daily['Cost'].max():.2f}")
 print(f"  Trend: {'📈 Increasing' if df_daily['Cost'].iloc[-7:].mean() > df_daily['Cost'].iloc[:7].mean() else '📉 Decreasing'}")
 ```
 
-3. **Cost by tag (team/project allocation)**:
+1. **Cost by tag (team/project allocation)**:
 
 ```python
 # Get costs grouped by cost allocation tags
@@ -184,7 +184,7 @@ for result in response['ResultsByTime']:
         cost = float(group['Metrics']['UnblendedCost']['Amount'])
 
         print(f"  Team: {team}, Project: {project} → ${cost:.2f}")
-```
+```text
 
 ### Task 2: Set Up Cost and Usage Reports (CUR)
 
@@ -227,9 +227,9 @@ policy = {
 
 s3.put_bucket_policy(Bucket=bucket_name, Policy=json.dumps(policy))
 print(f"✓ CUR bucket created: {bucket_name}")
-```
+```text
 
-2. **Create CUR report definition**:
+1. **Create CUR report definition**:
 
 ```python
 # Create CUR report
@@ -254,9 +254,9 @@ print("  Report Name: hourly-cost-usage-report")
 print("  Format: Parque (optimized for Athena)")
 print("  Frequency: Hourly updates")
 print("  Note: First report available in 24 hours")
-```
+```text
 
-3. **Wait 24 hours for first report, then query with Athena**:
+1. **Wait 24 hours for first report, then query with Athena**:
 
 ```python
 import time
@@ -357,9 +357,9 @@ if missing:
     print(f"⚠️  Missing required tags: {', '.join(missing)}")
 if invalid:
     print(f"⚠️  Invalid tag values: {', '.join(invalid)}")
-```
+```text
 
-2. **Activate cost allocation tags**:
+1. **Activate cost allocation tags**:
 
 ```python
 billing = boto3.client('ce')
@@ -374,9 +374,9 @@ for tag in tags_to_activate:
 
 print("\n✓ Tags will be active in 24 hours")
 print("  After activation, tags appear in Cost Explorer and CUR")
-```
+```text
 
-3. **Tag existing resources**:
+1. **Tag existing resources**:
 
 ```python
 def tag_all_s3_buckets():
@@ -411,7 +411,7 @@ def tag_all_s3_buckets():
             print(f"✗ Failed to tag {bucket_name}: {e}")
 
 tag_all_s3_buckets()
-```
+```text
 
 ### Task 4: Build Cost Dashboard
 
@@ -505,9 +505,9 @@ if anomalies:
         print(f"  {date}: ${anomaly['cost']:.2f} (Z-score: {anomaly['z_score']:.2f}, +${anomaly['deviation']:.2f})")
 else:
     print("✓ No significant cost anomalies detected")
-```
+```text
 
-2. **Use AWS Cost Anomaly Detection** service:
+1. **Use AWS Cost Anomaly Detection** service:
 
 ```python
 # Create cost anomaly monitor
@@ -539,7 +539,7 @@ subscription_arn = ce.create_anomaly_subscription(
 
 print(f"✓ Anomaly subscription created: {subscription_arn}")
 print("  Email alerts will be sent for anomalies > $100")
-```
+```text
 
 ## Validation Checklist
 
@@ -557,20 +557,24 @@ print("  Email alerts will be sent for anomalies > $100")
 ## Troubleshooting
 
 **Issue**: `AccessDeniedException` when calling Cost Explorer
+
 - **Solution**: Ensure IAM user/role has `ce:GetCostAndUsage` permission
 - Add policy: `arn:aws:iam::aws:policy/AWSBillingReadOnlyAccess`
 
 **Issue**: CUR report not generating
+
 - **Solution**: Wait 24 hours for first report delivery
 - Check S3 bucket policy allows billingreports.amazonaws.com
 - Verify bucket is in us-east-1 region
 
 **Issue**: Athena query fails on CUR table
+
 - **Solution**: Run `MSCK REPAIR TABLE` to update partitions
 - Ensure Glue Data Catalog has correct table schema
 - Check S3 permissions for Athena role
 
 **Issue**: Cost allocation tags not showing in Cost Explorer
+
 - **Solution**: Activate tags in Billing Console
 - Wait 24 hours after activation
 - Ensure resources are tagged correctly
@@ -586,6 +590,7 @@ print("  Email alerts will be sent for anomalies > $100")
 ## Cost Optimization Insights
 
 After analyzing your costs, common findings:
+
 - **Top 5 services typically account for 80% of costs**
 - **Dev/staging can be 20-40% of total** (optimization opportunity!)
 - **Untagged resources**: 10-30% of costs (improve visibility)

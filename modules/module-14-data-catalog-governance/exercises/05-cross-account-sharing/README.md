@@ -73,7 +73,7 @@ EOF
 awslocal s3api put-bucket-policy \
     --bucket training-data-lake \
     --policy file:///tmp/cross-account-bucket-policy.json
-```
+```text
 
 ### Task 2: Grant Cross-Account Permissions
 
@@ -113,7 +113,7 @@ awslocal lakeformation grant-permissions \
 # Verify grants
 awslocal lakeformation list-permissions \
     --principal '{\"DataLakePrincipalIdentifier\":\"arn:aws:iam::222222222222:root\"}'
-```
+```text
 
 ### Task 3: Set Up Consumer Account
 
@@ -181,7 +181,7 @@ awslocal lakeformation grant-permissions \
 awslocal glue get-table \
     --database-name shared_sales_db \
     --name sales_summary_link
-```
+```text
 
 ### Task 4: Query Shared Data
 
@@ -274,7 +274,7 @@ awslocal lakeformation grant-permissions \
 awslocal lakeformation list-permissions \
     --resource-type LF_TAG_POLICY \
     --principal '{\"DataLakePrincipalIdentifier\":\"arn:aws:iam::222222222222:root\"}'
-```
+```text
 
 Benefits of tag-based sharing:
 
@@ -322,7 +322,7 @@ for table in response['TableList']:
         for key, value in table['Parameters'].items():
             if 'tag' in key.lower() or 'domain' in key.lower():
                 print(f"  {key}: {value}")
-```
+```text
 
 ### Task 6: Monitor Cross-Account Access
 
@@ -393,7 +393,7 @@ def audit_cross_account_access(days=7):
 
 # Run audit
 audit_cross_account_access()
-```
+```text
 
 ### Task 7: Revoke Cross-Account Access
 
@@ -431,9 +431,10 @@ Test cross-account sharing:
 
 ```bash
 python validation_05.py
-```
+```text
 
 Expected results:
+
 - ✅ Producer S3 bucket policy allows consumer access
 - ✅ Lake Formation cross-account grants configured
 - ✅ Consumer resource links created successfully

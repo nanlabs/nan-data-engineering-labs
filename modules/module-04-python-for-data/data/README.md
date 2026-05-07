@@ -4,7 +4,7 @@ This folder contains realistic datasets of an e-commerce system to practice Pyth
 
 ## Structure de Carpetas
 
-```
+```text
 data/
 ├── raw/                      # Data crudos (sin procesar)
 │   ├── customers.csv         # 10,000 clientes
@@ -21,7 +21,7 @@ data/
 │   ├── transactions_schema.json
 │   └── user_activity_schema.json
 └── README.md                 # Este file
-```
+```text
 
 ---
 
@@ -69,7 +69,7 @@ df = pd.read_csv('data/raw/customers.csv')
 print(df.info())
 print(df['is_active'].value_counts())
 print(df[df.duplicated(subset=['customer_id'], keep=False)])
-```
+```text
 
 ---
 
@@ -101,6 +101,7 @@ print(df[df.duplicated(subset=['customer_id'], keep=False)])
 #### Structure Nested
 
 **Items** (1-8 por orden):
+
 ```json
 {
   "product_id": 123,
@@ -111,6 +112,7 @@ print(df[df.duplicated(subset=['customer_id'], keep=False)])
 ```
 
 **Shipping Address**:
+
 ```json
 {
   "street": "Calle Principal",
@@ -120,7 +122,7 @@ print(df[df.duplicated(subset=['customer_id'], keep=False)])
   "postal_code": "06100",
   "country": "Mexico"
 }
-```
+```text
 
 #### Problemas de Calidad
 
@@ -153,7 +155,7 @@ items_df = json_normalize(
     record_path='items',
     meta=['order_id', 'customer_id', 'order_date']
 )
-```
+```text
 
 ---
 
@@ -210,7 +212,7 @@ print(df.dtypes)
 print(df[df['price'] < 0])  # Precios negativos
 print(df[df['stock'] < 0])  # Stock negativo
 print(df[(df['rating'] < 0) | (df['rating'] > 5)])  # Rating invalido
-```
+```text
 
 ---
 
@@ -316,6 +318,7 @@ print(df.groupby('transaction_type')['amount'].agg(['count', 'sum', 'mean']))
 #### Structure Nested
 
 **Device**:
+
 ```json
 {
   "type": "mobile",
@@ -323,16 +326,17 @@ print(df.groupby('transaction_type')['amount'].agg(['count', 'sum', 'mean']))
   "os": "Android",
   "screen_resolution": "1920x1080"
 }
-```
+```text
 
 **Location**:
+
 ```json
 {
   "country": "Mexico",
   "city": "Ciudad de Mexico",
   "ip_address": "192.168.1.1"
 }
-```
+```text
 
 #### Problemas de Calidad
 
@@ -375,7 +379,7 @@ df['timestamp'] = df['timestamp'].apply(parse_timestamp)
 funnel_steps = ['page_view', 'search', 'click', 'add_to_cart', 'checkout', 'purchase']
 funnel = df[df['event_type'].isin(funnel_steps)].groupby('event_type').size()
 print(funnel)
-```
+```text
 
 ---
 
@@ -463,6 +467,7 @@ erDiagram
 **Objective**: Detectar y documentar todos los problemas de calidad
 
 **Tareas**:
+
 - Contar duplicados, nulls, valores fuera de rango
 - Validate foreign keys
 - Generar reporte de calidad
@@ -472,6 +477,7 @@ erDiagram
 **Objective**: Limpiar y estandarizar todos los datasets
 
 **Tareas**:
+
 - Eliminar duplicados
 - Estandarizar fechas, booleanos, formatos
 - Correct/remove abnormal values
@@ -482,6 +488,7 @@ erDiagram
 **Goal**: Prepare data for analysis
 
 **Tareas**:
+
 - Flatten estructuras nested
 - Convertir monedas a USD
 - Crear tables dimensionales (star schema)
@@ -492,6 +499,7 @@ erDiagram
 **Objective**: Validate integridad referencial y business rules
 
 **Tareas**:
+
 - Validate foreign keys
 - Validate calculations (totals, fees, etc.)
 - Validate business rules (refunds negativos, etc.)
@@ -501,6 +509,7 @@ erDiagram
 **Objective**: Understand the business through data
 
 **Tareas**:
+
 - Top products/categories
 - Customer Cohort Analysis
 - Conversion funnel
@@ -511,6 +520,7 @@ erDiagram
 **Objective**: Construir pipeline completo de data
 
 **Tareas**:
+
 - Extract: Read multiple formats
 - Transform: Limpiar, flatten, join
 - Load: Save in processed/ in optimal format
@@ -535,7 +545,7 @@ head -n 5 data/raw/customers.csv
 
 # Verificar encoding
 file -i data/raw/*.csv
-```
+```text
 
 ### Python Quick Check
 
@@ -567,7 +577,7 @@ for name, df in [('Customers', customers), ('Products', products),
     print(f"  Nulls: {df.isnull().sum().sum():,}")
     print(f"  Duplicates: {df.duplicated().sum():,}")
     print(f"  Memory: {df.memory_usage(deep=True).sum() / 1024**2:.2f} MB")
-```
+```text
 
 ---
 
@@ -605,32 +615,36 @@ After familiarizing yourself with the data:
 
 ### Documentation
 
-- **Pandas**: https://pandas.pydata.org/docs/
-- **PyArrow (Parquet)**: https://arrow.apache.org/docs/python/
-- **JSON Schema**: https://json-schema.org/
+- **Pandas**: <https://pandas.pydata.org/docs/>
+- **PyArrow (Parquet)**: <https://arrow.apache.org/docs/python/>
+- **JSON Schema**: <https://json-schema.org/>
 
 ### Herramientas
 
 - **Pandas Profiling**: Generate automatic quality reports
+
   ```bash
   pip install ydata-profiling
   ```
+
   ```python
   from ydata_profiling import ProfileReport
   profile = ProfileReport(df, title="Data Quality Report")
   profile.to_file("report.html")
-  ```
+  ```text
 
 - **Great Expectations**: Data Validation Framework
+
   ```python
   import great_expectations as gx
   ```
 
 - **DuckDB**: SQL sobre Parquet sin cargar en memoria
+
   ```python
   import duckdb
   duckdb.sql("SELECT * FROM 'data/raw/products.parquet' WHERE price < 0")
-  ```
+  ```text
 
 ---
 

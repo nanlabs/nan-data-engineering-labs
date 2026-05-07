@@ -9,6 +9,7 @@
 ## 🎯 Objectives
 
 Master schema management:
+
 - **Avro**: Binary serialization format
 - **Schema Registry**: Centralized schema storage
 - **Evolution**: Backward/forward compatibility
@@ -21,28 +22,33 @@ Master schema management:
 ### Why Avro?
 
 **Benefits**:
+
 - ✅ Compact binary format (smaller than JSON)
 - ✅ Schema evolution with compatibility checks
 - ✅ Type safety at serialize/deserialize
 - ✅ Language agnostic (Python, Java, etc.)
 
 **Comparison**:
-```
+
+```text
 JSON:    {"user_id": "user_123", "amount": 99.99}  // 46 bytes
 Avro:    Binary representation                     // ~20 bytes
-```
+```text
 
 ### Schema Evolution Rules
 
 **Backward Compatible** (new consumers, old producers):
+
 - ✅ Add field with default
 - ✅ Remove field
 
 **Forward Compatible** (old consumers, new producers):
+
 - ✅ Add field
 - ✅ Remove field with default
 
 **Full Compatible**:
+
 - ✅ Add field with default
 - ✅ Remove field with default
 
@@ -68,7 +74,7 @@ curl http://localhost:8081/subjects
 
 # Get schema by ID
 curl http://localhost:8081/schemas/ids/1
-```
+```text
 
 **File**: `scripts/register_schemas.py`
 
@@ -145,9 +151,10 @@ class AvroProducer:
             self.producer.flush()
         except Exception as e:
             print(f"Error: {e}")
-```
+```text
 
 **Test**:
+
 ```python
 producer = AvroProducer(
     bootstrap_servers='localhost:9092',
@@ -165,7 +172,7 @@ event = {
 }
 
 producer.send_event('user-events', event)
-```
+```text
 
 ### Part 3: Avro Consumer (45 min)
 
@@ -223,7 +230,7 @@ class AvroConsumer:
             pass
         finally:
             self.consumer.close()
-```
+```text
 
 ### Part 4: Schema Evolution (60 min)
 
@@ -234,6 +241,7 @@ class AvroConsumer:
 **Step 1: Create new schema version**
 
 `data/schemas/user_event_v2.avsc`:
+
 ```json
 {
   "type": "record",
@@ -265,7 +273,7 @@ def check_compatibility(new_schema_str: str, subject: str):
     )
 
     return is_compatible
-```
+```text
 
 **Step 3: Register new version**
 
@@ -278,7 +286,7 @@ if check_compatibility(new_schema_str, 'user-events-value'):
     print(f"New schema version registered: {schema_id}")
 else:
     print("Schema not compatible!")
-```
+```text
 
 ### Part 5: Schema Validation (45 min)
 
@@ -310,9 +318,10 @@ class SchemaValidator:
             if 'default' not in field and field['type'] != ['null', ...]:
                 required.append(field['name'])
         return required
-```
+```text
 
 **Test**:
+
 ```python
 validator = SchemaValidator('../../data/schemas/user_event.avsc')
 
@@ -380,9 +389,10 @@ def check_compatibility(subject, schema_file):
 
 if __name__ == '__main__':
     cli()
-```
+```text
 
 **Usage**:
+
 ```bash
 # List schemas
 python schema_cli.py list-schemas
@@ -395,18 +405,20 @@ python schema_cli.py register ../../data/schemas/user_event.avsc user-events-val
 
 # Check compatibility
 python schema_cli.py check-compatibility user-events-value user_event_v2.avsc
-```
+```text
 
 ---
 
 ## ✅ Validation
 
 **Run tests**:
+
 ```bash
 pytest test_avro_schemas.py -v
-```
+```text
 
 **Tests cover**:
+
 - ✅ Schema registration successful
 - ✅ Avro serialization/deserialization
 - ✅ Schema evolution compatibility

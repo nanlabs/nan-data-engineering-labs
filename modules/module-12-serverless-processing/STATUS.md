@@ -11,6 +11,7 @@
 ## 📊 Métricas de Contenido
 
 ### Theory
+
 | Archivo | Líneas | Estado | Temas Cubiertos |
 |---------|---------|--------|-----------------|
 | 01-serverless-fundamentals.md | ~3,500 | ✅ | Serverless concepts, Lambda fundamentals, event sources, pricing |
@@ -19,6 +20,7 @@
 | **TOTAL TEORÍA** | **~12,500** | **✅** | **3 archivos completos** |
 
 ### Practical Exercises
+
 | Exercise | Líneas | Difficulty | Duration | Estado |
 |-----------|---------|------------|----------|--------|
 | 01-first-lambda | ~1,800 | Básico | 2-3h | ✅ |
@@ -30,6 +32,7 @@
 | **TOTAL EJERCICIOS** | **~12,300** | - | **18-23h** | **✅** |
 
 ### Infrastructure
+
 | Componente | Líneas | Estado |
 |------------|---------|--------|
 | lambda-function module | ~150 | ✅ |
@@ -37,6 +40,7 @@
 | **TOTAL INFRASTRUCTURE** | **~270** | **✅** |
 
 ### Testing & Automation
+
 | Componente | Líneas | Estado |
 |------------|---------|--------|
 | conftest.py | ~70 | ✅ |
@@ -46,6 +50,7 @@
 | **TOTAL TESTING/SCRIPTS** | **~270** | **✅** |
 
 ### Documentación
+
 | Archivo | Líneas | Estado |
 |---------|---------|--------|
 | README.md | ~280 | ✅ |
@@ -56,7 +61,7 @@
 
 ## 📈 Resumen Total
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │  MÓDULO 12: SERVERLESS PROCESSING           │
 ├─────────────────────────────────────────────┤
@@ -68,13 +73,14 @@
 ├─────────────────────────────────────────────┤
 │  TOTAL:           ~25,620 líneas  ✅        │
 └─────────────────────────────────────────────┘
-```
+```text
 
 ---
 
 ## 🎯 Objectives de Aprendizaje Cubiertos
 
 ### Core Concepts (100%)
+
 - [x] Serverless computing fundamentals
 - [x] AWS Lambda architecture y lifecycle
 - [x] Event-driven architecture patterns
@@ -82,6 +88,7 @@
 - [x] Serverless pricing model
 
 ### Lambda Development (100%)
+
 - [x] Python Lambda handlers
 - [x] Event sources (S3, SQS, Kinesis, API Gateway)
 - [x] Environment variables y configuration
@@ -90,6 +97,7 @@
 - [x] X-Ray tracing
 
 ### Orchestration (100%)
+
 - [x] AWS Step Functions
 - [x] Amazon States Language (ASL)
 - [x] State machine patterns (Sequential, Parallel, Choice)
@@ -97,6 +105,7 @@
 - [x] EventBridge triggers
 
 ### API Development (100%)
+
 - [x] API Gateway REST APIs
 - [x] Lambda proxy integration
 - [x] Authentication (API Key, Cognito)
@@ -105,6 +114,7 @@
 - [x] Rate limiting y throttling
 
 ### Data Processing (100%)
+
 - [x] S3 event processing
 - [x] Kinesis stream processing
 - [x] SQS message processing (Standard & FIFO)
@@ -113,6 +123,7 @@
 - [x] Data partitioning
 
 ### Observability (100%)
+
 - [x] Structured logging (JSON)
 - [x] CloudWatch Logs y Metrics
 - [x] Custom metrics
@@ -122,6 +133,7 @@
 - [x] SNS notifications
 
 ### Infrastructure (100%)
+
 - [x] Terraform modules
 - [x] Multi-environment deployment
 - [x] IAM roles y policies (least privilege)
@@ -129,6 +141,7 @@
 - [x] DLQ configuration
 
 ### CI/CD (100%)
+
 - [x] GitHub Actions workflows
 - [x] Automated testing
 - [x] Multi-environment deployment
@@ -136,6 +149,7 @@
 - [x] Rollback mechanisms
 
 ### Best Practices (100%)
+
 - [x] Security (encryption, secrets management)
 - [x] Cost optimization
 - [x] Performance tuning
@@ -148,6 +162,7 @@
 ## 🛠️ Stack Tecnológico Implementado
 
 ### AWS Services
+
 - ✅ Lambda (Python 3.11)
 - ✅ API Gateway (REST & HTTP)
 - ✅ Step Functions
@@ -165,6 +180,7 @@
 - ✅ Secrets Manager
 
 ### Tools & Frameworks
+
 - ✅ Python 3.11
 - ✅ boto3 (AWS SDK)
 - ✅ pandas (data processing)
@@ -180,6 +196,7 @@
 ## 📝 Componentes por Exercise
 
 ### Exercise 01: First Lambda ✅
+
 - [x] Lambda handler con S3 trigger
 - [x] CSV processing con pandas
 - [x] CloudWatch logging
@@ -189,6 +206,7 @@
 - [x] Terraform infrastructure
 
 ### Exercise 02: S3 Event Processing ✅
+
 - [x] CSV to Parquet transformation
 - [x] SQS como buffer
 - [x] Dead Letter Queue
@@ -198,6 +216,7 @@
 - [x] Quarantine pattern
 
 ### Exercise 03: Step Functions ✅
+
 - [x] State machine definition (ASL)
 - [x] 6 Lambda functions (Extract, Validate, Transform, Load, Report)
 - [x] Parallel execution
@@ -207,6 +226,7 @@
 - [x] SNS notifications
 
 ### Exercise 04: REST API Lambda ✅
+
 - [x] CRUD operations (GET, POST, PUT, DELETE)
 - [x] API Gateway configuration
 - [x] DynamoDB integration
@@ -217,6 +237,7 @@
 - [x] Usage plans
 
 ### Exercise 05: SQS Messaging ✅
+
 - [x] SQS FIFO queue
 - [x] Order processing system
 - [x] Message deduplication
@@ -227,6 +248,7 @@
 - [x] Idempotency implementation
 
 ### Exercise 06: Production Pipeline ✅
+
 - [x] Real-time analytics pipeline
 - [x] API Gateway ingestion endpoint
 - [x] Kinesis Data Streams
@@ -243,6 +265,7 @@
 ## ✅ Checklist de Completitud
 
 ### Contenido
+
 - [x] 3 archivos de theory completos
 - [x] 6 exercises prácticos completos
 - [x] Infrastructure templates (Terraform modules)
@@ -252,6 +275,7 @@
 - [x] STATUS.md completo
 
 ### Calidad
+
 - [x] Código funcional y testeado
 - [x] Ejemplos completos (40-80 líneas cada uno)
 - [x] Documentación en español
@@ -261,6 +285,7 @@
 - [x] Unit tests incluidos
 
 ### Pedagogía
+
 - [x] Progresión de dificultad (Básico → Avanzado)
 - [x] Explicaciones detalladas
 - [x] Diagramas de arquitectura

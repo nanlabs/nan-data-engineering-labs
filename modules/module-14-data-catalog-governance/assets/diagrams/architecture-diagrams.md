@@ -93,7 +93,7 @@ graph TB
     style Catalog fill:#FF9900
     style S3 fill:#569A31
     style Athena fill:#8C4FFF
-```
+```text
 
 ## 2. Data Catalog Organization
 
@@ -140,7 +140,7 @@ graph TD
     style DB2 fill:#146EB4
     style DB3 fill:#146EB4
     style T1 fill:#569A31
-```
+```text
 
 ## 3. Crawler Execution Flow
 
@@ -190,7 +190,7 @@ sequenceDiagram
     SNS-->>User: Crawler completed
 
     Note over Crawler,Catalog: UpdateBehavior: UPDATE_IN_DATABASE<br/>DeleteBehavior: DEPRECATE_IN_DATABASE
-```
+```text
 
 ## 4. Lake Formation Permission Model
 
@@ -296,7 +296,7 @@ graph LR
     style Gold1 fill:#FFD700
     style Gold2 fill:#FFD700
     style Gold3 fill:#FFD700
-```
+```text
 
 ## 6. Cross-Account Data Sharing
 
@@ -340,7 +340,7 @@ sequenceDiagram
     Athena-->>CA: Query results
 
     Note over PA,CA: Data stays in producer account<br/>Consumer reads via Lake Formation permissions
-```
+```text
 
 ## 7. Data Quality Pipeline
 
@@ -387,7 +387,7 @@ flowchart TD
     style Fail fill:#D32F2F
     style Bronze fill:#CD7F32
     style Quarantine fill:#F57C00
-```
+```text
 
 ## 8. Governed Tables Architecture (Apache Iceberg)
 
@@ -485,7 +485,7 @@ graph TD
     style TagFilter2 fill:#00C853
     style TagFilter3 fill:#00C853
     style AutoPerm fill:#2196F3
-```
+```text
 
 ## 10. Monitoring and Observability
 
@@ -579,7 +579,7 @@ graph TB
     style A5 fill:#F57C00
     style CW_Dash fill:#2196F3
     style QS_Dash fill:#2196F3
-```
+```text
 
 ## Usage Notes
 
@@ -597,6 +597,7 @@ These diagrams illustrate key architectural patterns for Data Catalog and Govern
 10. **Monitoring**: Comprehensive observability and alerting
 
 To render these diagrams:
+
 - Use VS Code with the Mermaid extension
 - View in GitHub (native Mermaid support)
 - Use online tools like [Mermaid Live Editor](https://mermaid.live/)

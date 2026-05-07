@@ -26,19 +26,21 @@ Before beginning this module, you must have completed:
 - ✅ **Module 04**: Python for Data (pandas, testing)
 
 **Conocimientos necesarios**:
+
 - Python intermedio (funciones, classs, manejo de excepciones)
 - basic pandas (DataFrame operations)
 - Basic SQL (queries, inserts)
 - Conceptos de APIs REST
 
 **Software requerido**:
+
 - Python 3.8+
 - pip y virtualenv
 - SQLite (incluido en Python)
 
 ## 🏗️ Architecture ETL
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                      ETL PIPELINE                            │
 │                                                               │
@@ -58,11 +60,11 @@ Before beginning this module, you must have completed:
 │  ✓ Data Quality           ✓ Performance                     │
 │  ✓ Idempotency            ✓ Testing                         │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## 📂 Module Structure
 
-```
+```text
 module-06-etl-fundamentals/
 ├── README.md                          # Este archivo
 ├── STATUS.md                          # Estado de completitud
@@ -103,21 +105,27 @@ module-06-etl-fundamentals/
 ## 🎓 Exercises
 
 ### Exercise 01: Extract Basics (⭐ Basic - 1.5h)
+
 Data extraction from different sources: CSV, JSON, APIs, SQLite
 
 ### Exercise 02: Transform Basics (⭐⭐ Intermediate - 2h)
+
 Common transformations: cleanup, type conversion, aggregations
 
 ### Exercise 03: Load Basics (⭐⭐ Intermediate - 1.5h)
+
 Carga de datas: CSV, JSON, SQLite con upsert
 
 ### Exercise 04: Full pipeline (⭐⭐⭐ Advanced - 3h)
+
 pipeline ETL end-to-end modular y configurable
 
 ### Exercise 05: Error Handling (⭐⭐⭐⭐ Advanced - 2h)
+
 Manejo robusto de errores, logging, retry logic
 
 ### Exercise 06: Data Quality (⭐⭐⭐⭐⭐ Expert - 2.5h)
+
 Data quality validation and anomaly detection
 
 ## 📊 Progress Checklist

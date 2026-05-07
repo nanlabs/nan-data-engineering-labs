@@ -4,7 +4,7 @@ Suite completa of tests automatizados for validar exercises.
 
 ## 📂 Structure
 
-```
+```text
 validation/
 ├── conftest.py              # Fixtures of Spark
 ├── test_01_delta_basics.py
@@ -14,7 +14,7 @@ validation/
 ├── test_05_optimization.py
 ├── test_06_iceberg_comparison.py
 └── requirements.txt
-```
+```text
 
 ## 🚀 Uso
 
@@ -30,7 +30,7 @@ pytest -v validation/test_01_delta_basics.py
 
 # Generar reporte of cobertura
 pytest --cov=../exercises --cov-report=html
-```
+```text
 
 ## ✅ Cobertura
 

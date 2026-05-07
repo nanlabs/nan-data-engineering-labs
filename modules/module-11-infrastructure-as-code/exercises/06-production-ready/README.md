@@ -7,6 +7,7 @@
 ## 🎓 Objectives de Aprendizaje
 
 Al completar este exercise, serás capaz de:
+
 - ✅ Estructurar proyectos Terraform para enterprise
 - ✅ Implementar testing automatizado con terratest
 - ✅ Configurar CI/CD para Terraform
@@ -19,6 +20,7 @@ Al completar este exercise, serás capaz de:
 Hasta ahora has aprendido los fundamentos. Ahora es tiempo de profesionalizar tu infraestructura para **producción real**, donde la confiabilidad, seguridad y colaboración son críticas.
 
 **Este exercise cubre:**
+
 - 🏗️ Arquitectura enterprise de proyectos Terraform
 - 🧪 Testing automatizado
 - 🔄 Pipelines CI/CD
@@ -38,11 +40,11 @@ mkdir -p terraform-production-project && cd terraform-production-project
 mkdir -p {environments/{dev,staging,prod},modules/{networking,compute,data,security},tests,scripts,.github/workflows}
 
 tree -L 3
-```
+```text
 
 **Estructura resultante:**
 
-```
+```text
 terraform-production-project/
 ├── .gitignore
 ├── .pre-commit-config.yaml
@@ -93,7 +95,7 @@ terraform-production-project/
         ├── terraform-plan.yml
         ├── terraform-apply.yml
         └── terraform-destroy.yml
-```
+```text
 
 ### Step 1.2: Configurar .gitignore
 
@@ -273,7 +275,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_lake" {
     }
   }
 }
-```
+```text
 
 **modules/data/s3-data-lake/variables.tf:**
 
@@ -327,7 +329,7 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-```
+```text
 
 **modules/data/s3-data-lake/outputs.tf:**
 
@@ -346,7 +348,7 @@ output "bucket_domains" {
   description = "Map de domain names"
   value       = { for k, v in aws_s3_bucket.data_lake : k => v.bucket_domain_name }
 }
-```
+```text
 
 **modules/data/s3-data-lake/README.md:**
 
@@ -466,7 +468,7 @@ resource "aws_kms_alias" "data_lake" {
   name          = "alias/${var.project_name}-datalake"
   target_key_id = aws_kms_key.data_lake.key_id
 }
-```
+```text
 
 **environments/prod/variables.tf:**
 
@@ -491,7 +493,7 @@ variable "owner_team" {
   description = "Team owner"
   type        = string
 }
-```
+```text
 
 **environments/prod/terraform.tfvars.example:**
 
@@ -503,7 +505,7 @@ project_name = "my-analytics-platform"
 aws_region   = "us-east-1"
 cost_center  = "data-engineering"
 owner_team   = "platform-team"
-```
+```text
 
 **environments/prod/backend.hcl:**
 
@@ -533,7 +535,7 @@ go mod init terraform-production-project/tests
 # Instalar Terratest
 go get github.com/gruntwork-io/terratest/modules/terraform
 go get github.com/stretchr/testify/assert
-```
+```text
 
 ### Step 2.2: Escribir Test de Integración
 
@@ -543,66 +545,66 @@ go get github.com/stretchr/testify/assert
 package test
 
 import (
-	"testing"
+ "testing"
 
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
+ "github.com/gruntwork-io/terratest/modules/terraform"
+ "github.com/stretchr/testify/assert"
 )
 
 func TestDataLakeModule(t *testing.T) {
-	t.Parallel()
+ t.Parallel()
 
-	// Configuration del module a testear
-	terraformOptions := &terraform.Options{
-		// Path al module
-		TerraformDir: "../modules/data/s3-data-lake",
+ // Configuration del module a testear
+ terraformOptions := &terraform.Options{
+  // Path al module
+  TerraformDir: "../modules/data/s3-data-lake",
 
-		// Variables para el test
-		Vars: map[string]interface{}{
-			"project_name":     "terratest",
-			"environment":      "dev",
-			"enable_versioning": true,
-			"enable_lifecycle":  false,  // Simplificar para testing
-		},
+  // Variables para el test
+  Vars: map[string]interface{}{
+   "project_name":     "terratest",
+   "environment":      "dev",
+   "enable_versioning": true,
+   "enable_lifecycle":  false,  // Simplificar para testing
+  },
 
-		// Variables de entorno para AWS (usa LocalStack o cuenta de testing)
-		EnvVars: map[string]string{
-			"AWS_DEFAULT_REGION": "us-east-1",
-		},
-	}
+  // Variables de entorno para AWS (usa LocalStack o cuenta de testing)
+  EnvVars: map[string]string{
+   "AWS_DEFAULT_REGION": "us-east-1",
+  },
+ }
 
-	// Cleanup al final del test
-	defer terraform.Destroy(t, terraformOptions)
+ // Cleanup al final del test
+ defer terraform.Destroy(t, terraformOptions)
 
-	// Init y Apply
-	terraform.InitAndApply(t, terraformOptions)
+ // Init y Apply
+ terraform.InitAndApply(t, terraformOptions)
 
-	// TESTS
+ // TESTS
 
-	// Test 1: Verificar que se crearon 3 buckets (bronze, silver, gold)
-	bucketNames := terraform.OutputMap(t, terraformOptions, "bucket_names")
-	assert.Equal(t, 3, len(bucketNames), "Should create 3 buckets")
+ // Test 1: Verificar que se crearon 3 buckets (bronze, silver, gold)
+ bucketNames := terraform.OutputMap(t, terraformOptions, "bucket_names")
+ assert.Equal(t, 3, len(bucketNames), "Should create 3 buckets")
 
-	// Test 2: Verificar que existen las capas esperadas
-	assert.Contains(t, bucketNames, "bronze")
-	assert.Contains(t, bucketNames, "silver")
-	assert.Contains(t, bucketNames, "gold")
+ // Test 2: Verificar que existen las capas esperadas
+ assert.Contains(t, bucketNames, "bronze")
+ assert.Contains(t, bucketNames, "silver")
+ assert.Contains(t, bucketNames, "gold")
 
-	// Test 3: Verificar formato de los nombres
-	for layer, name := range bucketNames {
-		assert.Contains(t, name, "terratest-datalake")
-		assert.Contains(t, name, layer)
-		assert.Contains(t, name, "dev")
-	}
+ // Test 3: Verificar formato de los nombres
+ for layer, name := range bucketNames {
+  assert.Contains(t, name, "terratest-datalake")
+  assert.Contains(t, name, layer)
+  assert.Contains(t, name, "dev")
+ }
 
-	// Test 4: Verificar que los buckets tienen ARN
-	bucketArns := terraform.OutputMap(t, terraformOptions, "bucket_arns")
-	for layer, arn := range bucketArns {
-		assert.NotEmpty(t, arn, "Bucket %s should have ARN", layer)
-		assert.Contains(t, arn, "arn:aws:s3:::")
-	}
+ // Test 4: Verificar que los buckets tienen ARN
+ bucketArns := terraform.OutputMap(t, terraformOptions, "bucket_arns")
+ for layer, arn := range bucketArns {
+  assert.NotEmpty(t, arn, "Bucket %s should have ARN", layer)
+  assert.Contains(t, arn, "arn:aws:s3:::")
+ }
 }
-```
+```text
 
 ### Step 2.3: Ejecutar Tests
 
@@ -621,7 +623,7 @@ go test -v -timeout 30m
 # --- PASS: TestDataLakeModule (45.23s)
 # PASS
 # ok      terraform-production-project/tests      45.500s
-```
+```text
 
 ### Step 2.4: Test para Validaciones
 
@@ -631,50 +633,50 @@ go test -v -timeout 30m
 package test
 
 import (
-	"testing"
+ "testing"
 
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/assert"
+ "github.com/gruntwork-io/terratest/modules/terraform"
+ "github.com/stretchr/testify/assert"
 )
 
 func TestProjectNameValidation(t *testing.T) {
-	t.Parallel()
+ t.Parallel()
 
-	testCases := []struct {
-		name        string
-		projectName string
-		expectError bool
-	}{
-		{"valid-name", "my-project", false},
-		{"too-short", "ab", true},
-		{"too-long", "this-is-a-very-long-project-name-that-exceeds-limits", true},
-		{"valid-max", "project-name-max-length-ok", false},
-	}
+ testCases := []struct {
+  name        string
+  projectName string
+  expectError bool
+ }{
+  {"valid-name", "my-project", false},
+  {"too-short", "ab", true},
+  {"too-long", "this-is-a-very-long-project-name-that-exceeds-limits", true},
+  {"valid-max", "project-name-max-length-ok", false},
+ }
 
-	for _, tc := range testCases {
-		tc := tc  // capture range variable
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
+ for _, tc := range testCases {
+  tc := tc  // capture range variable
+  t.Run(tc.name, func(t *testing.T) {
+   t.Parallel()
 
-			terraformOptions := &terraform.Options{
-				TerraformDir: "../modules/data/s3-data-lake",
-				Vars: map[string]interface{}{
-					"project_name": tc.projectName,
-					"environment":  "dev",
-				},
-			}
+   terraformOptions := &terraform.Options{
+    TerraformDir: "../modules/data/s3-data-lake",
+    Vars: map[string]interface{}{
+     "project_name": tc.projectName,
+     "environment":  "dev",
+    },
+   }
 
-			defer terraform.Destroy(t, terraformOptions)
+   defer terraform.Destroy(t, terraformOptions)
 
-			_, err := terraform.InitAndApplyE(t, terraformOptions)
+   _, err := terraform.InitAndApplyE(t, terraformOptions)
 
-			if tc.expectError {
-				assert.Error(t, err, "Expected validation error for: %s", tc.projectName)
-			} else {
-				assert.NoError(t, err, "Should not error for: %s", tc.projectName)
-			}
-		})
-	}
+   if tc.expectError {
+    assert.Error(t, err, "Expected validation error for: %s", tc.projectName)
+   } else {
+    assert.NoError(t, err, "Should not error for: %s", tc.projectName)
+   }
+  })
+ }
 }
 ```
 
@@ -781,7 +783,7 @@ jobs:
       - name: Fail if Plan Failed
         if: steps.plan.outcome == 'failure'
         run: exit 1
-```
+```text
 
 ### Step 3.2: Workflow para Terraform Apply (Main Branch)
 
@@ -851,7 +853,7 @@ jobs:
         if: success()
         run: |
           echo "✅ Terraform apply successful for ${{ github.event.inputs.environment || 'dev' }}"
-```
+```text
 
 ---
 
@@ -865,7 +867,7 @@ pip install pre-commit
 
 # O con homebrew (macOS)
 brew install pre-commit
-```
+```text
 
 ### Step 4.2: Configurar Hooks
 
@@ -936,7 +938,7 @@ pre-commit run --all-files
 git add .
 git commit -m "Add production infrastructure"
 # [pre-commit hooks se ejecutan aquí]
-```
+```text
 
 ---
 
@@ -988,7 +990,7 @@ output "db_secret_arn" {
   value       = aws_secretsmanager_secret.db_password.arn
   description = "ARN del secret (no el valor)"
 }
-```
+```text
 
 ### Step 5.2: Rotar Secrets
 
@@ -1001,7 +1003,7 @@ aws secretsmanager update-secret \
 # Terraform no detecta cambio (gracias a ignore_changes)
 terraform plan
 # Output: No changes. Infrastructure is up-to-date.
-```
+```text
 
 ---
 
@@ -1108,7 +1110,7 @@ if [ "$apply_confirm" == "yes" ]; then
 else
   echo "⚠️  State restored but changes not applied"
 fi
-```
+```text
 
 ---
 
@@ -1124,63 +1126,63 @@ ENV ?= dev
 TF_DIR = environments/$(ENV)
 
 help:
-	@echo "Terraform Production Project"
-	@echo ""
-	@echo "Usage:"
-	@echo "  make init ENV=dev        - Initialize Terraform"
-	@echo "  make plan ENV=staging    - Run Terraform plan"
-	@echo "  make apply ENV=prod      - Apply changes"
-	@echo "  make destroy ENV=dev     - Destroy infrastructure"
-	@echo "  make validate            - Validate all configs"
-	@echo "  make test                - Run tests"
-	@echo "  make fmt                 - Format code"
-	@echo "  make docs                - Generate documentation"
+ @echo "Terraform Production Project"
+ @echo ""
+ @echo "Usage:"
+ @echo "  make init ENV=dev        - Initialize Terraform"
+ @echo "  make plan ENV=staging    - Run Terraform plan"
+ @echo "  make apply ENV=prod      - Apply changes"
+ @echo "  make destroy ENV=dev     - Destroy infrastructure"
+ @echo "  make validate            - Validate all configs"
+ @echo "  make test                - Run tests"
+ @echo "  make fmt                 - Format code"
+ @echo "  make docs                - Generate documentation"
 
 init:
-	@echo "🔄 Initializing $(ENV) environment..."
-	cd $(TF_DIR) && terraform init -backend-config=backend.hcl
+ @echo "🔄 Initializing $(ENV) environment..."
+ cd $(TF_DIR) && terraform init -backend-config=backend.hcl
 
 plan: init
-	@echo "📋 Planning $(ENV) environment..."
-	cd $(TF_DIR) && terraform plan
+ @echo "📋 Planning $(ENV) environment..."
+ cd $(TF_DIR) && terraform plan
 
 apply: init
-	@echo "🚀 Applying $(ENV) environment..."
-	cd $(TF_DIR) && terraform apply
+ @echo "🚀 Applying $(ENV) environment..."
+ cd $(TF_DIR) && terraform apply
 
 destroy: init
-	@echo "⚠️  WARNING: Destroying $(ENV) environment..."
-	@read -p "Are you sure? (yes/no): " confirm; \
-	if [ "$$confirm" = "yes" ]; then \
-		cd $(TF_DIR) && terraform destroy; \
-	fi
+ @echo "⚠️  WARNING: Destroying $(ENV) environment..."
+ @read -p "Are you sure? (yes/no): " confirm; \
+ if [ "$$confirm" = "yes" ]; then \
+  cd $(TF_DIR) && terraform destroy; \
+ fi
 
 validate:
-	@echo "✅ Validating all environments..."
-	@for env in dev staging prod; do \
-		echo "Validating $$env..."; \
-		cd environments/$$env && terraform init -backend=false && terraform validate || exit 1; \
-		cd ../..; \
-	done
+ @echo "✅ Validating all environments..."
+ @for env in dev staging prod; do \
+  echo "Validating $$env..."; \
+  cd environments/$$env && terraform init -backend=false && terraform validate || exit 1; \
+  cd ../..; \
+ done
 
 test:
-	@echo "🧪 Running tests..."
-	cd tests && go test -v -timeout 30m
+ @echo "🧪 Running tests..."
+ cd tests && go test -v -timeout 30m
 
 fmt:
-	@echo "🎨 Formatting code..."
-	terraform fmt -recursive .
+ @echo "🎨 Formatting code..."
+ terraform fmt -recursive .
 
 docs:
-	@echo "📚 Generating documentation..."
-	terraform-docs markdown table --output-file README.md modules/data/s3-data-lake
+ @echo "📚 Generating documentation..."
+ terraform-docs markdown table --output-file README.md modules/data/s3-data-lake
 
 plan-all:
-	@for env in dev staging prod; do \
-		echo "Planning $$env..."; \
-		make plan ENV=$$env; \
-	done
-```
+ @for env in dev staging prod; do \
+  echo "Planning $$env..."; \
+  make plan ENV=$$env; \
+ done
+```text
 
 **Uso:**
 
@@ -1202,41 +1204,47 @@ make test
 
 # Format all code
 make fmt
-```
+```text
 
 ---
 
 ## ✅ Checklist Final - Production Readiness
 
 ### 🏗️ Estructura
+
 - [ ] Proyecto organizado en modules reutilizables
 - [ ] Separación clara de entornos (dev/staging/prod)
 - [ ] `.gitignore` configurado correctamente
 - [ ] README detallado en cada module
 
 ### 🧪 Testing
+
 - [ ] Tests unitarios con Terratest
 - [ ] Tests de integración funcionando
 - [ ] Validaciones en inputs de modules
 
 ### 🔄 CI/CD
+
 - [ ] Pipeline de `terraform plan` en PRs
 - [ ] Pipeline de `terraform apply` protegido
 - [ ] Aprobaciones manuales para producción
 - [ ] Notificaciones de deploment
 
 ### 🔒 Seguridad
+
 - [ ] Secrets en AWS Secrets Manager
 - [ ] State file cifrado
 - [ ] KMS keys con rotación
 - [ ] Pre-commit hooks con tfsec
 
 ### 📊 Observabilidad
+
 - [ ] Tags consistentes en recursos
 - [ ] Outputs documentados
 - [ ] Logs de cambios en Git
 
 ### 🛡️ Disaster Recovery
+
 - [ ] Backup automatizado de state
 - [ ] Script de restore probado
 - [ ] Versionado de S3 habilitado
@@ -1257,6 +1265,7 @@ make fmt
 **¡Felicidades! 🎉** Has completed el module de Infrastructure as Code. Ahora tienes las habilidades para gestionar infraestructura cloud a level enterprise con Terraform.
 
 **Tu infraestructura ahora es:**
+
 - ✅ Reproducible
 - ✅ Versionada
 - ✅ Testeada
@@ -1265,6 +1274,7 @@ make fmt
 - ✅ Lista para producción
 
 **Próximos steps:**
+
 - Aplicar estos patrones en proyectos reales
 - Explorar Terragrunt para DRY configs
 - Implementar policy-as-code con Sentinel/OPA

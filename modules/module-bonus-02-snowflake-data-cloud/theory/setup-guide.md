@@ -20,11 +20,12 @@
 ### Step 1: Create Free Trial Account
 
 1. **Navigate to Signup Page**:
-   - Visit: https://signup.snowflake.com/
-   - Or: https://trial.snowflake.com/
+   - Visit: <https://signup.snowflake.com/>
+   - Or: <https://trial.snowflake.com/>
 
 2. **Choose Cloud Provider**:
-   ```
+
+   ```text
    Options:
    ├─ Amazon Web Services (AWS)     ← Most common, recommended
    ├─ Microsoft Azure
@@ -34,7 +35,8 @@
    ```
 
 3. **Select Region**:
-   ```
+
+   ```text
    AWS Regions (examples):
    ├─ US East (N. Virginia)        us-east-1      ← Low-cost, popular
    ├─ US West (Oregon)             us-west-2
@@ -46,7 +48,8 @@
    ```
 
 4. **Fill Account Details**:
-   ```
+
+   ```text
    Required Information:
    ├─ First Name
    ├─ Last Name
@@ -57,7 +60,8 @@
    ```
 
 5. **Choose Edition**:
-   ```
+
+   ```text
    Available for Trial:
    ├─ Standard Edition           $2/credit   (basic features)
    ├─ Enterprise Edition         $3/credit   ← Recommended (90-day Time Travel)
@@ -72,12 +76,13 @@
    - Click **Get Started**
 
 7. **Verify Email**:
-   - Check email inbox (from noreply@snowflake.com)
+   - Check email inbox (from <noreply@snowflake.com>)
    - Click verification link
    - Set password (strong, 8+ characters, mixed case, numbers, symbols)
 
 8. **Account Created**:
-   ```
+
+   ```text
    You'll receive:
    ├─ Account Identifier:  abc12345
    ├─ Account URL:         https://abc12345.snowflakecomputing.com
@@ -89,19 +94,21 @@
 ### Step 2: First Login
 
 1. **Navigate to Account URL**:
+
    ```bash
    # Example URL format
    https://<account_identifier>.snowflakecomputing.com
 
    # Specific example
    https://abc12345.snowflakecomputing.com
-   ```
+   ```text
 
 2. **Login Credentials**:
-   ```
+
+    ```text
    Username: <your-email>
    Password: <password-you-set>
-   ```
+    ```
 
 3. **Initial Setup Wizard** (optional):
    - Snowflake may present quick-start wizard
@@ -117,7 +124,7 @@
 
 ### Main Navigation
 
-```
+```text
 ┌────────────────────────────────────────────────────────────┐
 │  Snowflake Web UI Layout                                   │
 ├────────────────────────────────────────────────────────────┤
@@ -140,6 +147,7 @@
 **Purpose**: Write and execute SQL queries
 
 **Key Features**:
+
 ```sql
 -- 1. Create new worksheet
 -- Click: Worksheets → + Worksheet
@@ -164,9 +172,10 @@ SELECT CURRENT_VERSION(), CURRENT_USER(), CURRENT_ROLE();
 -- Results tab: Query output
 -- Chart tab: Visualize data
 -- Query Details: Execution stats, bytes scanned, duration
-```
+```text
 
 **Worksheet Tips**:
+
 ```sql
 -- Multiple statements (separated by semicolon)
 SELECT 1;
@@ -179,42 +188,48 @@ SELECT 3;
 -- Save worksheet: File → Save As → "My Analysis"
 -- Share worksheet: Top-right → Share
 -- Format SQL: Click "Format" button (beautify)
-```
+```text
 
 ### Data (Database Explorer)
 
 **Navigation**:
-```
+
+```text
 Data → Databases → [Database Name] → [Schema] → Tables/Views
 ```
 
 **Actions**:
+
 - **View Table Data**: Click table → Preview Data (top 100 rows, no warehouse needed)
 - **Table Schema**: Click Columns tab
 - **Table Details**: Storage size, row count, owner
 - **Open in Worksheet**: Click "..." → Open in Worksheet (generates SELECT *)
 
 **Example**:
+
 ```sql
 -- Navigate to SNOWFLAKE_SAMPLE_DATA (free sample database)
 -- Data → Databases → SNOWFLAKE_SAMPLE_DATA → TPCDS_SF10TCL → STORE_SALES
 -- Click table → Preview Data → See 100 rows instantly
-```
+```text
 
 ### Compute (Warehouses)
 
 **View Warehouses**:
-```
+
+```text
 Compute → Warehouses → View list
-```
+```text
 
 **Warehouse Actions**:
+
 - **Resume**: Start suspended warehouse
 - **Suspend**: Stop running warehouse (save costs)
 - **Edit**: Change size, auto-suspend settings
 - **Monitor**: View credit usage, query count
 
 **Creating Warehouse via UI**:
+
 ```
 1. Compute → Warehouses
 2. Click "+ Warehouse"
@@ -224,28 +239,31 @@ Compute → Warehouses → View list
    - Auto Suspend: 60 seconds
    - Auto Resume: ✓
 4. Click "Create Warehouse"
-```
+```text
 
 ### Activity (Query History)
 
 **Purpose**: Monitor all queries executed in account
 
 **Filters**:
-```
+
+```text
 ├─ Time Range:      Last 24 hours, 7 days, 30 days, Custom
 ├─ User:            Filter by user
 ├─ Warehouse:       Filter by warehouse
 ├─ Query Status:    Success, Failed, Running
 └─ Query Text:      Search query content
-```
+```text
 
 **Query Details**:
+
 - Click any query → View full SQL, execution plan, bytes scanned, credits used
 - Useful for debugging slow queries or errors
 
 ### Admin (Account Management)
 
 **Key Sections**:
+
 ```
 Admin → Users             ← Manage users
 Admin → Roles             ← RBAC configuration
@@ -254,7 +272,7 @@ Admin → Resource Monitors ← Set credit limits
 Admin → Usage             ← Credit consumption reports
 Admin → Billing           ← Payment methods (post-trial)
 Admin → Account           ← Account details, edition, region
-```
+```text
 
 ---
 
@@ -290,10 +308,11 @@ CREATE SCHEMA IF NOT EXISTS sandbox
 
 -- Verify creation
 SHOW SCHEMAS IN DATABASE training_snowflake;
-```
+```text
 
 **Expected Output**:
-```
+
+```text
 name        | database_name        | owner       | comment
 ------------|----------------------|-------------|------------------------
 RAW         | TRAINING_SNOWFLAKE   | ACCOUNTADMIN| Raw ingested data
@@ -325,7 +344,7 @@ SHOW WAREHOUSES LIKE 'training_wh';
 
 -- Check status (should be "Suspended")
 DESC WAREHOUSE training_wh;
-```
+```text
 
 ### Step 3: Create Sample Tables
 
@@ -392,10 +411,11 @@ FROM customers c
 LEFT JOIN orders o ON c.customer_id = o.customer_id
 GROUP BY c.customer_id, customer_name
 ORDER BY total_spent DESC;
-```
+```text
 
 **Expected Output**:
-```
+
+```text
 customer_id | customer_name    | order_count | total_spent
 ------------|------------------|-------------|------------
 1           | John Doe         | 2           | 174.99
@@ -416,7 +436,7 @@ ALTER USER <your-email-username> SET
 
 -- Verify settings
 SHOW PARAMETERS LIKE 'DEFAULT%' FOR USER <your-email-username>;
-```
+```text
 
 **Future logins**: New worksheets will automatically use these defaults.
 
@@ -427,6 +447,7 @@ SHOW PARAMETERS LIKE 'DEFAULT%' FOR USER <your-email-username>;
 ### Installation
 
 **macOS** (Homebrew):
+
 ```bash
 # Install SnowSQL via Homebrew
 brew install snowflake-snowsql
@@ -434,9 +455,10 @@ brew install snowflake-snowsql
 # Verify installation
 snowsql --version
 # Expected: SnowSQL v1.3.x
-```
+```text
 
 **macOS/Linux** (Manual):
+
 ```bash
 # Download installer from Snowflake
 curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.3/linux_x86_64/snowsql-1.3.1-linux_x86_64.bash
@@ -452,9 +474,10 @@ export PATH="$HOME/.snowsql:$PATH"
 
 # Verify
 snowsql --version
-```
+```text
 
 **Windows**:
+
 ```powershell
 # Download installer from Snowflake
 # https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.3/windows_x86_64/snowsql-1.3.1-windows_x86_64.msi
@@ -469,12 +492,14 @@ snowsql --version
 ### Configuration
 
 **Create Config File** (~/.snowsql/config):
+
 ```bash
 mkdir -p ~/.snowsql
 nano ~/.snowsql/config
-```
+```text
 
 **Config File Content**:
+
 ```ini
 [connections]
 
@@ -495,17 +520,19 @@ timing = True                              # Show query execution time
 output_format = psql                       # Table format (psql, json, csv)
 auto_completion = True                     # Enable tab completion
 syntax_style = monokai                     # Syntax highlighting
-```
+```text
 
 **Secure Config File**:
+
 ```bash
 # Restrict permissions (important for security)
 chmod 600 ~/.snowsql/config
-```
+```text
 
 ### Using SnowSQL
 
 **Connect to Snowflake**:
+
 ```bash
 # Connect using named connection
 snowsql -c training
@@ -517,6 +544,7 @@ snowsql -a abc12345 -u your-email@example.com
 ```
 
 **Sample SnowSQL Session**:
+
 ```bash
 $ snowsql -c training
 Password:
@@ -542,9 +570,10 @@ yourname@training_snowflake.analytics> SELECT COUNT(*) FROM customers;
 
 yourname@training_snowflake.analytics> !quit
 Goodbye!
-```
+```text
 
 **Useful SnowSQL Commands**:
+
 ```bash
 # Execute SQL file
 snowsql -c training -f create_tables.sql
@@ -560,9 +589,10 @@ snowsql -c training -o output_format=json -q "SELECT * FROM customers;" > custom
 
 # Variables in query
 snowsql -c training -D target_state=CA -q "SELECT * FROM customers WHERE state = '&target_state';"
-```
+```text
 
 **Interactive Commands** (inside SnowSQL):
+
 ```sql
 -- List available commands
 !help
@@ -584,7 +614,7 @@ USE DATABASE training_snowflake;
 
 -- Change warehouse
 USE WAREHOUSE training_wh;
-```
+```text
 
 ---
 
@@ -604,14 +634,16 @@ python -c "import snowflake.connector; print(snowflake.connector.__version__)"
 ```
 
 **Optional**: Install pandas and sqlalchemy for advanced features
+
 ```bash
 pip install snowflake-connector-python[pandas]
 pip install snowflake-sqlalchemy
-```
+```text
 
 ### Basic Connection
 
 **Create Python Script** (snowflake_test.py):
+
 ```python
 import snowflake.connector
 
@@ -641,9 +673,10 @@ print(f"Current Role: {row[2]}")
 # Close cursor and connection
 cursor.close()
 conn.close()
-```
+```text
 
 **Run Script**:
+
 ```bash
 python snowflake_test.py
 
@@ -651,11 +684,12 @@ python snowflake_test.py
 # Snowflake Version: 8.5.0
 # Current User: YOUR_EMAIL@EXAMPLE.COM
 # Current Role: ACCOUNTADMIN
-```
+```text
 
 ### Query Examples
 
 **Fetch All Rows**:
+
 ```python
 import snowflake.connector
 
@@ -685,6 +719,7 @@ conn.close()
 ```
 
 **Using Pandas**:
+
 ```python
 import snowflake.connector
 import pandas as pd
@@ -718,9 +753,10 @@ print(f"\nDataFrame shape: {df.shape}")
 print(f"Top spender: {df.iloc[0]['name']} - ${df.iloc[0]['total_spent']}")
 
 conn.close()
-```
+```text
 
 **Insert Data from Python**:
+
 ```python
 import snowflake.connector
 
@@ -755,9 +791,10 @@ conn.commit()
 
 cursor.close()
 conn.close()
-```
+```text
 
 **Batch Insert**:
+
 ```python
 import snowflake.connector
 
@@ -790,11 +827,12 @@ conn.commit()
 
 cursor.close()
 conn.close()
-```
+```text
 
 ### Connection Best Practices
 
 **Use Environment Variables**:
+
 ```python
 import os
 import snowflake.connector
@@ -810,6 +848,7 @@ conn = snowflake.connector.connect(
 ```
 
 **Set Environment Variables** (.env file):
+
 ```bash
 export SNOWFLAKE_ACCOUNT="abc12345"
 export SNOWFLAKE_USER="your-email@example.com"
@@ -817,9 +856,10 @@ export SNOWFLAKE_PASSWORD="your-password"
 export SNOWFLAKE_WAREHOUSE="training_wh"
 export SNOWFLAKE_DATABASE="training_snowflake"
 export SNOWFLAKE_SCHEMA="analytics"
-```
+```text
 
 **Context Manager** (auto-close connection):
+
 ```python
 import snowflake.connector
 
@@ -841,18 +881,20 @@ with get_connection() as conn:
         print(f"Customer count: {count}")
 
 # Connection and cursor automatically closed
-```
+```text
 
 ---
 
 ## 🛡️ Resource Monitor Setup
 
 **Why Resource Monitors?**
+
 - Prevent unexpected costs
 - Get alerts on credit usage
 - Automatically suspend warehouses at thresholds
 
 **Create Resource Monitor** (via SQL):
+
 ```sql
 -- Use ACCOUNTADMIN role
 USE ROLE ACCOUNTADMIN;
@@ -874,9 +916,10 @@ ALTER ACCOUNT SET RESOURCE_MONITOR = trial_credit_monitor;
 
 -- Verify
 SHOW RESOURCE MONITORS;
-```
+```text
 
 **Create Warehouse-Specific Monitor**:
+
 ```sql
 -- Monitor for training warehouse only
 CREATE RESOURCE MONITOR training_wh_monitor WITH
@@ -892,6 +935,7 @@ ALTER WAREHOUSE training_wh SET RESOURCE_MONITOR = training_wh_monitor;
 ```
 
 **Check Monitor Status**:
+
 ```sql
 -- View monitor usage
 SELECT *
@@ -907,7 +951,7 @@ SELECT
     ROUND((used_credits / credit_quota) * 100, 2) AS percent_used
 FROM SNOWFLAKE.ACCOUNT_USAGE.RESOURCE_MONITORS
 WHERE name = 'TRIAL_CREDIT_MONITOR';
-```
+```text
 
 ---
 
@@ -935,7 +979,7 @@ SELECT
 FROM customers c
 LEFT JOIN orders o ON c.customer_id = o.customer_id
 GROUP BY c.first_name, c.last_name;
-```
+```text
 
 ### Test Warehouse Auto-Suspend
 
@@ -954,7 +998,7 @@ SELECT COUNT(*) FROM customers;
 
 -- Check status again (should be "STARTED")
 SHOW WAREHOUSES LIKE 'training_wh';
-```
+```text
 
 ### Test SnowSQL Connection
 
@@ -990,7 +1034,7 @@ try:
     conn.close()
 except Exception as e:
     print(f"❌ Error: {e}")
-```
+```text
 
 ---
 
@@ -999,7 +1043,8 @@ except Exception as e:
 ### Common Issues
 
 **1. Cannot Login to Web UI**:
-```
+
+```text
 Problem: "Incorrect username or password"
 Solution:
   1. Verify username (usually your email)
@@ -1007,9 +1052,10 @@ Solution:
   3. Check caps lock
   4. Clear browser cache/cookies
   5. Try incognito/private window
-```
+```text
 
 **2. Warehouse Not Starting**:
+
 ```
 Problem: Query fails with "Warehouse not started"
 Solution:
@@ -1017,10 +1063,11 @@ Solution:
   2. Resume manually: ALTER WAREHOUSE training_wh RESUME;
   3. Check permissions: GRANT USAGE ON WAREHOUSE training_wh TO ROLE <your-role>;
   4. Verify AUTO_RESUME is TRUE: DESC WAREHOUSE training_wh;
-```
+```text
 
 **3. Table Not Found**:
-```
+
+```text
 Problem: "Object does not exist"
 Solution:
   1. Check current context:
@@ -1029,9 +1076,10 @@ Solution:
      SELECT * FROM training_snowflake.analytics.customers;
   3. Verify table exists:
      SHOW TABLES IN training_snowflake.analytics;
-```
+```text
 
 **4. Insufficient Privileges**:
+
 ```
 Problem: "SQL access control error"
 Solution:
@@ -1041,10 +1089,11 @@ Solution:
      GRANT USAGE ON DATABASE training_snowflake TO ROLE <your-role>;
      GRANT USAGE ON SCHEMA training_snowflake.analytics TO ROLE <your-role>;
      GRANT SELECT ON ALL TABLES IN SCHEMA training_snowflake.analytics TO ROLE <your-role>;
-```
+```text
 
 **5. SnowSQL Connection Fails**:
-```
+
+```text
 Problem: "Unable to connect"
 Solution:
   1. Verify account identifier: snowsql -a abc12345 -u your-email
@@ -1052,9 +1101,10 @@ Solution:
   3. Test account URL in browser: https://abc12345.snowflakecomputing.com
   4. Update SnowSQL: brew upgrade snowflake-snowsql (macOS)
   5. Check config file: cat ~/.snowsql/config
-```
+```text
 
 **6. Python Connector Issues**:
+
 ```
 Problem: Import error or connection fails
 Solution:
@@ -1062,10 +1112,11 @@ Solution:
   2. Check Python version (3.8+ required): python --version
   3. Verify installation: python -c "import snowflake.connector; print(snowflake.connector.__version__)"
   4. Test simple connection (no warehouse/database)
-```
+```text
 
 **7. Resource Monitor Suspends Warehouse**:
-```
+
+```text
 Problem: Queries fail after heavy usage
 Solution:
   1. Check monitor status:
@@ -1074,7 +1125,7 @@ Solution:
      ALTER RESOURCE MONITOR trial_credit_monitor SET CREDIT_QUOTA = 500;
   3. Resume warehouse manually:
      ALTER WAREHOUSE training_wh RESUME;
-```
+```text
 
 ---
 
@@ -1086,7 +1137,7 @@ Now that your environment is set up:
 2. ✅ **Review [COST-ALERT.md](../COST-ALERT.md)** to understand pricing
 3. ✅ **Start exercises** in the `exercises/` directory
 4. ✅ **Explore sample data**: `SNOWFLAKE_SAMPLE_DATA` database
-5. ✅ **Join Snowflake Community**: https://community.snowflake.com/
+5. ✅ **Join Snowflake Community**: <https://community.snowflake.com/>
 
 **Congratulations!** 🎉 Your Snowflake environment is ready for learning.
 

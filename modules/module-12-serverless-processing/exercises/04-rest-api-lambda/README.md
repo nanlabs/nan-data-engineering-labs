@@ -23,6 +23,7 @@
 ## 📚 Context
 
 Construirás una **User Management API** serverless con:
+
 - CRUD completo de usuarios
 - Autenticación con múltiples métodos
 - Validation de requests
@@ -31,7 +32,7 @@ Construirás una **User Management API** serverless con:
 
 **Arquitectura**:
 
-```
+```text
 ┌─────────────┐
 │   Client    │
 └──────┬──────┘
@@ -57,7 +58,7 @@ Construirás una **User Management API** serverless con:
 │  DynamoDB Table   │
 │  users            │
 └──────────────────┘
-```
+```text
 
 ---
 
@@ -304,7 +305,7 @@ def response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
         },
         'body': json.dumps(body, default=str)
     }
-```
+```text
 
 ---
 
@@ -523,7 +524,7 @@ curl -X PUT "$API_URL/$USER_ID" \
 # DELETE user
 curl -X DELETE "$API_URL/$USER_ID" \
   -H "X-API-Key: $API_KEY"
-```
+```text
 
 ### 3.2 Integration Tests
 
@@ -578,7 +579,7 @@ def test_rate_limiting():
             break
 
     assert response.status_code == 429
-```
+```text
 
 ---
 

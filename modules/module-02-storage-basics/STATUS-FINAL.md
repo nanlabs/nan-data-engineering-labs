@@ -24,7 +24,8 @@
 ## 📁 Complete File Inventory
 
 ### Theory (3 files - 20,000 words)
-```
+
+```text
 theory/
 ├── concepts.md (11,000 words)
 │   ├── Data Lake Architecture & Medallion Pattern
@@ -55,10 +56,11 @@ theory/
     ├── Blogs & Articles (Netflix, Uber, Spotify)
     ├── Certification Prep (AWS Data Analytics - Specialty)
     └── Learning Path (8-week progression)
-```
+```text
 
 ### Exercise 01: Data Lake Design (6 files - MOST DETAILED)
-```
+
+```text
 exercises/01-data-lake-design/
 ├── README.md
 │   ├── Learning objectives
@@ -97,7 +99,8 @@ exercises/01-data-lake-design/
 ```
 
 ### Exercise 02: File Format Conversion (4 files)
-```
+
+```text
 exercises/02-file-formats/
 ├── README.md
 │   ├── Objective: Convert CSV → JSON, Parquet, Avro
@@ -125,10 +128,11 @@ exercises/02-file-formats/
         ├── Real-world impact (cost savings examples)
         ├── Medallion architecture recommendations
         └── Key insights (Parquet = 79.7% space savings, 6x faster)
-```
+```text
 
 ### Exercise 03: Partitioning Strategies (3 files)
-```
+
+```text
 exercises/03-partitioning-strategies/
 ├── README.md
 │   ├── Objective: Implement Hive-style partitioning
@@ -153,7 +157,8 @@ exercises/03-partitioning-strategies/
 ```
 
 ### Exercise 04: Compression Optimization (2 files)
-```
+
+```text
 exercises/04-compression-optimization/
 ├── README.md
 │   ├── Objective: Compare Snappy, Gzip, LZ4, Zstd
@@ -165,10 +170,11 @@ exercises/04-compression-optimization/
     └── test_compression.py (with TODOs)
         ├── CompressionTester class skeleton
         └── Functions to implement compression benchmarking
-```
+```text
 
 ### Exercise 05: Schema Evolution (3 files)
-```
+
+```text
 exercises/05-schema-evolution/
 ├── README.md
 │   ├── Objective: Add columns, handle compatibility
@@ -193,7 +199,8 @@ exercises/05-schema-evolution/
 ```
 
 ### Exercise 06: Glue Catalog Integration (4 files)
-```
+
+```text
 exercises/06-glue-catalog/
 ├── README.md
 │   ├── Objective: Register datasets in AWS Glue Data Catalog
@@ -223,10 +230,11 @@ exercises/06-glue-catalog/
         ├── Window functions
         ├── CTAS (Create Table As Select)
         └── Maintenance queries (ADD PARTITION, ANALYZE)
-```
+```text
 
 ### Infrastructure (3 files)
-```
+
+```text
 infrastructure/
 ├── docker-compose.yml
 │   ├── LocalStack service configuration
@@ -250,7 +258,8 @@ infrastructure/
 ```
 
 ### Scripts & Automation (2 files)
-```
+
+```text
 scripts/
 ├── setup.sh (executable)
 │   ├── Check Python 3
@@ -260,10 +269,11 @@ scripts/
 │
 └── validate.sh (executable)
     └── Run pytest on validation/ directory
-```
+```text
 
 ### Documentation (5 files)
-```
+
+```text
 docs/
 ├── storage-guide.md (8,000+ words)
 │   ├── Complete format comparison matrix
@@ -300,7 +310,8 @@ docs/
 ```
 
 ### Sample Data Generation (1 file)
-```
+
+```text
 data/
 └── generate_sample_data.py (300+ lines)
     ├── SampleDataGenerator class
@@ -310,10 +321,11 @@ data/
     ├── Generate logs (50k rows, JSONL)
     ├── CLI with argparse
     └── Reproducible with seed parameter
-```
+```text
 
 ### Validation Tests (3 files)
-```
+
+```text
 validation/
 ├── conftest.py
 │   ├── Pytest fixtures
@@ -347,7 +359,8 @@ validation/
 ```
 
 ### Dependencies (1 file)
-```
+
+```text
 requirements.txt
 ├── Core data processing:
 │   ├── pandas>=2.0.0
@@ -374,13 +387,14 @@ requirements.txt
 │
 └── Optional:
     └── duckdb>=0.8.0
-```
+```text
 
 ---
 
 ## 🎯 Module Metrics
 
 ### Content Volume
+
 - **Theory**: 20,000+ words of technical content
 - **Code**: 2,000+ lines across exercises
 - **Tests**: 200+ lines of validation
@@ -388,7 +402,9 @@ requirements.txt
 - **TOTAL**: ~35,000 words + 2,200+ lines of code
 
 ### Learning Outcomes
+
 Students who complete this module will be able to:
+
 1. ✅ Design medallion architecture data lakes (Bronze/Silver/Gold)
 2. ✅ Choose optimal file formats for different use cases
 3. ✅ Implement partitioning strategies for query optimization
@@ -401,6 +417,7 @@ Students who complete this module will be able to:
 10. ✅ Benchmark and optimize data lake performance
 
 ### Time Investment
+
 - **Theory Reading**: 3-4 hours
 - **Exercise 01** (Data Lake Design): 90 minutes
 - **Exercise 02** (File Formats): 60 minutes
@@ -413,6 +430,7 @@ Students who complete this module will be able to:
 ### Skills Developed
 
 **Technical Skills**:
+
 - AWS S3 (buckets, lifecycle, versioning, encryption)
 - AWS Glue (Data Catalog, crawlers, tables)
 - AWS Athena (SQL queries, partition pruning, CTAS)
@@ -425,6 +443,7 @@ Students who complete this module will be able to:
 - Docker & LocalStack
 
 **Conceptual Understanding**:
+
 - Medallion architecture (Bronze/Silver/Gold layers)
 - Data lake vs data warehouse
 - Columnar vs row-based storage
@@ -434,6 +453,7 @@ Students who complete this module will be able to:
 - Metadata management
 
 **Best Practices**:
+
 - Naming conventions for data lakes
 - Storage class lifecycle policies
 - Security (encryption at rest, in transit)
@@ -448,12 +468,14 @@ Students who complete this module will be able to:
 ## 🔍 Quality Checklist
 
 ✅ **Content Quality**
+
 - [x] Theory is comprehensive (20,000+ words)
 - [x] All concepts explained with examples
 - [x] Mermaid diagrams for visual learners
 - [x] Real-world examples (Netflix, Uber, Spotify)
 
 ✅ **Exercise Quality**
+
 - [x] Exercise 01 highly detailed (6 files, 3,000+ word scenario)
 - [x] All exercises have starter templates with TODOs
 - [x] All exercises have complete solutions
@@ -461,6 +483,7 @@ Students who complete this module will be able to:
 - [x] Benchmark results and analysis included
 
 ✅ **Code Quality**
+
 - [x] All Python scripts are executable
 - [x] Comprehensive error handling
 - [x] Clear comments and docstrings
@@ -468,6 +491,7 @@ Students who complete this module will be able to:
 - [x] Tabulated output for readability
 
 ✅ **Infrastructure Quality**
+
 - [x] Docker Compose properly configured
 - [x] LocalStack with 6 AWS services
 - [x] Health checks implemented
@@ -475,6 +499,7 @@ Students who complete this module will be able to:
 - [x] Automated initialization script
 
 ✅ **Documentation Quality**
+
 - [x] README files for each major component
 - [x] Storage guide (8,000+ words)
 - [x] Troubleshooting guide (6,000+ words)
@@ -482,6 +507,7 @@ Students who complete this module will be able to:
 - [x] Clear getting started instructions
 
 ✅ **Testing Quality**
+
 - [x] Pytest fixtures configured
 - [x] Tests for Exercise 01 (13 tests)
 - [x] Tests for Exercise 02 (7 tests)
@@ -493,12 +519,14 @@ Students who complete this module will be able to:
 ## 📝 Next Steps
 
 ### For Students
+
 1. **Read Theory** (3-4 hours)
    - Start with concepts.md
    - Review architecture.md diagrams
    - Bookmark resources.md
 
 2. **Setup Environment** (15 minutes)
+
    ```bash
    # Run setup script
    bash scripts/setup.sh
@@ -516,11 +544,13 @@ Students who complete this module will be able to:
    - Exercise 06: Glue Catalog Integration
 
 4. **Run Validation** (5 minutes)
+
    ```bash
    bash scripts/validate.sh
-   ```
+   ```text
 
 ### For Instructors
+
 1. **Module is Production-Ready**
    - All theory, exercises, and solutions complete
    - Infrastructure tested with LocalStack
@@ -540,6 +570,7 @@ Students who complete this module will be able to:
    - Capstone: Design complete data lake for case study
 
 ### For Course Development
+
 1. **Module 03 (SQL Foundations)** is next in sequence
 2. Consider adding:
    - More compression algorithm comparisons
@@ -554,6 +585,7 @@ Students who complete this module will be able to:
 **Module 02: Storage Basics & Data Formats is 100% COMPLETE and ready for production use.**
 
 This module provides students with:
+
 - **Comprehensive theory** covering all aspects of storage and data formats
 - **6 complete exercises** with starter templates and full solutions
 - **Production-ready infrastructure** with Docker and LocalStack
@@ -562,6 +594,7 @@ This module provides students with:
 - **Sample data generation** for realistic practice
 
 Students who complete this module will have **production-level skills** in:
+
 - Designing data lakes with medallion architecture
 - Selecting optimal file formats and compression
 - Implementing partitioning strategies

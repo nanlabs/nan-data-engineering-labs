@@ -17,7 +17,7 @@
 
 **Arquitectura clásica**: REST API serverless
 
-```
+```text
 ┌──────────────┐
 │   Client     │
 └──────┬───────┘
@@ -42,7 +42,7 @@
          ┌──────▼──────┐
          │  DynamoDB   │
          └─────────────┘
-```
+```text
 
 **Implementación**:
 
@@ -115,7 +115,7 @@ def list_users(event, context):
             'count': len(response['Items'])
         }, default=str)
     }
-```
+```text
 
 ### Pattern 2: Data Lake Ingestion
 
@@ -158,7 +158,7 @@ def list_users(event, context):
 │  Glue Crawler                    │
 │  (Update Data Catalog)           │
 └─────────────────────────────────┘
-```
+```text
 
 **Implementación: Validator Lambda**
 
@@ -263,13 +263,13 @@ def process_valid_file(bucket, key, df):
 
     # Eliminar archivo original
     s3.delete_object(Bucket=bucket, Key=key)
-```
+```text
 
 ### Pattern 3: Event Sourcing
 
 **Concepto**: Todos los cambios se almacenan como eventos inmutables.
 
-```
+```text
 API Request → Lambda → Event Store (DynamoDB/S3)
                            ↓
                     EventBridge Stream
@@ -352,7 +352,7 @@ def generate_report(event, context):
             'Body': {'Text': {'Data': f"Hello {detail['data']['name']}!"}}
         }
     )
-```
+```text
 
 ---
 
@@ -382,9 +382,9 @@ def lambda_handler(event, context):
         },
         'body': json.dumps({'message': 'Success'})
     }
-```
+```text
 
-2. **Lambda Custom**: API Gateway transforma request/response
+1. **Lambda Custom**: API Gateway transforma request/response
 
 ### HTTP API vs REST API
 
@@ -405,7 +405,7 @@ def lambda_handler(event, context):
 def lambda_handler(event, context):
     # No necesitas validate, API Gateway ya lo hizo
     return {'statusCode': 200, 'body': 'Authenticated'}
-```
+```text
 
 #### 2. IAM (AWS credentials)
 
@@ -442,7 +442,7 @@ def lambda_handler(event, context):
     print(f"User {email} ({user_id}) made request")
 
     return {'statusCode': 200, 'body': f'Hello {email}'}
-```
+```text
 
 #### 4. Lambda Authorizer (custom)
 
@@ -481,7 +481,7 @@ def handler(event, context):
     role = event['requestContext']['authorizer']['role']
 
     return {'statusCode': 200, 'body': f'Hello {user_id} ({role})'}
-```
+```text
 
 ### Request Validation
 
@@ -505,7 +505,7 @@ def handler(event, context):
   },
   "required": ["email"]
 }
-```
+```text
 
 Si request no cumple schema, API Gateway retorna 400 sin invocar Lambda (ahorro de costos).
 
@@ -542,7 +542,7 @@ resource "aws_api_gateway_usage_plan" "main" {
   "Action": "s3:*",
   "Resource": "*"
 }
-```
+```text
 
 **✅ GOOD**: Lambda con permisos mínimos
 
@@ -557,7 +557,7 @@ resource "aws_api_gateway_usage_plan" "main" {
     "arn:aws:s3:::my-bucket/processed/*"
   ]
 }
-```
+```text
 
 ### Secrets Management
 
@@ -565,7 +565,7 @@ resource "aws_api_gateway_usage_plan" "main" {
 
 ```python
 os.environ['DB_PASSWORD'] = 'mypassword123'  # ⚠️ Visible en console
-```
+```text
 
 **✅ GOOD**: AWS Secrets Manager
 
@@ -621,16 +621,18 @@ resource "aws_iam_role_policy" "lambda_secrets" {
     }]
   })
 }
-```
+```text
 
 ### Encryption
 
 **At Rest**:
+
 - S3: Server-Side Encryption (SSE-S3, SSE-KMS)
 - DynamoDB: Encryption at rest con KMS
 - Lambda env vars: Cifradas con KMS
 
 **In Transit**:
+
 - API Gateway: HTTPS obligatorio
 - Lambda → AWS services: TLS por defecto
 
@@ -663,7 +665,7 @@ def lambda_handler(event, context):
         Body=encrypted_data,
         Metadata={'encrypted-key': encrypted_key.hex()}
     )
-```
+```text
 
 ### VPC Security
 
@@ -703,7 +705,7 @@ resource "aws_security_group" "rds" {
     security_groups = [aws_security_group.lambda.id]
   }
 }
-```
+```text
 
 ---
 
@@ -770,7 +772,7 @@ fields file_key
 | stats count() as count by file_key
 | sort count desc
 | limit 10
-```
+```text
 
 ### CloudWatch Metrics
 
@@ -804,7 +806,7 @@ def lambda_handler(event, context):
             }
         ]
     )
-```
+```text
 
 **Alarmas**:
 
@@ -842,7 +844,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
 
   alarm_actions = [aws_sns_topic.alerts.arn]
 }
-```
+```text
 
 ### X-Ray Tracing
 
@@ -883,7 +885,7 @@ resource "aws_iam_role_policy_attachment" "xray" {
   role       = aws_iam_role.lambda.name
   policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
 }
-```
+```text
 
 ---
 
@@ -891,9 +893,9 @@ resource "aws_iam_role_policy_attachment" "xray" {
 
 ### Pattern: Infrastructure as Code + CI/CD
 
-```
+```text
 Git Push → GitHub Actions → Tests → Deploy Lambda + API Gateway
-```
+```text
 
 #### GitHub Actions Workflow
 
@@ -1042,7 +1044,7 @@ Outputs:
   ApiUrl:
     Description: "API Gateway endpoint URL"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
-```
+```text
 
 **Deploy**:
 
@@ -1055,7 +1057,7 @@ sam deploy --stack-name my-app-staging --parameter-overrides Environment=staging
 
 # Deploy to production
 sam deploy --stack-name my-app-prod --parameter-overrides Environment=production
-```
+```text
 
 ---
 
@@ -1069,7 +1071,7 @@ sam deploy --stack-name my-app-prod --parameter-overrides Environment=production
 # Test con diferentes configuraciones
 # 512 MB: 1000ms = 512 MB-s = $0.000008333
 # 1024 MB: 600ms = 614 MB-s = $0.00001023 (MÁS RÁPIDO Y MÁS BARATO!)
-```
+```text
 
 **Tool**: AWS Lambda Power Tuning - encuentra configuration óptima.
 
@@ -1101,7 +1103,7 @@ resource "aws_lambda_provisioned_concurrency_config" "warm" {
   # Mantener 5 instancias siempre warm
   provisioned_concurrent_executions = 5
 }
-```
+```text
 
 **Costo**: ~$0.015 por GB-hora (vs $0.0000166667 por GB-segundo on-demand).
 
@@ -1136,7 +1138,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_lake" {
     }
   }
 }
-```
+```text
 
 ### 5. DynamoDB On-Demand vs Provisioned
 
@@ -1153,7 +1155,7 @@ resource "aws_dynamodb_table" "users" {
   # read_capacity  = 5
   # write_capacity = 5
 }
-```
+```text
 
 ---
 

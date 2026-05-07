@@ -107,7 +107,7 @@ flowchart TB
     style Storage fill:#87CEEB
     style Analytics fill:#FFF3E0
     style Monitoring fill:#FFE1E1
-```
+```text
 
 ## Lambda ETL Pipeline Flow
 
@@ -150,7 +150,7 @@ sequenceDiagram
     deactivate Lambda4
 
     Note over S3P: Data ready for<br/>analytics
-```
+```text
 
 ## Step Functions State Machine para ETL Complejo
 
@@ -199,7 +199,7 @@ flowchart TD
     style Failed fill:#FF6347
     style Parallel fill:#FFD700
     style HandleError fill:#FF9800
-```
+```text
 
 ## Event-Driven Architecture con EventBridge
 
@@ -294,7 +294,7 @@ graph TB
     style Lambda fill:#FFD700
     style Layers fill:#87CEEB
     style Runtime fill:#E8F5E9
-```
+```text
 
 ## Serverless Data Lake Zones
 
@@ -339,7 +339,7 @@ flowchart TB
     style Raw fill:#FFE1E1
     style Curated fill:#FFF3E0
     style Analytics fill:#E8F5E9
-```
+```text
 
 ## Lambda Cost Optimization Strategies
 
@@ -379,7 +379,7 @@ flowchart TD
     style Start fill:#E1F5FF
     style Savings fill:#90EE90
     style Monitor fill:#FFD700
-```
+```text
 
 ## Serverless Observability Stack
 
@@ -455,6 +455,7 @@ flowchart TB
 ## Uso
 
 Estos diagramas muestran:
+
 1. Arquitectura completa de una plataforma de datos serverless
 2. Flujo de ejecución de un pipeline ETL con Lambda
 3. Step Functions para orquestación compleja con manejo de errores

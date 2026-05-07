@@ -34,7 +34,7 @@ stateDiagram-v2
         Readiness probes
         Health checks
     end note
-```
+```text
 
 ## Deployment Strategies
 
@@ -99,7 +99,7 @@ flowchart TB
     style Rec fill:#FFE1E1
     style BG fill:#E1F5FF
     style Can fill:#FFF3E0
-```
+```text
 
 ## StatefulSet vs Deployment
 
@@ -144,7 +144,7 @@ flowchart LR
 
     style Deployment fill:#E8F5E9
     style StatefulSet fill:#E1F5FF
-```
+```text
 
 ## Service Types y Network Architecture
 
@@ -251,7 +251,7 @@ flowchart TB
     style PVC fill:#87CEEB
     style PV fill:#E8F5E9
     style Pod fill:#E1F5FF
-```
+```text
 
 ## ConfigMaps and Secrets Management
 
@@ -312,7 +312,7 @@ flowchart TB
     style K8sSecrets fill:#FFE1E1
     style K8sConfig fill:#E1F5FF
     style Pods fill:#E8F5E9
-```
+```text
 
 ## Auto-Scaling: HPA + Cluster Autoscaler
 
@@ -370,7 +370,7 @@ flowchart TB
     style HPA fill:#E8F5E9
     style CA fill:#87CEEB
     style Running fill:#90EE90
-```
+```text
 
 ## Deployment Workflow: GitOps with ArgoCD
 
@@ -479,11 +479,12 @@ flowchart TB
     style Guaranteed fill:#90EE90
     style Burstable fill:#FFD700
     style BestEffort fill:#FF9800
-```
+```text
 
 ## Uso
 
 Estos diagramas muestran:
+
 1. Pod lifecycle y estados en Kubernetes
 2. Estrategias de deployment (Rolling, Recreate, Blue/Green, Canary)
 3. Diferencias entre Deployment y StatefulSet

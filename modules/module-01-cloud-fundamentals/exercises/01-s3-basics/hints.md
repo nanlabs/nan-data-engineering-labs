@@ -11,6 +11,7 @@
 Can't connect to LocalStack?
 
 **Verify:**
+
 ```bash
 # Is LocalStack running?
 docker ps | grep localstack
@@ -20,22 +21,23 @@ curl http://localhost:4566
 
 # Do you have credentials configured?
 aws configure list
-```
+```text
 
 **Common issue:**
 If you see "Unable to locate credentials", configure dummy credentials:
+
 ```bash
 aws configure
 # Access Key: test
 # Secret Key: test
 # Region: us-east-1
-```
+```text
 
 ### Hint 1.2: Create Bucket
 
 Think about the command structure:
 
-```
+```text
 aws s3 mb s3://[BUCKET_NAME] --endpoint-url=[ENDPOINT]
 ```
 
@@ -47,13 +49,13 @@ aws s3 mb s3://[BUCKET_NAME] --endpoint-url=[ENDPOINT]
 
 Command structure:
 
-```
+```text
 aws s3 cp [LOCAL_FILE] s3://[BUCKET]/[KEY] --endpoint-url=[ENDPOINT]
-```
+```text
 
 **Remember:** The KEY is the COMPLETE path of the object in S3, including "folders":
 
-```
+```text
 source=app-logs/year=2024/month=01/day=15/filename.json
 ```
 
@@ -67,7 +69,7 @@ aws s3 ls s3://bucket/prefix/
 
 # Option 2: List recursively (show all files)
 aws s3 ls s3://bucket/prefix/ --recursive
-```
+```text
 
 To filter only app-logs, use the runct prefix: `source=app-logs`
 
@@ -89,7 +91,7 @@ create_bucket() {
 
     # ... rest of code
 }
-```
+```text
 
 **Note:** Quotes around `"$bucket_name"` are important for handling spaces (although bucket names shouldn't have spaces).
 
@@ -110,7 +112,7 @@ upload_file() {
 
     # ... resto del código
 }
-```
+```text
 
 ### Hint 2.3: Función list_objects
 
@@ -152,7 +154,7 @@ copy_object() {
 
     # ... resto del código
 }
-```
+```text
 
 **Nota:** `aws s3 cp` funciona para local→S3, S3→local, y S3→S3.
 
@@ -173,9 +175,10 @@ get_object_metadata() {
         --endpoint-url="$ENDPOINT_URL" \
         --region="$REGION"
 }
-```
+```text
 
 **Diferencia importante:**
+
 - `aws s3`: Comandos de alto nivel (cp, ls, rm, sync)
 - `aws s3api`: API de bajo nivel con más opciones (head-object, put-object, get-bucket-policy, etc.)
 
@@ -210,7 +213,7 @@ upload_file \
     "source=transactions/year=2024/month=01/day=15/transactions-2024-01-15.csv"
 
 echo ""
-```
+```text
 
 ### Hint 3.2: Main Function - Step 3 Completo
 
@@ -257,7 +260,7 @@ copy_object \
     "processed/app-logs/2024-01-15.json"
 
 echo ""
-```
+```text
 
 ### Hint 3.4: Función count_objects
 
@@ -272,9 +275,10 @@ count_objects() {
 
     echo "$count"
 }
-```
+```text
 
 **Explicación del pipe:**
+
 - `aws s3 ls ... --recursive`: Lista todos los archivos
 - `|`: Pasa output al next comando
 - `wc -l`: Cuenta líneas (cada archivo es una línea)
@@ -310,7 +314,7 @@ delete_bucket() {
 
     # ... resto del código
 }
-```
+```text
 
 ---
 
@@ -341,7 +345,7 @@ aws --endpoint-url=http://localhost:4566 s3 ls s3://my-data-lake-raw --recursive
 aws --endpoint-url=http://localhost:4566 s3api head-object \
     --bucket my-data-lake-raw \
     --key "source=app-logs/year=2024/month=01/day=15/app-logs-2024-01-15.json"
-```
+```text
 
 ### Limpiar Todo y Empezar de Cero
 
@@ -352,7 +356,7 @@ aws --endpoint-url=http://localhost:4566 s3 rb s3://my-data-lake-processed --for
 
 # O reinicia LocalStack
 docker restart localstack_main
-```
+```text
 
 ---
 
@@ -400,8 +404,8 @@ Después de complete el exercise, answer:
 
 - **AWS CLI S3 Reference**: `aws s3 help`
 - **AWS CLI S3API Reference**: `aws s3api help`
-- **LocalStack S3 Docs**: https://docs.localstack.cloud/user-guide/aws/s3/
-- **Bash Scripting Guide**: https://www.gnu.org/software/bash/manual/
+- **LocalStack S3 Docs**: <https://docs.localstack.cloud/user-guide/aws/s3/>
+- **Bash Scripting Guide**: <https://www.gnu.org/software/bash/manual/>
 
 ---
 

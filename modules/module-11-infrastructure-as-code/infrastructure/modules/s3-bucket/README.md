@@ -44,7 +44,7 @@ module "my_bucket" {
 output "bucket_arn" {
   value = module.my_bucket.arn
 }
-```
+```text
 
 ## Inputs
 

@@ -19,16 +19,19 @@ Create CloudFormation templates for QuickMart's data platform:
 ### Template 1: Data Lake Stack
 
 **Resources:**
+
 - S3 bucket with versioning
 - Lifecycle policies (30d → IA, 90d → Glacier)
 - Bucket policy with encryption enforcement
 - IAM role for data engineers
 
 **Parameters:**
+
 - `Environment` (dev, staging, prod)
 - `DataRetentionDays` (90, 180, 365)
 
 **Outputs:**
+
 - BucketName
 - BucketARN
 - DataEngineerRoleARN
@@ -36,6 +39,7 @@ Create CloudFormation templates for QuickMart's data platform:
 ### Template 2: Processing Stack
 
 **Resources:**
+
 - Lambda function (CSV validator)
 - SQS queue for events
 - CloudWatch log group
@@ -46,6 +50,7 @@ Create CloudFormation templates for QuickMart's data platform:
 ### Template 3: Monitoring Stack
 
 **Resources:**
+
 - CloudWatch dashboard
 - SNS topic for alerts
 - CloudWatch alarms (storage size, Lambda errors)
@@ -53,6 +58,7 @@ Create CloudFormation templates for QuickMart's data platform:
 ## 📋 Acceptance Criteria
 
 ### Template Requirements
+
 - [x] YAML format (more readable than JSON)
 - [x] Parameterized (no hardcoded values)
 - [x] Tagged resources (Environment, Project, ManagedBy)
@@ -61,6 +67,7 @@ Create CloudFormation templates for QuickMart's data platform:
 - [x] Condition functions for environment-specific logic
 
 ### Stack Lifecycle
+
 - [x] Create stack: `aws cloudformation create-stack`
 - [x] Update stack: `aws cloudformation update-stack`
 - [x] View changes: `aws cloudformation describe-change-set`
@@ -68,6 +75,7 @@ Create CloudFormation templates for QuickMart's data platform:
 - [x] Delete stack: `aws cloudformation delete-stack`
 
 ### Testing
+
 - [x] Deploy to dev environment
 - [x] Update with parameter change
 - [x] Test rollback (introduce error intentionally)
@@ -75,7 +83,7 @@ Create CloudFormation templates for QuickMart's data platform:
 
 ## 🏗️ Architecture
 
-```
+```text
 data-lake-stack.yaml
 ├── S3::Bucket (my-data-lake-${Environment})
 ├── S3::BucketPolicy (encryption required)
@@ -92,7 +100,7 @@ monitoring-stack.yaml
 ├── CloudWatch::Dashboard (data-platform-overview)
 ├── SNS::Topic (platform-alerts)
 └── CloudWatch::Alarms (storage, errors, costs)
-```
+```text
 
 ## 💡 Implementation Tips
 
@@ -115,7 +123,7 @@ Parameters:
     MinValue: 30
     MaxValue: 365
     Description: Days to retain data before archival
-```
+```text
 
 ### Conditional Resources
 
@@ -153,7 +161,7 @@ Resources:
       Variables:
         BUCKET_NAME: !ImportValue
           Fn::Sub: '${DataLakeStackName}-BucketName'
-```
+```text
 
 ### Tagging Strategy
 
@@ -167,7 +175,7 @@ Tags:
     Value: CloudFormation
   - Key: CostCenter
     Value: Engineering
-```
+```text
 
 ## 🧪 Test Scenarios
 
@@ -189,7 +197,7 @@ aws cloudformation create-stack \
     ParameterKey=Environment,ParameterValue=prod \
     ParameterKey=DataRetentionDays,ParameterValue=365 \
   --capabilities CAPABILITY_IAM
-```
+```text
 
 ### Scenario 2: Update Existing Stack
 
@@ -214,27 +222,29 @@ aws cloudformation update-stack \
 # Watch rollback
 aws cloudformation describe-stack-events \
   --stack-name quickmart-data-lake-dev
-```
+```text
 
 ## 📈 Benefits Realized
 
 ### Before CloudFormation
-```
+
+```text
 Setup Time: 2 hours (manual)
 Error Rate: 30% (typos, missed steps)
 Documentation: Outdated wiki
 Rollback: Manual (risky)
 Audit Trail: None
-```
+```text
 
 ### After CloudFormation
+
 ```
 Setup Time: 10 minutes (automated)
 Error Rate: <5% (validated templates)
 Documentation: Template IS documentation
 Rollback: Automatic (safe)
 Audit Trail: Git history + CloudFormation events
-```
+```text
 
 ## 🎓 Learning Outcomes
 

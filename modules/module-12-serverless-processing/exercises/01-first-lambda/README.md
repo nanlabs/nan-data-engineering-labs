@@ -28,7 +28,7 @@ Vas a create una función Lambda que se dispara automáticamente cuando se sube 
 
 **Arquitectura**:
 
-```
+```text
 ┌─────────────┐
 │  Usuario    │
 └──────┬──────┘
@@ -50,7 +50,7 @@ Vas a create una función Lambda que se dispara automáticamente cuando se sube 
 ┌──────────────────────────────┐
 │  S3 Bucket: data-processed   │
 └──────────────────────────────┘
-```
+```text
 
 ---
 
@@ -73,7 +73,7 @@ mkdir -p src tests infrastructure
 #   └── test_handler.py
 # infrastructure/
 #   └── main.tf             # Terraform
-```
+```text
 
 ### 1.2 Crear Función Lambda
 
@@ -247,7 +247,7 @@ def save_stats(bucket: str, key: str, stats: dict):
 ```txt
 pandas==2.1.4
 boto3==1.34.0
-```
+```text
 
 ---
 
@@ -422,7 +422,7 @@ output "lambda_arn" {
   value       = aws_lambda_function.csv_processor.arn
   description = "Lambda ARN"
 }
-```
+```text
 
 ---
 
@@ -536,7 +536,7 @@ def test_process_csv_file(mock_s3, sample_csv):
     assert stats['column_count'] == 4
     assert 'user_id' in stats['columns']
     assert 'age' in stats['numeric_stats']
-```
+```text
 
 ### 3.2 Ejecutar Tests
 
@@ -576,7 +576,7 @@ cd ..
 
 # Mover ZIP a infrastructure/
 mv lambda.zip ../infrastructure/
-```
+```text
 
 **`infrastructure/deploy.sh`** (automatizar):
 
@@ -615,7 +615,7 @@ terraform plan
 terraform apply -auto-approve
 
 echo "✅ Deployment completed!"
-```
+```text
 
 ### 4.2 Deploy con Terraform
 
@@ -634,7 +634,7 @@ terraform apply
 # Obtener outputs
 terraform output bucket_name
 terraform output lambda_function_name
-```
+```text
 
 ---
 
@@ -674,7 +674,7 @@ aws s3 cp s3://$BUCKET/processed/test_data_stats.json .
 
 # Ver contenido
 cat test_data_stats.json | jq .
-```
+```text
 
 **Expected output**:
 
@@ -715,7 +715,7 @@ cat test_data_stats.json | jq .
   "processed_at": "2024-03-07T10:30:00.123456",
   "processor": "lambda-csv-processor"
 }
-```
+```text
 
 ---
 
@@ -741,7 +741,7 @@ fields duration_ms
 fields @timestamp, @message
 | filter @message like /ERROR/
 | sort @timestamp desc
-```
+```text
 
 ### 6.2 CloudWatch Metrics
 
@@ -781,15 +781,15 @@ aws cloudwatch get-metric-statistics \
 
 ### Level 2: Intermedio
 
-4. **Procesamiento por chunks**: Manejar archivos grandes (>100 MB)
-5. **Dead Letter Queue**: Configurar DLQ para invocaciones fallidas
-6. **Lambda Layers**: Crear Layer con pandas para reutilizar en otras Lambdas
+1. **Procesamiento por chunks**: Manejar archivos grandes (>100 MB)
+2. **Dead Letter Queue**: Configurar DLQ para invocaciones fallidas
+3. **Lambda Layers**: Crear Layer con pandas para reutilizar en otras Lambdas
 
 ### Level 3: Avanzado
 
-7. **X-Ray tracing**: Habilitar tracing y agregar subsegments
-8. **VPC integration**: Mover Lambda a VPC privada
-9. **Reserved concurrency**: Configurar concurrency limits
+1. **X-Ray tracing**: Habilitar tracing y agregar subsegments
+2. **VPC integration**: Mover Lambda a VPC privada
+3. **Reserved concurrency**: Configurar concurrency limits
 
 ---
 
@@ -804,7 +804,7 @@ terraform destroy -auto-approve
 cd ..
 rm -rf src/package/
 rm infrastructure/lambda.zip
-```
+```text
 
 ---
 

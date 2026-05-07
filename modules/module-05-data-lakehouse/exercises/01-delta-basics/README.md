@@ -3,6 +3,7 @@
 ## 🎯 Objective
 
 Aprender los fundamentos of Delta Lake:
+
 - Crear tables Delta desde DataFrames
 - Basic operations: append, overwrite
 - Reading of tables Delta
@@ -28,7 +29,7 @@ Your company is migrating from Parquet to Delta Lake as to storage format. You n
 
 ## 🗂️ Structure of the Exercise
 
-```
+```text
 01-delta-basics/
 ├── README.md (this archivo)
 ├── hints.md
@@ -46,7 +47,7 @@ Your company is migrating from Parquet to Delta Lake as to storage format. You n
 │   └── README.md
 └── tests/
     └── test_delta_basics.py
-```
+```text
 
 ---
 
@@ -57,14 +58,16 @@ Your company is migrating from Parquet to Delta Lake as to storage format. You n
 ```bash
 cd ../../infrastructure
 docker-compose up -d
-```
+```text
 
 Verify that all services are running:
+
 ```bash
 docker-compose ps
 ```
 
 You should see:
+
 - `spark-master` (port 8080)
 - `spark-worker` (port 8081)
 - `minio` (ports 9000, 9001)
@@ -73,7 +76,7 @@ You should see:
 
 ### 2. Acceder to Jupyter
 
-Abre tu navegador in: HTTP://localhost:8888
+Abre tu navegador in: <HTTP://localhost:8888>
 
 not requiere password (configurado for desarrolelo local).
 
@@ -82,15 +85,17 @@ not requiere password (configurado for desarrolelo local).
 you can ejecutar los scrIPts of dos formas:
 
 **Option to: From Jupyter Notebook**
+
 - Carga cada scrIPt `.py` in una nueva celda
 - Ejecuta celda by celda
 
 **Option B: From the container terminal**
+
 ```bash
 docker exec -it module-05-spark-master bash
 cd /opt/spark/work-dir/exercises/01-delta-basics/starter
 spark-submit --master local[2] 01_create_table.py
-```
+```text
 
 ---
 
@@ -107,6 +112,7 @@ spark-submit --master local[2] 01_create_table.py
 5. Particiona by `country`
 
 **Expectativas**:
+
 - table creada in formato Delta
 - Partitioned by country
 - Metadatas verificables
@@ -121,6 +127,7 @@ spark-submit --master local[2] 01_create_table.py
 4. Verifica que el total of records sea 15,000
 
 **Expectativas**:
+
 - Append exitoso without duplicar datas
 - Total of records correcto
 - without sobrescribir datas existentes
@@ -132,13 +139,16 @@ spark-submit --master local[2] 01_create_table.py
 1. Read data from to specific country (ex: "USA")
 2. Modifica el campo `status` of "pending" to "expinetwork"
 3. Overwrite only that country's partition using:
+
    ```python
    .mode("overwrite")
    .option("replaceWhere", "country = 'USA'")
-   ```
+   ```text
+
 4. Verifica que otras particiones not se afectaron
 
 **Expectativas**:
+
 - Only the specified partition is overwritten
 - Otras particiones intactas
 - Changes reflejados in querys
@@ -150,6 +160,7 @@ spark-submit --master local[2] 01_create_table.py
 Ejecuta las siguientes querys SQL sobre la table Delta:
 
 1. **Count records by country**:
+
    ```sql
    SELECT country, COUNT(*) as total
    FROM transactions_delta
@@ -158,14 +169,16 @@ Ejecuta las siguientes querys SQL sobre la table Delta:
    ```
 
 2. **transactions by status**:
+
    ```sql
    SELECT status, COUNT(*) as count, 
           AVG(amount) as avg_amount
    FROM transactions_delta
    GROUP BY status
-   ```
+   ```text
 
 3. **Top 10 largest transactions**:
+
    ```sql
    SELECT transaction_id, user_id, amount, currency, country
    FROM transactions_delta
@@ -174,6 +187,7 @@ Ejecuta las siguientes querys SQL sobre la table Delta:
    ```
 
 4. **transactions by mes**:
+
    ```sql
    SELECT DATE_TRUNC('month', timestamp) as month,
           COUNT(*) as transactions,
@@ -181,9 +195,10 @@ Ejecuta las siguientes querys SQL sobre la table Delta:
    FROM transactions_delta
    GROUP BY month
    ORDER BY month
-   ```
+   ```text
 
 **Expectativas**:
+
 - Todas las queries ejecutan correctamente
 - Results guardados in DataFrames
 - Reasonable execution times (<5 seconds)
@@ -241,7 +256,7 @@ print("✅ Validación exitosa!")
 
 Delta Lake almacena datas in Parquet + transaction log:
 
-```
+```text
 bronze/transactions_delta/
 ├── _delta_log/
 │   ├── 00000000000000000000.json  # Version 0 (create)
@@ -255,7 +270,7 @@ bronze/transactions_delta/
 │   └── part-00000-xxx.snappy.parquet
 └── country=DEU/
     └── part-00000-xxx.snappy.parquet
-```
+```text
 
 ### Transaction Log
 
@@ -272,7 +287,7 @@ Each operation creates to new entry in`_delta_log/`:
     }
   }
 }
-```
+```text
 
 ### Modos of Escritura
 
@@ -300,6 +315,7 @@ Each operation creates to new entry in`_delta_log/`:
 ### Error: "Table not found"
 
 Verify that MinIO is running and accessible:
+
 ```bash
 docker exec -it module-05-minio mc ls local/bronze
 ```
@@ -307,25 +323,28 @@ docker exec -it module-05-minio mc ls local/bronze
 ### Error: "Java heap space"
 
 Aumenta memory of the Spark worker in `docker-compose.yml`:
+
 ```yaml
 SPARK_WORKER_MEMORY: 4g  # Aumentar to 8g
-```
+```text
 
 ### Slow queries
 
 Verify that the data is partitioned correctly:
+
 ```python
 # to see distribución of particiones
 spark.read.format("delta") \
     .load("s3a://bronze/transactions_delta") \
     .groupBy("country").count().show()
-```
+```text
 
 ---
 
 ## 🎯 Next Steps
 
 Una vez completado this exercise:
+
 1. ✅ Continuar with **Exercise 02: Medallion Architecture**
 2. Explorar el transaction log with `delta_table.history()`
 3. Experimentar with `df.repartition()` antes of escribir

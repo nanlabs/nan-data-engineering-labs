@@ -3,6 +3,7 @@
 ## 🎯 Objectives
 
 Learn estrategias de particionamiento para batch processing eficiente:
+
 - Particionamiento por fecha (time-based)
 - Particionamiento por rango (range-based)
 - Particionamiento por hash (hash-based)
@@ -19,7 +20,7 @@ Learn estrategias de particionamiento para batch processing eficiente:
 
 ### Partition Layout
 
-```
+```text
 data/
 ├── year=2024/
 │   ├── month=01/
@@ -27,7 +28,7 @@ data/
 │   │   │   └── file.parquet
 │   │   └── day=02/
 │   └── month=02/
-```
+```text
 
 ## 🏋️ Exercises
 
@@ -66,9 +67,10 @@ class DatePartitioner:
     ) -> pd.DataFrame:
         """Read multiple partitions for date range."""
         pass
-```
+```text
 
 **Features**:
+
 - Extrae year/month/day de timestamp
 - Create estructura de directorios
 - Write Parquet por partition
@@ -110,6 +112,7 @@ class RangePartitioner:
 ```
 
 **Use cases**:
+
 - Transaction amounts (small/medium/large)
 - User ages (young/adult/senior)
 - Product prices
@@ -138,9 +141,10 @@ class HashPartitioner:
     ):
         """Write DataFrame partitioned by hash."""
         pass
-```
+```text
 
 **Benefits**:
+
 - Uniform distribution
 - Good for joins (co-located keys)
 - Avoids data skew
@@ -166,7 +170,7 @@ def benchmark_partitioning():
 
     # Report speedup
     pass
-```
+```text
 
 ## 📊 Dataset
 
@@ -181,7 +185,7 @@ python generate_transactions.py \
   --days 30 \
   --partition-by date \
   --output-dir ../raw/transactions_partitioned
-```
+```text
 
 ## ✅ Validation
 
@@ -206,7 +210,8 @@ for (year, month, day), group in df.groupby(['year', 'month', 'day']):
     # Write group to partition
     partition_dir = f"year={year}/month={month:02d}/day={day:02d}"
     group.to_parquet(f"{output_dir}/{partition_dir}/data.parquet")
-```
+```text
+
 </details>
 
 <details>
@@ -225,7 +230,8 @@ df['partition'] = df['amount'].apply(lambda x: partition_value(x, ranges))
 # Write each partition
 for partition_name, group in df.groupby('partition'):
     group.to_parquet(f"{output_dir}/{partition_name}/data.parquet")
-```
+```text
+
 </details>
 
 <details>
@@ -241,7 +247,8 @@ def hash_partition(key, num_partitions):
 
 # Apply
 df['partition'] = df['user_id'].apply(lambda x: hash_partition(x, 10))
-```
+```text
+
 </details>
 
 ## 🎓 Learning Outcomes

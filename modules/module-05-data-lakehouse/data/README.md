@@ -4,7 +4,7 @@ This directory contains **synthetic datasets** generated to practice data Lakeho
 
 ## 📁 Structure of Directorios
 
-```
+```text
 data/
 ├── raw/                    # Datas brutos generados (Bronze layer)
 │   ├── transactions.json   # Transacciones e-commerce (300K records)
@@ -20,7 +20,7 @@ data/
 │   ├── generate_logs.py
 │   └── generate_all_datasets.py  # ScrIPt maestro
 └── README.md              # this archivo
-```
+```text
 
 ## 🎯 Datasets Disponibles
 
@@ -31,6 +31,7 @@ data/
 **Size**: ~300,000 records (~40 MB)
 
 **Campos PrincIPales**:
+
 - `transaction_id`(UUID): Unique transaction identifier
 - `user_id` (U0000123456): Identificador of user
 - `product_id` (P00012345): Identificador of producto
@@ -49,6 +50,7 @@ data/
 - `browser`: Navegador utilizado
 
 **Casos of Uso**:
+
 - Sales analysis by category
 - Fraud detection
 - Customer segmentation
@@ -64,6 +66,7 @@ data/
 **Size**: ~200,000 records (~35 MB)
 
 **Campos PrincIPales**:
+
 - `event_id`(UUID): Unique event identifier
 - `user_id` (U0000123456): Identificador of user
 - `session_id`(UUID): Session identifier
@@ -81,6 +84,7 @@ data/
 - `event_data`: Additional event-specific data (JSON)
 
 **Casos of Uso**:
+
 - Conversion funnel analysis
 - User segmentation by behavior
 - to/B testing and UX optimization
@@ -98,6 +102,7 @@ data/
 **Format**: JSON Lines (one line per log entry)
 
 **Campos PrincIPales**:
+
 - `log_id`(UUID): Unique log identifier
 - `timestamp`: Fecha and hora of the log (ISO 8601 with microsegundos)
 - `level`: Nivel of severidad (DEBUG, INFO, WARNING, ERROR, CRITICAL)
@@ -118,6 +123,7 @@ data/
 - `environment`: Entorno (development, staging, production)
 
 **Casos of Uso**:
+
 - Monitoring of errores and alerts
 - Performance analysis (duration of requests)
 - Troubleshooting and debugging
@@ -130,7 +136,7 @@ data/
 
 The datasets contain **~12% of records with quality problems** to practice cleaning techniques on the Medallion architecture (Bronze → Silver → Gold).
 
-### Problems Comunes in Todos los Datasets:
+### Problems Comunes in Todos los Datasets
 
 1. **Valores Nulos** (Missing Requinetwork Fields)
    - Campos obligatorios with valores `null`
@@ -159,21 +165,24 @@ The datasets contain **~12% of records with quality problems** to practice clean
    - Campos with `""`instead of valid values
    - Mensajes truncados or incompletos
 
-### Dataset Specific Problems:
+### Dataset Specific Problems
 
-#### Transactions:
+#### Transactions
+
 - ✗ Precios negativos
 - ✗ Cantidades irrealistas (>1000)
 - ✗ Total amount inconsistente with price × quantity
 - ✗ IDs of producto/user malformados
 
-#### Events:
+#### Events
+
 - ✗ Invalid or empty event types
 - ✗ URLs malformadas
 - ✗ Resoluciones of pantalla irrealistas (>50000px)
 - ✗ Dimensiones negativas
 
-#### Logs:
+#### Logs
+
 - ✗ Invalid log levels (`"debug"`, `"err"`, `"UNKNOWN"`)
 - ✗ Invalid HTTP status codes (0, 999, -200)
 - ✗ Duraciones negativas
@@ -190,7 +199,7 @@ Instala las dependencias of Python:
 
 ```bash
 pIP install faker mimesis
-```
+```text
 
 ### Generar Todos los Datasets
 
@@ -212,7 +221,7 @@ python generate_events.py
 
 # only logs (100K records, ~1 minuto)
 python generate_logs.py
-```
+```text
 
 ---
 
@@ -239,7 +248,7 @@ transactions_df.write \
     .format("delta") \
     .mode("append") \
     .save("s3a://bronze/transactions")
-```
+```text
 
 ### 2️⃣ Silver Layer (data Cleaning & Validation)
 
@@ -266,7 +275,7 @@ silver_df.write \
     .format("delta") \
     .mode("overwrite") \
     .save("s3a://silver/transactions")
-```
+```text
 
 ### 3️⃣ Gold Layer (Business Aggregations)
 
@@ -306,6 +315,7 @@ Los esquemas JSON in `schemas/` definen la structure esperada of cada dataset us
 - **logs.json**: Schema for logs of aplicaciones
 
 These schemes are useful for:
+
 - data validation with Great Expectations
 - Documentation generation
 - Schema evolution
@@ -331,7 +341,7 @@ spark_schema = T.StructType([
 
 # Leer with schema enforcement
 df = spark.read.schema(spark_schema).json("data/raw/transactions.json")
-```
+```text
 
 ---
 
@@ -388,7 +398,7 @@ df = spark.read.schema(spark_schema).json("data/raw/transactions.json")
 
 ```bash
 pIP install -r ../requirements.txt
-```
+```text
 
 ### Problem: Out of memory during generation
 
@@ -397,11 +407,12 @@ pIP install -r ../requirements.txt
 ```python
 # in generate_transactions.py
 NUM_RECORDS = 100000  # Networkucir of 300K to 100K
-```
+```text
 
 ### Problem: Archivos JSON muy grandes for procesar
 
 **Solution**:
+
 1. Usa PySpark in lugar of pandas/Python puro
 2. Procesa in chunks
 3. Usa formato Parquet in lugar of JSON
@@ -429,30 +440,34 @@ random.seed(42)  # Cambia this número
 ## 💡 TIPs
 
 1. **Quick data Inspection**:
+
    ```bash
    # Primeras 5 líneas
    head -n 5 data/raw/transactions.json | jq .
    
    # Contar records
    wc -l data/raw/*.json
-   ```
+   ```text
 
 2. **JSON Validation**:
+
    ```bash
    # Verificar if el JSON is válido
    jq empty data/raw/transactions.json
    ```
 
 3. **Search for specific problems**:
+
    ```bash
    # Buscar nulls
    grep "null" data/raw/transactions.json | head -n 10
    
    # Buscar precios negativos
    grep '"price": -' data/raw/transactions.json | head -n 10
-   ```
+   ```text
 
 4. **Uso of Docker for procesamiento**:
+
    ```bash
    # Levantar infrastructure
    cd ../infrastructure

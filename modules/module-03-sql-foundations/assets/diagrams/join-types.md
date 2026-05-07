@@ -33,7 +33,7 @@ graph LR
     style B3 fill:#ffcccc
     style X1 fill:#fff,stroke:#fff
     style X2 fill:#fff,stroke:#fff
-```
+```text
 
 **Returns**: Only matching rows from both tables
 
@@ -42,7 +42,7 @@ SELECT u.name, o.order_id
 FROM users u
 INNER JOIN orders o ON u.user_id = o.user_id;
 -- Result: Alice (101), Bob (102)
-```
+```text
 
 ---
 
@@ -78,7 +78,7 @@ graph LR
     style A3 fill:#cce5ff
     style R3 fill:#e6f3ff
     style B3 fill:#ffcccc,stroke-dasharray: 5 5
-```
+```text
 
 **Returns**: All rows from left table + matching rows from right (NULL if no match)
 
@@ -123,7 +123,7 @@ graph LR
     style A3 fill:#ffcccc,stroke-dasharray: 5 5
     style B3 fill:#cce5ff
     style R3 fill:#e6f3ff
-```
+```text
 
 **Returns**: All rows from right table + matching rows from left (NULL if no match)
 
@@ -132,7 +132,7 @@ SELECT u.name, o.order_id
 FROM users u
 RIGHT JOIN orders o ON u.user_id = o.user_id;
 -- Result: Alice (101), Bob (102), NULL (103)
-```
+```text
 
 ---
 
@@ -171,7 +171,7 @@ graph LR
     style B3 fill:#cce5ff
     style R3 fill:#e6f3ff
     style R4 fill:#e6f3ff
-```
+```text
 
 **Returns**: All rows from both tables (NULL where no match)
 
@@ -206,20 +206,22 @@ graph TD
     style LJ fill:#cce5ff
     style RJ fill:#fff3cd
     style FOJ fill:#f8d7da
-```
+```text
 
 ## Common Patterns
 
 ### Find Unmatched Rows (LEFT JOIN + NULL)
+
 ```sql
 -- Users without orders
 SELECT u.*
 FROM users u
 LEFT JOIN orders o ON u.user_id = o.user_id
 WHERE o.order_id IS NULL;
-```
+```text
 
 ### Find Matches in Either Table
+
 ```sql
 -- All users and orders (orphans included)
 SELECT
@@ -228,7 +230,7 @@ SELECT
     o.order_id
 FROM users u
 FULL OUTER JOIN orders o ON u.user_id = o.user_id;
-```
+```text
 
 ## Performance Considerations
 

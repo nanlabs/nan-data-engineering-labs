@@ -19,7 +19,7 @@ flowchart LR
     style C fill:#fff3e0
     style D fill:#f3e5f5
     style E fill:#e8f5e9
-```
+```text
 
 ## 🎯 Data Selection
 
@@ -47,7 +47,7 @@ flowchart TD
     style C fill:#fff9c4
     style G fill:#fff3e0
     style K fill:#f3e5f5
-```
+```text
 
 ## 🔄 Transformation pipeline
 
@@ -73,11 +73,12 @@ flowchart LR
     style E fill:#f3e5f5
     style F fill:#ffe0b2
     style G fill:#c8e6c9
-```
+```text
 
 ## 🔗 Tipos de Joins
 
 ### Inner Join
+
 ```mermaid
 flowchart TD
     A[DataFrame 1<br/>ID: 1,2,3] --> C[Inner Join]
@@ -89,6 +90,7 @@ flowchart TD
 ```
 
 ### Left Join
+
 ```mermaid
 flowchart TD
     A[DataFrame 1<br/>ID: 1,2,3] --> C[Left Join]
@@ -97,9 +99,10 @@ flowchart TD
     
     style C fill:#e3f2fd
     style D fill:#bbdefb
-```
+```text
 
 ### Right Join
+
 ```mermaid
 flowchart TD
     A[DataFrame 1<br/>ID: 1,2,3] --> C[Right Join]
@@ -108,9 +111,10 @@ flowchart TD
     
     style C fill:#fff9c4
     style D fill:#fff59d
-```
+```text
 
 ### Outer Join
+
 ```mermaid
 flowchart TD
     A[DataFrame 1<br/>ID: 1,2,3] --> C[Outer Join]
@@ -119,7 +123,7 @@ flowchart TD
     
     style C fill:#f3e5f5
     style D fill:#e1bee7
-```
+```text
 
 ## 📊 GroupBy Operations
 
@@ -194,7 +198,7 @@ flowchart LR
     style G1 fill:#e3f2fd
     style G2 fill:#e3f2fd
     style OUTPUT fill:#c8e6c9
-```
+```text
 
 ## 🧹 pipeline de Cleaning
 
@@ -243,7 +247,7 @@ flowchart TD
     style E fill:#ffcdd2
     style F fill:#ffcdd2
     style G fill:#c8e6c9
-```
+```text
 
 ## 📈 Multi-Level Aggregation
 
@@ -279,11 +283,12 @@ flowchart TD
     style M fill:#c8e6c9
     style N fill:#c8e6c9
     style O fill:#c8e6c9
-```
+```text
 
 ## 🔄 Reshape Operations
 
 ### Pivot (Wide Format)
+
 ```mermaid
 flowchart LR
     subgraph LONG[" Formato Largo"]
@@ -308,6 +313,7 @@ flowchart LR
 ```
 
 ### Melt (Long Format)
+
 ```mermaid
 flowchart LR
     subgraph WIDE2[" Formato Ancho"]
@@ -326,7 +332,7 @@ flowchart LR
     style WIDE2 fill:#c8e6c9
     style M fill:#e3f2fd
     style LONG2 fill:#fff9c4
-```
+```text
 
 ## 📊 Window Functions
 
@@ -361,7 +367,7 @@ flowchart TD
     style F fill:#f3e5f5
     style G fill:#ffe0b2
     style I fill:#c8e6c9
-```
+```text
 
 ## 🎨 Apply, Map, Applymap
 
@@ -394,11 +400,12 @@ flowchart TD
     style D fill:#fff3e0
     style E fill:#f3e5f5
     style F fill:#c8e6c9
-```
+```text
 
 ## 🔢 Operaciones Vectorizadas vs Loops
 
 ### ❌ Loop (Slow)
+
 ```mermaid
 flowchart TD
     A[For Loop] --> B[Fila 1]
@@ -418,6 +425,7 @@ flowchart TD
 ```
 
 ### ✅ Vectorized (Fast)
+
 ```mermaid
 flowchart LR
     A[Operacion<br/>Vectorizada] --> B[Todas las Filas]
@@ -428,7 +436,7 @@ flowchart LR
     style B fill:#e8f5e9
     style C fill:#e8f5e9
     style D fill:#c8e6c9
-```
+```text
 
 ## 🎯 Optimization Strategy
 
@@ -470,11 +478,12 @@ flowchart TD
     style J fill:#f3e5f5
     style L fill:#ffe0b2
     style M fill:#c8e6c9
-```
+```text
 
 ## 💡 Patterns Comunes
 
 ### Pattern 1: Filter → Transform → Aggregate
+
 ```mermaid
 flowchart LR
     A[📊 Data] --> B[Filter<br/>edad > 25]
@@ -487,9 +496,10 @@ flowchart LR
     style C fill:#fff3e0
     style D fill:#f3e5f5
     style E fill:#c8e6c9
-```
+```text
 
 ### Pattern 2: Merge → Enrich → Export
+
 ```mermaid
 flowchart LR
     A[📊 Data 1] --> C[Merge]
@@ -505,6 +515,7 @@ flowchart LR
 ```
 
 ### Pattern 3: Clean → Validate → Load
+
 ```mermaid
 flowchart LR
     A[📊 Raw] --> B[Clean<br/>nulls/dups]
@@ -517,7 +528,7 @@ flowchart LR
     style B fill:#fff9c4
     style D fill:#c8e6c9
     style E fill:#ffcdd2
-```
+```text
 
 ## 📊 Performance Comparison
 
@@ -545,11 +556,12 @@ flowchart TD
     style E fill:#fff9c4
     style F fill:#c8e6c9
     style G fill:#a5d6a7
-```
+```text
 
 ## 💡 Tips Visuales
 
 ### Memory Optimization
+
 ```mermaid
 flowchart LR
     A[DataFrame<br/>100 MB] --> B{Optimizar}
@@ -563,9 +575,8 @@ flowchart LR
     
     style A fill:#ffcdd2
     style F fill:#c8e6c9
-```
+```text
 
 ---
 
 **Note**: These diagrams are rendered in GitHub, VS Code (with extension), and Mermaid Live Editor.
-

@@ -14,7 +14,7 @@
 
 ## Cost Governance Architecture
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │              Cost Governance Framework                   │
 │                                                          │
@@ -39,7 +39,7 @@
 │  │  • Scale down Auto Scaling groups                  │ │
 │  └────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Tasks
 
@@ -133,9 +133,9 @@ create_monthly_budget(
     budget_amount=5000,
     alert_emails=['devops@company.com', 'finance@company.com']
 )
-```
+```text
 
-2. **Create budget with automated actions**:
+1. **Create budget with automated actions**:
 
 ```python
 # Budget action: Stop EC2 instances in dev when 90% budget reached
@@ -382,9 +382,9 @@ def lambda_handler(event, context):
 
 # Deploy as Lambda function with EventBridge trigger
 # Schedule: Daily at 2 AM UTC
-```
+```text
 
-2. **Deploy cleanup Lambda**:
+1. **Deploy cleanup Lambda**:
 
 ```python
 # Deploy the cleanup function
@@ -475,7 +475,7 @@ events.put_targets(
 )
 
 print(f"✓ EventBridge rule created: daily-cost-cleanup (daily 2 AM UTC)")
-```
+```text
 
 ### Task 2: Implement Service Control Policies (SCPs)
 
@@ -570,7 +570,7 @@ print("   Ensures proper cost attribution")
 #     Name='DenyExpensiveInstances',
 #     Type='SERVICE_CONTROL_POLICY'
 # )
-```
+```text
 
 ### Task 3: Cost Anomaly Detection Dashboard
 
@@ -627,7 +627,7 @@ def get_cost_anomalies(days=30):
 anomalies = get_cost_anomalies(days=30)
 ```
 
-2. **Create cost governance dashboard**:
+1. **Create cost governance dashboard**:
 
 ```python
 import matplotlib.pyplot as plt
@@ -706,7 +706,7 @@ cleanup_summary = {
 }
 
 create_governance_dashboard(budget_data, anomalies, cleanup_summary)
-```
+```text
 
 ### Task 4: Build FinOps KPI Dashboard
 
@@ -868,7 +868,7 @@ ce_client = boto3.client('ce')
 kpi_calc = FinOpsKPICalculator(ce_client)
 kpis = kpi_calc.calculate_cost_optimization_kpis()
 kpi_calc.display_kpi_dashboard(kpis)
-```
+```text
 
 ### Task 5: Slack/Email Cost Alerts Integration
 
@@ -955,7 +955,7 @@ Investigate immediately: Unusual spending pattern detected
         send_slack_alert(webhook_url, alert_message, 'warning')
 
     return {'statusCode': 200}
-```
+```text
 
 ## Validation Checklist
 
@@ -971,21 +971,25 @@ Investigate immediately: Unusual spending pattern detected
 ## Troubleshooting
 
 **Issue**: Budget alerts not sending
+
 - **Solution**: Verify SNS subscription confirmed
 - Check SNS topic permissions
 - Ensure budget notification thresholds are correct
 
 **Issue**: Budget action not executing
+
 - **Solution**: Check IAM role permissions for budget actions
 - Verify approval model (AUTOMATIC vs MANUAL)
 - Test with lower threshold first
 
 **Issue**: Cleanup Lambda failed to stop resources
+
 - **Solution**: Add proper IAM permissions (ec2:StopInstances)
 - Use resource tags to scope permissions (Environment=dev)
 - Check CloudWatch Logs for detailed error
 
 **Issue**: SCP blocking legitimate actions
+
 - **Solution**: Test SCPs in non-production OU first
 - Add exception for specific roles/users
 - Use Condition keys to allow based on tags
@@ -1001,18 +1005,21 @@ Investigate immediately: Unusual spending pattern detected
 ## FinOps Maturity Model
 
 ### Level 1: **Inform** (Visibility)
+
 - Cost Explorer enabled ✓
 - Basic tagging (>50% coverage)
 - Monthly cost reports
 - **Time**: 1-3 months
 
 ### Level 2: **Optimize** (Efficiency)
+
 - RI/SP coverage >60%
 - Lifecycle policies implemented
 - Right-sizing recommendations applied
 - **Time**: 3-6 months
 
 ### Level 3: **Operate** (Continuous Improvement)
+
 - Automated cleanup >80% coverage
 - Commitment utilization >85%
 - Anomaly detection with auto-remediation
@@ -1036,6 +1043,7 @@ Investigate immediately: Unusual spending pattern detected
 **Company**: 200-person engineering org, $50K/month AWS spend
 
 **Governance Measures Implemented**:
+
 1. **Budgets**: Team-level budgets ($5K each, 10 teams)
 2. **Cleanup**: Daily Lambda (saves $3K/month on idle resources)
 3. **SCPs**: Deny >4xlarge instances, require tags
@@ -1043,6 +1051,7 @@ Investigate immediately: Unusual spending pattern detected
 5. **KPIs**: Weekly dashboard review
 
 **Results After 6 Months**:
+
 - Untagged resources: 40% → 3%
 - Commitment coverage: 45% → 78%
 - Waste ratio: 22% → 8%
@@ -1050,6 +1059,7 @@ Investigate immediately: Unusual spending pattern detected
 - Engineering time: 2 hours/week (down from 8 hours/week firefighting)
 
 **ROI**:
+
 - Implementation: 120 hours ($12K)
 - Annual savings: $144K
 - Payback: 1 month
@@ -1058,6 +1068,7 @@ Investigate immediately: Unusual spending pattern detected
 ## Automation Examples
 
 ### 1. Stop Dev Instances Nightly
+
 ```bash
 # Lambda function triggered by EventBridge
 # cron(0 20 * * ? *) - 8 PM daily
@@ -1067,23 +1078,26 @@ aws ec2 stop-instances --instance-ids $(aws ec2 describe-instances \
 ```
 
 ### 2. Delete Old Snapshots
+
 ```bash
 # Delete snapshots older than 90 days (without "Keep" tag)
 aws ec2 describe-snapshots --owner-ids self \
   --query "Snapshots[?StartTime<='$(date -d '90 days ago' --iso-8601)'] | [?!Tags || !contains(Tags[?Key=='Keep'].Value, 'true')].[SnapshotId]" \
   --output text | xargs -n1 aws ec2 delete-snapshot --snapshot-id
-```
+```text
 
 ### 3. Right-Size Underutilized Instances
+
 ```python
 # Weekly check: Flag instances with CPU < 20% for 7 days
 # Send recommendations to Slack
 # Auto-resize after 14 days of low utilization (with approval)
-```
+```text
 
 ## Next Steps
 
 Congratulations! You've completed all 6 cost optimization exercises:
+
 1. ✅ Cost analysis and visibility
 2. ✅ S3 storage optimization
 3. ✅ Compute purchasing strategies
@@ -1092,6 +1106,7 @@ Congratulations! You've completed all 6 cost optimization exercises:
 6. ✅ Cost governance automation
 
 **Continue to**:
+
 - **Theory**: FinOps principles and best practices
 - **Module 18**: Advanced data architectures
 - **Checkpoint**: Enterprise Data Lakehouse project

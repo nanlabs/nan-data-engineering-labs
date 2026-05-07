@@ -3,6 +3,7 @@
 ## 🎯 Objectives
 
 Optimize batch jobs for maximum performance:
+
 - Partition tuning
 - Caching strategies
 - Broadcast joins
@@ -29,7 +30,7 @@ result = df.groupBy("category").sum("amount")
 # ✅ Fast
 df = spark.read.parquet("data/").repartition(200, "category")
 result = df.groupBy("category").sum("amount")
-```
+```text
 
 ## 🏋️ Exercises
 
@@ -88,7 +89,7 @@ class PartitionOptimizer:
             num_partitions: Target partition count (auto if None)
         """
         pass
-```
+```text
 
 ### Parte 2: Caching Strategy
 
@@ -133,7 +134,7 @@ class CacheManager:
     def get_cache_stats(self) -> Dict[str, Any]:
         """Get caching statistics."""
         pass
-```
+```text
 
 ### Parte 3: Broadcast Joins
 
@@ -231,7 +232,7 @@ class SkewHandler:
         Automatically handle skew if detected.
         """
         pass
-```
+```text
 
 ### Parte 5: Performance Benchmark
 
@@ -283,7 +284,7 @@ class PerformanceBenchmark:
     def generate_report(self, output_path: str):
         """Generate HTML performance report."""
         pass
-```
+```text
 
 ## 📊 Dataset
 
@@ -296,7 +297,7 @@ cd ../../data/scripts
 python generate_transactions.py \
   --total-records 50000000 \
   --days 180
-```
+```text
 
 ## ✅ Validation
 
@@ -321,7 +322,8 @@ def estimate_size_mb(df):
     total_rows = df.count()
     estimated_size = (sample_size / 10000) * total_rows / (1024 * 1024)
     return estimated_size
-```
+```text
+
 </details>
 
 <details>
@@ -336,7 +338,8 @@ def calculate_optimal_partitions(
     Rule: 128MB per partition (sweet spot)
     """
     return max(1, int(data_size_mb / target_partition_size_mb))
-```
+```text
+
 </details>
 
 <details>
@@ -358,7 +361,8 @@ skew_ratio = stats["max_count"] / stats["avg_count"]
 
 if skew_ratio > 3.0:
     print(f"SKEW DETECTED: {skew_ratio:.2f}x")
-```
+```text
+
 </details>
 
 <details>
@@ -382,6 +386,7 @@ result = result.withColumn(
     split(col("salted_key"), "_")[0]
 )
 ```
+
 </details>
 
 ## 🎓 Learning Outcomes

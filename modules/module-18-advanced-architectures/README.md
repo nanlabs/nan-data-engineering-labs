@@ -15,6 +15,7 @@ Before starting this module, ensure you have completed:
 - ✅ **Module 15**: Real-time Analytics (stream processing patterns)
 
 **Recommended**:
+
 - Module 10: Workflow Orchestration (Airflow, Step Functions)
 - Module 11: Infrastructure as Code (Terraform, CloudFormation)
 - Module 17: Cost Optimization (cost-aware architecture decisions)
@@ -24,6 +25,7 @@ Before starting this module, ensure you have completed:
 This advanced module explores enterprise-grade data architecture patterns used by leading organizations to build scalable, resilient, and cost-effective data platforms. You'll implement real-world patterns including Lambda Architecture, Kappa Architecture, Data Mesh, Event-Driven Architecture, and multi-region active-active systems.
 
 **What makes this "Advanced"?**
+
 - Multi-paradigm integration (batch + streaming + real-time)
 - Distributed system challenges (CAP theorem, eventual consistency)
 - Polyglot persistence (right database for each use case)
@@ -47,54 +49,65 @@ By the end of this module, you will be able to:
 ## Architecture Patterns Covered
 
 ### 1. **Lambda Architecture** (Batch + Speed Layer)
-```
+
+```text
 Raw Data → Batch Layer (Spark) → Serving Layer (Data Warehouse)
     ↓
 Speed Layer (Kinesis → Lambda) → Real-time Views
-```
+```text
+
 **Use Case**: Historical accuracy + real-time insights
 **Example**: E-commerce analytics (lifetime value + current session)
 
 ### 2. **Kappa Architecture** (Stream-Only)
-```
+
+```text
 Event Stream → Stream Processor → Materialized Views
          ↓
     Event Log (Kinesis/Kafka) = Source of Truth
 ```
+
 **Use Case**: Simplified architecture when batch isn't needed
 **Example**: Real-time fraud detection, IoT monitoring
 
 ### 3. **Data Mesh** (Decentralized Ownership)
-```
+
+```text
 Domain A (Product Team) → Data Product API
 Domain B (Sales Team) → Data Product API
 Domain C (Marketing Team) → Data Product API
          ↓
 Central Governance (Schema Registry, Catalog)
-```
+```text
+
 **Use Case**: Large organizations (>50 engineers), domain expertise
 **Example**: Uber, Netflix, Airbnb data platforms
 
 ### 4. **Event-Driven Architecture** (Event Sourcing + CQRS)
-```
+
+```text
 Commands → Event Store → Event Handlers → Read Models
                 ↓
            Immutable Log (DynamoDB Streams, Kinesis)
 ```
+
 **Use Case**: Audit trails, complex business logic, temporal queries
 **Example**: Financial transactions, order management
 
 ### 5. **Multi-Region Active-Active** (Global Scale)
-```
+
+```text
 US-East → DynamoDB Global Tables → EU-West
    ↓                                    ↓
 Users          Cross-region replication         Users
-```
+```text
+
 **Use Case**: Global applications, disaster recovery, low latency
 **Example**: Gaming leaderboards, IoT telemetry
 
 ### 6. **Polyglot Persistence** (Right Tool, Right Job)
-```
+
+```text
 Transactional → Aurora PostgreSQL (OLTP)
 Analytical → Redshift (OLAP)
 Caching → ElastiCache (low latency)
@@ -103,12 +116,14 @@ Search → OpenSearch (full-text)
 Graph → Neptune (relationships)
 Time-series → Timestream (sensors)
 ```
+
 **Use Case**: Optimize cost and performance per use case
 **Example**: Modern SaaS applications
 
 ## Exercises
 
 ### Exercise 01: Lambda Architecture Implementation
+
 **Time**: 3 hours | **Difficulty**: ⭐⭐⭐⭐
 Build a complete Lambda Architecture with batch (Spark), speed (Kinesis), and serving layers. Implement query logic that merges historical + real-time data.
 
@@ -116,6 +131,7 @@ Build a complete Lambda Architecture with batch (Spark), speed (Kinesis), and se
 **Savings**: 40% faster insights vs batch-only (hours → seconds for recent data)
 
 ### Exercise 02: Kappa Architecture with Kinesis
+
 **Time**: 2.5 hours | **Difficulty**: ⭐⭐⭐⭐
 Implement stream-only architecture using Kinesis Data Streams as the source of truth. Build reprocessing capability by replaying events from retention.
 
@@ -123,6 +139,7 @@ Implement stream-only architecture using Kinesis Data Streams as the source of t
 **Savings**: 30% operational complexity vs Lambda (one processing paradigm)
 
 ### Exercise 03: Data Mesh with Domain Data Products
+
 **Time**: 3.5 hours | **Difficulty**: ⭐⭐⭐⭐⭐
 Design Data Mesh architecture with 3 domains (Product, Sales, Customer). Implement data product APIs, schema registry, and federated governance.
 
@@ -130,6 +147,7 @@ Design Data Mesh architecture with 3 domains (Product, Sales, Customer). Impleme
 **Savings**: 50% faster time-to-insight for domain teams (decentralized ownership)
 
 ### Exercise 04: Event-Driven Architecture (CQRS + Event Sourcing)
+
 **Time**: 3 hours | **Difficulty**: ⭐⭐⭐⭐⭐
 Build event-sourced system with DynamoDB Streams. Implement CQRS pattern with separate command and query models. Enable temporal queries (point-in-time state).
 
@@ -137,6 +155,7 @@ Build event-sourced system with DynamoDB Streams. Implement CQRS pattern with se
 **Savings**: 100% audit compliance (immutable event log), 70% faster queries (read models)
 
 ### Exercise 05: Multi-Region Active-Active
+
 **Time**: 2.5 hours | **Difficulty**: ⭐⭐⭐⭐
 Implement global data platform with DynamoDB Global Tables and Aurora Global Database. Handle conflict resolution with Last-Write-Wins and custom resolvers.
 
@@ -144,6 +163,7 @@ Implement global data platform with DynamoDB Global Tables and Aurora Global Dat
 **Savings**: 60% latency reduction for global users, 99.99% availability
 
 ### Exercise 06: Polyglot Persistence Strategy
+
 **Time**: 2.5 hours | **Difficulty**: ⭐⭐⭐⭐
 Design multi-database architecture selecting optimal database per use case. Implement data synchronization between operational and analytical stores (CDC pattern).
 
@@ -153,21 +173,25 @@ Design multi-database architecture selecting optimal database per use case. Impl
 ## Real-World Case Studies
 
 ### Netflix: Lambda + Microservices
+
 - **Scale**: 200M+ subscribers, 1 trillion events/day
 - **Architecture**: Lambda Architecture with Kafka + Spark + Cassandra
 - **Result**: Sub-second personalization, 99.99% uptime
 
 ### Uber: Data Mesh
+
 - **Scale**: 1000+ data engineers, 10K+ data pipelines
 - **Architecture**: Domain-oriented data products with centralized governance
 - **Result**: 70% faster feature development, 10x data teams
 
 ### Airbnb: Minerva (Data Platform)
+
 - **Scale**: 150M users, 6M listings, 100 PB data
 - **Architecture**: Lakehouse (S3 + Presto + Airflow) + Apache Hudi
 - **Result**: Unified analytics + ML on same platform, $10M savings/year
 
 ### LinkedIn: Espresso (Multi-Datacenter)
+
 - **Scale**: 800M members, 100K queries/sec
 - **Architecture**: Active-active across 6 datacenters with timeline consistency
 - **Result**: <100ms global latency, automatic failover
@@ -175,16 +199,19 @@ Design multi-database architecture selecting optimal database per use case. Impl
 ## Technology Stack
 
 **Stream Processing**:
+
 - AWS Kinesis Data Streams, Kinesis Analytics (Flink)
 - Apache Kafka (Amazon MSK)
 - AWS Lambda (event-driven)
 
 **Batch Processing**:
+
 - AWS Glue (serverless Spark)
 - Amazon EMR (managed Hadoop/Spark)
 - AWS Batch (container-based)
 
 **Databases** (Polyglot):
+
 - Aurora PostgreSQL (OLTP, global database)
 - DynamoDB (NoSQL, global tables)
 - Redshift (OLAP, data warehouse)
@@ -194,24 +221,27 @@ Design multi-database architecture selecting optimal database per use case. Impl
 - Timestream (time-series)
 
 **Data Lakehouse**:
+
 - S3 (object storage)
 - Glue Data Catalog (metadata)
 - Athena (SQL queries)
 - EMR (Spark with Delta/Hudi/Iceberg)
 
 **Orchestration**:
+
 - AWS Step Functions (serverless workflows)
 - Apache Airflow (MWAA - Managed Workflows)
 - EventBridge (event routing)
 
 **Governance**:
+
 - Lake Formation (access control)
 - Glue Schema Registry (schema evolution)
 - CloudTrail (audit logs)
 
 ## Structure
 
-```
+```text
 module-18-advanced-architectures/
 ├── README.md                          # This file
 ├── STATUS.md                          # Progress tracking
@@ -278,7 +308,7 @@ module-18-advanced-architectures/
     └── test_advanced_architectures.py # Pytest suite
 
 Total: ~50 files, ~20,000+ lines
-```
+```text
 
 ## Getting Started
 
@@ -294,11 +324,12 @@ docker-compose up -d
 
 # Initialize AWS resources (optional - uses LocalStack or real AWS)
 bash init-aws.sh
-```
+```text
 
 ### 2. Read Theory
 
 Start with foundational concepts:
+
 1. **theory/concepts.md** - Architecture patterns, CAP theorem, consistency models
 2. **theory/architecture.md** - Reference architectures with real-world examples
 3. **theory/best-practices.md** - Design principles, when to use each pattern
@@ -330,27 +361,32 @@ bash scripts/validate.sh
 
 # Or use pytest directly
 pytest validation/test_advanced_architectures.py -v
-```
+```text
 
 ## Key Architectural Decisions
 
 ### When to Use Lambda Architecture?
+
 ✅ **Yes**: Need batch accuracy + real-time speed, complex analytics, reprocessing capability
 ❌ **No**: Operational complexity too high, team lacks expertise in both batch and streaming
 
 ### When to Use Kappa Architecture?
+
 ✅ **Yes**: Stream-first mindset, data naturally streams, simple reprocessing
 ❌ **No**: Complex batch analytics, historical reprocessing at scale
 
 ### When to Use Data Mesh?
+
 ✅ **Yes**: Large org (>50 data engineers), clear domain boundaries, domain expertise
 ❌ **No**: Small teams, centralized data team works well, high coordination cost
 
 ### When to Use Event Sourcing?
+
 ✅ **Yes**: Audit requirements, temporal queries, complex workflows, undo/replay
 ❌ **No**: Simple CRUD, storage costs concern, team unfamiliar with pattern
 
 ### When to Use Multi-Region?
+
 ✅ **Yes**: Global users, <100ms latency SLA, disaster recovery, compliance
 ❌ **No**: Single region sufficient, consistency critical, replication costs high
 
@@ -377,12 +413,14 @@ pytest validation/test_advanced_architectures.py -v
 ## Real-World Implementation Costs
 
 **Medium Company** (50 engineers, 10TB data/month):
+
 - Lambda Architecture: $15K/month (EMR $8K + Kinesis $4K + Redshift $3K)
 - Kappa Architecture: $9K/month (MSK $5K + Flink $4K)
 - Data Mesh: $20K/month (domain infrastructure × 5 domains)
 - Multi-Region: $25K/month (3x replication + cross-region transfer)
 
 **Large Company** (500 engineers, 100TB data/month):
+
 - Lambda Architecture: $80K/month (petabyte-scale batch + streaming)
 - Data Mesh: $120K/month (20 domains, federated governance)
 - Multi-Region: $150K/month (5 regions, disaster recovery)

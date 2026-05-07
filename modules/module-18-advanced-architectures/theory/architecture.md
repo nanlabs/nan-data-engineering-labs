@@ -16,7 +16,7 @@
 
 ### Architecture Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                      Data Sources                                │
 │  (Applications, IoT, Logs, APIs, Databases)                     │
@@ -51,7 +51,7 @@
             │ QuickSight/BI  │
             │   (Dashboards) │
             └────────────────┘
-```
+```text
 
 ### AWS Service Mapping
 
@@ -69,7 +69,7 @@ Processing:
 Serving:
   - Redshift: Data warehouse (from $0.25/hour for dc2.large)
   - S3 + Athena: Query in place ($5/TB scanned)
-```
+```text
 
 #### Speed Layer
 
@@ -90,7 +90,8 @@ Storage:
 ### Example: E-commerce Analytics
 
 **Batch Layer** (Accuracy):
-```
+
+```text
 Daily ETL (03:00 AM):
 1. Read all orders from yesterday (S3)
 2. Join with customers, products (10+ tables)
@@ -102,10 +103,11 @@ Daily ETL (03:00 AM):
 
 Query: "What is customer lifetime value?"
 Result: Accurate up to yesterday (03:00 AM cutoff)
-```
+```text
 
 **Speed Layer** (Freshness):
-```
+
+```text
 Real-time (sub-second):
 1. Order placed → Kinesis Stream
 2. Lambda function:
@@ -119,6 +121,7 @@ Result: Real-time (last 5 seconds)
 ```
 
 **Serving Layer** (Unified Query):
+
 ```sql
 -- Merge batch + real-time
 SELECT
@@ -128,7 +131,7 @@ SELECT
 FROM
     redshift.customers c
     LEFT JOIN dynamodb.realtime_revenue r ON c.customer_id = r.customer_id
-```
+```text
 
 ### Performance Characteristics
 
@@ -144,18 +147,20 @@ FROM
 **Scenario**: 10M events/day → 100M events/day (10x growth)
 
 **Batch Layer Scaling**:
-```
+
+```text
 Glue: 10 DPUs → 50 DPUs (+40 DPUs)
 Cost: $44/day → $220/day (+$176/day)
 Time: 2 hours → 2 hours (parallel scaling)
-```
+```text
 
 **Speed Layer Scaling**:
+
 ```
 Kinesis: 5 shards → 50 shards (+45 shards)
 Lambda: Auto-scales (no changes needed)
 Cost: $200/month → $2,000/month (+$1,800/month)
-```
+```text
 
 **Total Scaling Cost**: +$2,000/month for 10x traffic (reasonable).
 
@@ -165,7 +170,7 @@ Cost: $200/month → $2,000/month (+$1,800/month)
 
 ### Architecture Diagram
 
-```
+```text
 ┌──────────────────────────────────────────┐
 │          Data Sources                    │
 │  (Applications, IoT, Logs)               │
@@ -203,7 +208,7 @@ Cost: $200/month → $2,000/month (+$1,800/month)
   │ DynamoDB        │ │ OpenSearch       │
   │ (Aggregates)    │ │ (Search Index)   │
   └─────────────────┘ └──────────────────┘
-```
+```text
 
 ### Reprocessing Flow
 
@@ -221,7 +226,7 @@ Test/Validate
 Switch traffic: v1 → v2 (blue-green)
     ↓
 Delete v1 after 7 days
-```
+```text
 
 ### AWS Service Mapping
 
@@ -245,7 +250,7 @@ Materialized Views:
   Real-time: DynamoDB, ElastiCache
   Near-real-time: RDS, OpenSearch
   Analytical: Redshift, S3 (Athena)
-```
+```text
 
 ### Example: IoT Monitoring
 
@@ -289,7 +294,7 @@ WHERE avg_temp > 90 OR max_temp > 100;
   "window": "2026-03-09T10:30:00Z",
   "alert": true
 }
-```
+```text
 
 ### Reprocessing Scenario
 
@@ -333,7 +338,7 @@ update_application_config(read_table='device_metrics_v2')
 
 ### Architecture Diagram
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────┐
 │                 Central Platform Team                             │
 │  (Provides Infrastructure, Not Data)                             │
@@ -376,7 +381,7 @@ update_application_config(read_table='device_metrics_v2')
                     │ - Lake Formation (IAM) │
                     │ - CloudTrail (Audit)   │
                     └────────────────────────┘
-```
+```text
 
 ### Data Product Structure
 
@@ -406,7 +411,7 @@ Each domain publishes data products with:
     "pii": []
   }
 }
-```
+```text
 
 #### 2. **Data Product API**
 
@@ -438,23 +443,27 @@ data_api.query(
 from data_mesh import get_data_product
 catalog = get_data_product("product-catalog")
 df = catalog.query(category="Electronics")
-```
+```text
 
 ## Schema
+
 - product_id (string): Unique identifier
 - name (string): Product name
 - price (decimal): USD, 2 decimals
 - updated_at (timestamp): Last modification
 
 ## Quality Metrics
+
 - Completeness: 99.7% (last 7 days)
 - Duplicates: 0
 - Freshness: 45 min average
 
 ## Change Log
+
 - v2.1.0 (2026-03-01): Added `margin` field
 - v2.0.0 (2026-01-15): Breaking: Renamed `cost` → `unit_cost`
-```
+
+```text
 
 ### Governance Model
 
@@ -479,7 +488,7 @@ Quality:
   completeness: >95%
   freshness: Domain-specific SLA
   testing: Great Expectations rules
-```
+```text
 
 **Domain Autonomy** (Decided by Domain Team):
 
@@ -520,7 +529,7 @@ FROM rides.trips r
 JOIN payments.transactions p ON r.trip_id = p.trip_id
 JOIN customer.profiles u ON r.rider_id = u.user_id
 WHERE r.date = '2026-03-09'
-```
+```text
 
 **Enabled By**: Federated Glue Catalog (domains register their tables).
 
@@ -530,7 +539,7 @@ WHERE r.date = '2026-03-09'
 
 ### Architecture Diagram
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │                    Event Producers                           │
 │  (Order Service, Payment Service, Inventory Service)        │
@@ -556,7 +565,7 @@ WHERE r.date = '2026-03-09'
 │         │  │2.Pay         │  │         │  │          │
 │         │  │3.Ship        │  │         │  │          │
 └─────────┘  └──────────────┘  └─────────┘  └──────────┘
-```
+```text
 
 ### Event Schema (CloudEvents Standard)
 
@@ -612,11 +621,12 @@ eventbridge.put_targets(
         'Arn': kinesis_firehose_arn  # → S3
     }]
 )
-```
+```text
 
 ### Saga Pattern (Distributed Transactions)
 
 **Problem**: Place order requires:
+
 1. Reserve inventory
 2. Process payment
 3. Create shipment
@@ -660,7 +670,7 @@ If payment fails after inventory reserved, need to rollback.
     }
   }
 }
-```
+```text
 
 ---
 
@@ -668,7 +678,7 @@ If payment fails after inventory reserved, need to rollback.
 
 ### Architecture Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                      Global Load Balancer                        │
 │         (Route 53 with Latency-Based Routing)                   │
@@ -741,7 +751,7 @@ route53.change_resource_record_sets(
 
 # User from US → Routed to us-east-1 (20ms)
 # User from EU → Routed to eu-west-1 (15ms)
-```
+```text
 
 ### Conflict Resolution Example
 
@@ -765,12 +775,13 @@ dynamodb_eu.update_item(
 )
 
 # Conflict! Both regions think they have latest value.
-```
+```text
 
 **Resolution Strategies**:
 
 #### **Last-Write-Wins (LWW)** - Default
-```
+
+```text
 US: email = "john@us.com" (timestamp: 10:30:00.000)
 EU: email = "john@eu.com" (timestamp: 10:30:00.050)
 
@@ -781,6 +792,7 @@ Final: email = "john@eu.com"
 ```
 
 #### **Version Vectors** - Track Causality
+
 ```python
 # US write
 {
@@ -796,9 +808,10 @@ Final: email = "john@eu.com"
 
 # Conflict detected: US=5 vs EU=4 (diverged)
 # Store both versions, app resolves
-```
+```text
 
 #### **Custom Resolver** - Business Logic
+
 ```python
 def resolve_email_conflict(us_value, eu_value):
     # Business rule: EU GDPR takes precedence
@@ -806,7 +819,7 @@ def resolve_email_conflict(us_value, eu_value):
         return eu_value
     else:
         return us_value  # Use US version
-```
+```text
 
 ### Failover Automation
 
@@ -852,7 +865,7 @@ if not check_region_health('us-east-1'):
         Subject='🚨 Failover: US → EU',
         Message='Primary region failed, traffic routed to EU'
     )
-```
+```text
 
 ---
 
@@ -894,13 +907,14 @@ if not check_region_health('us-east-1'):
                 │All data unified│
                 │for BI queries  │
                 └────────────────┘
-```
+```text
 
 ### Database Selection Criteria
 
 #### **Aurora PostgreSQL** (Transactional)
 
 **Use When**:
+
 - ACID transactions required
 - Complex joins (10+ tables)
 - Relational data (foreign keys)
@@ -915,11 +929,12 @@ BEGIN;
   UPDATE inventory SET quantity = quantity - 1 WHERE product_id = 123;
   INSERT INTO orders (user_id, product_id, amount) VALUES (456, 123, 29.99);
 COMMIT;
-```
+```text
 
 #### **DynamoDB** (Key-Value)
 
 **Use When**:
+
 - Simple access patterns (get/put by key)
 - High write rate (>10K/sec)
 - Unpredictable traffic (auto-scaling)
@@ -939,11 +954,12 @@ dynamodb.put_item(
     TableName='carts',
     Item={'user_id': 'user_456', 'items': []}
 )
-```
+```text
 
 #### **ElastiCache (Redis)** (Caching)
 
 **Use When**:
+
 - Read-heavy (read:write = 100:1)
 - Expensive to compute (complex queries)
 - Sub-millisecond latency required
@@ -966,6 +982,7 @@ return product
 #### **Redshift** (Analytics)
 
 **Use When**:
+
 - Complex analytics (aggregations, window functions)
 - Historical queries (TB to PB scale)
 - Batch reporting (daily/weekly)
@@ -983,11 +1000,12 @@ FROM orders
 WHERE order_date >= '2025-01-01'
 GROUP BY month
 ORDER BY month;
-```
+```text
 
 #### **OpenSearch** (Search)
 
 **Use When**:
+
 - Full-text search ("iPhone 15 Pro Max cases")
 - Fuzzy matching (handle typos)
 - Faceted search (filters: category, price, brand)
@@ -1014,13 +1032,13 @@ opensearch.search(
         'sort': ['_score']  # Relevance ranking
     }
 )
-```
+```text
 
 ### CDC Implementation
 
 Sync Aurora → Redshift for analytics:
 
-```
+```text
 Aurora (Orders Table)
    ↓
 DMS CDC (continuous replication)
@@ -1065,7 +1083,7 @@ FROM 's3://cdc-bucket/orders/'
 IAM_ROLE 'arn:aws:iam::123456789:role/RedshiftCopyRole'
 FORMAT AS PARQUET;
 """)
-```
+```text
 
 **Latency**: 5-10 minutes (Aurora write → Redshift available)
 
@@ -1073,11 +1091,11 @@ FORMAT AS PARQUET;
 
 ## Hybrid Architectures (Combining Patterns)
 
-###Lambda + Data Mesh
+### Lambda + Data Mesh
 
 **Use Case**: Large organization with both batch and streaming needs.
 
-```
+```text
 ┌───────────────────────────────────────────┐
 │         Data Mesh (3 Domains)             │
 │                                           │
@@ -1091,7 +1109,7 @@ FORMAT AS PARQUET;
 │ Customer Domain → Batch-Only              │
 │  - Daily ETL: Glue                        │
 └───────────────────────────────────────────┘
-```
+```text
 
 **Benefit**: Domains choose architecture independently.
 
@@ -1107,13 +1125,13 @@ US Region:
 - OpenSearch (search) → Cross-region replication
 
 Result: <50ms latency worldwide, specialized databases
-```
+```text
 
 ### Event-Driven + CQRS
 
 **Use Case**: Command validation + multiple read models.
 
-```
+```text
 Command → EventBridge → Event Store (DynamoDB)
                 ↓
         ┌───────┼───────┬───────┐
@@ -1123,7 +1141,7 @@ Command → EventBridge → Event Store (DynamoDB)
         ↓       ↓       ↓       ↓
   DynamoDB  Redshift OpenSearch S3
   (Current) (History)(Search) (Archive)
-```
+```text
 
 **Benefit**: Single event stream, 4 specialized read models.
 
@@ -1173,7 +1191,7 @@ Command → EventBridge → Event Store (DynamoDB)
 │ - Presto/Athena: SQL over S3             │
 │ - Druid: Real-time dashboards            │
 └──────────────────────────────────────────┘
-```
+```text
 
 ### Scale Numbers
 
@@ -1204,7 +1222,7 @@ Command → EventBridge → Event Store (DynamoDB)
 
 **Data Mesh + Multi-Region + Polyglot**
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │                 Central Platform (Unified Data Platform)     │
 │   Technologies: HDFS, Hive, Presto, Spark, Kafka, Flink     │
@@ -1230,7 +1248,7 @@ Command → EventBridge → Event Store (DynamoDB)
          │   Unified Analytics Layer   │
          │   (Presto - SQL over all)   │
          └─────────────────────────────┘
-```
+```text
 
 ### Scale Numbers
 
@@ -1281,7 +1299,7 @@ Start: What are your requirements?
 ├─ Mixed workloads (OLTP + OLAP + Search)?
 │  ├─ Yes → Polyglot Persistence
 │  └─ No → Simple Architecture (CRUD + single database)
-```
+```text
 
 ### Cost Comparison (10TB data/month)
 

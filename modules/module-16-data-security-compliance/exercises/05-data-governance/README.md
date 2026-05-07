@@ -1,6 +1,7 @@
 # Exercise 05: Data Governance with Lake Formation
 
 ## Overview
+
 Implement fine-grained data access control using AWS Lake Formation, including table-level, column-level, and row-level security, tag-based access control (TBAC), cross-account data sharing, and data lineage tracking.
 
 **Difficulty**: ⭐⭐⭐⭐ Expert
@@ -31,7 +32,7 @@ Implement fine-grained data access control using AWS Lake Formation, including t
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │           LAKE FORMATION GOVERNANCE ARCHITECTURE             │
 │                                                              │
@@ -101,7 +102,7 @@ Implement fine-grained data access control using AWS Lake Formation, including t
 │  │    - FilterTable events (row-level access)           │   │
 │  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
-```
+```text
 
 ## Task 1: Register Data Lake (20 minutes)
 
@@ -268,7 +269,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ LAKE FORMATION SETUP COMPLETE")
     print("="*60)
-```
+```text
 
 ## Task 2: Configure Fine-Grained Access Control (45 minutes)
 
@@ -601,7 +602,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("✓ LF-TAGS CONFIGURED")
     print("="*60)
-```
+```text
 
 ## Validation Checklist
 

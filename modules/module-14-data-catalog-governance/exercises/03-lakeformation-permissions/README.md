@@ -44,7 +44,7 @@ awslocal lakeformation register-resource \
 
 # Verify registered locations
 awslocal lakeformation list-resources
-```
+```text
 
 ### Task 2: Create IAM Roles for Different Personas
 
@@ -88,7 +88,7 @@ awslocal iam create-role \
 
 # Verify roles
 awslocal iam list-roles --query 'Roles[?contains(RoleName, `Data`) || contains(RoleName, `External`)].RoleName'
-```
+```text
 
 ### Task 3: Grant Data Location Permissions
 
@@ -117,7 +117,7 @@ awslocal lakeformation grant-permissions \
     --principal '{\"DataLakePrincipalIdentifier\":\"arn:aws:iam::000000000000:role/DataScientist\"}' \
     --resource '{\"DataLocation\":{\"ResourceArn\":\"arn:aws:s3:::training-data-lake/gold/\"}}' \
     --permissions DATA_LOCATION_ACCESS
-```
+```text
 
 ### Task 4: Grant Database-Level Permissions
 
@@ -185,7 +185,7 @@ awslocal lakeformation grant-permissions \
         }
     }' \
     --permissions SELECT DESCRIBE
-```
+```text
 
 Test column-level security:
 
@@ -226,7 +226,7 @@ WHERE year = '2024' AND month = '03'
 print("Testing column-level security...")
 # In real AWS, these queries would be executed through Athena
 # In LocalStack, Lake Formation column filtering may be limited
-```
+```text
 
 ### Task 6: Implement Row-Level Security with Data Filters
 
@@ -275,7 +275,7 @@ awslocal lakeformation grant-permissions \
 # List all data cell filters
 awslocal lakeformation list-data-cells-filter \
     --table '{\"DatabaseName\":\"dev_sales_silver_db\",\"TableName\":\"sales_transactions_clean\"}'
-```
+```text
 
 Row filter examples:
 
@@ -359,7 +359,7 @@ awslocal lakeformation grant-permissions \
         }
     }' \
     --permissions SELECT DESCRIBE
-```
+```text
 
 Benefits of TBAC:
 
@@ -430,7 +430,7 @@ for perm in response.get('PrincipalResourcePermissions', []):
         for expr in policy['Expression']:
             print(f"  {expr['TagKey']} in {expr['TagValues']}")
         print(f"  Permissions: {', '.join(perm['Permissions'])}")
-```
+```text
 
 ### Task 8: List and Audit Permissions
 
@@ -525,9 +525,10 @@ def audit_all_permissions():
 
 if __name__ == '__main__':
     audit_all_permissions()
-```
+```text
 
 Run the audit:
+
 ```bash
 python audit_permissions.py
 ```
@@ -629,7 +630,7 @@ for test in test_cases:
     print(f"Expected: {test['expected']}")
     test_permissions(test['role'], test['database'], test['table'], test['query'])
     print()
-```
+```text
 
 ## Validation
 
@@ -637,9 +638,10 @@ Test your Lake Formation setup:
 
 ```bash
 python validation_03.py
-```
+```text
 
 Expected results:
+
 - ✅ S3 locations registered with Lake Formation
 - ✅ 4 IAM roles created (Engineer, Analyst, Scientist, Partner)
 - ✅ Data location permissions granted correctly

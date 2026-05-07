@@ -22,6 +22,7 @@
 ## 📚 Context
 
 Crearás una aplicación ETL simple containerizada que:
+
 - Read archivos CSV de S3 (o local)
 - Procesa con pandas
 - Write resultados a PostgreSQL
@@ -29,7 +30,7 @@ Crearás una aplicación ETL simple containerizada que:
 
 **Arquitectura**:
 
-```
+```text
 ┌──────────────────────────────────────────┐
 │      Docker Compose Stack                │
 ├──────────────────────────────────────────┤
@@ -48,7 +49,7 @@ Crearás una aplicación ETL simple containerizada que:
 │  │  Volume: postgres_data             │  │
 │  └────────────────────────────────────┘  │
 └──────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -234,7 +235,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
+```text
 
 ### Step 1.2: Requirements
 
@@ -270,7 +271,7 @@ COPY app.py .
 
 # Run ETL
 CMD ["python", "app.py"]
-```
+```text
 
 ### Step 2.2: Build y Run
 
@@ -280,7 +281,7 @@ docker build -t data-etl:v1.0 etl/
 
 # Run container (will fail without database)
 docker run --rm data-etl:v1.0
-```
+```text
 
 ---
 
@@ -341,7 +342,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD python -c "import sys; sys.exit(0)"
 
 CMD ["python", "app.py"]
-```
+```text
 
 ### Step 3.2: Build Optimizado
 
@@ -432,7 +433,7 @@ volumes:
 networks:
   data_network:
     driver: bridge
-```
+```text
 
 ### Step 4.2: Sample Data
 
@@ -446,7 +447,7 @@ order_id,order_date,product,quantity,price
 1004,2024-01-02,Monitor,1,300.00
 1005,2024-01-03,Laptop,2,1200.00
 1006,2024-01-03,USB Cable,5,10.00
-```
+```text
 
 ### Step 4.3: Run Stack
 
@@ -472,7 +473,7 @@ docker-compose down
 
 # Stop and remove volumes
 docker-compose down -v
-```
+```text
 
 ---
 
@@ -510,7 +511,7 @@ docker push 123456789.dkr.ecr.us-east-1.amazonaws.com/data-etl:latest
 aws ecr describe-images \
   --repository-name data-etl \
   --region us-east-1
-```
+```text
 
 ---
 
@@ -521,7 +522,7 @@ aws ecr describe-images \
 ```bash
 docker images data-etl:v2.0
 # Should show image with size ~280MB
-```
+```text
 
 ### 2. Docker Compose Stack Runs
 
@@ -530,7 +531,7 @@ docker-compose ps
 # All services should be running/exited (etl)
 docker-compose logs etl | grep "completed successfully"
 # Should show success message
-```
+```text
 
 ### 3. Data in Database
 
@@ -545,29 +546,33 @@ docker-compose exec postgres psql -U dataeng -d analytics -c \
 ```bash
 aws ecr list-images --repository-name data-etl
 # Should show v2.0 and latest tags
-```
+```text
 
 ---
 
 ## 🎓 Conceptos Aprendidos
 
 ✅ **Docker Basics**:
+
 - Dockerfile syntax
 - Build process y layers
 - Image tagging
 
 ✅ **Multi-Stage Builds**:
+
 - Separar build y runtime
 - Image size optimization
 - Security (non-root user)
 
 ✅ **Docker Compose**:
+
 - Multi-container applications
 - Service dependencies
 - Volume management
 - Network isolation
 
 ✅ **AWS ECR**:
+
 - Container registry management
 - Authentication
 - Image push/pull
@@ -587,7 +592,7 @@ docker-compose logs postgres
 
 # Verify network
 docker network inspect docker-basics_data_network
-```
+```text
 
 ### Error: Permission denied in container
 
@@ -595,7 +600,7 @@ docker network inspect docker-basics_data_network
 # Ensure proper ownership in Dockerfile
 COPY --chown=appuser:appuser app.py .
 USER appuser
-```
+```text
 
 ### Error: No space left on device
 

@@ -19,11 +19,13 @@ This guide helps you diagnose and fix common issues when working with the SQL Fo
 ### Issue: Container Won't Start
 
 **Symptoms**:
+
 ```bash
 ERROR: Cannot start service postgres: driver failed programming external connectivity
-```
+```text
 
 **Causes**:
+
 - Port 5432 already in use by another PostgreSQL instance
 - Docker daemon not running
 - Insufficient permissions
@@ -31,6 +33,7 @@ ERROR: Cannot start service postgres: driver failed programming external connect
 **Solutions**:
 
 1. **Check if port is in use**:
+
 ```bash
 # Linux/Mac
 sudo lsof -i :5432
@@ -41,18 +44,20 @@ sudo kill -9 <PID>
 # Or change port in docker-compose.yml
 ports:
   - "5433:5432"  # Use 5433 instead
-```
+```text
 
-2. **Restart Docker daemon**:
+1. **Restart Docker daemon**:
+
 ```bash
 # Linux
 sudo systemctl restart docker
 
 # Mac
 # Restart Docker Desktop from application menu
-```
+```text
 
-3. **Check Docker permissions**:
+1. **Check Docker permissions**:
+
 ```bash
 # Linux - add user to docker group
 sudo usermod -aG docker $USER
@@ -64,30 +69,34 @@ sudo usermod -aG docker $USER
 ### Issue: Container Exits Immediately
 
 **Symptoms**:
+
 ```bash
 docker ps  # Container not listed
 docker ps -a  # Shows "Exited (1)" status
-```
+```text
 
 **Solutions**:
 
 1. **Check container logs**:
+
 ```bash
 docker logs sql-foundations-db
 
 # Common errors:
 # - "initdb: error: directory "/var/lib/postgresql/data" exists but is not empty"
 # - "FATAL: could not create shared memory segment"
-```
+```text
 
-2. **Remove volume and recreate**:
+1. **Remove volume and recreate**:
+
 ```bash
 cd infrastructure/
 docker-compose down -v  # Remove volumes
 docker-compose up -d
-```
+```text
 
-3. **Check init.sql for errors**:
+1. **Check init.sql for errors**:
+
 ```bash
 # Test SQL syntax
 docker exec -i sql-foundations-db psql -U postgres -d ecommerce < infrastructure/init.sql
@@ -98,18 +107,21 @@ docker exec -i sql-foundations-db psql -U postgres -d ecommerce < infrastructure
 ### Issue: Out of Disk Space
 
 **Symptoms**:
+
 ```bash
 ERROR: No space left on device
-```
+```text
 
 **Solutions**:
 
 1. **Check Docker disk usage**:
+
 ```bash
 docker system df
-```
+```text
 
-2. **Clean up unused resources**:
+1. **Clean up unused resources**:
+
 ```bash
 # Remove stopped containers
 docker container prune
@@ -122,7 +134,7 @@ docker volume prune
 
 # Nuclear option: remove everything
 docker system prune -a --volumes
-```
+```text
 
 ---
 
@@ -131,6 +143,7 @@ docker system prune -a --volumes
 ### Issue: "Connection Refused"
 
 **Symptoms**:
+
 ```python
 psycopg2.OperationalError: could not connect to server: Connection refused
 ```
@@ -138,32 +151,36 @@ psycopg2.OperationalError: could not connect to server: Connection refused
 **Solutions**:
 
 1. **Verify container is running**:
+
 ```bash
 docker ps | grep sql-foundations-db
 
 # If not running:
 cd infrastructure/
 docker-compose up -d
-```
+```text
 
-2. **Check database is ready**:
+1. **Check database is ready**:
+
 ```bash
 docker exec sql-foundations-db pg_isready -U postgres -d ecommerce
 
 # Should output:
 # /var/run/postgresql:5432 - accepting connections
-```
+```text
 
-3. **Test connection manually**:
+1. **Test connection manually**:
+
 ```bash
 docker exec -it sql-foundations-db psql -U postgres -d ecommerce
 
 # If this works but Python can't connect, check:
 # - Firewall rules
 # - Connection string (should use localhost, not 127.0.0.1)
-```
+```text
 
-4. **Check .env configuration**:
+1. **Check .env configuration**:
+
 ```bash
 cat infrastructure/.env
 
@@ -180,26 +197,30 @@ POSTGRES_PASSWORD=postgres123
 ### Issue: "Database Does Not Exist"
 
 **Symptoms**:
+
 ```bash
 FATAL: database "ecommerce" does not exist
-```
+```text
 
 **Solutions**:
 
 1. **List available databases**:
+
 ```bash
 docker exec sql-foundations-db psql -U postgres -l
-```
+```text
 
-2. **Create database if missing**:
+1. **Create database if missing**:
+
 ```bash
 docker exec sql-foundations-db psql -U postgres -c "CREATE DATABASE ecommerce;"
 
 # Run init script
 docker exec -i sql-foundations-db psql -U postgres -d ecommerce < infrastructure/init.sql
-```
+```text
 
-3. **Or use reset script**:
+1. **Or use reset script**:
+
 ```bash
 ./scripts/reset_db.sh
 ```
@@ -209,18 +230,21 @@ docker exec -i sql-foundations-db psql -U postgres -d ecommerce < infrastructure
 ### Issue: "Authentication Failed"
 
 **Symptoms**:
+
 ```bash
 FATAL: password authentication failed for user "postgres"
-```
+```text
 
 **Solutions**:
 
 1. **Check password in .env**:
+
 ```bash
 grep POSTGRES_PASSWORD infrastructure/.env
-```
+```text
 
-2. **Update test configuration** (validation/conftest.py):
+1. **Update test configuration** (validation/conftest.py):
+
 ```python
 DB_CONFIG = {
     'host': 'localhost',
@@ -229,9 +253,10 @@ DB_CONFIG = {
     'user': 'postgres',
     'password': 'postgres123'  # Match .env
 }
-```
+```text
 
-3. **Recreate container with correct credentials**:
+1. **Recreate container with correct credentials**:
+
 ```bash
 cd infrastructure/
 docker-compose down -v
@@ -246,74 +271,85 @@ docker-compose up -d
 ### Issue: "No Data in Tables"
 
 **Symptoms**:
+
 ```sql
 SELECT COUNT(*) FROM users;
 -- Returns: 0
-```
+```text
 
 **Solutions**:
 
 1. **Check if data files exist**:
+
 ```bash
 ls -la data/seeds/
 # Should show: users.csv, products.csv
-```
+```text
 
-2. **Load data manually**:
+1. **Load data manually**:
+
 ```bash
 ./scripts/load_sample_data.sh --clear-first
-```
+```text
 
-3. **Verify CSV format**:
+1. **Verify CSV format**:
+
 ```bash
 head data/seeds/users.csv
 # Should have headers: user_id,first_name,last_name,email,...
 ```
 
-4. **Check for loading errors**:
+1. **Check for loading errors**:
+
 ```bash
 docker logs sql-foundations-db | grep ERROR
-```
+```text
 
 ---
 
 ### Issue: "Duplicate Key Violations"
 
 **Symptoms**:
+
 ```bash
 ERROR: duplicate key value violates unique constraint "users_pkey"
-```
+```text
 
 **Solutions**:
 
 1. **Clear existing data first**:
+
 ```bash
 docker exec sql-foundations-db psql -U postgres -d ecommerce -c "TRUNCATE TABLE users CASCADE;"
-```
+```text
 
-2. **Or use reset script**:
+1. **Or use reset script**:
+
 ```bash
 ./scripts/reset_db.sh
 ```
 
-3. **Check for duplicate IDs in CSV**:
+1. **Check for duplicate IDs in CSV**:
+
 ```bash
 cut -d',' -f1 data/seeds/users.csv | sort | uniq -d
 # Should return nothing if no duplicates
-```
+```text
 
 ---
 
 ### Issue: "Foreign Key Constraint Violations"
 
 **Symptoms**:
+
 ```bash
 ERROR: insert or update on table "orders" violates foreign key constraint
-```
+```text
 
 **Solutions**:
 
 1. **Load data in correct order**:
+
 ```bash
 # Correct order:
 # 1. users (parent)
@@ -321,18 +357,20 @@ ERROR: insert or update on table "orders" violates foreign key constraint
 # 3. orders (references users)
 # 4. order_items (references orders and products)
 # 5. user_activity (references users)
-```
+```text
 
-2. **Verify parent records exist**:
+1. **Verify parent records exist**:
+
 ```sql
 -- Check if user_id exists before inserting order
 SELECT COUNT(*) FROM users WHERE user_id = 123;
 ```
 
-3. **Use reset script which loads in correct order**:
+1. **Use reset script which loads in correct order**:
+
 ```bash
 ./scripts/reset_db.sh
-```
+```text
 
 ---
 
@@ -341,22 +379,25 @@ SELECT COUNT(*) FROM users WHERE user_id = 123;
 ### Issue: "pytest: command not found"
 
 **Symptoms**:
+
 ```bash
 ./scripts/validate.sh
 # pytest: command not found
-```
+```text
 
 **Solutions**:
 
 1. **Activate virtual environment**:
+
 ```bash
 source venv/bin/activate
 
 # Or if venv doesn't exist:
 ./scripts/setup.sh
-```
+```text
 
-2. **Install requirements**:
+1. **Install requirements**:
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -366,27 +407,31 @@ pip install -r requirements.txt
 ### Issue: "ImportError: No module named 'psycopg2'"
 
 **Symptoms**:
+
 ```python
 ImportError: No module named 'psycopg2'
-```
+```text
 
 **Solutions**:
 
 1. **Install psycopg2-binary**:
+
 ```bash
 pip install psycopg2-binary
-```
+```text
 
-2. **If that fails** (common on Mac M1/M2):
+1. **If that fails** (common on Mac M1/M2):
+
 ```bash
 # Install PostgreSQL development files
 brew install postgresql
 
 # Then install psycopg2
 pip install psycopg2
-```
+```text
 
-3. **Or use binary version**:
+1. **Or use binary version**:
+
 ```bash
 pip uninstall psycopg2
 pip install psycopg2-binary
@@ -397,23 +442,27 @@ pip install psycopg2-binary
 ### Issue: "Tests Fail with 'No Data Found'"
 
 **Symptoms**:
+
 ```python
 AssertionError: Expected at least 1 row, got 0
-```
+```text
 
 **Solutions**:
 
 1. **Verify data is loaded**:
+
 ```bash
 docker exec sql-foundations-db psql -U postgres -d ecommerce -c "SELECT COUNT(*) FROM users;"
-```
+```text
 
-2. **Reload data**:
+1. **Reload data**:
+
 ```bash
 ./scripts/load_sample_data.sh --clear-first
-```
+```text
 
-3. **Check test is using correct database**:
+1. **Check test is using correct database**:
+
 ```python
 # In validation/conftest.py
 DB_CONFIG = {
@@ -427,14 +476,16 @@ DB_CONFIG = {
 ### Issue: "Tests Pass Locally But Fail in CI"
 
 **Symptoms**:
+
 ```bash
 # Local: All tests passed
 # CI: Multiple failures
-```
+```text
 
 **Solutions**:
 
 1. **Check database initialization in CI**:
+
 ```yaml
 # .github/workflows/test.yml
 services:
@@ -449,17 +500,19 @@ services:
       --health-interval 10s
       --health-timeout 5s
       --health-retries 5
-```
+```text
 
-2. **Ensure init.sql runs in CI**:
+1. **Ensure init.sql runs in CI**:
+
 ```yaml
 steps:
   - name: Initialize database
     run: |
       PGPASSWORD=postgres123 psql -h localhost -U postgres -d ecommerce < infrastructure/init.sql
-```
+```text
 
-3. **Load test data in CI**:
+1. **Load test data in CI**:
+
 ```yaml
   - name: Load test data
     run: |
@@ -474,16 +527,18 @@ steps:
 ### Issue: "Query Takes Too Long"
 
 **Symptoms**:
+
 ```sql
 -- Query runs for minutes
 SELECT * FROM orders o
 JOIN users u ON o.user_id = u.user_id
 WHERE u.country = 'US';
-```
+```text
 
 **Solutions**:
 
 1. **Check query plan**:
+
 ```sql
 EXPLAIN ANALYZE
 SELECT * FROM orders o
@@ -494,53 +549,60 @@ WHERE u.country = 'US';
 -- - Seq Scan on large tables (bad)
 -- - Index Scan (good)
 -- - High cost values
-```
+```text
 
-2. **Add missing indexes**:
+1. **Add missing indexes**:
+
 ```sql
 -- Index foreign keys
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 
 -- Index frequently filtered columns
 CREATE INDEX idx_users_country ON users(country);
-```
+```text
 
-3. **Analyze tables**:
+1. **Analyze tables**:
+
 ```sql
 ANALYZE users;
 ANALYZE orders;
 ```
 
-4. **Limit results during development**:
+1. **Limit results during development**:
+
 ```sql
 -- Add LIMIT while testing
 SELECT * FROM orders LIMIT 100;
-```
+```text
 
 ---
 
 ### Issue: "Index Not Being Used"
 
 **Symptoms**:
+
 ```sql
 EXPLAIN SELECT * FROM users WHERE country = 'US';
 -- Shows: Seq Scan (not Index Scan)
-```
+```text
 
 **Solutions**:
 
 1. **Check if index exists**:
+
 ```sql
 \d users
 -- Look for indexes in output
-```
+```text
 
-2. **Verify statistics are up to date**:
+1. **Verify statistics are up to date**:
+
 ```sql
 ANALYZE users;
 ```
 
-3. **Check selectivity**:
+1. **Check selectivity**:
+
 ```sql
 -- If query returns >10% of rows, seq scan may be faster
 SELECT COUNT(*) * 100.0 / (SELECT COUNT(*) FROM users)
@@ -548,14 +610,15 @@ FROM users
 WHERE country = 'US';
 
 -- If >10%, seq scan is probably correct choice
-```
+```text
 
-4. **Force index usage (testing only)**:
+1. **Force index usage (testing only)**:
+
 ```sql
 SET enable_seqscan = OFF;
 EXPLAIN SELECT * FROM users WHERE country = 'US';
 SET enable_seqscan = ON;
-```
+```text
 
 ---
 
@@ -568,9 +631,10 @@ SET enable_seqscan = ON;
 ```sql
 -- Doesn't match anything
 SELECT * FROM users WHERE email LIKE '%GMAIL.COM';
-```
+```text
 
 **Solution**: Use ILIKE for case-insensitive matching:
+
 ```sql
 SELECT * FROM users WHERE email ILIKE '%gmail.com';
 ```
@@ -586,9 +650,10 @@ SELECT u.name, o.order_id
 FROM users u
 LEFT JOIN orders o ON u.user_id = o.user_id;
 -- All order_id values are NULL
-```
+```text
 
 **Solution**: Check column names match:
+
 ```sql
 -- Verify column names
 \d users
@@ -597,7 +662,7 @@ LEFT JOIN orders o ON u.user_id = o.user_id;
 -- Common mistake: joining on wrong columns
 -- WRONG: ON u.id = o.user_id
 -- RIGHT: ON u.user_id = o.user_id
-```
+```text
 
 ---
 
@@ -611,9 +676,10 @@ FROM orders
 JOIN users ON orders.user_id = users.user_id
 GROUP BY user_id;
 -- ERROR: column "first_name" must appear in GROUP BY clause
-```
+```text
 
 **Solution**: Add all non-aggregated columns to GROUP BY:
+
 ```sql
 SELECT user_id, first_name, COUNT(*)
 FROM orders
@@ -633,9 +699,10 @@ SELECT product_name,
        LAST_VALUE(product_name) OVER (ORDER BY price) AS most_expensive
 FROM products;
 -- LAST_VALUE returns wrong result
-```
+```text
 
 **Solution**: Specify complete frame:
+
 ```sql
 SELECT product_name,
        FIRST_VALUE(product_name) OVER (ORDER BY price) AS cheapest,
@@ -644,7 +711,7 @@ SELECT product_name,
            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
        ) AS most_expensive
 FROM products;
-```
+```text
 
 ---
 
@@ -657,9 +724,10 @@ WITH high_value_orders AS (
     SELECT * FROM orders WHERE total_amount > 500
 );
 -- ERROR: WITH query "high_value_orders" was not referenced
-```
+```text
 
 **Solution**: Use the CTE in main query:
+
 ```sql
 WITH high_value_orders AS (
     SELECT * FROM orders WHERE total_amount > 500
@@ -676,9 +744,10 @@ SELECT * FROM high_value_orders;  -- Reference it here
 ```sql
 EXPLAIN SELECT * FROM users;
 -- Output is hard to read
-```
+```text
 
 **Solution**: Use EXPLAIN with options:
+
 ```sql
 -- Better formatting
 EXPLAIN (FORMAT JSON, ANALYZE, BUFFERS)
@@ -687,7 +756,7 @@ SELECT * FROM users WHERE country = 'US';
 -- Or visual format
 EXPLAIN (FORMAT TEXT, ANALYZE, BUFFERS, VERBOSE)
 SELECT * FROM users WHERE country = 'US';
-```
+```text
 
 ---
 
@@ -709,7 +778,7 @@ docker-compose restart
 
 # View logs
 docker logs -f sql-foundations-db
-```
+```text
 
 ---
 
@@ -729,7 +798,7 @@ VACUUM ANALYZE;
 
 -- Or specific table
 VACUUM ANALYZE users;
-```
+```text
 
 ---
 
@@ -743,7 +812,7 @@ SELECT
 FROM pg_tables
 WHERE schemaname = 'public'
 ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
-```
+```text
 
 ---
 
@@ -760,7 +829,7 @@ rm -rf venv/
 # Start fresh
 cd ..
 ./scripts/setup.sh
-```
+```text
 
 ---
 
@@ -773,6 +842,7 @@ If you're still stuck after trying these solutions:
 3. **Run validation**: `./scripts/validate.sh --verbose`
 4. **Check documentation**: See docs/sql-guide.md for SQL reference
 5. **Inspect database state**:
+
 ```bash
 docker exec -it sql-foundations-db psql -U postgres -d ecommerce
 

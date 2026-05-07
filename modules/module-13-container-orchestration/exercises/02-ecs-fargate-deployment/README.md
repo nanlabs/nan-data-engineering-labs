@@ -24,12 +24,13 @@
 ## 📚 Context
 
 Desplegarás la aplicación ETL del exercise 01 en AWS ECS Fargate como:
+
 - **Scheduled Task**: Corre diariamente a las 2 AM
 - **API Service**: REST API para trigger manual
 
 **Arquitectura**:
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │                    AWS ECS Architecture                   │
 ├──────────────────────────────────────────────────────────┤
@@ -66,7 +67,7 @@ Desplegarás la aplicación ETL del exercise 01 en AWS ECS Fargate como:
 │  │  • Alarms                                         │  │
 │  └──────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────┘
-```
+```text
 
 ---
 
@@ -184,7 +185,7 @@ resource "aws_route_table_association" "private" {
 data "aws_availability_zones" "available" {
   state = "available"
 }
-```
+```text
 
 ### Step 1.2: Security Groups
 
@@ -324,7 +325,7 @@ resource "aws_secretsmanager_secret_version" "db_password" {
     dbname   = "analytics"
   })
 }
-```
+```text
 
 ### Step 1.4: ECS Cluster
 
@@ -433,7 +434,7 @@ resource "aws_s3_bucket" "data" {
 }
 
 data "aws_caller_identity" "current" {}
-```
+```text
 
 ### Step 1.5: Task Definition
 
@@ -500,7 +501,7 @@ resource "aws_ecr_repository" "app" {
     scan_on_push = true
   }
 }
-```
+```text
 
 ### Step 1.6: ECS Service con ALB
 
@@ -720,7 +721,7 @@ resource "aws_ecs_task_definition" "etl" {
     }
   }])
 }
-```
+```text
 
 ---
 
@@ -739,7 +740,7 @@ terraform plan
 
 # Apply
 terraform apply
-```
+```text
 
 ### Step 2.2: Push Image to ECR
 
@@ -753,7 +754,7 @@ aws ecr get-login-password --region us-east-1 | \
 docker build -t data-api:latest ../app/
 docker tag data-api:latest $(terraform output -raw ecr_repository_url):latest
 docker push $(terraform output -raw ecr_repository_url):latest
-```
+```text
 
 ### Step 2.3: Verify Deployment
 
@@ -786,21 +787,21 @@ aws ecs describe-services \
   --services data-api \
   | jq '.services[0].runningCount'
 # Should be 2
-```
+```text
 
 ### 2. ALB Health Check
 
 ```bash
 curl http://$(terraform output -raw alb_dns_name)/health
 # Should return 200 OK
-```
+```text
 
 ### 3. Auto Scaling Configured
 
 ```bash
 aws application-autoscaling describe-scalable-targets \
   --service-namespace ecs
-```
+```text
 
 ### 4. Scheduled Task Created
 

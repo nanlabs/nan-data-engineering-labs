@@ -1,6 +1,7 @@
 # Exercise 05: SQL Analytics & Dashboards
 
 ## Overview
+
 Build interactive SQL dashboards using Databricks SQL for business intelligence, featuring parameterized queries, advanced window functions, cohort analysis, and rich visualizations.
 
 **Estimated Time**: 1.5 hours
@@ -10,7 +11,9 @@ Build interactive SQL dashboards using Databricks SQL for business intelligence,
 ---
 
 ## Learning Objectives
+
 By completing this exercise, you will be able to:
+
 - Write complex analytical SQL queries with window functions
 - Create parameterized queries with dynamic filters
 - Build cohort analysis and retention reports
@@ -22,7 +25,9 @@ By completing this exercise, you will be able to:
 ---
 
 ## Scenario
+
 You're the analytics lead for an e-commerce company. The executive team needs dashboards to answer:
+
 1. What are our top-performing products and regions?
 2. How do sales trends look month-over-month?
 3. Which salespeople are exceeding quota?
@@ -38,9 +43,11 @@ Build a comprehensive SQL analytics solution with interactive dashboards that up
 ## Requirements
 
 ### Task 1: Sample Data Generation (15 min)
+
 Generate realistic sales data for analysis.
 
 **Requirements**:
+
 - Create `sales_transactions` table with 10,000 records
 - Date range: Last 12 months
 - 50 unique products across 5 categories
@@ -48,7 +55,8 @@ Generate realistic sales data for analysis.
 - 20 salespeople with quotas
 
 **Schema**:
-```
+
+```text
 transaction_id: STRING
 transaction_date: DATE
 product_id: STRING
@@ -62,15 +70,17 @@ salesperson_id: STRING
 salesperson_name: STRING
 customer_id: STRING
 customer_signup_date: DATE (for cohort analysis)
-```
+```text
 
 **Data Distribution**:
+
 - 60% of sales from top 20% of products (Pareto principle)
 - 40% of sales from top 3 regions
 - Seasonal trends (December 20% higher, August 10% lower)
 - 15% outlier transactions (very high value)
 
 **Success Criteria**:
+
 - ✅ Table has exactly 10,000 transactions
 - ✅ Data spans 12 months evenly
 - ✅ 50 unique products, 20 salespeople
@@ -80,9 +90,11 @@ customer_signup_date: DATE (for cohort analysis)
 ---
 
 ### Task 2: Basic Analytics Queries (20 min)
+
 Write fundamental analytical queries for business insights.
 
 **Query 1: Revenue by Region**
+
 ```sql
 SELECT
   region,
@@ -93,9 +105,10 @@ SELECT
 FROM sales_transactions
 GROUP BY region
 ORDER BY total_revenue DESC;
-```
+```text
 
 **Query 2: Monthly Trends**
+
 ```sql
 SELECT
   DATE_TRUNC('month', transaction_date) as sales_month,
@@ -109,6 +122,7 @@ ORDER BY sales_month;
 ```
 
 **Query 3: Top 10 Products**
+
 ```sql
 SELECT
   product_name,
@@ -121,9 +135,10 @@ FROM sales_transactions
 GROUP BY product_name, product_category
 ORDER BY total_revenue DESC
 LIMIT 10;
-```
+```text
 
 **Query 4: Salesperson Performance**
+
 ```sql
 SELECT
   salesperson_name,
@@ -135,9 +150,10 @@ SELECT
 FROM sales_transactions
 GROUP BY salesperson_name
 ORDER BY total_sales DESC;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ All 4 queries execute successfully
 - ✅ Results are sorted appropriately
 - ✅ Aggregations mathematically correct
@@ -146,9 +162,11 @@ ORDER BY total_sales DESC;
 ---
 
 ### Task 3: Advanced SQL with Window Functions (25 min)
+
 Implement sophisticated analytics using window functions.
 
 **Query 1: Running Totals (Cumulative Revenue)**
+
 ```sql
 SELECT
   transaction_date,
@@ -163,9 +181,10 @@ SELECT
   ) as moving_avg_7day
 FROM sales_transactions
 ORDER BY transaction_date;
-```
+```text
 
 **Query 2: Ranking Products by Category**
+
 ```sql
 SELECT
   product_category,
@@ -185,6 +204,7 @@ QUALIFY rank_in_category <= 5;  -- Top 5 per category
 ```
 
 **Query 3: Month-over-Month Growth**
+
 ```sql
 WITH monthly_sales AS (
   SELECT
@@ -205,9 +225,10 @@ SELECT
   ) as mom_growth_pct
 FROM monthly_sales
 ORDER BY month;
-```
+```text
 
 **Query 4: Salesperson Quota Attainment**
+
 ```sql
 WITH salesperson_quotas AS (
   SELECT salesperson_name, 50000 as monthly_quota  -- $50k/month
@@ -237,9 +258,10 @@ SELECT
 FROM monthly_performance mp
 JOIN salesperson_quotas sq ON mp.salesperson_name = sq.salesperson_name
 ORDER BY mp.month DESC, mp.actual_sales DESC;
-```
+```text
 
 **Success Criteria**:
+
 - ✅ Running totals increase monotonically
 - ✅ Rankings correct within each partition
 - ✅ MoM growth percentages calculated correctly
@@ -249,15 +271,18 @@ ORDER BY mp.month DESC, mp.actual_sales DESC;
 ---
 
 ### Task 4: Cohort Analysis (25 min)
+
 Analyze customer retention by signup cohort.
 
 **Requirements**:
+
 - Group customers by signup month (cohort)
 - Track purchases in subsequent months (Month 0, 1, 2, ... 11)
 - Calculate retention rate per cohort
 - Create cohort retention matrix
 
 **Cohort Analysis Query**:
+
 ```sql
 WITH customer_cohorts AS (
   SELECT
@@ -292,9 +317,10 @@ SELECT
 FROM cohort_activity ca
 JOIN cohort_sizes cs ON ca.cohort_month = cs.cohort_month
 ORDER BY ca.cohort_month, months_since_signup;
-```
+```text
 
 **Cohort Matrix (PIVOT)**:
+
 ```sql
 SELECT * FROM (
   SELECT
@@ -311,6 +337,7 @@ ORDER BY cohort_month;
 ```
 
 **Success Criteria**:
+
 - ✅ Cohorts grouped by signup month
 - ✅ Retention tracked for 12 months
 - ✅ Month 0 retention = 100% (by definition)
@@ -320,9 +347,11 @@ ORDER BY cohort_month;
 ---
 
 ### Task 5: Parameterized Queries with Widgets (20 min)
+
 Create dynamic queries that respond to user input.
 
 **Requirements**:
+
 - Create 4 input parameters (widgets):
   - Date range (start_date, end_date)
   - Region filter (multi-select)
@@ -330,6 +359,7 @@ Create dynamic queries that respond to user input.
   - Minimum transaction value
 
 **Databricks Widgets**:
+
 ```python
 # Create widgets
 dbutils.widgets.text("start_date", "2025-01-01", "Start Date")
@@ -346,9 +376,10 @@ end_date = dbutils.widgets.get("end_date")
 selected_regions = dbutils.widgets.get("regions")
 selected_category = dbutils.widgets.get("category")
 min_amount = float(dbutils.widgets.get("min_amount"))
-```
+```text
 
 **Parameterized Query**:
+
 ```sql
 SELECT
   region,
@@ -370,14 +401,16 @@ WHERE
   AND total_amount >= ${min_amount}
 GROUP BY region, product_category
 ORDER BY revenue DESC;
-```
+```text
 
 **Dynamic Filtering**:
+
 - Test with different parameter combinations
 - Verify "All" option works (shows all data)
 - Ensure filters combine correctly (AND logic)
 
 **Success Criteria**:
+
 - ✅ All 4 widgets created and visible
 - ✅ Query updates when parameters change
 - ✅ "All" option bypasses filter
@@ -387,30 +420,35 @@ ORDER BY revenue DESC;
 ---
 
 ### Task 6: Dashboard Creation (20 min)
+
 Build an executive dashboard with multiple visualizations.
 
 **Requirements**:
 Create dashboard with 6 visualizations answering key business questions.
 
 **Visualization 1: Revenue Trend (Line Chart)**
+
 - X-axis: Month
 - Y-axis: Revenue ($)
 - Line: Monthly revenue
 - Add MoM growth % as data labels
 
 **Visualization 2: Top 10 Products (Bar Chart)**
+
 - X-axis: Product name
 - Y-axis: Revenue ($)
 - Color by category
 - Horizontal layout
 
 **Visualization 3: Regional Performance (Pie Chart)**
+
 - Slices: Regions
 - Values: Revenue percentage
 - Show percentage labels
 - Legend on right
 
 **Visualization 4: Key Metrics (KPI Cards)**
+
 - Total Revenue: `$3.2M` (large number)
 - Total Transactions: `10,000`
 - Avg Transaction: `$320`
@@ -418,6 +456,7 @@ Create dashboard with 6 visualizations answering key business questions.
 - Format with colors (green if above target)
 
 **Visualization 5: Category Matrix (Pivot Table)**
+
 - Rows: Product category
 - Columns: Region
 - Values: Revenue
@@ -425,6 +464,7 @@ Create dashboard with 6 visualizations answering key business questions.
 - Conditional formatting (heatmap)
 
 **Visualization 6: Salesperson Leaderboard (Table)**
+
 - Columns: Name, Sales, Deals, Avg Deal, Quota %, Status
 - Sort by Sales descending
 - Top 10 only
@@ -434,7 +474,8 @@ Create dashboard with 6 visualizations answering key business questions.
   - Red: < 80%
 
 **Dashboard Layout**:
-```
+
+```text
 +----------------------------------+----------------------------------+
 |     KPI Cards (4 metrics)        |    Revenue Trend (Line Chart)    |
 +----------------------------------+----------------------------------+
@@ -445,11 +486,13 @@ Create dashboard with 6 visualizations answering key business questions.
 ```
 
 **Interactivity**:
+
 - Add filters (date range, region, category)
 - Enable drill-down on charts (click to filter)
 - Auto-refresh daily
 
 **Success Criteria**:
+
 - ✅ Dashboard contains all 6 visualizations
 - ✅ Charts render correctly with proper labels
 - ✅ KPI cards show large numbers prominently
@@ -500,7 +543,8 @@ for i in range(10000):
 
 df = spark.createDataFrame(transactions)
 df.write.format("delta").mode("overwrite").saveAsTable("sales_transactions")
-```
+```text
+
 </details>
 
 <details>
@@ -522,7 +566,8 @@ SELECT
   LAG(revenue) OVER (PARTITION BY category ORDER BY revenue DESC) as next_highest_revenue
 FROM product_revenue
 QUALIFY rank_in_category <= 10;
-```
+```text
+
 </details>
 
 <details>
@@ -548,7 +593,8 @@ WHERE transaction_date BETWEEN '{start}' AND '{end}'
   AND ('{regions}' = 'All' OR region = '{regions}')
 """
 spark.sql(query).display()
-```
+```text
+
 </details>
 
 <details>
@@ -575,20 +621,23 @@ JOIN sales_transactions t ON c.customer_id = t.customer_id
 GROUP BY c.cohort_month, activity_month
 ORDER BY c.cohort_month, period;
 ```
+
 </details>
 
 ---
 
 ## Validation
+
 Run the validation script to check your work:
 
 ```bash
 cd exercises/exercise-05-sql-analytics
 python validate.py
-```
+```text
 
 **Expected Output**:
-```
+
+```text
 ✅ Task 1: Sample data generated (10,000 transactions, $3.45M revenue)
    - 50 products, 20 salespeople, 10 regions
    - Date range: 2025-01-01 to 2025-12-31
@@ -612,12 +661,14 @@ python validate.py
    - Filters propagate to all visualizations
 
 🎉 Exercise 05 Complete! Total Score: 100/100
-```
+```text
 
 ---
 
 ## Deliverables
+
 Submit the following:
+
 1. `solution.sql` - All SQL queries from Tasks 1-5
 2. Dashboard screenshot (with all 6 visualizations)
 3. Cohort retention matrix (exported to CSV or screenshot)
@@ -626,6 +677,7 @@ Submit the following:
 ---
 
 ## Resources
+
 - [Databricks SQL Guide](https://docs.databricks.com/sql/index.html)
 - [SQL Window Functions](https://docs.databricks.com/sql/language-manual/sql-ref-functions-builtin.html#window-functions)
 - [SQL Widgets (Parameters)](https://docs.databricks.com/notebooks/widgets.html)
@@ -635,7 +687,9 @@ Submit the following:
 ---
 
 ## Next Steps
+
 After completing this exercise:
+
 - ✅ Exercise 06: ML with MLflow
 - Explore Databricks SQL Warehouses for production BI
 - Review Module 15: Real-Time Analytics for streaming dashboards

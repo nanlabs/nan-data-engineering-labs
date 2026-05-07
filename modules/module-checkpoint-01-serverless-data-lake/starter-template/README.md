@@ -8,7 +8,7 @@ Build an end-to-end serverless data lake for **CloudMart**, a fictional e-commer
 
 ### Architecture Diagram
 
-```
+```text
 ┌─────────────┐
 │ Data Sources│ (CSV, JSON, JSONL files)
 └──────┬──────┘
@@ -46,11 +46,11 @@ Build an end-to-end serverless data lake for **CloudMart**, a fictional e-commer
 │              Analytics & Reporting Layer                  │
 │  Query data with SQL, create dashboards                  │
 └───────────────────────────────────────────────────────────┘
-```
+```text
 
 ## 📁 Project Structure
 
-```
+```text
 starter-template/
 ├── infrastructure/           # Terraform IaC
 │   ├── main.tf              # Main infrastructure (TODO sections)
@@ -115,11 +115,12 @@ By completing this project, you will:
 #### Phase 1: Infrastructure Setup (Week 1)
 
 1. **Configure Variables**
+
    ```bash
    cd infrastructure/
    cp terraform.tfvars.example terraform.tfvars
    # Edit terraform.tfvars with your values
-   ```
+   ```text
 
 2. **Complete Infrastructure TODOs**
    - Open `infrastructure/main.tf`
@@ -127,6 +128,7 @@ By completing this project, you will:
    - Refer to `infrastructure/README.md` for detailed guidance
 
 3. **Deploy Infrastructure**
+
    ```bash
    terraform init
    terraform validate
@@ -153,6 +155,7 @@ By completing this project, you will:
    - events_ingestion (JSONL streaming data)
 
 3. **Test End-to-End**
+
    ```bash
    # Upload sample data
    aws s3 cp sample-orders.csv s3://your-bucket-raw/orders/
@@ -162,7 +165,7 @@ By completing this project, you will:
 
    # Verify Parquet files created in processed bucket
    aws s3 ls s3://your-bucket-processed/orders/
-   ```
+   ```text
 
 #### Phase 3: Glue ETL Jobs (Week 2-3)
 
@@ -172,15 +175,17 @@ By completing this project, you will:
    - `bronze_to_silver_products.py` - Product categorization
 
 2. **Run Glue Crawlers**
+
    ```bash
    aws glue start-crawler --name cloudmart-bronze-orders-dev
    aws glue start-crawler --name cloudmart-silver-orders-dev
    ```
 
 3. **Test Glue Jobs**
+
    ```bash
    aws glue start-job-run --job-name cloudmart-bronze-to-silver-orders-dev
-   ```
+   ```text
 
 4. **Complete Silver to Gold Jobs** (Advanced)
    - `silver_to_gold_sales_summary.py` - Aggregations & rankings
@@ -206,6 +211,7 @@ By completing this project, you will:
 See [CHECKLIST.md](./CHECKLIST.md) for detailed progress tracking.
 
 **Summary:**
+
 - [ ] Phase 1: Infrastructure (40 points)
 - [ ] Phase 2: Lambda Functions (20 points)
 - [ ] Phase 3: Glue ETL Jobs (25 points)
@@ -225,7 +231,7 @@ python -m pytest test_handler.py
 # Test Glue scripts locally with PySpark
 cd pipelines/glue/
 spark-submit bronze_to_silver_orders.py --local-test
-```
+```text
 
 ### Integration Tests
 
@@ -243,7 +249,7 @@ SELECT
   (SELECT COUNT(*) FROM bronze.orders) as bronze_count,
   (SELECT COUNT(*) FROM silver.orders) as silver_count,
   (SELECT COUNT(*) FROM gold.sales_summary) as gold_count;
-```
+```text
 
 ## 📊 Success Metrics
 
@@ -260,16 +266,19 @@ Your implementation is successful when:
 ## 📚 Resources
 
 ### AWS Documentation
+
 - [AWS Glue Developer Guide](https://docs.aws.amazon.com/glue/)
 - [Amazon Athena User Guide](https://docs.aws.amazon.com/athena/)
 - [AWS Lambda Developer Guide](https://docs.aws.amazon.com/lambda/)
 
 ### Training Materials
+
 - [Terraform AWS Provider Docs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - [PySpark Documentation](https://spark.apache.org/docs/latest/api/python/)
 - [Medallion Architecture Pattern](https://www.databricks.com/glossary/medallion-architecture)
 
 ### Reference Solution
+
 - Located in `../reference-solution/` (use only if stuck!)
 
 ## 🐛 Troubleshooting
@@ -277,18 +286,23 @@ Your implementation is successful when:
 ### Common Issues
 
 **Issue**: Lambda function timeout
+
 - **Solution**: Increase timeout in `variables.tf` or optimize code
 
 **Issue**: Glue job fails with "Access Denied"
+
 - **Solution**: Check IAM role permissions for S3 buckets
 
 **Issue**: Athena "Table not found"
+
 - **Solution**: Run Glue crawler to discover schema
 
 **Issue**: Parquet files not created
+
 - **Solution**: Check CloudWatch logs for errors
 
 **Issue**: High AWS costs
+
 - **Solution**: Check for orphaned resources, enable lifecycle policies
 
 ### Getting Help
@@ -301,6 +315,7 @@ Your implementation is successful when:
 ## 💰 Cost Management
 
 **Expected monthly costs (dev environment):**
+
 - S3 storage: $1-5
 - Lambda executions: $0-2 (within free tier)
 - Glue crawlers & jobs: $5-20 (pay per use)
@@ -310,6 +325,7 @@ Your implementation is successful when:
 **Total: ~$10-35/month**
 
 **Cost optimization tips:**
+
 1. Delete resources after testing
 2. Use lifecycle policies for S3
 3. Enable Glue job bookmarks (avoid reprocessing)
@@ -370,11 +386,12 @@ When ready to submit:
 
 **Total: 100 points (110 with bonus)**
 
-## 🎉 Congratulations!
+## 🎉 Congratulations
 
 By completing this project, you've built a production-grade serverless data lake using AWS best practices. This is a significant achievement and demonstrates your cloud data engineering skills.
 
 **Next Steps:**
+
 - Add this project to your portfolio
 - Write a blog post about your learnings
 - Explore Checkpoint 02: Real-time Analytics Platform

@@ -26,9 +26,10 @@ file.close()  # Facil de olvidar
 with open("data.txt", "r") as file:
     contenido = file.read()
 # Se cierra automaticamente
-```
+```text
 
 **Beneficios**:
+
 - Automatically close the file
 - Libera resources incluso si hay error
 - Cleaner and safer code
@@ -52,7 +53,7 @@ df = pd.read_csv(
 
 # Escribir CSV
 df.to_csv("salida.csv", index=False)
-```
+```text
 
 ### JSON
 
@@ -70,7 +71,7 @@ with open("salida.json", "w") as f:
 # JSON con pandas
 df = pd.read_json("data.json")
 df = pd.read_json("data.json", orient="records")  # Lista de objetos
-```
+```text
 
 ### Parquet
 
@@ -85,6 +86,7 @@ df.to_parquet("salida.parquet", compression="snappy")
 ```
 
 **Advantages de Parquet**:
+
 - columnr format (more efficient)
 - Integrated compression
 - Preserva tipos de data
@@ -102,13 +104,14 @@ except PermissionError:
     print("Sin permisos para leer")
 except Exception as e:
     print(f"Error inesperado: {e}")
-```
+```text
 
 ---
 
 ## Exercises
 
 Usa los datasets generados en `data/raw/`:
+
 - `customers.csv` (10,000 registros)
 - `orders.json` (50,000 registros, anidado)
 - `products.csv` (500 registros)
@@ -123,7 +126,7 @@ Lee un file CSV y retorna un DataFrame.
 df = leer_csv("data/raw/customers.csv")
 assert len(df) == 10000
 assert "customer_id" in df.columns
-```
+```text
 
 ### 2. escribir_csv(df, ruta) ⭐
 
@@ -133,7 +136,7 @@ Escribe un DataFrame a CSV.
 df = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
 escribir_csv(df, "output.csv")
 assert os.path.exists("output.csv")
-```
+```text
 
 ### 3. leer_json(ruta) ⭐⭐
 
@@ -152,7 +155,7 @@ Escribe data a JSON con formato legible.
 ```python
 data = {"nombre": "Ana", "edad": 25}
 escribir_json(data, "output.json")
-```
+```text
 
 ### 5. csv_a_parquet(csv_path, parquet_path) ⭐⭐
 
@@ -160,7 +163,7 @@ Convierte CSV a Parquet.
 
 ```python
 csv_a_parquet("data/raw/products.csv", "data/processed/products.parquet")
-```
+```text
 
 ### 6. contar_registros(ruta) ⭐⭐
 
@@ -169,7 +172,7 @@ Cuenta registros en file CSV/JSON.
 ```python
 assert contar_registros("data/raw/customers.csv") == 10000
 assert contar_registros("data/raw/orders.json") == 50000
-```
+```text
 
 ### 7. obtener_columns_csv(ruta) ⭐
 
@@ -191,7 +194,7 @@ filtrar_csv(
     "customers_usa.csv",
     lambda df: df[df["country"] == "USA"]
 )
-```
+```text
 
 ### 9. combinar_csvs(rutas, ruta_salida) ⭐⭐
 
@@ -202,7 +205,7 @@ combinar_csvs(
     ["parte1.csv", "parte2.csv"],
     "completo.csv"
 )
-```
+```text
 
 ### 10. json_a_csv_plano(json_path, csv_path) ⭐⭐⭐
 
@@ -216,7 +219,7 @@ Convierte JSON anidado a CSV plano (flatten).
 #   "customer": {"name": "Ana"}
 # }
 json_a_csv_plano("data/raw/orders.json", "orders_flat.csv")
-```
+```text
 
 ---
 
