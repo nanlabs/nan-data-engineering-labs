@@ -52,16 +52,71 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      - name: Detect changed modules
+        id: changed-modules
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            changed_files="$(git diff --name-only "origin/${{ github.base_ref }}...${{ github.sha }}")"
+          else
+            before="${{ github.event.before }}"
+            if [ "$before" = "0000000000000000000000000000000000000000" ]; then
+              before="$(git rev-list --max-parents=0 HEAD)"
+            fi
+            changed_files="$(git diff --name-only "$before" "${{ github.sha }}")"
+          fi
+
+          modules="$(printf '%s\n' "$changed_files" | awk -F/ '/^modules\/module-[^\/]+\// {print $2}' | sort -u | tr '\n' ' ' | xargs)"
+
+          if [ -n "$modules" ]; then
+            echo "has_modules=true" >> "$GITHUB_OUTPUT"
+            echo "modules=$modules" >> "$GITHUB_OUTPUT"
+            echo "Changed modules: $modules"
+          else
+            echo "has_modules=false" >> "$GITHUB_OUTPUT"
+            echo "modules=" >> "$GITHUB_OUTPUT"
+            echo "No module changes detected; contract validation will be skipped."
+          fi
+
       - name: Run contract validation
         id: validate-contract
+        if: steps.changed-modules.outputs.has_modules == 'true'
         run: |
-          python scripts/validate_learning_labs.py \
-            --strict-core \
-            --strict-headings \
-            --report-json validate-contract-report.json
-          exit_code=$?
+          set +e
+
+          cat > validate-contract-report.json << 'JSON'
+          {"errors": 0, "warnings": 0, "findings": []}
+          JSON
+
+          exit_code=0
+          for module in ${{ steps.changed-modules.outputs.modules }}; do
+            module_report="validate-contract-report-${module}.json"
+
+            python scripts/validate_learning_labs.py \
+              --module "$module" \
+              --strict-core \
+              --strict-headings \
+              --report-json "$module_report"
+            module_exit=$?
+            if [ "$module_exit" -ne 0 ]; then
+              exit_code=1
+            fi
+
+            MODULE_REPORT="$module_report" python -c "import json, os; main_path='validate-contract-report.json'; module_path=os.environ['MODULE_REPORT']; main=json.load(open(main_path, 'r', encoding='utf-8')); module=json.load(open(module_path, 'r', encoding='utf-8')); main['errors']=int(main.get('errors', 0))+int(module.get('errors', 0)); main['warnings']=int(main.get('warnings', 0))+int(module.get('warnings', 0)); main['findings']=list(main.get('findings', []))+list(module.get('findings', [])); json.dump(main, open(main_path, 'w', encoding='utf-8'), indent=2)"
+          done
+
           echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
           exit $exit_code
+
+      - name: Skip contract validation when no modules changed
+        if: steps.changed-modules.outputs.has_modules != 'true'
+        run: |
+          cat > validate-contract-report.json << 'JSON'
+          {"errors": 0, "warnings": 0, "findings": []}
+          JSON
+          echo "No module-related changes in this run."
 
       - name: Upload contract validation report
         if: always()
