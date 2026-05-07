@@ -42,7 +42,7 @@ pytest-xdist==3.5.0           # Parallel test execution
 # Jupyter & Notebooks
 # ------------------------------
 jupyter==1.0.0                # Jupyter metapackage
-jupyterlab==4.0.11            # JupyterLab computational environment
+jupyterlab==4.5.7            # JupyterLab computational environment
 ipykernel==6.29.0             # IPython kernel for Jupyter
 ipywidgets==8.1.1             # Interactive widgets for Jupyter
 
