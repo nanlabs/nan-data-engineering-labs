@@ -57,6 +57,14 @@ jobs:
         run: |
           set -euo pipefail
 
+          is_deps_pr="false"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            pr_title="${{ github.event.pull_request.title }}"
+            if [[ "$pr_title" =~ ^chore\(deps\) ]]; then
+              is_deps_pr="true"
+            fi
+          fi
+
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             git fetch origin "${{ github.base_ref }}" --depth=1
             changed_files="$(git diff --name-only "origin/${{ github.base_ref }}...${{ github.sha }}")"
@@ -75,16 +83,18 @@ jobs:
           if [ -n "$modules" ]; then
             echo "has_modules=true" >> "$GITHUB_OUTPUT"
             echo "modules=$modules" >> "$GITHUB_OUTPUT"
+            echo "is_deps_pr=$is_deps_pr" >> "$GITHUB_OUTPUT"
             echo "Changed modules: $modules"
           else
             echo "has_modules=false" >> "$GITHUB_OUTPUT"
             echo "modules=" >> "$GITHUB_OUTPUT"
+            echo "is_deps_pr=$is_deps_pr" >> "$GITHUB_OUTPUT"
             echo "No module changes detected; contract validation will be skipped."
           fi
 
       - name: Run contract validation
         id: validate-contract
-        if: steps.changed-modules.outputs.has_modules == 'true'
+        if: steps.changed-modules.outputs.has_modules == 'true' && steps.changed-modules.outputs.is_deps_pr != 'true'
         run: |
           set +e
 
@@ -113,12 +123,16 @@ jobs:
           exit $exit_code
 
       - name: Skip contract validation when no modules changed
-        if: steps.changed-modules.outputs.has_modules != 'true'
+        if: steps.changed-modules.outputs.has_modules != 'true' || steps.changed-modules.outputs.is_deps_pr == 'true'
         run: |
           cat > validate-contract-report.json << 'JSON'
           {"errors": 0, "warnings": 0, "findings": []}
           JSON
-          echo "No module-related changes in this run."
+          if [ "${{ steps.changed-modules.outputs.is_deps_pr }}" = "true" ]; then
+            echo "Skipping contract validation for dependency PR (chore(deps))."
+          else
+            echo "No module-related contract changes in this run."
+          fi
 
       - name: Upload contract validation report
         if: always()
