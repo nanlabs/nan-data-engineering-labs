@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     # Run for PR and workflow_run events; bot validation happens in steps.
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_run'
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     permissions:
       pull-requests: write
@@ -77,5 +79,3 @@ jobs:
       - name: Skip non-Dependabot PR
         if: steps.pr.outputs.number != '' && steps.author.outputs.is_dependabot != 'true'
         run: echo "PR #${{ steps.pr.outputs.number }} is not from Dependabot; skipping."
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
