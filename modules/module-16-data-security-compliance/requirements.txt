@@ -12,7 +12,7 @@ aws-encryption-sdk==3.3.0
 cryptography==46.0.7
 pycryptodome==3.20.0
 python-jose[cryptography]==3.3.0
-PyJWT==2.8.0
+PyJWT==2.12.0
 passlib[bcrypt]==1.7.4
 
 # IAM & Policy Tools
