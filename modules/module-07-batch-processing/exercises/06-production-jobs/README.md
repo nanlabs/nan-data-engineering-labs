@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # Exercise 06: Production Batch Jobs
 
 ## 🎯 Objectives

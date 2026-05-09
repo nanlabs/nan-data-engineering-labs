@@ -4,7 +4,7 @@
 
 ### 1. Apache Spark ⭐
 
-**The de facto standard for distributed batch processing**
+#### The de facto standard for distributed batch processing
 
 ````python
 from pyspark.sql import SparkSession
@@ -146,7 +146,7 @@ with beam.Pipeline() as pipeline:
 
 ### 5. dbt (Data Build Tool)
 
-**SQL-first transformation framework**
+#### SQL-first transformation framework
 
 ````sql
 -- models/sales_summary.sql
@@ -274,7 +274,7 @@ response = batch.submit_job(
 
 #### 1. Cloud Dataproc
 
-**Managed Spark/Hadoop cluster**
+#### Managed Spark/Hadoop cluster
 
 ````bash
 # Create cluster

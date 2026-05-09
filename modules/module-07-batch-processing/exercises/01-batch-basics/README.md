@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # Exercise 01: Batch Processing Basics
 
 ## 🎯 Objectives

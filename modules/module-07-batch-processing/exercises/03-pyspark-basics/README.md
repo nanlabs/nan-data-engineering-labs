@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # Exercise 03: PySpark Basics
 
 ## 🎯 Objectives

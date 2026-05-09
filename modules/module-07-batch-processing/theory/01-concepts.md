@@ -2,7 +2,9 @@
 
 ## 📚 What is Batch Processing?
 
-**Batch Processing** is the processing of large volumes of data in **discrete batches**, usually in scheduled time windows (daily, weekly, monthly).
+**Batch Processing** is the processing of large volumes of data in
+**discrete batches**, usually in scheduled time windows (daily, weekly,
+monthly).
 
 ### features Clave
 
@@ -506,4 +508,5 @@ logger.info(f"Throughput: {len(result)/duration:.2f} records/sec")
 
 ______________________________________________________________________
 
-Continue with [02-architecture.md](./02-architecture.md) for batch architectures in the cloud.
+Continue with [02-architecture.md](./02-architecture.md)
+for batch architectures in the cloud.

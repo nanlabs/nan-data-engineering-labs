@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # Exercise 04: Batch ETL pipeline
 
 ## 🎯 Objectives

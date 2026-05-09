@@ -11,7 +11,9 @@
 
 ## Module Overview
 
-Learn to build efficient batch processing pipelines for large-scale data transformation and analysis. Master partitioning strategies, distributed computing with PySpark, and production-grade batch job orchestration.
+Learn to build efficient batch processing pipelines for large-scale data
+transformation and analysis. Master partitioning strategies, distributed
+computing with PySpark, and production-grade batch job orchestration.
 
 ## Learning Objectives
 
@@ -36,11 +38,11 @@ By the end of this module, you will be able to:
 ## Getting Started
 
 1. Ensure prerequisites are completed
-2. Read `theory/concepts.md` for foundational understanding
-3. Review `theory/architecture.md` for AWS architecture patterns
-4. Set up infrastructure: `bash scripts/setup.sh`
-5. Complete exercises in order (01 through 06)
-6. Validate your learning: `bash scripts/validate.sh`
+1. Read `theory/concepts.md` for foundational understanding
+1. Review `theory/architecture.md` for AWS architecture patterns
+1. Set up infrastructure: `bash scripts/setup.sh`
+1. Complete exercises in order (01 through 06)
+1. Validate your learning: `bash scripts/validate.sh`
 
 ## Exercises
 
@@ -86,7 +88,7 @@ By the end of this module, you will be able to:
 **Data**: Production-ready batch processing
 **Files**: ProductionBatchJob, RetryHandler, JobMonitor
 
----
+______________________________________________________________________
 
 ## 📚 Module Resources
 
@@ -107,11 +109,11 @@ By the end of this module, you will be able to:
 - **batch-processing-checklist.md**: 100+ item production checklist
 - **pyspark-quick-reference.md**: Complete PySpark cheat sheet
 
----
+______________________________________________________________________
 
 ## 🚀 Quick Start
 
-```bash
+````bash
 # 1. Setup environment (creates venv, installs deps, generates data)
 cd modules/module-07-batch-processing
 bash scripts/setup.sh
@@ -184,3 +186,4 @@ After completing this module, you'll be ready for:
 - **PySpark**: Distributed batch processing
 - **Parquet**: Columnar storage format
 - **Partitioning**: Data organization strategies
+````

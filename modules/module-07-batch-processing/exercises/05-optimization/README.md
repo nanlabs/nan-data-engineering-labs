@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # Exercise 05: Performance Optimization
 
 ## 🎯 Objectives

@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # Exercise 02: Data Partitioning Strategies
 
 ## 🎯 Objectives
