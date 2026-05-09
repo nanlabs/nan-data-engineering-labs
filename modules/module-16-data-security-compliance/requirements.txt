@@ -96,5 +96,5 @@ mkdocs==1.5.3
 mkdocs-material==9.5.15
 
 # Utilities
-tqdm==4.66.2  # Progress bars
+tqdm==4.66.3  # Progress bars
 colorama==0.4.6  # Colored terminal output
