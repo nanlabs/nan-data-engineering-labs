@@ -51,7 +51,7 @@ moto[all]==5.0.3  # AWS service mocking
 # HTTP & API
 requests==2.31.0
 aiohttp==3.13.4
-urllib3==2.2.1
+urllib3==2.6.3
 
 # Data Processing
 pyyaml==6.0.1
