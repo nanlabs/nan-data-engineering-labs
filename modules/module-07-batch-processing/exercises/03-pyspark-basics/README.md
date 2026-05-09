@@ -23,7 +23,7 @@ Spark is the leading framework for big data processing:
 
 ### DataFrame API
 
-```python
+````python
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.appName("app").getOrCreate()
@@ -147,15 +147,15 @@ class SparkOptimizer:
     def explain_plan(df: DataFrame):
         """Show execution plan."""
         pass
-```
+````
 
 ### Parte 4: Batch pipeline
 
 **Archivo**: `starter/spark_pipeline.py`
 
-Create un batch pipeline completo:
+Create a complete batch pipeline:
 
-```python
+````python
 class SparkBatchPipeline:
     def __init__(self, spark: SparkSession):
         self.spark = spark
@@ -217,14 +217,14 @@ spark = SparkSession.builder \
     .config("spark.driver.memory", "2g") \
     .config("spark.sql.shuffle.partitions", "100") \
     .getOrCreate()
-```
+````
 
 </details>
 
 <details>
 <summary>Hint 2: DataFrame operations</summary>
 
-```python
+````python
 from pyspark.sql.functions import col, sum, count, avg
 
 # Filter
@@ -279,11 +279,11 @@ df_result = large_df.join(
 
 ## 🎓 Learning Outcomes
 
-- ✅ Configurar y usar Spark Sessions
-- ✅ Realizar transformations y actions en DataFrames
-- ✅ Implementar joins y aggregations distribuidas
-- ✅ Optimizar performance con caching y broadcast
-- ✅ Construir batch pipelines con Spark
+- ✅ Configure and use Spark Sessions
+- ✅ Perform transformations and actions on DataFrames
+- ✅ Implement distributed joins and aggregations
+- ✅ Optimize performance with caching and broadcast
+- ✅ Build batch pipelines with Spark
 
 ## 📚 Referencias
 
@@ -294,3 +294,4 @@ df_result = large_df.join(
 ## ➡️ Next
 
 Continue with [Exercise 04: Batch ETL Pipeline](../04-batch-pipeline/)
+````

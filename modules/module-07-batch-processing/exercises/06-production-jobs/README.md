@@ -23,7 +23,7 @@ Prepare batch jobs for production:
 
 ### Production Job Lifecycle
 
-```text
+````text
 Schedule → Start → Monitor → Complete → Validate → Alert
                 ↓ Fail
             Retry → Success / Dead Letter
@@ -157,13 +157,13 @@ class RetryHandler:
         - Permission denied
         """
         pass
-```
+````
 
 ### Parte 3: Job Monitoring
 
 **Archivo**: `starter/job_monitor.py`
 
-```python
+````python
 class JobMonitor:
     def __init__(self, job_name: str):
         self.job_name = job_name
@@ -380,11 +380,11 @@ python production_job.py \
   --date 2024-03-07 \
   --env local \
   --dry-run
-```
+````
 
 ### Production Deployment
 
-```bash
+````bash
 # Submit to cluster
 spark-submit \
   --master yarn \
@@ -446,14 +446,14 @@ if duration_minutes > SLA_MINUTES:
         severity="WARNING",
         message=f"Job exceeded SLA: {duration_minutes:.1f}min > {SLA_MINUTES}min"
     )
-```
+````
 
 </details>
 
 <details>
 <summary>Hint 3: Quality checks</summary>
 
-```python
+````python
 def validate_output(df, config):
     errors = []
 
@@ -505,10 +505,10 @@ def publish_metrics(metrics):
 ## 🎓 Learning Outcomes
 
 - ✅ Design production-ready jobs
-- ✅ Implementar retry logic robusto
-- ✅ Configurar monitoring y alerting
-- ✅ Implementar data quality checks
-- ✅ Manejar SLAs efectivamente
+- ✅ Implement robust retry logic
+- ✅ Configure monitoring and alerting
+- ✅ Implement data quality checks
+- ✅ Manage SLAs effectively
 - ✅ Deploy to production clusters
 
 ## 📚 Referencias
@@ -519,7 +519,7 @@ def publish_metrics(metrics):
 
 ## 🎉 Module Complete
 
-Has completed todos los exercises de Batch Processing. Ahora dominas:
+You have completed all of the Batch Processing exercises. You now master:
 
 - Batch processing fundamentals
 - Data partitioning strategies
@@ -531,3 +531,4 @@ Has completed todos los exercises de Batch Processing. Ahora dominas:
 ## ➡️ Next Module
 
 Continue with **Module 08: Streaming Basics**
+````

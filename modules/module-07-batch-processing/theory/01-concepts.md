@@ -11,13 +11,13 @@
 ✅ **Eficiencia de resources**: Optimizado para costos
 ✅ **Procesamiento offline**: No requiere respuesta inmediata
 
----
+______________________________________________________________________
 
 ## 🆚 Batch vs Stream Processing
 
 ### Batch Processing
 
-```text
+````text
 [1M records] → Process → [Output]
      ↓          (1 hour)      ↓
   Collect                  Results
@@ -44,7 +44,7 @@
 [Event] → Process → [Output]
   ↓       (ms)        ↓
 Real-time         Immediate
-```
+````
 
 **features**:
 
@@ -62,7 +62,7 @@ Real-time         Immediate
 
 ### Micro-Batch (Hybrid)
 
-```text
+````text
 [100 events] → Process → [Output]
      ↓         (seconds)     ↓
   Every 5s              Results
@@ -135,7 +135,7 @@ def incremental_batch():
 
     # Update watermark
     set_watermark(now())
-```
+````
 
 **Pros**:
 
@@ -159,10 +159,10 @@ def incremental_batch():
 
 Capturar y procesar **cambios** (inserts, updates, deletes):
 
-```python
+````python
 # Example: CDC batch processing
 def cdc_batch():
-    # Read change log desde último batch
+    # Read change log from the last batch
     changes = read_cdc_log(since=last_run)
 
     for change in changes:
@@ -226,7 +226,7 @@ df.write.partitionBy('year', 'month', 'day').parquet('data/')
 
 # Read specific partition
 df = spark.read.parquet('data/year=2024/month=03/day=07')
-```
+````
 
 **Ventajas**:
 
@@ -241,7 +241,7 @@ df = spark.read.parquet('data/year=2024/month=03/day=07')
 
 #### 2. Particionamiento por Rango
 
-```python
+````python
 # Partition por rangos de valores
 def range_partition(value):
     if value < 1000:
@@ -263,7 +263,7 @@ df['partition'] = df['amount'].apply(range_partition)
 #### 3. Particionamiento por Hash
 
 ```python
-# Partition por hash para distribución uniforme
+# Partition by hash for uniform distribution
 df['partition'] = df['user_id'] % 10  # 10 partitions
 ```text
 
@@ -280,7 +280,7 @@ data/
   ├── country=USA/
   ├── country=UK/
   └── country=Canada/
-```
+````
 
 **Casos de uso**:
 
@@ -288,7 +288,7 @@ data/
 - Por tipo de cliente
 - By product category
 
----
+______________________________________________________________________
 
 ## 🎯 Batch Processing Patterns
 
@@ -296,7 +296,7 @@ data/
 
 Process data in specific time windows:
 
-```python
+````python
 def process_daily_batch(date):
     """Process one day of data."""
     start = datetime(date.year, date.month, date.day)
@@ -344,7 +344,7 @@ def idempotent_batch(date):
 
 ### Pattern 4: Checkpoint
 
-Guardar progreso para recovery:
+Save progress for recovery:
 
 ```python
 def batch_with_checkpoint():
@@ -354,17 +354,17 @@ def batch_with_checkpoint():
         process(partition)
         checkpoint += 1
         save_checkpoint(checkpoint)
-```
+````
 
 **Uso**: Batch jobs largos que pueden fallar
 
----
+______________________________________________________________________
 
 ## 💾 Formatos de Archivo para Batch
 
 ### CSV
 
-```python
+````python
 df.to_csv('output.csv', index=False)
 ```text
 
@@ -402,19 +402,19 @@ df.to_parquet('output.parquet', compression='snappy')
 
 ```python
 df.to_avro('output.avro')
-```
+````
 
 **Pros**: Schema evolution, compact
 **Cons**: Menos adoption
 **Uso**: Streaming, Kafka
 
----
+______________________________________________________________________
 
 ## 🔧 Chunking & Memory Management
 
 ### Problem: Dataset No Cabe en Memoria
 
-```python
+````python
 # ❌ Malo: Read todo en memoria
 df = pd.read_csv('huge_file.csv')  # 50GB - OOM!
 ```text
@@ -434,7 +434,7 @@ for chunk in pd.read_csv('huge_file.csv', chunksize=chunk_size):
 ### Memory-Efficient Operations
 
 ```python
-# Usar dtypes específicos
+# Use specific dtypes
 dtypes = {
     'user_id': 'int32',  # en lugar de int64
     'amount': 'float32',  # en lugar de float64
@@ -454,19 +454,19 @@ df = pd.read_csv('file.csv', dtype=dtypes)
 # ✅ Bueno: Particiones balanceadas
 df.write.partitionBy('year', 'month').parquet('data/')
 
-# ❌ Malo: Demasiadas particiones pequeñas
+# ❌ Bad: Too many small partitions
 df.write.partitionBy('year', 'month', 'day', 'hour').parquet('data/')
-```
+````
 
 **Regla**: 100MB - 1GB por partition file
 
 ### 2. Usa Formatos Columnar
 
-```python
+````python
 # ✅ Parquet para analytics
 df.to_parquet('data.parquet', compression='snappy')
 
-# ❌ CSV para grandes volúmenes
+# ❌ CSV for large volumes
 df.to_csv('data.csv')  # Lento y grande
 ```text
 
@@ -502,8 +502,8 @@ duration = time.time() - start
 logger.info(f"Batch completed in {duration:.2f}s")
 logger.info(f"Records processed: {len(result)}")
 logger.info(f"Throughput: {len(result)/duration:.2f} records/sec")
-```
+````
 
----
+______________________________________________________________________
 
 Continue with [02-architecture.md](./02-architecture.md) for batch architectures in the cloud.

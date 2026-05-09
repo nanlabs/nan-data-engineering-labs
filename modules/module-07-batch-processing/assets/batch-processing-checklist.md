@@ -4,42 +4,42 @@
 
 ### Requirements Gathering
 
-- [ ] Definir input data sources
-- [ ] Identificar output requirements
+- [ ] Define input data sources
+- [ ] Identify output requirements
 - [ ] Determine SLA (maximum execution time)
-- [ ] Estimar data volume (GB, records)
-- [ ] Identificar dependencies (otros jobs, external systems)
+- [ ] Estimate data volume (GB, records)
+- [ ] Identify dependencies (other jobs, external systems)
 
 ### Design
 
-- [ ] Elegir estrategia de procesamiento (full load vs incremental)
+- [ ] Choose processing strategy (full load vs incremental)
 - [ ] Design partitioning strategy
-- [ ] Definir retention policy
-- [ ] Planificar error handling
-- [ ] Documentar data lineage
+- [ ] Define retention policy
+- [ ] Plan error handling
+- [ ] Document data lineage
 
 ## 🏗️ Development
 
 ### Code Quality
 
-- [ ] Seguir coding standards
-- [ ] Implementar logging estructurado
-- [ ] Agregar type hints (Python)
+- [ ] Follow coding standards
+- [ ] Implement structured logging
+- [ ] Add type hints (Python)
 - [ ] Document critical functions
 - [ ] Code review completed
 
 ### Performance
 
-- [ ] Usar formato columnr (Parquet)
-- [ ] Implementar partitioning apropiado
-- [ ] Optimizar dtypes para memoria
+- [ ] Use columnar format (Parquet)
+- [ ] Implement appropriate partitioning
+- [ ] Optimize dtypes for memory
 - [ ] Use broadcast join for small tables
-- [ ] Cachear DataFrames reutilizados
-- [ ] Evitar shuffles innecesarios
+- [ ] Cache reused DataFrames
+- [ ] Avoid unnecessary shuffles
 
 ### Data Quality
 
-- [ ] Validar input data exists
+- [ ] Validate input data exists
 - [ ] Check for null values
 - [ ] Validate value ranges
 - [ ] Detect duplicates
@@ -49,47 +49,47 @@
 ### Error Handling
 
 - [ ] Try-catch on critical operations
-- [ ] Retry logic con exponential backoff
-- [ ] Dead letter queue para registros fallidos
-- [ ] Cleanup en caso de fallo
-- [ ] Logging detallado de errores
+- [ ] Retry logic with exponential backoff
+- [ ] Dead letter queue for failed records
+- [ ] Cleanup on failure
+- [ ] Detailed error logging
 
 ### Idempotence
 
-- [ ] Usar mode='overwrite' o upsert
-- [ ] Partition overwriting correcto
-- [ ] No duplicar datos en append
-- [ ] Test re-execution of the job
+- [ ] Use mode='overwrite' or upsert
+- [ ] Overwrite partitions correctly
+- [ ] Do not duplicate data in append
+- [ ] Test job re-execution
 
 ## ✅ Testing
 
 ### Unit Tests
 
-- [ ] Test transformations individuales
+- [ ] Test individual transformations
 - [ ] Test data validation functions
 - [ ] Test error scenarios
-- [ ] Test con datos edge cases
+- [ ] Test with edge case data
 - [ ] Coverage > 80%
 
 ### Integration Tests
 
 - [ ] Test complete pipeline E2E
-- [ ] Test con sample production data
-- [ ] Test joins con todas las tables
+- [ ] Test with sample production data
+- [ ] Test joins with all tables
 - [ ] Test partition reading/writing
 
 ### Performance Tests
 
-- [ ] Benchmark con dataset realista
-- [ ] Verificar throughput (records/sec)
-- [ ] Medir memory usage
+- [ ] Benchmark with a realistic dataset
+- [ ] Verify throughput (records/sec)
+- [ ] Measure memory usage
 - [ ] Profile code (identify bottlenecks)
 
 ## 📊 Monitoring & Observability
 
 ### Metrics
 
-- [ ] Track duration (total y por stage)
+- [ ] Track duration (total and per stage)
 - [ ] Track records processed
 - [ ] Track data volume (GB)
 - [ ] Track throughput (records/sec)
@@ -100,115 +100,71 @@
 
 - [ ] Log start/end timestamps
 - [ ] Log configuration used
-- [ ] Log record counts en cada stage
-- [ ] Log warnings y errors
+- [ ] Log record counts at each stage
+- [ ] Log warnings and errors
 - [ ] Structured logging (JSON format)
 
 ### Alerting
 
-- [ ] Alerta si job falla
-- [ ] Alerta si SLA excede
-- [ ] Alerta si quality checks fallan
-- [ ] Alerta si data volume anomaly
+- [ ] Alert if the job fails
+- [ ] Alert if the SLA is exceeded
+- [ ] Alert if quality checks fail
+- [ ] Alert if data volume is anomalous
 
 ## 🚀 Deployment
 
 ### Configuration
 
-- [ ] Externalizar config (YAML/JSON)
-- [ ] Separar configs por ambiente (dev/staging/prod)
-- [ ] Parametrizar execution_date
-- [ ] No hardcodear paths o credentials
-- [ ] Usar secrets manager para sensitive data
+- [ ] Externalize config (YAML/JSON)
+- [ ] Separate configs by environment (dev/staging/prod)
+- [ ] Parameterize execution_date
+- [ ] Do not hardcode paths or credentials
+- [ ] Use a secrets manager for sensitive data
 
 ### Documentation
 
-- [ ] README con job description
-- [ ] Input/output schemas documentados
+- [ ] README with job description
+- [ ] Documented input/output schemas
 - [ ] Dependency graph
-- [ ] Runbook para troubleshooting
-- [ ] SLA documentado
+- [ ] Troubleshooting runbook
+- [ ] Documented SLA
 
 ### Infrastructure
 
-- [ ] Cluster size apropiado
-- [ ] Executor/driver memory configurado
-- [ ] Shuffle partitions optimizados
-- [ ] Checkpointing habilitado
-- [ ] Output path con suficiente storage
+- [ ] Appropriate cluster size
+- [ ] Executor/driver memory configured
+- [ ] Shuffle partitions optimized
+- [ ] Checkpointing enabled
+- [ ] Output path with sufficient storage
 
 ## 🔄 Production Operations
 
 ### Scheduling
 
-- [ ] Cron schedule configurado
-- [ ] Dependencies declaradas
-- [ ] Backfill strategy documentada
-- [ ] Retry policy configurada
+- [ ] Cron schedule configured
+- [ ] Dependencies declared
+- [ ] Backfill strategy documented
+- [ ] Retry policy configured
 
 ### Maintenance
 
-- [ ] Data retention implementada
-- [ ] Logs retention configurada
-- [ ] Old partitions cleanup automatizado
-- [ ] Health check agregado
+- [ ] Data retention implemented
+- [ ] Logs retention configured
+- [ ] Automated cleanup for old partitions
+- [ ] Health check added
 
 ### Disaster Recovery
 
-- [ ] Backup strategy definida
-- [ ] Recovery procedure documentada
-- [ ] Checkpoint recovery testeado
-- [ ] Rollback plan definido
+- [ ] Backup strategy defined
+- [ ] Recovery procedure documented
+- [ ] Checkpoint recovery tested
+- [ ] Rollback plan defined
 
 ## 📈 Post-Deployment
 
 ### Monitoring
 
-- [ ] Dashboard creado (Grafana, DataDog, etc.)
-- [ ] Metrics baseline establecido
-- [ ] SLA tracking activo
-- [ ] On-call rotation definida
-
-### Optimization
-
-- [ ] Review performance metrics semanalmente
-- [ ] Identificar bottlenecks
-- [ ] Optimize queries lentos
-- [ ] Tune partition sizes
-- [ ] Review cost metrics
-
-### Continuous Improvement
-
-- [ ] Collect feedback de usuarios
-- [ ] Revisar incidents y post-mortems
-- [ ] Actualizar documentation
-- [ ] Refactor legacy code
-- [ ] Mantener dependencies actualizadas
-
-## 🎯 Example Checklist for Daily Sales Batch Job
-
-**Job**: Daily Sales Aggregation
-**Schedule**: Daily at 2 AM
-**SLA**: Complete by 6 AM (4 hours)
-**Data Volume**: 10M transactions (~500MB)
-
-- [x] Input: S3 partitioned transactions
-- [x] Output: Parquet partitioned by date
-- [x] Incremental processing (yesterday's data only)
-- [x] Join with users and products
-- [x] Aggregate by country, category
-- [x] Quality checks:
-  - [x] Record count > 100K
-  - [x] No nulls in critical fields
-  - [x] All amounts > 0
-- [x] Error handling with 3 retries
-- [x] Slack alerts on failure
-- [x] CloudWatch metrics published
-- [x] Tests cover 85% of code
-- [x] Performance: Processes 500MB in 15 minutes
-- [x] Documentation complete
-- [x] Production deployment successful
-
----
-
-**Use this checklist for every batch job you develop!**
+- [ ] Dashboard created (Grafana, DataDog, etc.)
+- [ ] Metrics baseline established
+- [ ] SLA tracking active
+- [ ] On-call rotation defined

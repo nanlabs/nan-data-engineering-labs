@@ -16,13 +16,13 @@ Optimize batch jobs for maximum performance:
 ### Performance Bottlenecks
 
 1. **Data Shuffle**: Moving data between executors (slow)
-2. **Spills to Disk**: Out of memory (very slow)
-3. **Data Skew**: Uneven partition sizes
-4. **Small Files**: Too many small files (overhead)
+1. **Spills to Disk**: Out of memory (very slow)
+1. **Data Skew**: Uneven partition sizes
+1. **Small Files**: Too many small files (overhead)
 
 ### Optimization Strategies
 
-```python
+````python
 # ❌ Slow
 df = spark.read.parquet("data/")
 result = df.groupBy("category").sum("amount")
@@ -180,13 +180,13 @@ class BroadcastOptimizer:
             broadcast_threshold_mb: Max size to broadcast
         """
         pass
-```
+````
 
 ### Parte 4: Data Skew Handler
 
 **Archivo**: `starter/skew_handler.py`
 
-```python
+````python
 class SkewHandler:
     @staticmethod
     def detect_skew(
@@ -307,14 +307,14 @@ python solution/performance_benchmark.py
 
 # Run tests
 pytest test_optimization.py -v
-```
+````
 
 ## 💡 Hints
 
 <details>
 <summary>Hint 1: Calculate DataFrame size</summary>
 
-```python
+````python
 def estimate_size_mb(df):
     # Sample and estimate
     sample = df.limit(10000)
@@ -385,18 +385,18 @@ result = result.withColumn(
     "original_key",
     split(col("salted_key"), "_")[0]
 )
-```
+````
 
 </details>
 
 ## 🎓 Learning Outcomes
 
-- ✅ Analizar y optimizar partitioning
-- ✅ Implementar caching strategies efectivas
-- ✅ Usar broadcast joins correctamente
-- ✅ Detectar y manejar data skew
-- ✅ Benchmark y comparar estrategias
-- ✅ Optimizar queries con predicate pushdown
+- ✅ Analyze and optimize partitioning
+- ✅ Implement effective caching strategies
+- ✅ Use broadcast joins correctly
+- ✅ Detect and handle data skew
+- ✅ Benchmark and compare strategies
+- ✅ Optimize queries with predicate pushdown
 
 ## 📚 Referencias
 

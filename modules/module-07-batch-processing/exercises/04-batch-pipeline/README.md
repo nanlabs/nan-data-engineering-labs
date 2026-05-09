@@ -2,7 +2,7 @@
 
 ## 🎯 Objectives
 
-Construir un batch ETL pipeline completo con:
+Build a complete batch ETL pipeline with:
 
 - Extract from multiple sources
 - Transform with business logic
@@ -15,7 +15,7 @@ Construir un batch ETL pipeline completo con:
 
 ### Batch ETL pipeline
 
-```text
+````text
 ┌─────────────┐
 │   Extract   │  Read from sources
 └──────┬──────┘
@@ -92,7 +92,7 @@ class BatchETLPipeline:
             execution_date: Date to process (YYYY-MM-DD)
         """
         pass
-```
+````
 
 ### Parte 2: Business Transformations
 
@@ -100,7 +100,7 @@ class BatchETLPipeline:
 
 Implement transformaciones de negocio:
 
-```python
+````python
 class BusinessTransformations:
     @staticmethod
     def enrich_transactions(
@@ -250,13 +250,13 @@ validation:
   business_rules:
     max_amount: 10000
     min_amount: 0.01
-```
+````
 
 ## 📊 Dataset
 
 Use full generated datasets:
 
-```bash
+````bash
 cd ../../data/scripts
 
 # Generate all data
@@ -308,14 +308,14 @@ df.write \
   .option("partitionOverwriteMode", "dynamic") \
   .partitionBy("year", "month") \
   .parquet(output_path)
-```
+````
 
 </details>
 
 <details>
 <summary>Hint 3: Metrics tracking</summary>
 
-```python
+````python
 import time
 import json
 
@@ -367,10 +367,10 @@ def validate_dataframe(df, required_columns, max_amount):
 
 - ✅ Design and implement complete batch ETL pipelines
 - ✅ Aplicar business logic en transformaciones
-- ✅ Implementar error handling robusto
+- ✅ Implement robust error handling
 - ✅ Trackear metrics y monitoring
 - ✅ Garantizar idempotencia
-- ✅ Usar configuration files
+- ✅ Use configuration files
 
 ## 📚 Referencias
 
@@ -380,3 +380,4 @@ def validate_dataframe(df, required_columns, max_amount):
 ## ➡️ Next
 
 Continue with [Exercise 05: Performance Optimization](../05-optimization/)
+````

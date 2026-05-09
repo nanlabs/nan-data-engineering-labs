@@ -4,7 +4,7 @@
 
 ### Basic Component
 
-```text
+````text
 ┌────────────┐    ┌───────────┐    ┌──────────┐    ┌─────────┐
 │   Source   │ → │  Extract  │ → │ Transform │ → │  Load   │
 └────────────┘    └───────────┘    └──────────┘    └─────────┘
@@ -39,9 +39,9 @@
 │  Stage 4    │  Load
 │  Load       │  - Write to target
 └─────────────┘  - Update metrics
-```
+````
 
----
+______________________________________________________________________
 
 ## 🚀 Apache Spark for Batch Processing
 
@@ -56,7 +56,7 @@
 
 ### Spark Architecture
 
-```text
+````text
 ┌─────────────────┐
 │  Driver Program │
 │   (SparkContext)│
@@ -124,7 +124,7 @@ df_grouped = df_filtered.groupBy("category").sum("amount")
 
 # Action (triggers)
 df_grouped.show()
-```
+````
 
 **Ventajas DataFrame**:
 
@@ -134,7 +134,7 @@ df_grouped.show()
 
 #### Dataset API (Typed)
 
-```python
+````python
 from pyspark.sql import Row
 
 # Define schema
@@ -207,15 +207,15 @@ df.explain()
 
 # Ver plan optimizado
 df.explain(True)
-```
+````
 
----
+______________________________________________________________________
 
 ## 🎯 Batch pipeline Architectures
 
 ### 1. Lambda Architecture
 
-```text
+````text
               ┌──────────────┐
               │ Data Source  │
               └──────┬───────┘
@@ -267,7 +267,7 @@ df.explain(True)
 │   Serving    │
 │    Layer     │
 └──────────────┘
-```
+````
 
 **Philosophy**: Everything is stream (batch = bounded stream)
 
@@ -282,7 +282,7 @@ df.explain(True)
 
 ### 3. Batch-Only Architecture (Simple)
 
-```text
+````text
 ┌──────────────┐
 │ Data Source  │
 └──────┬───────┘
@@ -332,13 +332,13 @@ reduced = mapped.reduceByKey(lambda a, b: a + b)
 ```python
 result = (rdd
     .map(lambda x: (x.category, x.amount))
-    .filter(lambda x: x[1] > 100)  # Filter después de map
+    .filter(lambda x: x[1] > 100)  # Filter after map
     .reduceByKey(lambda a, b: a + b))
-```
+````
 
 ### Pattern 3: Join Pattern
 
-```python
+````python
 # Join dos datasets
 users = spark.read.parquet("users/")
 orders = spark.read.parquet("orders/")
@@ -368,7 +368,7 @@ window = Window.partitionBy("category").orderBy(desc("amount"))
 # Aplica window function
 df_ranked = df.withColumn("rank", rank().over(window))
 
-# Top N por categoría
+# Top N by category
 top_per_category = df_ranked.filter(col("rank") <= 10)
 ```text
 
@@ -393,16 +393,16 @@ df = spark.read.parquet("data/").filter("year = 2024 AND month = 3")
 ### 2. Caching
 
 ```python
-# Cache dataset usado múltiples veces
+# Cache dataset used multiple times
 df_cached = df.filter(df.amount > 100).cache()
 
-# Múltiples acciones sobre cached data
+# Multiple actions on cached data
 count = df_cached.count()
 sum_amount = df_cached.agg({"amount": "sum"}).collect()
 
 # Liberar memoria
 df_cached.unpersist()
-```
+````
 
 **When to search**:
 
@@ -412,7 +412,7 @@ df_cached.unpersist()
 
 ### 3. Broadcast Join
 
-```python
+````python
 from pyspark.sql.functions import broadcast
 
 # Small table (< 10MB)
@@ -427,7 +427,7 @@ result = large_df.join(broadcast(small_df), "category_id")
 ### 4. Repartitioning
 
 ```python
-# Repartition para mejor paralelización
+# Repartition for better parallelization
 df_repart = df.repartition(200)  # 200 partitions
 
 # Coalesce para reducir particiones (no shuffle)
@@ -444,7 +444,7 @@ df1_filtered = df1.filter(df1.year == 2024)
 df2_filtered = df2.filter(df2.amount > 100)
 result = df1_filtered.join(df2_filtered, "id")
 
-# ❌ Filter después de join (más lento)
+# ❌ Filter after join (slower)
 result = df1.join(df2, "id").filter(
     (col("year") == 2024) & (col("amount") > 100)
 )
@@ -467,7 +467,7 @@ def monitor_batch_job():
     # Process
     result = process_batch(df)
 
-    # Métricas
+    # Metrics
     duration = time.time() - start_time
     records_processed = result.count()
     throughput = records_processed / duration
@@ -483,7 +483,7 @@ def monitor_batch_job():
 
     log_metrics(metrics)
     return result
-```
+````
 
 **Metrics to monitor**:
 
@@ -496,7 +496,7 @@ def monitor_batch_job():
 
 ### Alerting
 
-```python
+````python
 def process_with_alerts(df):
     try:
         result = process_batch(df)
@@ -570,11 +570,11 @@ def idempotent_write(df, date):
 
     # Overwrite partition (garantiza idempotencia)
     df.write.mode("overwrite").parquet(output_path)
-```
+````
 
 ### 4. Validate Inputs y Outputs
 
-```python
+````python
 def validated_batch(input_path, output_path):
     # Validate input existe
     if not input_exists(input_path):
@@ -610,3 +610,4 @@ sla_hours: 4
 ---
 
 Continue with [03-resources.md](./03-resources.md) for tools and resources.
+````

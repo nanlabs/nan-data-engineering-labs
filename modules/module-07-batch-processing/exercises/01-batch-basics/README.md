@@ -2,21 +2,21 @@
 
 ## 🎯 Objectives
 
-Learn los fundamentos de batch processing:
+Learn the fundamentals of batch processing:
 
-- Procesar archivos grandes que no caben en memoria
-- Implementar chunking eficiente
-- Memory management con pandas
-- Progress tracking
-- Batch aggregations
+- Process large files that do not fit in memory
+- Implement efficient chunking
+- Manage memory with pandas
+- Track progress
+- Perform batch aggregations
 
 ## 📚 Conceptos
 
 ### Chunking
 
-Cuando tienes un archivo de 10GB pero solo 8GB de RAM, necesitas **chunking**:
+When you have a 10GB file but only 8GB of RAM, you need **chunking**:
 
-```python
+````python
 # ❌ Malo: Intenta cargar todo
 df = pd.read_csv('huge_file.csv')  # OOM Error!
 
@@ -38,15 +38,15 @@ df['category'] = 'category'  # Muy eficiente para strings repetidos
 
 ## 🏋️ Exercises
 
-### Parte 1: Basic Chunking
+### Part 1: Basic Chunking
 
 **Archivo**: `starter/batch_reader.py`
 
-Implement un `BatchReader` que:
+Implement a `BatchReader` that:
 
-1. Read archivos CSV en chunks
-2. Procesa cada chunk
-3. Agrega resultados
+1. Reads CSV files in chunks
+2. Processes each chunk
+3. Aggregates the results
 
 ```python
 class BatchReader:
@@ -63,25 +63,25 @@ class BatchReader:
 
 ```bash
 python starter/batch_reader.py
-```
+````
 
-**Esperado**:
+**Expected**:
 
-- Read archivo en chunks de 100K
-- Apply transformation to each chunk
-- Retorna resultado agregado
+- Read the file in 100K chunks
+- Apply a transformation to each chunk
+- Return the aggregated result
 
-### Parte 2: Memory Optimization
+### Part 2: Memory Optimization
 
 **Archivo**: `starter/memory_optimizer.py`
 
-Implement optimizaciones de memoria:
+Implement memory optimizations:
 
 1. Detect optimal data types
-2. Convert dtypes automatically
-3. Reporta ahorro de memoria
+1. Convert dtypes automatically
+1. Report memory savings
 
-```python
+````python
 class MemoryOptimizer:
     @staticmethod
     def optimize_dtypes(df: pd.DataFrame) -> pd.DataFrame:
@@ -100,18 +100,18 @@ class MemoryOptimizer:
 python starter/memory_optimizer.py
 ```text
 
-**Esperado**:
+**Expected**:
 
-- int64 → int32 cuando posible
-- object → category para strings repetidos
+- int64 → int32 when possible
+- object → category for repeated strings
 - float64 → float32 when precision not critical
-- Reporte de ahorro (ej: "Reduced from 500MB to 150MB")
+- Savings report (e.g. "Reduced from 500MB to 150MB")
 
-### Parte 3: Progress Tracking
+### Part 3: Progress Tracking
 
 **Archivo**: `starter/progress_tracker.py`
 
-Agrega progress bars y logging:
+Add progress bars and logging:
 
 ```python
 from tqdm import tqdm
@@ -124,16 +124,16 @@ class BatchProcessor:
 
 **Features**:
 
-- Progress bar con tqdm
-- ETA (tiempo estimado)
-- Records/second throughput
-- Metrics Logging
+- Progress bar with tqdm
+- ETA (estimated time remaining)
+- Records-per-second throughput
+- Metrics logging
 
-### Parte 4: Batch Aggregations
+### Part 4: Batch Aggregations
 
 **Archivo**: `starter/batch_aggregator.py`
 
-Implement aggregations incrementales:
+Implement incremental aggregations:
 
 ```python
 class BatchAggregator:
@@ -147,22 +147,22 @@ class BatchAggregator:
     def get_results(self) -> Dict[str, Any]:
         """Get final aggregated results."""
         pass
-```
+````
 
-**Aggregations a implement**:
+**Aggregations to implement**:
 
 - Total records
-- Sum de amounts
+- Sum of amounts
 - Count by category
 - Average amount
 - Min/max amounts
 
 ## 📊 Dataset
 
-Usa el dataset de transactions generado:
+Use the generated transactions dataset:
 
-```bash
-# Genera dataset pequeño para testing
+````bash
+# Generate a small dataset for testing
 cd ../../data/scripts
 python generate_transactions.py \
   --total-records 1000000 \
@@ -226,14 +226,14 @@ def optimize_ints(df, col):
             return 'int32'
 
     return 'int64'
-```
+````
 
 </details>
 
 <details>
 <summary>Hint 3: Progress bar</summary>
 
-```python
+````python
 from tqdm import tqdm
 
 # Get total lines
@@ -276,9 +276,9 @@ class Aggregator:
 After completing this exercise, you will know:
 
 - ✅ How to process files > RAM with chunking
-- ✅ Optimizar memory usage con dtypes correctos
-- ✅ Implementar progress tracking profesional
-- ✅ Hacer aggregations incrementales eficientemente
+- ✅ Optimize memory usage with the right dtypes
+- ✅ Implement professional progress tracking
+- ✅ Perform incremental aggregations efficiently
 
 ## 📚 Referencias
 
@@ -289,3 +289,4 @@ After completing this exercise, you will know:
 ## ➡️ Next
 
 Continue with [Exercise 02: Partitioning Strategies](../02-partitioning/)
+````

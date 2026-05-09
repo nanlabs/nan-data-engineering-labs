@@ -36,7 +36,7 @@ Product catalog with:
 
 ### Requirements
 
-```bash
+````bash
 pip install pandas pyarrow tqdm
 ```text
 
@@ -77,7 +77,7 @@ data/raw/transactions/
 │   │   └── ...
 │   ├── month=02/
 │   └── ...
-```
+````
 
 **Estimated size**:
 
@@ -87,7 +87,7 @@ data/raw/transactions/
 
 ### Generar Usuarios
 
-```bash
+````bash
 # Default: 1M users
 python data/scripts/generate_users.py
 
@@ -130,7 +130,7 @@ Use them for validation with tools like`jsonschema` o `pydantic`.
 ### Generate Small Dataset (Testing)
 
 ```bash
-# 100K transactions para testing rápido
+# 100K transactions for quick testing
 python data/scripts/generate_transactions.py \
   --total-records 100000 \
   --days 7 \
@@ -145,7 +145,7 @@ python data/scripts/generate_transactions.py \
   --total-records 50000000 \
   --days 180 \
   --output-dir data/raw/transactions_large
-```
+````
 
 **Nota**: 50M records = ~2.5 GB Parquet, toma ~30 minutes generar
 
@@ -189,7 +189,7 @@ Los scripts generan datos realistas con:
 
 ## 📁 Estructura de Archivos
 
-```text
+````text
 data/
 ├── schemas/
 │   ├── transactions.json     # Transaction schema
@@ -227,3 +227,4 @@ ls -lh data/raw/
 ```text
 
 Total: ~560 MB de data de entrenamiento
+````

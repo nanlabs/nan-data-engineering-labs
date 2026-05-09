@@ -14,13 +14,13 @@ Learn estrategias de particionamiento para batch processing eficiente:
 ### Why Partition?
 
 1. **Performance**: Read solo particiones relevantes (partition pruning)
-2. **Parallelization**: Process partitions in parallel
-3. **Maintainability**: Delete old data easily
-4. **Cost Optimization**: Reduce data scanned en cloud
+1. **Parallelization**: Process partitions in parallel
+1. **Maintainability**: Delete old data easily
+1. **Cost Optimization**: Reduce data scanned en cloud
 
 ### Partition Layout
 
-```text
+````text
 data/
 ├── year=2024/
 │   ├── month=01/
@@ -109,7 +109,7 @@ class RangePartitioner:
     ):
         """Write DataFrame partitioned by ranges."""
         pass
-```
+````
 
 **Use cases**:
 
@@ -123,7 +123,7 @@ class RangePartitioner:
 
 Partition using hash function:
 
-```python
+````python
 class HashPartitioner:
     def __init__(self, num_partitions: int = 10):
         """Initialize with number of partitions."""
@@ -191,14 +191,14 @@ python generate_transactions.py \
 
 ```bash
 pytest test_partitioning.py -v
-```
+````
 
 ## 💡 Hints
 
 <details>
 <summary>Hint 1: Extracting date components</summary>
 
-```python
+````python
 # Pandas
 df['timestamp'] = pd.to_datetime(df['timestamp'])
 df['year'] = df['timestamp'].dt.year
@@ -253,10 +253,10 @@ df['partition'] = df['user_id'].apply(lambda x: hash_partition(x, 10))
 
 ## 🎓 Learning Outcomes
 
-- ✅ Implementar date, range, y hash partitioning
-- ✅ Entender partition pruning benefits
-- ✅ Elegir estrategia de particionamiento correcta
-- ✅ Optimizar queries usando partitioning
+- ✅ Implement date, range, and hash partitioning
+- ✅ Understand partition pruning benefits
+- ✅ Choose the right partitioning strategy
+- ✅ Optimize queries using partitioning
 
 ## 📚 Referencias
 
@@ -266,3 +266,4 @@ df['partition'] = df['user_id'].apply(lambda x: hash_partition(x, 10))
 ## ➡️ Next
 
 Continue with [Exercise 03: PySpark Basics](../03-pyspark-basics/)
+````

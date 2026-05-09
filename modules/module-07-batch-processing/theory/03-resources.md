@@ -6,7 +6,7 @@
 
 **The de facto standard for distributed batch processing**
 
-```python
+````python
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder \
@@ -129,7 +129,7 @@ with beam.Pipeline() as pipeline:
      | "Parse" >> beam.Map(parse_line)
      | "Transform" >> beam.Map(transform)
      | "Write" >> beam.io.WriteToText("output.txt"))
-```
+````
 
 **features**:
 
@@ -148,7 +148,7 @@ with beam.Pipeline() as pipeline:
 
 **SQL-first transformation framework**
 
-```sql
+````sql
 -- models/sales_summary.sql
 {{ config(materialized='table') }}
 
@@ -262,7 +262,7 @@ response = batch.submit_job(
         'date': '2024-03-07'
     }
 )
-```
+````
 
 **When to use**:
 
@@ -276,7 +276,7 @@ response = batch.submit_job(
 
 **Managed Spark/Hadoop cluster**
 
-```bash
+````bash
 # Create cluster
 gcloud dataproc clusters create batch-cluster \
   --region=us-central1 \
@@ -342,15 +342,15 @@ result.write.parquet("abfss://container@account.dfs.core.windows.net/output/")
 df = spark.read.format("delta").load("/mnt/data/")
 df_transformed = df.filter(df.amount > 100)
 df_transformed.write.format("delta").mode("overwrite").save("/mnt/output/")
-```
+````
 
----
+______________________________________________________________________
 
 ## 📚 Useful Libraries
 
 ### Data Processing
 
-```python
+````python
 # pandas: Data manipulation
 import pandas as pd
 
@@ -419,9 +419,9 @@ class Transaction(BaseModel):
 
 # Validate
 transaction = Transaction(**data)
-```
+````
 
----
+______________________________________________________________________
 
 ## 🎓 resources de Aprendizaje
 
@@ -488,7 +488,7 @@ Quick reference para data engineering
 🌐 **r/dataengineering** (Reddit)
 Community Q&A
 
----
+______________________________________________________________________
 
 ## 🔧 Development Tools
 
@@ -496,7 +496,7 @@ Community Q&A
 
 **Jupyter Notebooks**:
 
-```bash
+````bash
 pip install jupyterlab
 jupyter lab
 ```text
@@ -552,7 +552,7 @@ spark = SparkSession.builder \
 - **Stages**: Stages y tasks
 - **Storage**: Cached RDDs/DataFrames
 - **Environment**: Configuration
-- **Executors**: Estado de executors
+- **Executors**: Executor status
 - **SQL**: Query execution plans
 
 ---
@@ -566,8 +566,8 @@ spark = SparkSession.builder \
 df.write.parquet("output.parquet", compression="snappy")
 
 # ❌ Malo
-df.to_csv("output.csv")  # 10x más grande y lento
-```
+df.to_csv("output.csv")  # 10x larger and slower
+````
 
 **Comparison**:
 
@@ -576,11 +576,11 @@ df.to_csv("output.csv")  # 10x más grande y lento
 
 ### 2. Partition Tuning
 
-```python
+````python
 # Regla: 2-4 partitions por CPU core
 
 # Cluster con 10 nodes × 4 cores = 40 cores
-# → 80-160 partitions óptimo
+# → 80-160 partitions is optimal
 
 df.repartition(100)
 ```text
@@ -627,9 +627,9 @@ logger.info({
     "records_processed": result.count(),
     "throughput": result.count() / duration
 })
-```
+````
 
----
+______________________________________________________________________
 
 ## 📊 Performance Benchmarks
 
@@ -638,7 +638,7 @@ logger.info({
 **Dataset**: 100M records, 5GB
 
 | Operation | Pandas | Spark (10 nodes) | Speedup |
-|-----------|--------|------------------|---------|
+| --------- | ------ | ---------------- | ------- |
 | Read CSV  | 180s   | 12s              | 15x     |
 | Filter    | 45s    | 3s               | 15x     |
 | GroupBy   | 120s   | 8s               | 15x     |
@@ -648,15 +648,15 @@ logger.info({
 
 **Dataset**: 1GB
 
-| Format | Size | Write Time | Read Time |
-|--------|------|------------|-----------|
-| CSV    | 1.0 GB | 30s      | 45s       |
-| Parquet (no compress) | 0.8 GB | 15s | 10s |
-| Parquet (snappy) | 0.3 GB | 18s | 8s |
+| Format                | Size   | Write Time | Read Time |
+| --------------------- | ------ | ---------- | --------- |
+| CSV                   | 1.0 GB | 30s        | 45s       |
+| Parquet (no compress) | 0.8 GB | 15s        | 10s       |
+| Parquet (snappy)      | 0.3 GB | 18s        | 8s        |
 
 **Winner**: Parquet con Snappy compression ⭐
 
----
+______________________________________________________________________
 
 ## 🎯 Checklist de Batch Job
 
@@ -669,8 +669,8 @@ logger.info({
 
 ### Implementation
 
-- [ ] Usar formato columnr (Parquet)
-- [ ] Implementar idempotencia
+- [ ] Use columnar format (Parquet)
+- [ ] Implement idempotency
 - [ ] Agregar logging estructurado
 - [ ] Configurar checkpointing
 
@@ -695,6 +695,6 @@ logger.info({
 - [ ] Review Spark UI periodically
 - [ ] Optimize based on metrics
 
----
+______________________________________________________________________
 
 Now you are ready for the practical exercises. Starts with [Exercise 01](../exercises/01-batch-basics/).
