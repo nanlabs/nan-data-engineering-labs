@@ -5,7 +5,7 @@ boto3==1.34.69
 botocore==1.34.69
 
 # AWS Enhanced Clients
-aws-sam-cli==1.112.0
+aws-sam-cli==1.134.0
 aws-encryption-sdk==3.3.0
 
 # Security & Cryptography
