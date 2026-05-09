@@ -24,19 +24,21 @@ Use this skill when the task involves module structure consistency, heading norm
 2. Compare current state against `docs/MODULE-CONTRACT-MATRIX.md`.
 3. Apply minimal edits to satisfy required files/folders and heading requirements.
 4. Keep newly edited instructional content in English.
-5. Run validators before finalizing:
+5. Follow scope-first completion:
+  - Populate missing module content before claiming translation progress.
+  - Standardize target module files first, then expand scope.
+6. Run validators before finalizing:
 
 ```bash
 PYTHON=python
 $PYTHON scripts/validate_learning_labs.py --strict-core --strict-headings
+$PYTHON scripts/validate_english_content.py
 $PYTHON scripts/progress.py
 ```
-
-1. Verify and report outcomes with evidence:
-
-- `git status --short` for changed scope
-- validator output summary for targeted modules
-- explicit residual issues if any
+7. Verify and report outcomes with evidence:
+  - `git status --short` for changed scope
+  - validator output summary for targeted modules
+  - explicit residual issues if any
 
 ## Validation Rules
 
