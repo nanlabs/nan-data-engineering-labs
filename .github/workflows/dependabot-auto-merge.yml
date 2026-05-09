@@ -14,10 +14,8 @@ jobs:
   auto-merge-dependabot:
     name: Auto-merge Dependabot PRs
     runs-on: ubuntu-latest
-    # Only run for Dependabot PRs
-    if: |
-      github.event.pull_request.user.login == 'dependabot[bot]' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.head_repository.owner.login == 'dependabot[bot]')
+    # Run for PR and workflow_run events; bot validation happens in steps.
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_run'
 
     permissions:
       pull-requests: write
@@ -33,21 +31,51 @@ jobs:
             echo "number=${{ github.event.workflow_run.pull_requests[0].number }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Enable auto-merge for Dependabot PR
+      - name: Validate Dependabot author
+        id: author
         if: steps.pr.outputs.number != ''
         run: |
+          set -euo pipefail
+
+          pr_number="${{ steps.pr.outputs.number }}"
+          repo="${{ github.repository }}"
+
+          author_login="$(gh pr view "$pr_number" --repo "$repo" --json author -q '.author.login')"
+          echo "PR #$pr_number author: $author_login"
+
+          if [ "$author_login" = "dependabot[bot]" ] || [ "$author_login" = "app/dependabot" ]; then
+            echo "is_dependabot=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_dependabot=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Enable auto-merge for Dependabot PR
+        if: steps.pr.outputs.number != '' && steps.author.outputs.is_dependabot == 'true'
+        run: |
+          set -euo pipefail
+
           pr_number="${{ steps.pr.outputs.number }}"
           repo="${{ github.repository }}"
 
           echo "Processing PR #$pr_number..."
-          sleep 2
 
-          # Enable auto-merge if PR is ready
+          # Enable auto-merge if PR is ready.
           gh pr merge "$pr_number" \
             --repo "$repo" \
             --auto \
             --merge \
-            --delete-branch \
-            --admin 2>&1 | grep -E "auto-merge|already|not|ready" || echo "Auto-merge request processed"
+            --delete-branch
+
+          auto_merge_state="$(gh pr view "$pr_number" --repo "$repo" --json autoMergeRequest -q '.autoMergeRequest != null')"
+          if [ "$auto_merge_state" != "true" ]; then
+            echo "Failed to enable auto-merge for PR #$pr_number"
+            exit 1
+          fi
+
+          echo "Auto-merge enabled for PR #$pr_number"
+
+      - name: Skip non-Dependabot PR
+        if: steps.pr.outputs.number != '' && steps.author.outputs.is_dependabot != 'true'
+        run: echo "PR #${{ steps.pr.outputs.number }} is not from Dependabot; skipping."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
