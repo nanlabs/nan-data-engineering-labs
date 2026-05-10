@@ -5,7 +5,7 @@
 repos:
   # Standard file hygiene hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         name: Trim Trailing Whitespace
@@ -43,7 +43,7 @@ repos:
 
   # Markdown formatting and linting
   - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.22
+    rev: 1.0.0
     hooks:
       - id: mdformat
         name: mdformat (Markdown Formatter)
