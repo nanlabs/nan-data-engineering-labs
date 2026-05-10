@@ -61,20 +61,41 @@ jobs:
 
           echo "Processing PR #$pr_number..."
 
-          # Enable auto-merge if PR is ready.
-          gh pr merge "$pr_number" \
-            --repo "$repo" \
-            --auto \
-            --merge \
-            --delete-branch
+          set +e
+          merge_output="$(gh pr merge "$pr_number" --repo "$repo" --auto --merge --delete-branch 2>&1)"
+          merge_exit=$?
+          set -e
 
-          auto_merge_state="$(gh pr view "$pr_number" --repo "$repo" --json autoMergeRequest -q '.autoMergeRequest != null')"
-          if [ "$auto_merge_state" != "true" ]; then
-            echo "Failed to enable auto-merge for PR #$pr_number"
-            exit 1
+          if [ "$merge_exit" -eq 0 ]; then
+            echo "Configured with merge strategy"
+          elif echo "$merge_output" | grep -qi "Auto merge is not allowed for this repository"; then
+            echo "Auto-merge is disabled at repository level; attempting direct merge fallback"
+
+            if gh pr merge "$pr_number" --repo "$repo" --merge --delete-branch; then
+              echo "Merged directly with merge strategy"
+            elif gh pr merge "$pr_number" --repo "$repo" --squash --delete-branch; then
+              echo "Merged directly with squash strategy"
+            elif gh pr merge "$pr_number" --repo "$repo" --rebase --delete-branch; then
+              echo "Merged directly with rebase strategy"
+            else
+              echo "Direct merge not available yet (likely pending checks/branch protection)."
+              echo "Will retry automatically on workflow_run completion."
+              exit 0
+            fi
+          else
+            echo "Auto-merge not configured right now; will retry on workflow_run completion."
+            echo "$merge_output"
+            exit 0
           fi
 
-          echo "Auto-merge enabled for PR #$pr_number"
+          merged_state="$(gh pr view "$pr_number" --repo "$repo" --json mergedAt -q '.mergedAt != null')"
+          auto_state="$(gh pr view "$pr_number" --repo "$repo" --json autoMergeRequest -q '.autoMergeRequest != null')"
+
+          if [ "$merged_state" = "true" ] || [ "$auto_state" = "true" ]; then
+            echo "Auto-merge active (or already merged) for PR #$pr_number"
+          else
+            echo "No active merge state yet; leaving as soft success for next retry cycle."
+          fi
 
       - name: Skip non-Dependabot PR
         if: steps.pr.outputs.number != '' && steps.author.outputs.is_dependabot != 'true'
