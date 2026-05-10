@@ -17,19 +17,26 @@ Current step: **Post-contract stabilization**, preparing next quality wave.
 
 ### In Progress
 
-- [ ] Consolidate follow-up quality tasks now that structure contract is green.
+- [ ] Consolidate follow-up quality tasks now that structure
+  contract is green.
+- [ ] Review and prioritize module-content quality improvements
+  after latest governance snapshot.
 
 ### Next Steps
 
-- [ ] Run and record full governance checks:
+- [x] Run and record full governance checks:
   - `python scripts/validate_english_content.py`
   - `python scripts/progress.py`
+  - Result (2026-05-09): `Findings: 0` in English governance scan.
+  - Result (2026-05-09): Learning progress report generated
+    (overall progress currently `0%`).
 - [ ] Replace placeholder starter/solution notes with exercise-specific
   implementation guidance where needed.
 - [ ] Define the next wave (content quality, test depth, and consistency
   hardening) and execute in atomic commits.
 
-Goal: keep module structure predictable so learners can transfer navigation habits across all modules.
+Goal: keep module structure predictable so learners can
+transfer navigation habits across all modules.
 
 ## Current Drift Detected
 
@@ -37,7 +44,8 @@ Goal: keep module structure predictable so learners can transfer navigation habi
   - `module-01` to `module-05` contain `docs/` while most regular modules do not.
   - `module-10` contains `dags/` while other regular modules do not.
   - `module-05` contains `venv/` (should not be a module subfolder).
-- Checkpoint modules include `extensions/` which is not listed in required or optional matrix.
+- Checkpoint modules include `extensions/` which is not listed
+  in required or optional matrix.
 - Some modules may still include legacy placeholder content;
   verify current state before cleanup.
 
@@ -60,9 +68,13 @@ Goal: keep module structure predictable so learners can transfer navigation habi
   folders by module type.
 - [ ] Update `scripts/validate_learning_labs.py` to fail on unapproved extras.
 - [ ] Add exception list support (if needed) for module-specific justified folders.
-- [ ] Run `python scripts/validate_learning_labs.py --strict-core
-  --strict-headings` and verify expected output is clean
+
+<!-- markdownlint-disable MD013 -->
+
+- [ ] Run `python scripts/validate_learning_labs.py --strict-core --strict-headings` and verify expected output is clean
   after content migration.
+
+<!-- markdownlint-enable MD013 -->
 
 ## Skills and Agent Alignment
 
