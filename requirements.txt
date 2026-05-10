@@ -22,7 +22,7 @@ kafka-python>=2.0.2
 confluent-kafka>=2.3.0
 
 # Workflow Orchestration
-apache-airflow>=2.8.0
+apache-airflow>=3.2.1
 
 # Infrastructure as Code
 terraform-compliance>=1.15.1
