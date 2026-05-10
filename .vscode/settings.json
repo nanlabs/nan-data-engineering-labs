@@ -1,0 +1,14 @@
+{
+  "editor.rulers": [
+    {
+      "color": "#ffb70044",
+      "column": 79
+    },
+    {
+      "color": "#ffb70044",
+      "column": 88
+    }
+  ],
+  "python.analysis.typeCheckingMode": "standard",
+  "ruff.lineLength": 88
+}
