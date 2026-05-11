@@ -176,7 +176,7 @@ Curated resources to master data storage and file formats.
 
 ```bash
 pip install pyarrow
-```text
+```
 
 - [Documentation](https://arrow.apache.org/docs/python/)
 - [GitHub](https://github.com/apache/arrow)
@@ -186,7 +186,7 @@ pip install pyarrow
 
 ```bash
 pip install pandas
-```text
+```
 
 - [Documentation](https://pandas.pydata.org/docs/)
 - **Use For:** DataFrame operations, CSV/JSON/Parquet
@@ -195,7 +195,7 @@ pip install pandas
 
 ```bash
 pip install boto3
-```text
+```
 
 - [Documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
 - **Use For:** S3 operations, Glue API
@@ -213,7 +213,7 @@ pip install fastavro
 
 ```bash
 pip install pyorc
-```text
+```
 
 - [GitHub](https://github.com/noirello/pyorc)
 - **Use For:** ORC file operations
@@ -231,7 +231,7 @@ aws s3 ls s3://bucket/
 aws s3 sync local/ s3://bucket/
 aws glue get-tables --database-name mydb
 aws athena start-query-execution
-```text
+```
 
 - [Documentation](https://docs.aws.amazon.com/cli/latest/reference/)
 
@@ -246,7 +246,7 @@ parquet-tools show data.parquet
 parquet-tools schema data.parquet
 parquet-tools meta data.parquet
 parquet-tools csv data.parquet
-```text
+```
 
 - [GitHub](https://github.com/ktrueda/parquet-tools)
 
@@ -270,7 +270,7 @@ sudo apt install jq
 
 # Usage
 cat data.json | jq '.[] | select(.amount > 100)'
-```text
+```
 
 - [Documentation](https://stedolan.github.io/jq/)
 
@@ -479,7 +479,7 @@ fake = Faker()
 data = [fake.simple_profile() for _ in range(10000)]
 df = pd.DataFrame(data)
 df.to_parquet('fake_data.parquet')
-```text
+```
 
 **Mockaroo**
 
@@ -505,7 +505,7 @@ aws s3 sync local/ s3://bucket/
 
 # Storage class
 aws s3 cp file.txt s3://bucket/ --storage-class GLACIER
-```text
+```
 
 **Parquet with PyArrow**
 
@@ -537,53 +537,53 @@ SELECT * FROM table;  -- Bad
 -- Use CTAS for complex queries
 CREATE TABLE optimized AS
 SELECT ... FROM table WHERE ...
-```text
+```
 
 ## 🎯 Learning Path
 
 ### Beginner (Weeks 1-2)
 
 1. ✅ Read Module 02 theory (concepts.md)
-2. ✅ Watch "Getting Started with S3" video
-3. ✅ Complete Exercise 01: Data lake design
-4. ✅ Complete Exercise 02: File format conversion
+1. ✅ Watch "Getting Started with S3" video
+1. ✅ Complete Exercise 01: Data lake design
+1. ✅ Complete Exercise 02: File format conversion
 
 ### Intermediate (Weeks 3-4)
 
 1. ✅ Read "Designing Data-Intensive Applications" Ch 3-4
-2. ✅ Complete Exercise 03: Partitioning
-3. ✅ Complete Exercise 04: Compression
-4. ✅ Watch re:Invent session on data lakes
+1. ✅ Complete Exercise 03: Partitioning
+1. ✅ Complete Exercise 04: Compression
+1. ✅ Watch re:Invent session on data lakes
 
 ### Advanced (Weeks 5-6)
 
 1. ✅ Complete Exercise 05: Schema evolution
-2. ✅ Complete Exercise 06: Glue Catalog
-3. ✅ Read Dremel paper
-4. ✅ Build personal project with production data
+1. ✅ Complete Exercise 06: Glue Catalog
+1. ✅ Read Dremel paper
+1. ✅ Build personal project with production data
 
 ### Mastery (Weeks 7-8)
 
 1. ✅ Complete AWS Data Lake workshop
-2. ✅ Contribute to open-source (PyArrow, etc.)
-3. ✅ Write blog post on learning
-4. ✅ Consider AWS Data Analytics certification
+1. ✅ Contribute to open-source (PyArrow, etc.)
+1. ✅ Write blog post on learning
+1. ✅ Consider AWS Data Analytics certification
 
 ## 📞 Getting Help
 
 ### When Stuck
 
 1. **Check Documentation:** Official AWS docs first
-2. **Search Stack Overflow:** Likely someone had same issue
-3. **AWS Forums:** Post detailed question
-4. **Office Hours:** Use module Slack channel
-5. **Instructor:** Tag instructor for review
+1. **Search Stack Overflow:** Likely someone had same issue
+1. **AWS Forums:** Post detailed question
+1. **Office Hours:** Use module Slack channel
+1. **Instructor:** Tag instructor for review
 
 ### Best Practices for Asking Questions
 
 **Good Question:**
 
-```text
+```
 I'm trying to convert 10GB CSV to Parquet using PyArrow but getting
 MemoryError. I've tried:
 - Reading in chunks: Still fails
@@ -595,13 +595,13 @@ Code: [gist link]
 Error: [full traceback]
 
 Any suggestions for streaming conversion?
-```text
+```
 
 **Bad Question:**
 
 ```
 Parquet doesn't work. Help?
-```text
+```
 
 ## 🏆 Success Metrics
 
@@ -613,10 +613,10 @@ Track your progress:
 - [ ] Built sample data lake project
 - [ ] Can explain Parquet vs Avro to peer
 - [ ] Understand when to use each storage class
-- [ ] Optimized query from 5min to <10s
+- [ ] Optimized query from 5min to \<10s
 - [ ] Reduced storage costs by 50%+
 
----
+______________________________________________________________________
 
 **Last Updated:** February 2, 2026
 

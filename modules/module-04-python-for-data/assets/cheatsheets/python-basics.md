@@ -15,7 +15,7 @@ nada = None                        # NoneType
 # Verificar tipo
 type(nombre)  # <class 'str'>
 isinstance(edad, int)  # True
-```text
+```
 
 ### Type Conversion
 
@@ -33,7 +33,7 @@ bool(0)          # False
 bool("")         # False
 bool([])         # False
 bool(1)          # True
-```text
+```
 
 ## 📝 Strings
 
@@ -64,7 +64,7 @@ texto.split()           # ["Python", "para", "Data"]
 
 # Cleaning
 "  texto  ".strip()    # "texto"
-```text
+```
 
 ### F-Strings (Formateo)
 
@@ -116,7 +116,7 @@ max(numeros)                   # Maximo
 min(numeros)                   # Minimo
 sorted(numeros)                # Ordenar (nueva lista)
 numeros.sort()                 # Ordenar in-place
-```text
+```
 
 ### Tuplas (Ordenadas, Inmutables)
 
@@ -134,7 +134,7 @@ def obtener_data():
     return "Juan", 30, "Mexico"
 
 nombre, edad, pais = obtener_data()
-```text
+```
 
 ### Diccionarios (Clave-Valor)
 
@@ -163,7 +163,7 @@ persona.items()                # dict_items([('nombre', 'Ana'), ...])
 
 # Verification
 "nombre" in persona            # True
-```text
+```
 
 ### Sets (Not ordered, unique)
 
@@ -212,7 +212,7 @@ else:
 
 # Operador ternario
 estado = "activo" if edad >= 18 else "inactivo"
-```text
+```
 
 ### Bucles
 
@@ -245,7 +245,7 @@ for i in range(10):
     if i == 8:
         break     # Salir del loop
     print(i)
-```text
+```
 
 #### While Loop
 
@@ -261,7 +261,7 @@ while True:
     respuesta = input("¿Continuar? (s/n): ")
     if respuesta.lower() == 'n':
         break
-```text
+```
 
 ## 🎯 Funciones
 
@@ -310,7 +310,7 @@ def crear_persona(**data):
     return data
 
 crear_persona(nombre="Ana", edad=25, ciudad="Madrid")
-```text
+```
 
 ### Lambda (Anonymous Functions)
 
@@ -323,7 +323,7 @@ suma(3, 5)  # 8
 numeros = [1, 2, 3, 4, 5]
 pares = list(filter(lambda x: x % 2 == 0, numeros))  # [2, 4]
 cuadrados = list(map(lambda x: x**2, numeros))       # [1, 4, 9, 16, 25]
-```text
+```
 
 ## 🚀 Comprehensions
 
@@ -346,7 +346,7 @@ mayusculas = [p.upper() for p in palabras]
 # Nested
 matriz = [[i*j for j in range(3)] for i in range(3)]
 # [[0, 0, 0], [0, 1, 2], [0, 2, 4]]
-```text
+```
 
 ### Dict Comprehensions
 
@@ -372,7 +372,7 @@ invertido = {v: k for k, v in original.items()}
 # Unique
 unicos = {x % 3 for x in range(10)}
 # {0, 1, 2}
-```text
+```
 
 ## ⚠️ Errores Comunes
 
@@ -388,7 +388,7 @@ def funcion():
 def funcion():
     print("Hola")   # 4 espacios
     print("Mundo")  # 4 espacios
-```text
+```
 
 ### 2. Mutabilidad de Listas
 
@@ -401,7 +401,7 @@ print(lista1)          # [1, 2, 3, 4] ¡Modificada!
 
 # ✅ Correct
 lista2 = lista1.copy()  # o lista1[:]
-```text
+```
 
 ### 3. Default Mutable Arguments
 
@@ -425,13 +425,13 @@ def agregar_item(item, lista=None):
 ## 💡 Tips and Best Practices
 
 1. **Usa nombres descriptivos**: `edad_usuario` mejor que `e`
-2. **PEP 8**: 4 spaces for indentation, snake_case for variables
-3. **Docstrings**: Documenta funciones complejas
-4. **List comprehensions**: More Pythonic than simple loops
-5. **f-strings**: Preferir sobre `.format()` o `%`
-6. **Usa `in`**: Para verificar pertenencia en colecciones
-7. **Avoid modifying lists during iteration**: Create a copy
+1. **PEP 8**: 4 spaces for indentation, snake_case for variables
+1. **Docstrings**: Documenta funciones complejas
+1. **List comprehensions**: More Pythonic than simple loops
+1. **f-strings**: Preferir sobre `.format()` o `%`
+1. **Usa `in`**: Para verificar pertenencia en colecciones
+1. **Avoid modifying lists during iteration**: Create a copy
 
----
+______________________________________________________________________
 
 **Siguiente**: Ver [pandas-reference.md](pandas-reference.md) para trabajar con data

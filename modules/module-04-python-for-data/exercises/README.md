@@ -4,7 +4,7 @@ This folder contains 6 progressive exercises designed to build Python skills app
 
 ## Structure de Exercises
 
-```text
+```
 exercises/
 ├── 01-python-basics/           # Fundamentos de Python
 ├── 02-data-structures/         # Listas, dicts, comprehensions
@@ -12,38 +12,42 @@ exercises/
 ├── 04-pandas-fundamentals/     # DataFrames y operaciones
 ├── 05-data-transformation/     # ETL, joins, aggregations
 └── 06-error-handling/          # Logging, excepciones, produccion
-```text
+```
 
 ## How to Use the Exercises
 
 ### Option 1: Guided Mode (Recommended for Learning)
 
 1. **Read theory**: Open the `README.md` for each exercise
-2. **Try starter**: Work in `starter/exercise.py`
+
+1. **Try starter**: Work in `starter/exercise.py`
+
    - Busca los comentarios `# TODO:`
    - Implementa las funciones marcadas
-3. **Run tests**: Verify your solution
+
+1. **Run tests**: Verify your solution
 
    ```bash
    pytest exercises/01-python-basics/tests/ -v
    ```
 
-4. **Comparar con solution**: Si te atoras, revisa `solution/`
-5. **Repetir con ejemplos**: Explora `examples/` para casos avanzados
+1. **Comparar con solution**: Si te atoras, revisa `solution/`
+
+1. **Repetir con ejemplos**: Explora `examples/` para casos avanzados
 
 ### Option 2: Self-taught Mode
 
 1. Lee el README
-2. Deploy your own version from scratch
-3. Compare with solution after
+1. Deploy your own version from scratch
+1. Compare with solution after
 
 ### Option 3: Review Mode
 
 1. Lee solution directamente
-2. Ejecuta tests
-3. Modifica y experimenta
+1. Ejecuta tests
+1. Modifica y experimenta
 
----
+______________________________________________________________________
 
 ## Lista de Exercises
 
@@ -72,7 +76,7 @@ exercises/
 - `solution/basics.py`- Complete solution
 - `tests/test_basics.py` - 15 tests
 
----
+______________________________________________________________________
 
 ### 📗 Exercise 02: Data Structures
 
@@ -101,7 +105,7 @@ exercises/
 - `examples/comprehensions.py` - Ejemplos avanzados
 - `tests/test_data_structures.py` - 20 tests
 
----
+______________________________________________________________________
 
 ### 📙 Exercise 03: File Operations
 
@@ -130,7 +134,7 @@ exercises/
 - `solution/file_io.py`- Complete solution
 - `tests/test_file_io.py` - 18 tests
 
----
+______________________________________________________________________
 
 ### 📕 Exercise 04: Pandas Fundamentals
 
@@ -160,7 +164,7 @@ exercises/
 - `notebooks/pandas_tutorial.ipynb` - Tutorial interactivo
 - `tests/test_pandas.py` - 25 tests
 
----
+______________________________________________________________________
 
 ### 📔 Exercise 05: Data Transformation
 
@@ -190,7 +194,7 @@ exercises/
 - `examples/etl_pipeline.py` - pipeline completo
 - `tests/test_transformation.py` - 22 tests
 
----
+______________________________________________________________________
 
 ### 📓 Exercise 06: Error Handling & Production
 
@@ -220,7 +224,7 @@ exercises/
 - `examples/production_pipeline.py` - pipeline robusto
 - `tests/test_error_handling.py` - 20 tests
 
----
+______________________________________________________________________
 
 ## Test Execution
 
@@ -232,20 +236,20 @@ pytest exercises/ -v
 
 # Con coverage
 pytest exercises/ --cov=exercises --cov-report=html
-```text
+```
 
 ### Run tests for a specific exercise
 
 ```bash
 pytest exercises/01-python-basics/tests/ -v
 pytest exercises/04-pandas-fundamentals/tests/ -v
-```text
+```
 
 ### Run a specific test
 
 ```bash
 pytest exercises/01-python-basics/tests/test_basics.py::test_suma -v
-```text
+```
 
 ### Run tests con output detallado
 
@@ -253,7 +257,7 @@ pytest exercises/01-python-basics/tests/test_basics.py::test_suma -v
 pytest exercises/ -v -s  # -s muestra prints
 ```
 
----
+______________________________________________________________________
 
 ## Progreso Sugerido
 
@@ -273,34 +277,34 @@ pytest exercises/ -v -s  # -s muestra prints
 - ✅ Day 1-2: Exercise 06 (Error Handling)
 - ✅ Day 3-5: Final project (combine everything)
 
----
+______________________________________________________________________
 
 ## Tips for Success
 
 ### 🎯 Antes de Empezar
 
 1. **Read the full README** for the exercise
-2. **Watch the tests** to understand what to expect
-3. **Experiment in notebook** before writing code
-4. **Usa los data reales** de `data/raw/`
+1. **Watch the tests** to understand what to expect
+1. **Experiment in notebook** before writing code
+1. **Usa los data reales** de `data/raw/`
 
 ### 💡 Durante el Exercise
 
 1. **No copies-pegues** solution - aprende escribiendo
-2. **Run tests frequently** (each function)
-3. **Usa print()** liberalmente para debugging
-4. **query documentation** (pandas, Python docs)
-5. **Pregunta en comunidades** si te atoras
+1. **Run tests frequently** (each function)
+1. **Usa print()** liberalmente para debugging
+1. **query documentation** (pandas, Python docs)
+1. **Pregunta en comunidades** si te atoras
 
 ### ✅ After Completing
 
 1. **Compare your code** with solution
-2. **Identifica diferencias** en approach
-3. **Aprende patrones** usados en solution
-4. **Refactor** your code if necessary
-5. **Experimenta con examples/** para profundizar
+1. **Identifica diferencias** en approach
+1. **Aprende patrones** usados en solution
+1. **Refactor** your code if necessary
+1. **Experimenta con examples/** para profundizar
 
----
+______________________________________________________________________
 
 ## resources Adicionales
 
@@ -321,7 +325,7 @@ pytest exercises/ -v -s  # -s muestra prints
 - `data/README.md`- Complete dataset documentation
 - `data/schemas/` - Schemas JSON con validaciones
 
----
+______________________________________________________________________
 
 ## Troubleshooting
 
@@ -333,7 +337,7 @@ pytest exercises/01-python-basics/tests/ -v -s
 
 # Ver que linea falla exactamente
 pytest exercises/01-python-basics/tests/ --tb=long
-```text
+```
 
 ### Import errors
 
@@ -343,7 +347,7 @@ cd /path/to/module-04-python-for-data
 
 # O ajustar PYTHONPATH
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-```text
+```
 
 ### Data no encontrados
 
@@ -353,7 +357,7 @@ ls -lh data/raw/
 
 # Regenerar si es necesario
 cd data && python3 generate_all_datasets.py
-```text
+```
 
 ### Pandas no instalado
 
@@ -366,20 +370,20 @@ docker-compose up -d jupyter
 pip install -r requirements.txt
 ```
 
----
+______________________________________________________________________
 
 ## Assessment
 
 ### Success Criteria by Exercise
 
-| Exercise | Test Passing | Estimated Time | Comprehension |
-|-----------|---------------|-----------------|-------------|
-| 01 - Python Basics | 15/15 ✅ | 1-2h | Basic syntax |
-| 02 - Data Structures | 20/20 ✅ | 2-3h | Structures core |
-| 03 - File Operations | 18/18 ✅ | 2-3h | I/O multi-formato |
-| 04 - Pandas Fundamentals | 25/25 ✅ | 3-4h | DataFrames |
-| 05 - Data Transformation | 22/22 ✅ | 3-4h | ETL completo |
-| 06 - Error Handling | 20/20 ✅ | 2-3h | Production code |
+| Exercise                 | Test Passing | Estimated Time | Comprehension     |
+| ------------------------ | ------------ | -------------- | ----------------- |
+| 01 - Python Basics       | 15/15 ✅     | 1-2h           | Basic syntax      |
+| 02 - Data Structures     | 20/20 ✅     | 2-3h           | Structures core   |
+| 03 - File Operations     | 18/18 ✅     | 2-3h           | I/O multi-formato |
+| 04 - Pandas Fundamentals | 25/25 ✅     | 3-4h           | DataFrames        |
+| 05 - Data Transformation | 22/22 ✅     | 3-4h           | ETL completo      |
+| 06 - Error Handling      | 20/20 ✅     | 2-3h           | Production code   |
 
 **Total**: 120 tests, ~14-16 horas
 
@@ -388,12 +392,12 @@ pip install -r requirements.txt
 After each exercise, ask yourself:
 
 1. ✅ Do I understand **why** my code works?
-2. ✅ Could you explain it to someone else?
-3. ✅ Could you solve a similar problem without help?
-4. ✅ Do I know alternatives to the approach I used?
-5. ✅ Is my code readable and well documented?
+1. ✅ Could you explain it to someone else?
+1. ✅ Could you solve a similar problem without help?
+1. ✅ Do I know alternatives to the approach I used?
+1. ✅ Is my code readable and well documented?
 
----
+______________________________________________________________________
 
 ## Proyecto Final (Opcional)
 
@@ -404,30 +408,30 @@ After completing the 6 exercises, build a **complete ETL pipeline**:
 **Requerimientos**:
 
 1. Leer los 5 datasets (CSV, JSON)
-2. Limpiar data (duplicados, nulls, inconsistencias)
-3. Integrar con joins (customers ← orders ← transactions)
-4. Calculate metrics:
+1. Limpiar data (duplicados, nulls, inconsistencias)
+1. Integrar con joins (customers ← orders ← transactions)
+1. Calculate metrics:
    - Total revenue and by country
    - Top 10 best-selling products
    - Customer lifetime value
    - Conversion rate del funnel
-5. Exportar resultados a CSV y JSON
-6. Complete logging for each step
-7. Tests unitarios (>80% coverage)
+1. Exportar resultados a CSV y JSON
+1. Complete logging for each step
+1. Tests unitarios (>80% coverage)
 
 **Tiempo estimado**: 8-10 horas
 
----
+______________________________________________________________________
 
 ## Next Step
 
 After completing these exercises:
 
-➡️ **Step 6: Validation** - Tests automatizados integrados  
-➡️ **Step 7: Assets** - Cheatsheets y diagramas de referencia  
+➡️ **Step 6: Validation** - Tests automatizados integrados
+➡️ **Step 7: Assets** - Cheatsheets y diagramas de referencia
 ➡️ **Step 8: Scripts & Docs** - Automation and troubleshooting
 
----
+______________________________________________________________________
 
 **Happy coding! 🐍🐼**
 

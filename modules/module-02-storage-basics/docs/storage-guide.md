@@ -3,29 +3,29 @@
 ## Table of Contents
 
 1. [Format Comparison Matrix](#format-comparison-matrix)
-2. [CSV - Comma Separated Values](#csv)
-3. [JSON - JavaScript Object Notation](#json)
-4. [Parquet - Apache Parquet](#parquet)
-5. [Avro - Apache Avro](#avro)
-6. [ORC - Optimized Row Columnar](#orc)
-7. [Decision Framework](#decision-framework)
-8. [Real-World Examples](#real-world-examples)
+1. [CSV - Comma Separated Values](#csv)
+1. [JSON - JavaScript Object Notation](#json)
+1. [Parquet - Apache Parquet](#parquet)
+1. [Avro - Apache Avro](#avro)
+1. [ORC - Optimized Row Columnar](#orc)
+1. [Decision Framework](#decision-framework)
+1. [Real-World Examples](#real-world-examples)
 
 ## Format Comparison Matrix
 
-| Feature | CSV | JSON | Parquet | Avro | ORC |
-|---------|-----|------|---------|------|-----|
-| **Storage Type** | Row | Row | Columnar | Row | Columnar |
-| **Schema** | None | Flexible | Strict | Strict | Strict |
-| **Compression** | Weak | Weak | Excellent | Good | Excellent |
-| **Read Speed** | Slow | Slow | Very Fast | Fast | Very Fast |
-| **Write Speed** | Fast | Fast | Medium | Fast | Medium |
-| **Query Performance** | Poor | Poor | Excellent | Medium | Excellent |
-| **Human Readable** | ✅ Yes | ✅ Yes | ❌ No | ❌ No | ❌ No |
-| **Schema Evolution** | ❌ No | Partial | ✅ Yes | ✅ Excellent | ✅ Yes |
-| **Nested Data** | ❌ No | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Splittable** | ❌ No | ❌ No | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Best For** | Exchange | APIs | Analytics | Streaming | Hive |
+| Feature               | CSV      | JSON     | Parquet   | Avro         | ORC       |
+| --------------------- | -------- | -------- | --------- | ------------ | --------- |
+| **Storage Type**      | Row      | Row      | Columnar  | Row          | Columnar  |
+| **Schema**            | None     | Flexible | Strict    | Strict       | Strict    |
+| **Compression**       | Weak     | Weak     | Excellent | Good         | Excellent |
+| **Read Speed**        | Slow     | Slow     | Very Fast | Fast         | Very Fast |
+| **Write Speed**       | Fast     | Fast     | Medium    | Fast         | Medium    |
+| **Query Performance** | Poor     | Poor     | Excellent | Medium       | Excellent |
+| **Human Readable**    | ✅ Yes   | ✅ Yes   | ❌ No     | ❌ No        | ❌ No     |
+| **Schema Evolution**  | ❌ No    | Partial  | ✅ Yes    | ✅ Excellent | ✅ Yes    |
+| **Nested Data**       | ❌ No    | ✅ Yes   | ✅ Yes    | ✅ Yes       | ✅ Yes    |
+| **Splittable**        | ❌ No    | ❌ No    | ✅ Yes    | ✅ Yes       | ✅ Yes    |
+| **Best For**          | Exchange | APIs     | Analytics | Streaming    | Hive      |
 
 ## CSV - Comma Separated Values
 
@@ -57,7 +57,7 @@
 transaction_id,user_id,amount,timestamp,country
 1,1001,125.50,2024-01-15T10:30:00,USA
 2,1002,89.99,2024-01-15T11:15:00,UK
-```text
+```
 
 **File Size Example** (100K rows):
 
@@ -69,7 +69,7 @@ transaction_id,user_id,amount,timestamp,country
 - Exchanging data with external systems
 - One-time data exports for human review
 - Bronze layer (preserving original format)
-- Small datasets (<1 GB)
+- Small datasets (\<1 GB)
 
 ### When NOT to Use
 
@@ -115,14 +115,14 @@ transaction_id,user_id,amount,timestamp,country
     "browser": "Chrome"
   }
 }
-```text
+```
 
 **JSONL (JSON Lines)** - Better for big data:
 
 ```jsonl
 {"transaction_id":1,"user_id":1001,"amount":125.50}
 {"transaction_id":2,"user_id":1002,"amount":89.99}
-```text
+```
 
 **File Size Example** (100K rows):
 
@@ -182,11 +182,11 @@ Parquet (Column-based):
 transaction_id: [1, 2, 3, ...]
 user_id:       [1001, 1002, 1003, ...]
 amount:        [125.50, 89.99, 210.00, ...]
-```text
+```
 
 **Internal Structure**:
 
-```text
+```
 Parquet File
 ├── File Metadata
 ├── Row Group 1 (128 MB default)
@@ -197,7 +197,7 @@ Parquet File
 │   └── Column Chunk: country
 ├── Row Group 2
 └── Footer (schema, offsets)
-```text
+```
 
 **Compression Comparison** (100K rows):
 
@@ -223,12 +223,12 @@ result = df[df['country'] == 'USA']['amount'].sum()
 
 ### Compression Algorithms
 
-| Algorithm | Ratio | Compression Speed | Decompression Speed | CPU | Best For |
-|-----------|-------|-------------------|---------------------|-----|----------|
-| **Snappy** | 55-60% | ⚡⚡⚡ Very Fast | ⚡⚡⚡ Very Fast | Low | **Default choice** |
-| **Gzip** | 75-80% | 🐢 Slow | 🐢 Slow | High | Archival storage |
-| **LZ4** | 50-55% | ⚡⚡⚡⚡ Fastest | ⚡⚡⚡⚡ Fastest | Very Low | Real-time ingestion |
-| **Zstd** | 70-75% | ⚡⚡ Fast | ⚡⚡⚡ Very Fast | Medium | Modern balanced |
+| Algorithm  | Ratio  | Compression Speed | Decompression Speed | CPU      | Best For            |
+| ---------- | ------ | ----------------- | ------------------- | -------- | ------------------- |
+| **Snappy** | 55-60% | ⚡⚡⚡ Very Fast  | ⚡⚡⚡ Very Fast    | Low      | **Default choice**  |
+| **Gzip**   | 75-80% | 🐢 Slow           | 🐢 Slow             | High     | Archival storage    |
+| **LZ4**    | 50-55% | ⚡⚡⚡⚡ Fastest  | ⚡⚡⚡⚡ Fastest    | Very Low | Real-time ingestion |
+| **Zstd**   | 70-75% | ⚡⚡ Fast         | ⚡⚡⚡ Very Fast    | Medium   | Modern balanced     |
 
 **Recommendation by Layer**:
 
@@ -254,7 +254,7 @@ schema_v2 = pa.schema([
 
 # Old readers can still read V2 files (ignores new column)
 # New readers can read V1 files (loyalty_points = null)
-```text
+```
 
 ### When to Use ⭐ HIGHLY RECOMMENDED
 
@@ -317,7 +317,7 @@ schema_v2 = pa.schema([
     }], "default": null}
   ]
 }
-```text
+```
 
 **File Size Example** (100K rows):
 
@@ -338,7 +338,7 @@ schema_v2 = pa.schema([
   {"name": "amount", "type": "double"},
   {"name": "currency", "type": "string", "default": "USD"}
 ]}
-```text
+```
 
 **Forward Compatibility** (old code reads new data):
 
@@ -398,7 +398,7 @@ schema_v2 = pa.schema([
 
 ### Step 1: Determine Your Use Case
 
-```text
+```
 START
   │
   ├─ Human needs to read? ──> CSV
@@ -410,11 +410,11 @@ START
   ├─ Analytics/BI? ──> Parquet ⭐
   │
   └─ Hive tables? ──> ORC
-```text
+```
 
 ### Step 2: Data Size Threshold
 
-```text
+```
 < 100 MB      → CSV is fine
 100 MB - 1 GB → CSV acceptable, Parquet better
 1 GB - 10 GB  → Parquet recommended
@@ -423,12 +423,12 @@ START
 
 ### Step 3: Query Pattern
 
-```text
+```
 Full table scans        → Any format
 Column-specific queries → Parquet/ORC ⭐
 Row-by-row access      → Avro
 One-time export        → CSV
-```text
+```
 
 ## Real-World Examples
 
@@ -458,28 +458,29 @@ One-time export        → CSV
 **Why Parquet is #1**:
 
 1. **Storage Efficiency**: 70-90% compression
-2. **Query Speed**: 5-10x faster than CSV/JSON
-3. **Industry Standard**: Supported by every tool
-4. **Cost Savings**: Massive reduction in S3 costs
-5. **Performance**: Columnar = perfect for analytics
+1. **Query Speed**: 5-10x faster than CSV/JSON
+1. **Industry Standard**: Supported by every tool
+1. **Cost Savings**: Massive reduction in S3 costs
+1. **Performance**: Columnar = perfect for analytics
 
 **Golden Rule**:
+
 > "If you're building a data lake, use Parquet.
 > If you're not sure, use Parquet.
 > If someone suggests CSV for big data, show them this guide."
 
 ### Quick Reference Card
 
-| Scenario | Format | Why |
-|----------|--------|-----|
-| Data Lake (Silver/Gold) | Parquet | Best performance & compression |
-| Data Exchange | CSV | Universal compatibility |
-| API Responses | JSON | Web standard |
-| Streaming/Kafka | Avro | Schema evolution |
-| Hive Tables | ORC | Hive-optimized |
-| Raw Data Ingestion | Original | Preserve lineage |
+| Scenario                | Format   | Why                            |
+| ----------------------- | -------- | ------------------------------ |
+| Data Lake (Silver/Gold) | Parquet  | Best performance & compression |
+| Data Exchange           | CSV      | Universal compatibility        |
+| API Responses           | JSON     | Web standard                   |
+| Streaming/Kafka         | Avro     | Schema evolution               |
+| Hive Tables             | ORC      | Hive-optimized                 |
+| Raw Data Ingestion      | Original | Preserve lineage               |
 
----
+______________________________________________________________________
 
 **Last Updated**: February 2, 2026
 **Module**: 02 - Storage Basics

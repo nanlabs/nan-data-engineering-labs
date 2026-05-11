@@ -1,8 +1,16 @@
 # Starter Scenario
 
-Implement the starter files for this exercise based on README.md and hints.md.
+## Exercise Context
 
-## Expected Output
+- Module: `module-13-container-orchestration`
+- Exercise: `02-ecs-fargate-deployment`
 
-- Starter implementation aligned with exercise requirements.
-- Passing validation and tests for the targeted scope.
+## Goal
+
+Implement the starter files for this exercise using
+`README.md` and `hints.md` as the source of truth.
+
+## Deliverable
+
+- A runnable starter scaffold aligned with acceptance criteria.
+- Inputs and outputs clearly documented in starter assets.

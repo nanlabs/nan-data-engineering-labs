@@ -10,7 +10,7 @@ import numpy as np
 
 # Verificar version
 pd.__version__
-```text
+```
 
 ### Crear DataFrames
 
@@ -38,7 +38,7 @@ df = pd.read_json('data.json', orient='records')
 
 # Desde Parquet
 df = pd.read_parquet('data.parquet')
-```text
+```
 
 ## 🔍 Initial Exploration
 
@@ -62,7 +62,7 @@ df.index            # Index
 df['columna'].unique()          # Array de unicos
 df['columna'].nunique()         # Cantidad de unicos
 df['columna'].value_counts()    # Frecuencia de valores
-```text
+```
 
 ## 🎯 Data Selection
 
@@ -95,7 +95,7 @@ df.iloc[[0, 2, 4]]      # Filas especificas
 # Filas y columnas
 df.iloc[0:5, 0:2]       # Filas 0-4, columnas 0-1
 df.iloc[:, [0, 2]]      # Todas las filas, columnas 0 y 2
-```text
+```
 
 #### Por Etiqueta (loc)
 
@@ -110,7 +110,7 @@ df.loc[df['ciudad'] == 'Madrid']
 
 # Filas y columnas
 df.loc[df['edad'] > 25, ['nombre', 'edad']]
-```text
+```
 
 ### Filtrado (Boolean Indexing)
 
@@ -137,7 +137,7 @@ df[df['nombre'].str.contains('Ana')]
 
 # Between
 df[df['edad'].between(25, 30)]
-```text
+```
 
 ## 🔧 Transformaciones
 
@@ -174,7 +174,7 @@ df.sort_values(['ciudad', 'edad'], ascending=[True, False])
 
 # Ordenar index
 df.sort_index()
-```text
+```
 
 ### Cleaning de Data
 
@@ -197,7 +197,7 @@ df.fillna({'edad': 0, 'ciudad': 'N/A'})  # Por columna
 df.fillna(method='ffill')           # Forward fill
 df.fillna(method='bfill')           # Backward fill
 df['edad'].fillna(df['edad'].mean())  # Con media
-```text
+```
 
 #### Duplicados
 
@@ -212,7 +212,7 @@ df.drop_duplicates()                # Eliminar todas
 df.drop_duplicates(subset=['nombre'])  # Por columna
 df.drop_duplicates(keep='first')    # Mantener primera ocurrencia
 df.drop_duplicates(keep='last')     # Mantener ultima
-```text
+```
 
 ### Type Conversion
 
@@ -243,7 +243,7 @@ df['edad'].count()      # Conteo (no-null)
 # Percentiles
 df['edad'].quantile(0.25)   # Q1
 df['edad'].quantile(0.75)   # Q3
-```text
+```
 
 ### GroupBy (Agrupar)
 
@@ -267,7 +267,7 @@ df.groupby('ciudad').agg(
 
 # Reset index despues de groupby
 df.groupby('ciudad')['edad'].mean().reset_index()
-```text
+```
 
 ### Pivot Tables
 
@@ -288,7 +288,7 @@ pd.pivot_table(
     index='ciudad',
     aggfunc=['mean', 'count']
 )
-```text
+```
 
 ## 🔗 Combination of DataFrames
 
@@ -325,7 +325,7 @@ pd.merge(df1, df2, on=['id', 'fecha'])
 
 # Sufijos para columnas duplicadas
 pd.merge(df1, df2, on='id', suffixes=('_left', '_right'))
-```text
+```
 
 ## 📅 Manejo de Fechas
 
@@ -338,7 +338,7 @@ df['fecha'] = pd.to_datetime(df['fecha'], format='%Y-%m-%d')
 
 # Crear columna de fecha
 df['fecha'] = pd.date_range('2024-01-01', periods=100, freq='D')
-```text
+```
 
 ### Extraer Componentes
 
@@ -349,7 +349,7 @@ df['dia'] = df['fecha'].dt.day
 df['dia_semana'] = df['fecha'].dt.dayofweek  # 0=Lunes
 df['nombre_dia'] = df['fecha'].dt.day_name()
 df['trimestre'] = df['fecha'].dt.quarter
-```text
+```
 
 ### Operaciones con Fechas
 
@@ -382,7 +382,7 @@ df.to_parquet('data.parquet', compression='gzip')
 
 # Excel
 df.to_excel('data.xlsx', sheet_name='Hoja1', index=False)
-```text
+```
 
 ## ⚡ Optimization and Performance
 
@@ -404,7 +404,7 @@ df = pd.read_csv('data.csv', usecols=['nombre', 'edad'])
 # Leer en chunks para files grandes
 for chunk in pd.read_csv('data.csv', chunksize=10000):
     process(chunk)
-```text
+```
 
 ## ⚠️ Errores Comunes
 
@@ -418,7 +418,7 @@ subset['nueva_col'] = 0  # Warning!
 # ✅ Correct
 subset = df[df['edad'] > 25].copy()
 subset['nueva_col'] = 0
-```text
+```
 
 ### 2. Modify During Iteration
 
@@ -442,19 +442,19 @@ df.dropna(inplace=True)
 
 # ✅ O reasignar
 df = df.dropna()
-```text
+```
 
 ## 💡 Tips and Best Practices
 
 1. **Operaciones vectorizadas**: Usar operaciones de Pandas en lugar de loops
-2. **Chaining**: Chain operations for cleaner code
-3. **copy()**: Usar cuando necesites trabajar con un subset independiente
-4. **query()**: For more readable complex filters:`df.query('edad > 25 and ciudad == "Madrid"')`
-5. **eval()**: For fast arithmetic operations:`df.eval('total = precio * cantidad')`
-6. **Categories**: For columns with repeated values ​​(saves memory)
-7. **reset_index()**: After operations that modify the index
-8. **inplace=True**: Modifica el DataFrame original (ahorra memoria)
+1. **Chaining**: Chain operations for cleaner code
+1. **copy()**: Usar cuando necesites trabajar con un subset independiente
+1. **query()**: For more readable complex filters:`df.query('edad > 25 and ciudad == "Madrid"')`
+1. **eval()**: For fast arithmetic operations:`df.eval('total = precio * cantidad')`
+1. **Categories**: For columns with repeated values ​​(saves memory)
+1. **reset_index()**: After operations that modify the index
+1. **inplace=True**: Modifica el DataFrame original (ahorra memoria)
 
----
+______________________________________________________________________
 
 **Next**: See [data-cleaning.md](data-cleaning.md) for advanced cleaning techniques

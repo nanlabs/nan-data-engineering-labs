@@ -18,7 +18,7 @@ EXPLAIN SELECT * FROM orders WHERE user_id = 1;
 EXPLAIN ANALYZE SELECT * FROM orders
 WHERE user_id = 1
 ORDER BY order_date DESC;
-```text
+```
 
 ### indexes
 
@@ -31,11 +31,11 @@ CREATE INDEX idx_orders_user_date ON orders(user_id, order_date);
 
 -- View existing indexes
 \di+ orders
-```text
+```
 
 ### Optimization
 
-- Evitar SELECT *
+- Evitar SELECT \*
 - Usar LIMIT apropiadamente
 - Filter before JOIN when possible
 - Consider materializing complex CTEs

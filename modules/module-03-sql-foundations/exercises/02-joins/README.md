@@ -33,7 +33,7 @@ SELECT
     u.last_name
 FROM orders o
 INNER JOIN users u ON o.user_id = u.user_id;
-```text
+```
 
 **When to use**: When you only want records that exist in both tables.
 
@@ -56,7 +56,7 @@ SELECT u.*
 FROM users u
 LEFT JOIN orders o ON u.user_id = o.user_id
 WHERE o.order_id IS NULL;
-```text
+```
 
 **When to use**: When you need all the records in the main table, whether they have relationships or not.
 
@@ -73,7 +73,7 @@ SELECT
     u.last_name
 FROM users u
 RIGHT JOIN orders o ON u.user_id = o.user_id;
-```text
+```
 
 **Nota**: Generalmente se prefiere LEFT JOIN reorganizando las tables.
 
@@ -110,7 +110,7 @@ FROM orders o
 INNER JOIN users u ON o.user_id = u.user_id
 INNER JOIN order_items oi ON o.order_id = oi.order_id
 INNER JOIN products p ON oi.product_id = p.product_id;
-```text
+```
 
 ### 6. Self JOIN
 
@@ -131,18 +131,18 @@ INNER JOIN users u1 ON o1.user_id = u1.user_id
 INNER JOIN users u2 ON o2.user_id = u2.user_id
 INNER JOIN products p ON oi1.product_id = p.product_id
 WHERE u1.user_id < u2.user_id;
-```text
+```
 
 ## 🎓 Exercises
 
 ### Setup
 
 1. Make sure you have the database running
-2. Navigate to the exercise directory:
+1. Navigate to the exercise directory:
 
 ```bash
 cd exercises/02-joins
-```text
+```
 
 ### Exercise 1: Basic INNER JOIN
 
@@ -222,7 +222,7 @@ users (1) ----< (N) orders
 products (1) ----< (N) order_items (N) >---- (1) orders
 
 users (1) ----< (N) user_activity (N) >---- (0..1) products
-```text
+```
 
 **Relaciones**:
 
@@ -263,7 +263,7 @@ Para cada query:
 
 -- FULL OUTER JOIN: Todos de ambos lados
 -- Result: All users (with/without orders) + all orders (with/without user)
-```text
+```
 
 ## 🔍 Testing
 
@@ -274,7 +274,7 @@ psql -h localhost -U dataengineer -d ecommerce -f starter/01_inner_join.sql
 # Comparar con soluciones
 diff <(psql -h localhost -U dataengineer -d ecommerce -f starter/01_inner_join.sql) \
      <(psql -h localhost -U dataengineer -d ecommerce -f solution/01_inner_join.sql)
-```text
+```
 
 ## 💡 Hints
 
@@ -302,6 +302,6 @@ Once you complete this exercise, continue with:
 
 - **Exercise 03**: Aggregations - GROUP BY and aggregation functions
 
----
+______________________________________________________________________
 
 **Tip**: Usa `EXPLAIN`to see the execution plan of queries with JOINs and understand how PostgreSQL optimizes them.

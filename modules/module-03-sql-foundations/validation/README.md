@@ -4,7 +4,7 @@ This directory contains automated tests to validate the exercises in the SQL Fou
 
 ## 📋 Contenido
 
-```text
+```
 validation/
 ├── conftest.py              # Pytest configuration and fixtures
 ├── helpers.py               # Validation utilities
@@ -12,7 +12,7 @@ validation/
 ├── test_exercise_02.py      # Tests para Joins
 ├── test_exercises_03_06.py  # Tests para Aggregations, Window Functions, CTEs, Optimization
 └── README.md                # Este archivo
-```text
+```
 
 ## 🚀 Setup
 
@@ -24,7 +24,7 @@ cd modules/module-03-sql-foundations
 
 # Instalar pytest y dependencias
 pip install pytest pytest-postgresql psycopg2-binary python-dotenv
-```text
+```
 
 ### 2. Configurar database
 
@@ -60,7 +60,7 @@ POSTGRES_PORT=5432
 POSTGRES_DB=ecommerce
 POSTGRES_USER=dataengineer
 POSTGRES_PASSWORD=training123
-```text
+```
 
 ## 🧪 Run Tests
 
@@ -69,7 +69,7 @@ POSTGRES_PASSWORD=training123
 ```bash
 # From the module directory
 pytest validation/ -v
-```text
+```
 
 ### Tests by Exercise
 
@@ -91,7 +91,7 @@ pytest validation/ -v -m exercise05
 
 # Exercise 06: Optimization
 pytest validation/ -v -m exercise06
-```text
+```
 
 ### Specific Tests
 
@@ -123,7 +123,7 @@ pytest validation/ -v -m "not slow"
 
 # Generate coverage report (requires pytest-cov)
 pytest validation/ --cov=validation --cov-report=html
-```text
+```
 
 ## 📊 Test Structure
 
@@ -163,7 +163,7 @@ def test_select_users(execute_query):
 
     assert len(results) == 5
     assert 'first_name' in results[0]
-```text
+```
 
 ### Test con Validaciones
 
@@ -184,7 +184,7 @@ def test_projection(execute_query):
         results,
         ['first_name', 'last_name', 'email']
     )
-```text
+```
 
 ### Test de Performance
 
@@ -212,7 +212,7 @@ def test_join_performance(db_cursor):
 
 - ✓ Projection of specific columns
 - ✓ Usage de alias
-- ✓ Filtering with WHERE (=, <, >, !=)
+- ✓ Filtering with WHERE (=, \<, >, !=)
 - ✓ Logical operators (AND, OR, NOT)
 - ✓ Pattern matching (LIKE, IN, BETWEEN)
 - ✓ NULL handling (IS NULL, IS NOT NULL)
@@ -274,7 +274,7 @@ docker-compose down -v
 docker-compose up -d
 sleep 5
 psql -h localhost -U dataengineer -d ecommerce -f init.sql
-```text
+```
 
 ### Error: "Connection refused"
 
@@ -286,7 +286,7 @@ psql -h localhost -U dataengineer -d ecommerce -f init.sql
 cd infrastructure
 docker-compose up -d
 docker-compose ps  # Verificar estado
-```text
+```
 
 ### Error: "Table is empty"
 
@@ -296,7 +296,7 @@ docker-compose ps  # Verificar estado
 
 ```bash
 psql -h localhost -U dataengineer -d ecommerce -f infrastructure/init.sql
-```text
+```
 
 ### Tests Fallan Intermitentemente
 
@@ -319,7 +319,7 @@ pytest validation/ -m "not slow"
 
 # Or run in parallel
 pytest validation/ -n auto
-```text
+```
 
 ## 📚 resources
 
@@ -333,24 +333,24 @@ pytest validation/ -n auto
 ### Escribir Tests
 
 1. **Un concepto por test**: Cada test debe validar una sola cosa
-2. **Nombres descriptivos**: `test_select_users_with_active_status` > `test_query1`
-3. **Clear assertions**: Use helpers that give useful error messages
-4. **Automatic Cleanup**: Use fixtures with rollback
-5. **Consistent data**: Do not assume specific data, verify conditions
+1. **Nombres descriptivos**: `test_select_users_with_active_status` > `test_query1`
+1. **Clear assertions**: Use helpers that give useful error messages
+1. **Automatic Cleanup**: Use fixtures with rollback
+1. **Consistent data**: Do not assume specific data, verify conditions
 
 ### Performance
 
 1. **Usar markers**: Marca tests lentos con `@pytest.mark.slow`
-2. **Fixtures con scope apropiado**: `session`for connection,`function` para cursor
-3. **Evitar sleep**: Usar health checks en lugar de esperar tiempos fijos
-4. **Limitar datasets**: Usa LIMIT en tests cuando sea posible
+1. **Fixtures con scope apropiado**: `session`for connection,`function` para cursor
+1. **Evitar sleep**: Usar health checks en lugar de esperar tiempos fijos
+1. **Limitar datasets**: Usa LIMIT en tests cuando sea posible
 
 ### Mantenibilidad
 
 1. **Reusable Helpers**: Centralize common logic in`helpers.py`
-2. **Fixtures compartidas**: Define en `conftest.py`
-3. **Documentation**: Clear Docstrings in each test
-4. **Organized Markers**: Use markers to group tests logically
+1. **Fixtures compartidas**: Define en `conftest.py`
+1. **Documentation**: Clear Docstrings in each test
+1. **Organized Markers**: Use markers to group tests logically
 
 ## 🔄 CI/CD Integration
 
@@ -413,9 +413,9 @@ jobs:
         with:
           name: test-results
           path: junit/test-results.xml
-```text
+```
 
----
+______________________________________________________________________
 
 **Last Update**: February 2026
 **Mantenido por**: Equipo de Training Data Engineering
