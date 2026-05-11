@@ -7,10 +7,10 @@ This file defines agent behavior for this repository.
 ## Source of Truth
 
 1. Follow this file first.
-2. Follow `docs/MODULE-CONTRACT-MATRIX.md` for module structure contracts.
-3. Follow `.github/skills/cloud-data-module-standardization/SKILL.md` for normalization workflow.
-4. Follow `.github/skills/cloud-data-english-standards/SKILL.md` for language governance.
-5. If instructions conflict, prefer this file for agent behavior and SKILL files for content rules.
+1. Follow `docs/MODULE-CONTRACT-MATRIX.md` for module structure contracts.
+1. Follow `.github/skills/cloud-data-module-standardization/SKILL.md` for normalization workflow.
+1. Follow `.github/skills/cloud-data-english-standards/SKILL.md` for language governance.
+1. If instructions conflict, prefer this file for agent behavior and SKILL files for content rules.
 
 ## Repository Conventions
 
@@ -34,7 +34,7 @@ PYTHON=python
 $PYTHON scripts/validate_learning_labs.py --strict-core --strict-headings
 $PYTHON scripts/validate_english_content.py
 $PYTHON scripts/progress.py
-```text
+```
 
 ## Execution and Reporting Norms
 

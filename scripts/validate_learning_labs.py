@@ -24,6 +24,7 @@ REGULAR_REQUIRED = (
     "validation",
     "scripts",
     "data",
+    "docs",
 )
 
 CHECKPOINT_REQUIRED = (
@@ -53,6 +54,36 @@ EXERCISE_REQUIRED = (
     "solution",
     "my_solution",
 )
+
+REGULAR_OPTIONAL = (
+    "assets",
+    "infrastructure",
+    "requirements.txt",
+    "pytest.ini",
+    "Makefile",
+    "GETTING-STARTED.md",
+    "QUICK-START.md",
+    "STATUS-FINAL.md",
+    "PROGRESS.md",
+)
+
+CHECKPOINT_OPTIONAL = (
+    "scripts",
+    "requirements.txt",
+    "assets",
+    "extensions",
+)
+
+BONUS_OPTIONAL = (
+    "assets",
+    "infrastructure",
+    "requirements.txt",
+    "COST-ALERT.md",
+)
+
+MODULE_SPECIFIC_EXCEPTIONS = {
+    "module-10-workflow-orchestration": {"dags"},
+}
 
 # Heading groups can be satisfied by at least one candidate each.
 README_HEADING_GROUPS = {
@@ -97,6 +128,16 @@ def required_paths_for(module_kind: str) -> Sequence[str]:
         return CHECKPOINT_REQUIRED
     if module_kind == "bonus":
         return BONUS_REQUIRED
+    return ()
+
+
+def optional_paths_for(module_kind: str) -> Sequence[str]:
+    if module_kind == "regular":
+        return REGULAR_OPTIONAL
+    if module_kind == "checkpoint":
+        return CHECKPOINT_OPTIONAL
+    if module_kind == "bonus":
+        return BONUS_OPTIONAL
     return ()
 
 
@@ -148,6 +189,38 @@ def check_required_paths(
                     message=f"Missing required path: {rel}",
                 )
             )
+
+    return findings
+
+
+def check_unapproved_extras(
+    module_dir: Path,
+    strict_bonus: bool,
+) -> List[Finding]:
+    findings: List[Finding] = []
+    kind = module_type(module_dir.name)
+
+    approved = set(required_paths_for(kind))
+    approved.update(optional_paths_for(kind))
+    approved.update(MODULE_SPECIFIC_EXCEPTIONS.get(module_dir.name, set()))
+
+    module_root_entries = {
+        p.name for p in module_dir.iterdir() if not p.name.startswith(".")
+    }
+    extras = sorted(module_root_entries - approved)
+
+    for extra in extras:
+        severity = "ERROR"
+        if kind == "bonus" and not strict_bonus:
+            severity = "WARNING"
+        findings.append(
+            Finding(
+                severity=severity,
+                module=module_dir.name,
+                code="UNAPPROVED_MODULE_EXTRA",
+                message=f"Unapproved module-root path: {extra}",
+            )
+        )
 
     return findings
 
@@ -256,6 +329,9 @@ def validate_modules(
 
         findings.extend(
             check_required_paths(module_dir, strict_bonus=strict_bonus)
+        )
+        findings.extend(
+            check_unapproved_extras(module_dir, strict_bonus=strict_bonus)
         )
         findings.extend(
             check_exercise_contract(module_dir, strict_bonus=strict_bonus)
