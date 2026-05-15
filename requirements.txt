@@ -4,7 +4,7 @@ awscli>=1.32.0
 awscli-local>=0.22.2
 
 # Data Processing
-pandas>=3.0.2
+pandas>=3.0.3
 numpy>=1.26.0
 pyarrow>=24.0.0
 duckdb>=1.5.2
