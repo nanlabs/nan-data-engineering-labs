@@ -31,7 +31,7 @@ terraform-compliance>=1.15.1
 pytest>=9.0.3
 pytest-cov>=7.1.0
 pytest-mock>=3.12.0
-moto[all]>=5.2.0
+moto[all]>=5.2.1
 
 # Data Generation
 faker>=22.0.0
