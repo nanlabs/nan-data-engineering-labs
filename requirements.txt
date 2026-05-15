@@ -1,5 +1,5 @@
 # Core AWS and Cloud Tools
-boto3>=1.43.6
+boto3>=1.43.8
 awscli>=1.32.0
 awscli-local>=0.22.2
 
