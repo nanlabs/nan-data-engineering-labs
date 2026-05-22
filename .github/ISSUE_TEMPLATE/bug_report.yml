@@ -26,4 +26,4 @@ body:
     id: env
     attributes:
       label: Environment
-      placeholder: "e.g. devcontainer, macOS local, Linux venv"
+      placeholder: "e.g. devcontainer, macOS local, Linux uv"
