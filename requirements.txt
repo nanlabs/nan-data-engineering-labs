@@ -35,7 +35,7 @@ moto[all]>=5.2.1
 
 # Data Generation
 faker>=40.18.0
-mimesis>=13.0.0
+mimesis>=19.1.0
 
 # Utilities
 python-dotenv>=1.0.0
