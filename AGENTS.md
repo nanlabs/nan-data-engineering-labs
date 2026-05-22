@@ -1,16 +1,23 @@
 # AGENTS
 
+## Charter
+
+This repository adopts **NaNLABS Lab Charter v1**.
+Upstream contract: [`docs/CHARTER.md`](docs/CHARTER.md).
+When in doubt, the Charter wins over local conventions documented below.
+
 ## Scope
 
 This file defines agent behavior for this repository.
 
 ## Source of Truth
 
-1. Follow this file first.
+1. Follow `docs/CHARTER.md` (Lab Charter v1) as the upstream contract.
+1. Follow this file for repo-specific agent behavior.
 1. Follow `docs/MODULE-CONTRACT-MATRIX.md` for module structure contracts.
 1. Follow `.github/skills/cloud-data-module-standardization/SKILL.md` for normalization workflow.
 1. Follow `.github/skills/cloud-data-english-standards/SKILL.md` for language governance.
-1. If instructions conflict, prefer this file for agent behavior and SKILL files for content rules.
+1. If instructions conflict, prefer Charter > this file > SKILL files.
 
 ## Repository Conventions
 
