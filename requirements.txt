@@ -38,7 +38,7 @@ faker>=40.18.0
 mimesis>=19.1.0
 
 # Utilities
-python-dotenv>=1.0.0
+python-dotenv>=1.2.2
 pyyaml>=6.0.3
 jsonschema>=4.21.0
 requests>=2.34.2
