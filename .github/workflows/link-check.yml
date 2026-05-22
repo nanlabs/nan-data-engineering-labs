@@ -1,0 +1,46 @@
+name: link-check
+
+on:
+  pull_request:
+    paths:
+      - "**/references/links.md"
+      - "**/theory/resources.md"
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install requests
+      - name: Link check
+        run: |
+          python -c "
+          import pathlib, re, requests, sys
+
+          errors = []
+          for pattern in ['**/references/links.md', '**/theory/resources.md']:
+              for f in pathlib.Path('.').glob(pattern):
+                  text = f.read_text()
+                  urls = re.findall(r'https?://[^\s)>\]]+', text)
+                  for url in urls:
+                      try:
+                          r = requests.head(url, timeout=10, allow_redirects=True)
+                          if r.status_code >= 400:
+                              errors.append(f'{f}: {url} -> {r.status_code}')
+                      except Exception as e:
+                          errors.append(f'{f}: {url} -> {e}')
+
+          if errors:
+              print('Broken links found:')
+              for e in errors:
+                  print(f'  {e}')
+              sys.exit(1)
+          else:
+              print('All links OK')
+          "

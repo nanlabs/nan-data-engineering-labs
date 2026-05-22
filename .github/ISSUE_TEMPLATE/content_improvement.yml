@@ -1,0 +1,32 @@
+name: Content improvement
+description: Existing module content needs to be improved (theory, exercises, validation)
+labels: ["content"]
+body:
+  - type: input
+    id: module
+    attributes:
+      label: Module path
+      placeholder: "e.g. modules/module-05-data-lakehouse"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - README
+        - theory
+        - exercises
+        - validation
+        - infrastructure
+        - data
+        - scripts
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: improvement
+    attributes:
+      label: Proposed improvement
+    validations:
+      required: true
