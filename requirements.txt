@@ -7,7 +7,7 @@ awscli-local>=0.22.2
 pandas>=3.0.3
 numpy>=2.4.4
 pyarrow>=24.0.0
-duckdb>=1.5.2
+duckdb>=1.5.3
 
 # Apache Spark (PySpark local)
 pyspark>=4.1.1
