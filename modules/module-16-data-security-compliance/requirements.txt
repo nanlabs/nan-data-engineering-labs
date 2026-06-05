@@ -35,7 +35,7 @@ aws-gate==0.11.4
 aws-iam-tester==0.4.0
 
 # Data Governance
-pyarrow==15.0.2
+pyarrow==23.0.1
 pandas==2.2.1
 
 # Security Scanning
