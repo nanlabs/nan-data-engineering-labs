@@ -5,7 +5,7 @@
 # ------------------------------
 # PySpark & Spark Extensions
 # ------------------------------
-pyspark==3.5.0                # Apache Spark Python API
+pyspark==3.5.2                # Apache Spark Python API
 delta-spark==3.0.0            # Delta Lake for Spark (70% of module)
 pyiceberg[pyarrow,s3fs]==0.6.0  # Apache Iceberg Python API (30% of module)
 
