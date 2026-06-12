@@ -1,7 +1,7 @@
 # Requirements for Exercise 01: Delta Basics
 
 # Core Spark and Delta Lake
-pyspark==3.5.0
+pyspark==3.5.2
 delta-spark==3.0.0
 
 # AWS S3 support (for MinIO)
