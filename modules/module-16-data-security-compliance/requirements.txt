@@ -9,7 +9,7 @@ aws-sam-cli==1.134.0
 aws-encryption-sdk==3.3.0
 
 # Security & Cryptography
-cryptography==46.0.7
+cryptography==48.0.1
 pycryptodome==3.20.0
 python-jose[cryptography]==3.4.0
 PyJWT==2.13.0
