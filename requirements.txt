@@ -18,7 +18,7 @@ great-expectations>=0.18.22
 pandera>=0.32.0
 
 # Streaming
-kafka-python>=3.0.0
+kafka-python>=3.0.2
 confluent-kafka>=2.14.2
 
 # Workflow Orchestration
