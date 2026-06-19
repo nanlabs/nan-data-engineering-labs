@@ -11,7 +11,7 @@ duckdb>=1.5.4
 
 # Apache Spark (PySpark local)
 pyspark>=4.1.2
-delta-spark>=4.2.0
+delta-spark>=4.3.0
 
 # Data Quality
 great-expectations>=0.18.22
