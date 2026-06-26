@@ -1,6 +1,6 @@
 # Core AWS and Cloud Tools
 boto3>=1.43.33
-awscli>=1.45.33
+awscli>=1.45.36
 awscli-local>=0.22.2
 
 # Data Processing
