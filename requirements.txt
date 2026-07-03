@@ -34,7 +34,7 @@ pytest-mock>=3.15.1
 moto[all]>=5.2.2
 
 # Data Generation
-faker>=40.23.0
+faker>=40.28.1
 mimesis>=19.1.0
 
 # Utilities
