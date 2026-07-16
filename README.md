@@ -326,3 +326,11 @@ MIT License -- Free to use for learning and teaching. See [LICENSE](LICENSE).
 <!-- PROGRESS_START -->
 *Progress table will be auto-generated here by scripts/progress.py*
 <!-- PROGRESS_END -->
+
+## 👥 Contributors
+
+<a href="https://github.com/nanlabs/nan-data-engineering-labs/contributors">
+  <img src="https://contrib.rocks/image?repo=nanlabs/nan-data-engineering-labs"/>
+</a>
+
+Made with [contributors-img](https://contrib.rocks).
