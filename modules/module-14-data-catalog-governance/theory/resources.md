@@ -114,27 +114,17 @@
 
 ### AWS Big Data Blog
 
-**Data Catalog:**
+**Data Catalog / Lake Formation / Data Quality:**
 
-- [Best practices for organizing your data catalog](https://aws.amazon.com/blogs/big-data/best-practices-for-organizing-your-aws-glue-data-catalog/)
-- [Build a governed data catalog with AWS Glue](https://aws.amazon.com/blogs/big-data/build-a-governed-data-catalog-with-aws-glue/)
-- [Automate data discovery and catalog updates](https://aws.amazon.com/blogs/big-data/automate-aws-glue-data-catalog-population/)
+Prefer the official docs above for durable references. Blog posts rotate frequently; start from:
 
-**Lake Formation:**
-
-- [Implement row-level and cell-level security](https://aws.amazon.com/blogs/big-data/implement-row-level-and-cell-level-security/)
-- [Tag-based access control for multi-tenant data lakes](https://aws.amazon.com/blogs/big-data/tag-based-access-control/)
-- [Cross-account data sharing patterns](https://aws.amazon.com/blogs/big-data/enable-cross-account-data-sharing/)
-
-**Data Quality:**
-
-- [Automate data quality validation](https://aws.amazon.com/blogs/big-data/automate-data-quality-validation/)
-- [Build data quality rules with AWS Glue](https://aws.amazon.com/blogs/big-data/build-data-quality-rules/)
+- [AWS Big Data Blog home](https://aws.amazon.com/blogs/big-data/)
+- [Design a data mesh with Lake Formation and Glue](https://aws.amazon.com/blogs/big-data/design-a-data-mesh-architecture-using-aws-lake-formation-and-aws-glue/)
 
 ### AWS Database Blog
 
-- [Metadata management best practices](https://aws.amazon.com/blogs/database/metadata-management/)
-- [Data lineage with AWS Glue](https://aws.amazon.com/blogs/database/data-lineage-glue/)
+- [AWS Database Blog home](https://aws.amazon.com/blogs/database/)
+- Search for Glue / Lake Formation / metadata management posts as needed
 
 ## Books
 
