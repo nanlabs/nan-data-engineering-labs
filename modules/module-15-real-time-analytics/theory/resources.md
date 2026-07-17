@@ -60,17 +60,17 @@
 
 **Core Concepts**
 
-- 📖 [Flink Documentation](https://flink.apache.org/docs/stable/)
-- 🎓 [DataStream API](https://flink.apache.org/docs/stable/dev/datastream_api.html)
-- 🎓 [Table API & SQL](https://flink.apache.org/docs/stable/dev/table/overview.html)
-- 🎯 [Stateful Stream Processing](https://flink.apache.org/docs/stable/dev/stream/state/)
+- 📖 [Flink Documentation](https://nightlies.apache.org/flink/flink-docs-stable/)
+- 🎓 [DataStream API](https://nightlies.apache.org/flink/flink-docs-stable/dev/datastream_api.html)
+- 🎓 [Table API & SQL](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/table/overview/)
+- 🎯 [Stateful Stream Processing](https://nightlies.apache.org/flink/flink-docs-stable/dev/stream/state/)
 
 **Advanced Topics**
 
-- ⏰ [Event Time & Watermarks](https://flink.apache.org/docs/stable/dev/event_time.html)
-- 🪟 [Windows](https://flink.apache.org/docs/stable/dev/stream/operators/windows.html)
-- 🔍 [Complex Event Processing (CEP)](https://flink.apache.org/docs/stable/dev/libs/cep.html)
-- 💾 [State & Fault Tolerance](https://flink.apache.org/docs/stable/dev/stream/state/checkpointing.html)
+- ⏰ [Event Time & Watermarks](https://nightlies.apache.org/flink/flink-docs-stable/docs/concepts/time/)
+- 🪟 [Windows](https://nightlies.apache.org/flink/flink-docs-stable/dev/stream/operators/windows.html)
+- 🔍 [Complex Event Processing (CEP)](https://nightlies.apache.org/flink/flink-docs-stable/dev/libs/cep.html)
+- 💾 [State & Fault Tolerance](https://nightlies.apache.org/flink/flink-docs-stable/dev/stream/state/checkpointing.html)
 
 ### PyFlink
 
@@ -212,7 +212,7 @@
 pip install apache-flink==1.17.0
 
 # Flink CLI
-wget https://dlcdn.apache.org/flink/flink-1.17.0/flink-1.17.0-bin-scala_2.12.tgz
+wget https://flink.apache.org/downloads/
 tar -xvf flink-1.17.0-bin-scala_2.12.tgz
 ```text
 
@@ -315,7 +315,7 @@ import aiohttp
 
 **2. AWS Forums**
 
-- 💬 [AWS Big Data Forums](https://repost.aws/tags/TA4IvCeWI1TE-6EMfW1AOzqA/amazon-kinesis-data-analytics)
+- 💬 [AWS Big Data Forums](https://docs.aws.amazon.com/kinesisanalytics/)
 - 💬 [AWS re:Post](https://repost.aws/)
 - 💬 [AWS Reddit](https://www.reddit.com/r/aws/)
 

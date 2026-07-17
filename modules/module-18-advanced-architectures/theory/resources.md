@@ -66,7 +66,7 @@
 **Level**: Intermediate (less technical, more organizational)
 **Time**: 20-30 hours
 **Price**: $35 (Kindle), $50 (paperback)
-**Link**: <https://martinfowler.com/books/data-mesh.html>
+**Link**: <https://martinfowler.com/articles/data-mesh-principles.html>
 
 ### 3. **Building Microservices** (Sam Newman, 2021 - 2nd Edition)
 
@@ -410,7 +410,7 @@
    **Topics**: Data platform evolution, Kafka at scale
 
 2. **Netflix Engineering**
-   <https://www.youtube.com/c/NetflixOpenSource>
+   <https://netflix.github.io/>
    **Topics**: Microservices, chaos engineering, data platform
 
 ---

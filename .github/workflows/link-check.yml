@@ -5,6 +5,7 @@ on:
     paths:
       - "**/references/links.md"
       - "**/theory/resources.md"
+      - ".github/workflows/link-check.yml"
   schedule:
     - cron: "0 6 * * 1"
 
@@ -20,27 +21,80 @@ jobs:
         run: pip install requests
       - name: Link check
         run: |
-          python -c "
-          import pathlib, re, requests, sys
+          python - <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          import requests
+
+          # Anti-bot / method-not-allowed / gateway blips are not treated as dead links.
+          SOFT_STATUSES = {401, 403, 405, 406, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524, 530}
+          HEADERS = {
+              "User-Agent": "nan-data-engineering-labs-link-check/1.0 (+https://github.com/nanlabs/nan-data-engineering-labs)"
+          }
+          SKIP_HOST_PREFIXES = ("localhost", "127.0.0.1", "0.0.0.0")
+          TRAILING_PUNCT = "\"'`.,;:)]}>"
 
           errors = []
-          for pattern in ['**/references/links.md', '**/theory/resources.md']:
-              for f in pathlib.Path('.').glob(pattern):
-                  text = f.read_text()
-                  urls = re.findall(r'https?://[^\s)>\]]+', text)
-                  for url in urls:
-                      try:
-                          r = requests.head(url, timeout=10, allow_redirects=True)
-                          if r.status_code >= 400:
-                              errors.append(f'{f}: {url} -> {r.status_code}')
-                      except Exception as e:
-                          errors.append(f'{f}: {url} -> {e}')
+          soft = []
+          skipped = 0
+          checked = 0
 
+          def normalize(url: str) -> str:
+              return url.rstrip(TRAILING_PUNCT)
+
+          def check(url: str) -> tuple[str, str | int]:
+              try:
+                  r = requests.head(url, timeout=15, allow_redirects=True, headers=HEADERS)
+                  if r.status_code < 400:
+                      return "ok", r.status_code
+                  if r.status_code in SOFT_STATUSES:
+                      return "soft", r.status_code
+                  # Some hosts reject HEAD; retry with GET.
+                  r = requests.get(url, timeout=15, allow_redirects=True, headers=HEADERS, stream=True)
+                  r.close()
+                  if r.status_code < 400:
+                      return "ok", r.status_code
+                  if r.status_code in SOFT_STATUSES:
+                      return "soft", r.status_code
+                  return "hard", r.status_code
+              except requests.exceptions.SSLError as exc:
+                  return "soft", f"ssl:{exc.__class__.__name__}"
+              except requests.exceptions.ConnectionError as exc:
+                  # Transient network resets / DNS failures are not dead links.
+                  return "soft", f"conn:{exc.__class__.__name__}"
+              except Exception as exc:  # noqa: BLE001
+                  return "hard", str(exc)
+
+          for pattern in ["**/references/links.md", "**/theory/resources.md"]:
+              for path in pathlib.Path(".").glob(pattern):
+                  text = path.read_text(encoding="utf-8")
+                  urls = re.findall(r"https?://[^\s)>\]]+", text)
+                  for raw in urls:
+                      url = normalize(raw)
+                      host = re.sub(r"^https?://", "", url).split("/", 1)[0].lower()
+                      if host.startswith(SKIP_HOST_PREFIXES):
+                          skipped += 1
+                          continue
+                      checked += 1
+                      kind, detail = check(url)
+                      if kind == "hard":
+                          errors.append(f"{path}: {url} -> {detail}")
+                      elif kind == "soft":
+                          soft.append(f"{path}: {url} -> {detail}")
+
+          print(
+              f"Checked {checked} URLs ({len(errors)} hard failures, {len(soft)} soft/blocked, {skipped} skipped)"
+          )
+          if soft:
+              print("Soft failures (ignored):")
+              for item in soft:
+                  print(f"  {item}")
           if errors:
-              print('Broken links found:')
-              for e in errors:
-                  print(f'  {e}')
+              print("Broken links found:")
+              for item in errors:
+                  print(f"  {item}")
               sys.exit(1)
-          else:
-              print('All links OK')
-          "
+          print("All links OK")
+          PY

@@ -10,7 +10,7 @@ pyarrow>=25.0.0
 duckdb>=1.5.4
 
 # Apache Spark (PySpark local)
-pyspark>=4.1.2
+pyspark>=4.0.1,<=4.1.1
 delta-spark>=4.3.1
 
 # Data Quality

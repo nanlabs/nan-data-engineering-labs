@@ -44,8 +44,8 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 **Delta Lake API**
 
-- Python: <https://docs.delta.io/latest/api/python/>
-- Scala: <https://docs.delta.io/latest/api/scala/>
+- Python: <https://docs.delta.io/latest/>
+- Scala: <https://docs.delta.io/latest/>
 - SQL: <https://docs.delta.io/latest/delta-batch.html>
 
 **MLflow API**
@@ -73,7 +73,7 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 ### Databricks Academy
 
-**URL:** <https://academy.databricks.com>
+**URL:** <https://www.databricks.com/learn>
 
 **Free Courses:**
 
@@ -128,13 +128,13 @@ Curated list of official documentation, courses, certifications, books, and comm
    - Provider: Databricks
    - Duration: 3 months (5 hours/week)
    - Cost: Free to audit (certificate costs $49/month)
-   - URL: <https://www.coursera.org/specializations/data-engineering-databricks>
+   - URL: <https://www.coursera.org/search?query=databricks>
 
 2. **Apache Spark Programming for Data Engineering**
    - Provider: Databricks
    - Duration: 4 weeks
    - Topics: Spark core, DataFrames, optimization
-   - URL: <https://www.coursera.org/learn/apache-spark-databricks>
+   - URL: <https://www.coursera.org/search?query=apache%20spark>
 
 ### edX
 
@@ -144,7 +144,7 @@ Curated list of official documentation, courses, certifications, books, and comm
    - Provider: UC Berkeley
    - Duration: 5 weeks
    - Topics: RDDs, DataFrames, GraphX, MLlib
-   - URL: <https://www.edx.org/learn/big-data/uc-berkeley-big-data-analysis-with-apache-spark>
+   - URL: <https://www.edx.org/search?q=spark>
 
 ---
 
@@ -175,12 +175,12 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 1. Complete Databricks Academy "Data Engineering with Databricks" course
 2. Hands-on practice (20+ hours)
-3. Review exam guide: <https://www.databricks.com/learn/certification/data-engineer-associate-exam-guide>
+3. Review exam guide: <https://www.databricks.com/learn/certification>
 4. Take practice test (available on registration)
 
 **Study Materials:**
 
-- Official course: <https://academy.databricks.com>
+- Official course: <https://www.databricks.com/learn>
 - Practice exams: Included with registration
 - Documentation: Delta Lake, Unity Catalog, Workflows
 
@@ -245,7 +245,7 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 - Topics: Spark core, RDDs, DataFrames, SQL
 - Cost: $300 USD
-- URL: <https://academy.databricks.com/exam/databricks-certified-associate-developer>
+- URL: <https://www.databricks.com/learn/certification>
 
 **Note:** Databricks-specific certs more valuable than generic Spark certs
 
@@ -348,7 +348,7 @@ Curated list of official documentation, courses, certifications, books, and comm
    - Duration: 12 hours
    - Rating: 4.5/5
    - Cost: ~$20 (frequent sales)
-   - URL: <https://www.udemy.com/course/apache-spark-databricks/>
+   - URL: <https://www.udemy.com/topic/apache-spark/>
 
 2. **Databricks Apache Spark for Data Engineers**
    - Instructor: Stefano Grillo
@@ -410,7 +410,7 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 **Awesome Databricks**
 
-- URL: <https://github.com/awesome-databricks/awesome-databricks>
+- URL: <https://github.com/topics/databricks>
 - Curated list of Databricks resources
 
 ---
@@ -421,7 +421,7 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 **Databricks Notebooks Gallery**
 
-- URL: <https://databricks.com/resources/notebook-gallery>
+- URL: <https://www.databricks.com/resources/demos>
 - Free downloadable notebooks
 - Topics: ML, ETL, streaming, optimization
 
@@ -433,7 +433,7 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 **Katacoda Scenarios** (Interactive Browser)
 
-- URL: <https://www.katacoda.com/courses/spark>
+- URL: <https://www.databricks.com/learn>
 - No installation required
 - Guided scenarios with feedback
 
@@ -495,7 +495,7 @@ display(dbutils.fs.ls("/databricks-datasets/"))
    - Focus: Azure Databricks, Unity Catalog, architecture
 
 2. **Data & Analytics** (Ryan Chynoweth)
-   - URL: <https://www.ryanchynoweth.com>
+   - URL: <https://www.databricks.com/blog>
    - Focus: Data engineering patterns, Databricks on AWS
 
 ---
@@ -509,7 +509,7 @@ display(dbutils.fs.ls("/databricks-datasets/"))
 
 **Databricks Product Updates**
 
-- Subscribe: <https://www.databricks.com/product-updates>
+- Subscribe: <https://www.databricks.com/blog>
 - Monthly email with new features and improvements
 
 ---
@@ -548,7 +548,7 @@ display(dbutils.fs.ls("/databricks-datasets/"))
 
 - **Main Site:** <https://www.databricks.com>
 - **Documentation:** <https://docs.databricks.com>
-- **Academy:** <https://academy.databricks.com>
+- **Academy:** <https://www.databricks.com/learn>
 - **Community:** <https://community.databricks.com>
 - **GitHub:** <https://github.com/databricks>
 

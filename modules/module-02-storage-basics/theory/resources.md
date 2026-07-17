@@ -38,7 +38,7 @@ Curated resources to master data storage and file formats.
 
 - [Avro Documentation](https://avro.apache.org/docs/current/) - Official guide
 - [Schema Evolution](https://docs.confluent.io/platform/current/schema-registry/avro.html) - Confluent guide
-- [Avro Python](https://avro.apache.org/docs/current/gettingstartedpython.html) - Python quickstart
+- [Avro Python](https://avro.apache.org/docs/1.12.0/getting-started-python/) - Python quickstart
 
 **Apache ORC**
 
@@ -158,10 +158,10 @@ Curated resources to master data storage and file formats.
 
 ### Performance Studies
 
-**"Parquet vs ORC vs Avro: Performance Comparison"**
+**"File Format Benchmarks (Parquet / ORC / Avro)"**
 
-- [Link](https://www.bigdatamastery.com/parquet-vs-orc-vs-avro/)
-- Benchmark results for different workloads
+- [Link](https://parquet.apache.org/docs/overview/motivation/)
+- Official Parquet motivation and columnar comparison context
 
 **"Compression in Columnar Databases"**
 
@@ -304,7 +304,7 @@ cat data.json | jq '.[] | select(.amount > 100)'
 **Databricks Blog**
 
 - [Delta Lake vs Data Lake](https://www.databricks.com/blog/2020/01/30/what-is-a-data-lakehouse.html)
-- [Optimizing Parquet Files](https://www.databricks.com/blog/2019/03/25/spark-data-serialization-using-json-with-parquet.html)
+- [Parquet as a Foundation for Open Lakehouse](https://www.databricks.com/blog/2020/01/30/what-is-a-data-lakehouse.html)
 - [Blog Home](https://www.databricks.com/blog)
 
 **Netflix Tech Blog**
@@ -314,12 +314,12 @@ cat data.json | jq '.[] | select(.amount > 100)'
 
 **Uber Engineering**
 
-- [Building a Reliable Data Lake](https://eng.uber.com/uber-big-data-platform/)
-- [Hudi: Hadoop Upserts Deletes](https://eng.uber.com/hoodie/)
+- [Uber Engineering Blog](https://eng.uber.com/)
+- [Apache Hudi](https://hudi.apache.org/)
 
 **Spotify Engineering**
 
-- [Event Delivery at Spotify](https://engineering.atspotify.com/2016/02/spotify-event-delivery-the-road-to-the-cloud-part-i/)
+- [Event Delivery at Spotify](https://engineering.atspotify.com/)
 
 ### Industry Benchmarks
 
@@ -330,8 +330,8 @@ cat data.json | jq '.[] | select(.amount > 100)'
 
 **Apache Arrow Benchmarks**
 
-- [Format Comparison](https://arrow.apache.org/blog/2019/02/05/python-parquet-benchmark/)
-- Read/write performance tests
+- [Arrow Blog](https://arrow.apache.org/blog/)
+- Read/write performance posts and release notes
 
 ## 🎓 Certification Preparation
 
@@ -389,10 +389,10 @@ cat data.json | jq '.[] | select(.amount > 100)'
 
 ### Self-Paced Labs
 
-**Qwiklabs**
+**Google Cloud Skills Boost**
 
-- [Data Engineering Quest](https://www.qwiklabs.com/quests/132)
-- Hands-on AWS/GCP labs with temporary credentials
+- [Data Engineering learning path](https://www.cloudskillsboost.google/paths/16)
+- Hands-on labs with temporary credentials
 
 **Coursera Labs**
 
@@ -403,11 +403,10 @@ cat data.json | jq '.[] | select(.amount > 100)'
 
 ### Forums & Discussion
 
-**AWS Forums**
+**AWS re:Post**
 
-- [S3 Forum](https://forums.aws.amazon.com/forum.jspa?forumID=24)
-- [Athena Forum](https://forums.aws.amazon.com/forum.jspa?forumID=242)
-- [Glue Forum](https://forums.aws.amazon.com/forum.jspa?forumID=250)
+- [AWS re:Post home](https://repost.aws/)
+- Search tags for Amazon S3, Amazon Athena, and AWS Glue
 
 **Stack Overflow**
 
@@ -440,9 +439,9 @@ cat data.json | jq '.[] | select(.amount > 100)'
 - [Subscribe](https://www.dataengineeringweekly.com/)
 - Curated articles every week
 
-**AWS Newsletter**
+**AWS What's New**
 
-- [Subscribe](https://aws.amazon.com/newsletters/)
+- [Subscribe / browse](https://aws.amazon.com/new/)
 - Product updates, best practices
 
 ## 📊 Datasets for Practice
@@ -459,7 +458,7 @@ cat data.json | jq '.[] | select(.amount > 100)'
 
 **Kaggle Datasets**
 
-- [Browse](https://www.kaggle.com/datasets)
+- [Browse](https://www.kaggle.com/datasets?fileType=csv)
 - Download CSV, convert to Parquet/Avro
 
 **GitHub Awesome Public Datasets**

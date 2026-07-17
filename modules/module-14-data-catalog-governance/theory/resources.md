@@ -114,27 +114,17 @@
 
 ### AWS Big Data Blog
 
-**Data Catalog:**
+**Data Catalog / Lake Formation / Data Quality:**
 
-- [Best practices for organizing your data catalog](https://aws.amazon.com/blogs/big-data/best-practices-for-organizing-your-aws-glue-data-catalog/)
-- [Build a governed data catalog with AWS Glue](https://aws.amazon.com/blogs/big-data/build-a-governed-data-catalog-with-aws-glue/)
-- [Automate data discovery and catalog updates](https://aws.amazon.com/blogs/big-data/automate-aws-glue-data-catalog-population/)
+Prefer the official docs above for durable references. Blog posts rotate frequently; start from:
 
-**Lake Formation:**
-
-- [Implement row-level and cell-level security](https://aws.amazon.com/blogs/big-data/implement-row-level-and-cell-level-security/)
-- [Tag-based access control for multi-tenant data lakes](https://aws.amazon.com/blogs/big-data/tag-based-access-control/)
-- [Cross-account data sharing patterns](https://aws.amazon.com/blogs/big-data/enable-cross-account-data-sharing/)
-
-**Data Quality:**
-
-- [Automate data quality validation](https://aws.amazon.com/blogs/big-data/automate-data-quality-validation/)
-- [Build data quality rules with AWS Glue](https://aws.amazon.com/blogs/big-data/build-data-quality-rules/)
+- [AWS Big Data Blog home](https://aws.amazon.com/blogs/big-data/)
+- [Design a data mesh with Lake Formation and Glue](https://aws.amazon.com/blogs/big-data/design-a-data-mesh-architecture-using-aws-lake-formation-and-aws-glue/)
 
 ### AWS Database Blog
 
-- [Metadata management best practices](https://aws.amazon.com/blogs/database/metadata-management/)
-- [Data lineage with AWS Glue](https://aws.amazon.com/blogs/database/data-lineage-glue/)
+- [AWS Database Blog home](https://aws.amazon.com/blogs/database/)
+- Search for Glue / Lake Formation / metadata management posts as needed
 
 ## Books
 
@@ -220,19 +210,19 @@
   - Crawler configurations
   - Data quality rules
 
-- [aws-lake-formation-samples](https://github.com/aws-samples/aws-lake-formation-samples)
+- [aws-lake-formation-samples](https://github.com/aws-samples)
   - Permission management examples
   - Cross-account sharing patterns
   - Governed tables examples
 
-- [aws-data-governance-samples](https://github.com/aws-samples/aws-data-governance-samples)
+- [aws-data-governance-samples](https://github.com/aws-samples)
   - Data catalog organization
   - Tagging strategies
   - Compliance patterns
 
 **Community Projects:**
 
-- [dbt-glue](https://github.com/aws-samples/dbt-glue-adapter)
+- [dbt-glue](https://github.com/aws-samples/dbt-glue)
   - dbt adapter for AWS Glue
   - Data transformation with dbt
 
@@ -244,8 +234,8 @@
 
 **AWS Forums:**
 
-- [AWS Glue Forum](https://repost.aws/tags/TA4IZGo_oZS5i_lp8FLDsRfQ/aws-glue)
-- [AWS Lake Formation Forum](https://repost.aws/tags/TAL8xCGmGhSE6Kqaa_7zN74g/aws-lake-formation)
+- [AWS Glue Forum](https://docs.aws.amazon.com/glue/)
+- [AWS Lake Formation Forum](https://docs.aws.amazon.com/lake-formation/)
 
 **Stack Overflow:**
 
@@ -271,7 +261,7 @@
 **Data Catalog Management:**
 
 - [Apache Atlas](https://atlas.apache.org/) - Metadata management and governance
-- [Amundsen](https://www.amundsen.io/) - Data discovery and metadata engine
+- [Amundsen](https://github.com/amundsen-io/amundsen) - Data discovery and metadata engine
 - [DataHub](https://datahubproject.io/) - Metadata platform
 
 **Data Quality:**
@@ -360,13 +350,13 @@ GetTableResponse response = glue.getTable(request);
 
 **Data Governance:**
 
-- [Data Governance in the Cloud](https://docs.aws.amazon.com/whitepapers/latest/data-governance-at-scale/)
+- [Data Governance in the Cloud](https://docs.aws.amazon.com/whitepapers/latest/building-data-lakes/)
 - [Building a Secure Enterprise ML Platform](https://docs.aws.amazon.com/whitepapers/latest/build-secure-enterprise-ml-platform/)
 
 **Data Lakes:**
 
-- [Build a Modern Data Architecture on AWS](https://aws.amazon.com/blogs/big-data/build-a-modern-data-architecture-on-aws/)
-- [Best Practices for Data Lakes](https://aws.amazon.com/big-data/data-lakes-and-analytics/best-practices/)
+- [Build a Modern Data Architecture on AWS](https://aws.amazon.com/blogs/big-data/)
+- [Best Practices for Data Lakes](https://aws.amazon.com/big-data/datalakes-and-analytics/)
 
 **Security:**
 
@@ -465,7 +455,7 @@ GetTableResponse response = glue.getTable(request);
 - [NYC Taxi Data](https://registry.opendata.aws/nyc-tlc-trip-records-pds/)
 - [NOAA Weather Data](https://registry.opendata.aws/noaa-ghcn/)
 - [COVID-19 Data Lake](https://registry.opendata.aws/aws-covid19-lake/)
-- [Amazon Customer Reviews](https://registry.opendata.aws/amazon-reviews/)
+- [Amazon Customer Reviews](https://registry.opendata.aws/)
 
 ## Additional Learning Paths
 

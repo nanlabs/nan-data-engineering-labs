@@ -410,7 +410,7 @@ SELECT first_name,last_name,email FROM users WHERE created_at>'2024-01-01' ORDER
 
 ### GitLab SQL Style Guide
 
-🔗 <https://about.gitlab.com/handbook/business-technology/data-team/platform/sql-style-guide/>
+🔗 <https://docs.gitlab.com/ee/development/sql.html>
 
 **Focus**: Team collaboration, readability
 **Covers**:
@@ -538,7 +538,7 @@ LIMIT 10;
 **PostgreSQL Experts**:
 
 - <https://www.crunchydata.com/blog>
-- <https://www.postgresql.org/about/news/>
+- <https://www.postgresql.org/about/newsarchive/>
 - <https://www.cybertec-postgresql.com/en/blog/>
 
 **Database Performance**:
