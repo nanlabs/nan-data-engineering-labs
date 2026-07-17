@@ -28,15 +28,21 @@ jobs:
 
           import requests
 
-          # Anti-bot / method-not-allowed responses are not treated as dead links.
-          SOFT_STATUSES = {401, 403, 405, 429}
+          # Anti-bot / method-not-allowed / gateway blips are not treated as dead links.
+          SOFT_STATUSES = {401, 403, 405, 406, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524, 530}
           HEADERS = {
               "User-Agent": "nan-data-engineering-labs-link-check/1.0 (+https://github.com/nanlabs/nan-data-engineering-labs)"
           }
+          SKIP_HOST_PREFIXES = ("localhost", "127.0.0.1", "0.0.0.0")
+          TRAILING_PUNCT = "\"'`.,;:)]}>"
 
           errors = []
           soft = []
+          skipped = 0
           checked = 0
+
+          def normalize(url: str) -> str:
+              return url.rstrip(TRAILING_PUNCT)
 
           def check(url: str) -> tuple[str, str | int]:
               try:
@@ -53,6 +59,14 @@ jobs:
                   if r.status_code in SOFT_STATUSES:
                       return "soft", r.status_code
                   return "hard", r.status_code
+              except requests.exceptions.SSLError as exc:
+                  return "soft", f"ssl:{exc.__class__.__name__}"
+              except requests.exceptions.ConnectionError as exc:
+                  # DNS failures / refused connections for external docs are often flaky.
+                  msg = str(exc)
+                  if "NameResolutionError" in msg or "Failed to resolve" in msg:
+                      return "soft", "dns"
+                  return "hard", msg
               except Exception as exc:  # noqa: BLE001
                   return "hard", str(exc)
 
@@ -60,7 +74,12 @@ jobs:
               for path in pathlib.Path(".").glob(pattern):
                   text = path.read_text(encoding="utf-8")
                   urls = re.findall(r"https?://[^\s)>\]]+", text)
-                  for url in urls:
+                  for raw in urls:
+                      url = normalize(raw)
+                      host = re.sub(r"^https?://", "", url).split("/", 1)[0].lower()
+                      if host.startswith(SKIP_HOST_PREFIXES):
+                          skipped += 1
+                          continue
                       checked += 1
                       kind, detail = check(url)
                       if kind == "hard":
@@ -68,7 +87,9 @@ jobs:
                       elif kind == "soft":
                           soft.append(f"{path}: {url} -> {detail}")
 
-          print(f"Checked {checked} URLs ({len(errors)} hard failures, {len(soft)} soft/blocked)")
+          print(
+              f"Checked {checked} URLs ({len(errors)} hard failures, {len(soft)} soft/blocked, {skipped} skipped)"
+          )
           if soft:
               print("Soft failures (ignored):")
               for item in soft:

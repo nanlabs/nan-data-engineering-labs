@@ -166,7 +166,7 @@ This list contains official and quality-verified Resources to delve deeper into 
 
 **12. AWS Startups Blog - Data & Analytics**
 
-- URL: <https://aws.amazon.com/blogs/startups/tag/data-analytics/>
+- URL: <https://aws.amazon.com/blogs/startups/>
 - Why: Real Usage Cases from startups with limited budgets
 - Learn: How to do more with less ($)
 

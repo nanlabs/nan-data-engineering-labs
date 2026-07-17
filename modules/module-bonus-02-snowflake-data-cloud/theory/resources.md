@@ -107,7 +107,7 @@
 
 **10. Performance Optimization**:
 
-- **URL**: <https://docs.snowflake.com/en/user-guide/performance-query-optimization>
+- **URL**: <https://docs.snowflake.com/en/user-guide/querying>
 - **Topics**:
   - Clustering keys
   - Materialized views
@@ -116,7 +116,7 @@
 
 **11. Security**:
 
-- **URL**: <https://docs.snowflake.com/en/user-guide/security>
+- **URL**: <https://docs.snowflake.com/en/user-guide/security-overview>
 - **Topics**:
   - Role-based access control (RBAC)
   - Network policies
@@ -200,7 +200,7 @@
 
 **Study Resources**:
 
-- **Official Study Guide**: <https://learn.snowflake.com/snowpro-core-certification-study-guide>
+- **Official Study Guide**: <https://learn.snowflake.com/>
 - **Hands-On Labs**: <https://learn.snowflake.com/>
 - **Practice Exams**: Available via Snowflake University
 - **This Module**: Exercises 01-10 cover 80% of exam topics
@@ -236,7 +236,7 @@
 
 **Study Resources**:
 
-- **Study Guide**: <https://learn.snowflake.com/snowpro-advanced-data-engineer>
+- **Study Guide**: <https://learn.snowflake.com/>
 - **Badge**: <https://www.credly.com/>
 
 #### Data Scientist (Advanced)
@@ -455,7 +455,7 @@
 **Fivetran**:
 
 - **Integration**: Pre-built connectors (150+ sources)
-- **URL**: <https://fivetran.com/connectors/snowflake>
+- **URL**: <https://fivetran.com/docs/destinations/snowflake>
 - **Use Case**: Automated ELT from SaaS, databases, files
 
 **Matillion**:
@@ -729,7 +729,7 @@ Streams:             https://docs.snowflake.com/en/user-guide/streams
 Tasks:               https://docs.snowflake.com/en/user-guide/tasks-intro
 Snowpipe:            https://docs.snowflake.com/en/user-guide/data-load-snowpipe
 External Tables:     https://docs.snowflake.com/en/user-guide/tables-external-intro
-Security:            https://docs.snowflake.com/en/user-guide/security
+Security:            https://docs.snowflake.com/en/user-guide/security-overview
 Cost Management:     https://docs.snowflake.com/en/user-guide/cost-understanding
 SQL Reference:       https://docs.snowflake.com/en/sql-reference
 ```

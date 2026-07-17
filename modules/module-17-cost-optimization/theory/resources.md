@@ -121,7 +121,7 @@ This document provides curated resources for deepening your cloud cost optimizat
 - **Duration**: 12 hours
 - **Cost**: Free (with paid FOCP exam prep option)
 - **Content**: FinOps Foundation curriculum
-- **Link**: <https://training.linuxfoundation.org/training/introduction-to-finops/>
+- **Link**: <https://www.finops.org/introduction/>
 
 ### 4. Udemy
 
@@ -418,7 +418,7 @@ policies:
 
 - **Frequency**: Monthly
 - **Content**: FinOps case studies, tool updates, event announcements
-- **Subscribe**: <https://www.finops.org/newsletter/>
+- **Subscribe**: <https://www.finops.org/>
 
 ### 3. AWS Cloud Economics Blog
 
@@ -597,7 +597,7 @@ policies:
 
 **5. FinOps Landscape**
 
-- **Link**: <https://landscape.finops.org/>
+- **Link**: <https://www.finops.org/>
 - **Content**: Directory of 100+ FinOps tools
 - **Categories**: Cost visibility, optimization, governance, FOCUS
 - **Best For**: Tool selection

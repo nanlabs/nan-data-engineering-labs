@@ -377,7 +377,7 @@
 
 **mCoding**
 
-- URL: <https://www.youtube.com/c/mCoding>
+- URL: <https://www.youtube.com/@mCodingWithJamesMurphy>
 - Tipo: Python avanzado
 - Why: Advanced topics explained clearly
 - Videos: Type hints, async/await, performance optimization

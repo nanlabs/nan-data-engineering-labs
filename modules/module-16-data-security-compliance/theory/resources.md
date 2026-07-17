@@ -93,7 +93,7 @@
 
 **A Cloud Guru / Pluralsight**
 
-- [AWS Certified Security - Specialty](https://acloudguru.com/course/aws-certified-security-specialty)
+- [AWS Certified Security - Specialty](https://www.pluralsight.com/cloud-guru)
 - Duration: 15-20 hours
 - Hands-on labs included
 
@@ -105,7 +105,7 @@
 
 **Linux Academy / A Cloud Guru**
 
-- [AWS Security Fundamentals](https://linuxacademy.com/)
+- [AWS Security Fundamentals](https://www.pluralsight.com/)
 - Hands-on labs with real AWS environments
 
 ---
@@ -162,7 +162,7 @@
 
 - 📝 [AWS Security Blog](https://aws.amazon.com/blogs/security/)
   - Latest security announcements, best practices
-- 📝 [AWS Big Data Blog - Security](https://aws.amazon.com/blogs/big-data/tag/security/)
+- 📝 [AWS Big Data Blog - Security](https://aws.amazon.com/blogs/big-data/)
   - Data security patterns
 - 📝 [AWS Architecture Blog](https://aws.amazon.com/blogs/architecture/)
   - Security reference architectures
@@ -321,14 +321,14 @@ results = analyzer.analyze(text="My SSN is 123-45-6789", language='en')
 
 🌍 **AWS Security Forums**
 
-- URL: [repost.aws/tags/TAjybM38hSQiO01aZVEQxIVA/security](https://repost.aws/tags/TAjybM38hSQiO01aZVEQxIVA/security)
+- URL: [repost.aws/tags/TAjybM38hSQiO01aZVEQxIVA/security](https://repost.aws/topics/TA4I-security/security)
 - Community Q&A
 
 ### **Security Communities**
 
 🌍 **OWASP Cloud Security**
 
-- URL: [owasp.org/www-project-cloud-security/](https://owasp.org/www-project-cloud-security/)
+- URL: [owasp.org/www-project-cloud-security/](https://owasp.org/www-project-cloud-native-application-security-top-10/)
 - Cloud security testing guide
 
 🌍 **Reddit r/AWSCloud**
@@ -362,7 +362,7 @@ results = analyzer.analyze(text="My SSN is 123-45-6789", language='en')
 
 ### **SOC 2**
 
-📋 [AICPA SOC 2 Overview](https://www.aicpa.org/soc2)
+📋 [AICPA SOC 2 Overview](https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2)
 📋 [AWS SOC Reports](https://aws.amazon.com/compliance/soc-faqs/)
 
 ### **ISO 27001**
