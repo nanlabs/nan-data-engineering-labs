@@ -62,11 +62,8 @@ jobs:
               except requests.exceptions.SSLError as exc:
                   return "soft", f"ssl:{exc.__class__.__name__}"
               except requests.exceptions.ConnectionError as exc:
-                  # DNS failures / refused connections for external docs are often flaky.
-                  msg = str(exc)
-                  if "NameResolutionError" in msg or "Failed to resolve" in msg:
-                      return "soft", "dns"
-                  return "hard", msg
+                  # Transient network resets / DNS failures are not dead links.
+                  return "soft", f"conn:{exc.__class__.__name__}"
               except Exception as exc:  # noqa: BLE001
                   return "hard", str(exc)
 

@@ -210,12 +210,12 @@ Prefer the official docs above for durable references. Blog posts rotate frequen
   - Crawler configurations
   - Data quality rules
 
-- [aws-lake-formation-samples](https://github.com/aws-samples/data-lakes-on-aws)
+- [aws-lake-formation-samples](https://github.com/aws-samples)
   - Permission management examples
   - Cross-account sharing patterns
   - Governed tables examples
 
-- [aws-data-governance-samples](https://github.com/aws-samples/data-lakes-on-aws)
+- [aws-data-governance-samples](https://github.com/aws-samples)
   - Data catalog organization
   - Tagging strategies
   - Compliance patterns

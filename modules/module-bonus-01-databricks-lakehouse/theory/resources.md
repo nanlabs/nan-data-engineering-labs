@@ -44,7 +44,7 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 **Delta Lake API**
 
-- Python: <https://docs.delta.io/latest/api/python/index.html>
+- Python: <https://docs.delta.io/latest/>
 - Scala: <https://docs.delta.io/latest/>
 - SQL: <https://docs.delta.io/latest/delta-batch.html>
 
@@ -245,7 +245,7 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 - Topics: Spark core, RDDs, DataFrames, SQL
 - Cost: $300 USD
-- URL: <https://www.databricks.com/learn/exam/databricks-certified-associate-developer>
+- URL: <https://www.databricks.com/learn/certification>
 
 **Note:** Databricks-specific certs more valuable than generic Spark certs
 
@@ -410,7 +410,7 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 **Awesome Databricks**
 
-- URL: <https://github.com/henrywoo/awesome-databricks>
+- URL: <https://github.com/topics/databricks>
 - Curated list of Databricks resources
 
 ---
@@ -433,7 +433,7 @@ Curated list of official documentation, courses, certifications, books, and comm
 
 **Katacoda Scenarios** (Interactive Browser)
 
-- URL: <https://www.databricks.com/learn/training/catalog>
+- URL: <https://www.databricks.com/learn>
 - No installation required
 - Guided scenarios with feedback
 

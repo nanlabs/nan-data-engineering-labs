@@ -116,7 +116,7 @@
 
 **11. Security**:
 
-- **URL**: <https://docs.snowflake.com/en/user-guide/security-overview>
+- **URL**: <https://docs.snowflake.com/en/guides-overview-secure>
 - **Topics**:
   - Role-based access control (RBAC)
   - Network policies
@@ -729,7 +729,7 @@ Streams:             https://docs.snowflake.com/en/user-guide/streams
 Tasks:               https://docs.snowflake.com/en/user-guide/tasks-intro
 Snowpipe:            https://docs.snowflake.com/en/user-guide/data-load-snowpipe
 External Tables:     https://docs.snowflake.com/en/user-guide/tables-external-intro
-Security:            https://docs.snowflake.com/en/user-guide/security-overview
+Security:            https://docs.snowflake.com/en/guides-overview-secure
 Cost Management:     https://docs.snowflake.com/en/user-guide/cost-understanding
 SQL Reference:       https://docs.snowflake.com/en/sql-reference
 ```

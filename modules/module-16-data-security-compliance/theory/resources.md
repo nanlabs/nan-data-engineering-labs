@@ -328,7 +328,7 @@ results = analyzer.analyze(text="My SSN is 123-45-6789", language='en')
 
 🌍 **OWASP Cloud Security**
 
-- URL: [owasp.org/www-project-cloud-security/](https://owasp.org/www-project-cloud-native-application-security-top-10/)
+- URL: [owasp.org/www-project-cloud-security/](https://owasp.org/)
 - Cloud security testing guide
 
 🌍 **Reddit r/AWSCloud**

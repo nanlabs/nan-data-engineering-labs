@@ -62,12 +62,12 @@
 
 - 📖 [Flink Documentation](https://nightlies.apache.org/flink/flink-docs-stable/)
 - 🎓 [DataStream API](https://nightlies.apache.org/flink/flink-docs-stable/dev/datastream_api.html)
-- 🎓 [Table API & SQL](https://nightlies.apache.org/flink/flink-docs-stable/dev/table/overview.html)
+- 🎓 [Table API & SQL](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/table/overview/)
 - 🎯 [Stateful Stream Processing](https://nightlies.apache.org/flink/flink-docs-stable/dev/stream/state/)
 
 **Advanced Topics**
 
-- ⏰ [Event Time & Watermarks](https://nightlies.apache.org/flink/flink-docs-stable/dev/event_time.html)
+- ⏰ [Event Time & Watermarks](https://nightlies.apache.org/flink/flink-docs-stable/docs/concepts/time/)
 - 🪟 [Windows](https://nightlies.apache.org/flink/flink-docs-stable/dev/stream/operators/windows.html)
 - 🔍 [Complex Event Processing (CEP)](https://nightlies.apache.org/flink/flink-docs-stable/dev/libs/cep.html)
 - 💾 [State & Fault Tolerance](https://nightlies.apache.org/flink/flink-docs-stable/dev/stream/state/checkpointing.html)
