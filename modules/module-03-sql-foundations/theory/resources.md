@@ -141,7 +141,7 @@ Even if using PostgreSQL, other docs provide perspectives:
 
 ### DataCamp SQL Courses
 
-🔗 <https://www.datacamp.com/courses/intro-to-sql-for-data-science>
+🔗 <https://www.datacamp.com/courses/introduction-to-sql>
 
 **Format**: Interactive courses
 **Level**: Beginner to Advanced
