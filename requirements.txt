@@ -6,7 +6,7 @@ awscli-local>=0.22.2
 # Data Processing
 pandas>=3.0.5
 numpy>=2.5.1
-pyarrow>=25.0.0
+pyarrow>=25.0.1
 duckdb>=1.5.5
 
 # Apache Spark (PySpark local)
