@@ -1,7 +1,7 @@
 # Module 08: Streaming Basics - Requirements
 
 # Core Dependencies
-kafka-python==2.0.2
+kafka-python==2.3.2
 confluent-kafka==2.3.0
 apache-flink==1.18.0
 pyflink==1.18.0
