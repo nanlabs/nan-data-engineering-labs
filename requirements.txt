@@ -51,7 +51,7 @@ markdown>=3.10.3
 
 # SQL
 sqlalchemy>=2.0.53
-psycopg2-binary>=2.9.12
+psycopg2-binary>=2.9.13
 
 # Linting and Formatting
 ruff>=0.16.7
