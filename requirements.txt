@@ -55,4 +55,4 @@ psycopg2-binary>=2.9.13
 
 # Linting and Formatting
 ruff>=0.16.9
-black>=26.5.1
+black>=26.10.0
