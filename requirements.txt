@@ -15,7 +15,7 @@ delta-spark>=4.4.1
 
 # Data Quality
 great-expectations>=0.18.22
-pandera>=0.34.0
+pandera>=0.34.1
 
 # Streaming
 kafka-python>=3.0.11
