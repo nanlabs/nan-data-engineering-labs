@@ -14,7 +14,7 @@ pyspark<=4.2.0,>=4.2.0
 delta-spark>=4.4.1
 
 # Data Quality
-great-expectations>=0.18.22
+great-expectations>=1.24.0
 pandera>=0.34.1
 
 # Streaming
