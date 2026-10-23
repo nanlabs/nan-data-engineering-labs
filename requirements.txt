@@ -30,7 +30,7 @@ terraform-compliance>=1.15.1
 # Testing
 pytest>=9.1.1
 pytest-cov>=7.1.0
-pytest-mock>=3.16.0
+pytest-mock>=3.17.0
 moto[all]>=5.2.4
 
 # Data Generation
