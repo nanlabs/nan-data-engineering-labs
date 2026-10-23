@@ -47,7 +47,7 @@ rich>=15.0.0
 tabulate>=0.10.0
 
 # Documentation
-markdown>=3.11
+markdown>=3.11.2
 
 # SQL
 sqlalchemy>=2.1.4
