@@ -54,5 +54,5 @@ sqlalchemy>=2.1.4
 psycopg2-binary>=2.9.13
 
 # Linting and Formatting
-ruff>=0.17.0
+ruff>=0.17.1
 black>=26.10.1
