@@ -1,7 +1,7 @@
 # Core AWS and Cloud Tools
 boto3>=1.43.119
 awscli>=1.46.1
-awscli-local>=0.22.2
+awscli-local>=0.23.0
 
 # Data Processing
 pandas>=3.1.0
