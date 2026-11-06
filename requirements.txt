@@ -19,7 +19,7 @@ pandera>=0.35.0
 
 # Streaming
 kafka-python>=3.0.12
-confluent-kafka>=2.16.0
+confluent-kafka>=2.16.1
 
 # Workflow Orchestration
 apache-airflow>=3.3.2
