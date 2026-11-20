@@ -25,7 +25,7 @@ confluent-kafka>=2.16.1
 apache-airflow>=3.4.0
 
 # Infrastructure as Code
-terraform-compliance>=1.16.0
+terraform-compliance>=1.17.2
 
 # Testing
 pytest>=9.2.0
